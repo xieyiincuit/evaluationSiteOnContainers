@@ -11,7 +11,7 @@ try
     host.MigrateDbContext<EvaluationContext>((context, services) =>
     {
         var logger = services.GetRequiredService<ILogger<EvaluationContextSeed>>();
-        new EvaluationContextSeed().SeedAsync(context, logger).Wait();      
+        new EvaluationContextSeed().SeedAsync(context, logger).Wait();
     });
     Log.Information("Migrations Applyed ({ApplicationContext})...", Program.AppName);
 

@@ -62,10 +62,15 @@ public class EvaluationCommentEntityTypeConfiguration : IEntityTypeConfiguration
            .HasComment("回复的评论id")
            .IsRequired(false);
 
+        builder.Property(e => e.ArticleId)
+          .HasColumnName("article_id")
+          .HasComment("评论对应的测评id")
+          .IsRequired();
+
         //设置外键约束
         builder.HasOne(e => e.EvaluationArticle)
             .WithMany(article => article.EvaluationComments)
-            .HasForeignKey(e => e.ArticleForeignKey)
+            .HasForeignKey(e => e.ArticleId)
             .HasConstraintName("foreignKey_comment_article")
             .OnDelete(DeleteBehavior.Cascade);
     }

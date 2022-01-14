@@ -16,7 +16,7 @@ public class EvaluationContext : DbContext
     }
 }
 
-public class CatalogContextDesignFactory : IDesignTimeDbContextFactory<EvaluationContext>
+public class EvaluationContextDesignFactory : IDesignTimeDbContextFactory<EvaluationContext>
 {
     public EvaluationContext CreateDbContext(string[] args)
     {

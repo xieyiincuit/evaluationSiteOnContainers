@@ -15,7 +15,9 @@ public class Startup
             .AddCustomMVC(Configuration)
             .AddCustomSwagger(Configuration)
             .AddCustomDbContext(Configuration)
-            .AddCustomHealthCheck(Configuration);
+            .AddCustomHealthCheck(Configuration)
+            .AddCustomServicesInjection(Configuration)
+            .AddCustomOptions(Configuration);
 
         //use autofac
         var container = new ContainerBuilder();

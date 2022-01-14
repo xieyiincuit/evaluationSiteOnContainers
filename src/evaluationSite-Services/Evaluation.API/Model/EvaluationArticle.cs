@@ -8,6 +8,7 @@ public class EvaluationArticle
 
     public string Title { get; set; }
 
+    public string? DesciptionImage { get; set; }
     public string? ArticleImage { get; set; }
 
     public string Content { get; set; }

@@ -70,7 +70,7 @@ public class EvaluationContextSeed
                 UserId = 1,
                 UserName = "Luocl",
                 CreateTime = DateTime.Now.AddHours(1),
-                ArticleForeignKey = 1
+                ArticleId = 1
             },
             new EvaluationComment()
             {
@@ -78,8 +78,26 @@ public class EvaluationContextSeed
                 UserId = 2,
                 UserName = "Chenxy",
                 CreateTime = DateTime.Now.AddMinutes(26),
-                ArticleForeignKey = 1
+                ArticleId = 1
             },
+            new EvaluationComment()
+            {
+                Content = "我觉得确实是挺有意思的",
+                UserId = 3,
+                UserName = "Zhousl",
+                CreateTime = DateTime.Now.AddMinutes(44),
+                ArticleId = 2
+            },
+            new EvaluationComment()
+            {
+                Content = "正确的 正确的",
+                UserId = 4,
+                UserName = "Hanbaoyi",
+                CreateTime = DateTime.Now.AddHours(1).AddMinutes(20),
+                ArticleId = 2,
+                IsReplay = true,
+                ReplayId = 3          
+            }
         };
     }
 
@@ -91,8 +109,7 @@ public class EvaluationContextSeed
             new EvaluationCategory() { Type = "Xbox" },
             new EvaluationCategory() { Type = "独立游戏" },
             new EvaluationCategory() { Type = "网游" },
-            new EvaluationCategory() { Type = "手游" },
-            new EvaluationCategory() { Type = "全部游戏" }
+            new EvaluationCategory() { Type = "手游" }        
         };
     }
 

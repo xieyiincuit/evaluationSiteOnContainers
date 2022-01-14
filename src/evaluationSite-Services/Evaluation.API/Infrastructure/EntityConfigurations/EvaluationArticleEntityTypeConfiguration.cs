@@ -15,6 +15,12 @@ class EvaluationArticleEntityTypeConfiguration : IEntityTypeConfiguration<Evalua
             .ValueGeneratedOnAdd()
             .IsRequired();
 
+        builder.Property(x => x.Author)
+            .HasColumnName("author")
+            .HasComment("测评内容作者")
+            .IsRequired()
+            .HasMaxLength(50);
+
         builder.Property(x => x.Title)
             .HasColumnName("title")
             .HasComment("测评文章标题")
@@ -23,8 +29,13 @@ class EvaluationArticleEntityTypeConfiguration : IEntityTypeConfiguration<Evalua
 
         builder.Property(x => x.ArticleImage)
           .HasColumnName("article_image")
-          .HasComment("文章呈现图")
+          .HasComment("内容Top呈现图")
           .IsRequired(false);
+
+        builder.Property(x => x.DesciptionImage)
+         .HasColumnName("desciption_image")
+         .HasComment("展示略缩图")
+         .IsRequired(false);
 
         builder.Property(x => x.Content)
             .HasColumnName("content")
@@ -83,6 +94,11 @@ class EvaluationArticleEntityTypeConfiguration : IEntityTypeConfiguration<Evalua
         builder.Property(x => x.Status)
             .HasColumnName("article_status")
             .HasComment("文章发布状态")
+            .IsRequired();
+
+        builder.Property(x => x.CategoryTypeId)
+            .HasColumnName("category_type_id")
+            .HasComment("测评类别主键")
             .IsRequired();
 
         builder.HasOne(x => x.CategoryType)

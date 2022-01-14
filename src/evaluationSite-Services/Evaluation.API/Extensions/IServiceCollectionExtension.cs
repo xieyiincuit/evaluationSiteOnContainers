@@ -19,7 +19,8 @@ public static class IServiceCollectionExtension
 
     public static IServiceCollection AddCustomDbContext(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<EvaluationContext>(options =>
+        services.AddEntityFrameworkSqlServer()
+            .AddDbContext<EvaluationContext>(options =>
         {
             string connectionString = configuration["ConnectionStrings:DataBaseConnectString"];
             options.UseSqlServer(connectionString,
@@ -91,4 +92,12 @@ public static class IServiceCollectionExtension
 
         return services;
     }
+
+    public static IServiceCollection AddCustomServicesInjection(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddScoped<IEvaluationArticle, EvaluationArticleService>();
+        services.AddScoped<IEvaluationCategory, EvaluationCategoryService>();
+        return services;
+    }
+
 }

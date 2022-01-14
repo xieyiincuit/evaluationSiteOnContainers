@@ -31,7 +31,7 @@ public class EvaluationComment
     /// <summary>
     /// 关联测评的外键
     /// </summary>
-    public int ArticleForeignKey { get; set; }
+    public int ArticleId { get; set; }
 
     /// <summary>
     /// 测评导航属性
