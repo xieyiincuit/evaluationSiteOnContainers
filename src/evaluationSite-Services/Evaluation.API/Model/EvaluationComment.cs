@@ -26,7 +26,17 @@ public class EvaluationComment
     /// <summary>
     /// 回复的评论Id
     /// </summary>
-    public int? ReplayId { get; set; }
+    public int? ReplayCommentId { get; set; }
+
+    /// <summary>
+    /// 回复的用户Id
+    /// </summary>
+    public int ReplyUserId { get; set; }
+
+    /// <summary>
+    /// 回复的用户名
+    /// </summary>
+    public string ReplyNickName { get; set; }
 
     /// <summary>
     /// 关联测评的外键

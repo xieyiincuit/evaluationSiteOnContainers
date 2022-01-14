@@ -57,10 +57,20 @@ public class EvaluationCommentEntityTypeConfiguration : IEntityTypeConfiguration
             .HasComment("该评论是否为回复")
             .IsRequired(false);
 
-        builder.Property(e => e.ReplayId)
-           .HasColumnName("replay_id")
+        builder.Property(e => e.ReplayCommentId)
+           .HasColumnName("replay_comment_id")
            .HasComment("回复的评论id")
            .IsRequired(false);
+
+        builder.Property(e => e.ReplyUserId)
+          .HasColumnName("replay_userid")
+          .HasComment("回复的玩家Id")
+          .IsRequired(false);
+
+        builder.Property(e => e.ReplyNickName)
+          .HasColumnName("replay_nickname")
+          .HasComment("回复的玩家名")
+          .IsRequired(false);
 
         builder.Property(e => e.ArticleId)
           .HasColumnName("article_id")

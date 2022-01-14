@@ -20,7 +20,7 @@ public class EvaluationContextSeed
                 await context.Articles.AddRangeAsync(GetPreconfigurationEvaluationArticle());
                 await context.SaveChangesAsync();
             }
-         
+
             if (!context.Comments.Any())
             {
                 await context.Comments.AddRangeAsync(GetPreconfigurationEvaluationComment());
@@ -96,8 +96,34 @@ public class EvaluationContextSeed
                 CreateTime = DateTime.Now.AddHours(1).AddMinutes(20),
                 ArticleId = 2,
                 IsReplay = true,
-                ReplayId = 3          
-            }
+                ReplayCommentId = 3,
+                ReplyUserId = 3,
+                ReplyNickName = "Zhousl"
+            },
+            new EvaluationComment()
+            {
+                Content = "不是正确的 不是正确的",
+                UserId = 3,
+                NickName = "Zhousl",
+                CreateTime = DateTime.Now.AddHours(2),
+                ArticleId = 2,
+                IsReplay = true,
+                ReplayCommentId = 4,
+                ReplyUserId = 4,
+                ReplyNickName = "Hanbaoyi"
+            },
+            new EvaluationComment()
+            {
+                Content = "我觉得Zhousl说的对",
+                UserId = 5,
+                NickName = "Wangxb",
+                CreateTime = DateTime.Now.AddHours(3),
+                ArticleId = 2,
+                IsReplay = true,
+                ReplayCommentId = 5,
+                ReplyUserId = 3,
+                ReplyNickName = "Zhousl"
+            },
         };
     }
 
@@ -109,7 +135,7 @@ public class EvaluationContextSeed
             new EvaluationCategory() { CategoryType = "Xbox" },
             new EvaluationCategory() { CategoryType = "独立游戏" },
             new EvaluationCategory() { CategoryType = "网游" },
-            new EvaluationCategory() { CategoryType = "手游" }        
+            new EvaluationCategory() { CategoryType = "手游" }
         };
     }
 
