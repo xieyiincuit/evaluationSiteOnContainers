@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.ViewModel;
+﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.DtoModel;
 
 public class PaginatedItemsDtoModel<TEntity> where TEntity : class
 {

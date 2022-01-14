@@ -24,7 +24,7 @@ global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Infrast
 global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Infrastructure.Exceptions;
 global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Infrastructure.Filters;
 global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Infrastructure.EntityConfigurations;
-global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.ViewModel;
+global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.DtoModel;
 global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Extensions;
 global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Interfaces;
 global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Services;
