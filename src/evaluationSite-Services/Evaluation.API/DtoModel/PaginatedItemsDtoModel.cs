@@ -1,6 +1,6 @@
 ﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.ViewModel;
 
-public class PaginatedItemsViewModel<TEntity> where TEntity : class
+public class PaginatedItemsDtoModel<TEntity> where TEntity : class
 {
     public int CurrentPage { get; private set; }
     public int TotalPages { get; set; }
@@ -11,7 +11,7 @@ public class PaginatedItemsViewModel<TEntity> where TEntity : class
 
     public IEnumerable<TEntity> Data { get; private set; }
 
-    public PaginatedItemsViewModel(int pageIndex, int pageSize, long count, IEnumerable<TEntity> data)
+    public PaginatedItemsDtoModel(int pageIndex, int pageSize, long count, IEnumerable<TEntity> data)
     {
         CurrentPage = pageIndex;
         PageSize = pageSize;

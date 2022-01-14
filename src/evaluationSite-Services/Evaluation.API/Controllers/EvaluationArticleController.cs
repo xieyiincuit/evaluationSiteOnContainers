@@ -16,7 +16,7 @@ public class EvaluationArticleController : ControllerBase
     // GET api/v1/evaluation/articles[?pageSize=10&pageIndex=1]
     [HttpGet]
     [Route("articles")]
-    [ProducesResponseType(typeof(PaginatedItemsViewModel<EvaluationArticle>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(PaginatedItemsDtoModel<EvaluationArticle>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(IEnumerable<EvaluationArticle>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> GetArticlesAsync([FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 1, string? ids = null)
@@ -40,7 +40,7 @@ public class EvaluationArticleController : ControllerBase
         var maxPageIndex = (int)Math.Ceiling((totalArticles / (double)pageSize));
         pageIndex = pageIndex <= 0 || pageIndex > maxPageIndex ? 1 : pageIndex;
 
-        var model = new PaginatedItemsViewModel<EvaluationArticle>(pageIndex, pageSize, totalArticles,
+        var model = new PaginatedItemsDtoModel<EvaluationArticle>(pageIndex, pageSize, totalArticles,
             await _articleService.GetArticlesAsync(pageSize, pageIndex));
 
         return Ok(model);
@@ -66,7 +66,7 @@ public class EvaluationArticleController : ControllerBase
     // GET api/v1/evaluation/type/articles
     [HttpGet]
     [Route("type/articles")]
-    [ProducesResponseType(typeof(PaginatedItemsViewModel<EvaluationArticle>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(PaginatedItemsDtoModel<EvaluationArticle>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> GetArticleByTypeAsync(int categoryId, [FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 1)
     {
@@ -85,7 +85,7 @@ public class EvaluationArticleController : ControllerBase
         var maxPageIndex = (int)Math.Ceiling((totalArticles / (double)pageSize));
         pageIndex = pageIndex <= 0 || pageIndex > maxPageIndex ? 1 : pageIndex;
 
-        var model = new PaginatedItemsViewModel<EvaluationArticle>(pageIndex, pageSize, totalArticles,
+        var model = new PaginatedItemsDtoModel<EvaluationArticle>(pageIndex, pageSize, totalArticles,
             await _articleService.GetArticlesAsync(pageSize, pageIndex, categoryId));
 
         return Ok(model);
