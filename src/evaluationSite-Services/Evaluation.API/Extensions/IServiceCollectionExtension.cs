@@ -97,6 +97,7 @@ public static class IServiceCollectionExtension
     {
         services.AddScoped<IEvaluationArticle, EvaluationArticleService>();
         services.AddScoped<IEvaluationCategory, EvaluationCategoryService>();
+        services.AddScoped<IEvaluationComment, EvaluationCommentService>();
         return services;
     }
 
