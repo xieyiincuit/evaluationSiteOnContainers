@@ -19,8 +19,7 @@ public static class IServiceCollectionExtension
 
     public static IServiceCollection AddCustomDbContext(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddEntityFrameworkSqlServer()
-            .AddDbContext<EvaluationContext>(options =>
+        services.AddDbContext<EvaluationContext>(options =>
         {
             string connectionString = configuration["ConnectionStrings:DataBaseConnectString"];
             options.UseSqlServer(connectionString,
