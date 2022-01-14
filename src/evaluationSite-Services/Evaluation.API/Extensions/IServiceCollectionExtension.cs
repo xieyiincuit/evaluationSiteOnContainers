@@ -100,4 +100,9 @@ public static class IServiceCollectionExtension
         return services;
     }
 
+    public static IServiceCollection AddCustomMapper(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+        return services;
+    }
 }

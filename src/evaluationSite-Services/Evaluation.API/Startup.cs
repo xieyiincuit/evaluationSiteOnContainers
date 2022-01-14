@@ -17,7 +17,8 @@ public class Startup
             .AddCustomDbContext(Configuration)
             .AddCustomHealthCheck(Configuration)
             .AddCustomServicesInjection(Configuration)
-            .AddCustomOptions(Configuration);
+            .AddCustomOptions(Configuration)
+            .AddCustomMapper(Configuration);
 
         //use autofac
         var container = new ContainerBuilder();

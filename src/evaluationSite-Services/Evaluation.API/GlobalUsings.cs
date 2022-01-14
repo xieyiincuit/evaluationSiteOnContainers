@@ -1,6 +1,7 @@
 ﻿global using Autofac.Extensions.DependencyInjection;
 global using Autofac;
 global using Serilog;
+global using AutoMapper;
 global using Microsoft.AspNetCore;
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.AspNetCore.Mvc.Filters;
