@@ -69,6 +69,12 @@ public class EvaluationArticleService : IEvaluationArticle
         return articles;
     }
 
+    public async Task<bool> IsArticleExist(int id)
+    {
+        var article = await _evaluationContext.Articles.FindAsync(id);
+        return article != null;
+    }
+
     /// <summary>
     /// Bulks get articles
     /// </summary>

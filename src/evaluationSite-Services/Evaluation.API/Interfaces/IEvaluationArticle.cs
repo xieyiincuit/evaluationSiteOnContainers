@@ -7,4 +7,5 @@ public interface IEvaluationArticle
     Task<List<EvaluationArticle>> GetArticlesAsync(int pageSize, int pageIndex, string ids = null);
     Task<List<EvaluationArticle>> GetArticlesAsync(int pageSize, int pageIndex, int categoryTypeId);
     Task<EvaluationArticle> GetArticleAsync(int id);
+    Task<bool> IsArticleExist(int id);
 }
