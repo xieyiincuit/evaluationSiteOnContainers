@@ -14,6 +14,13 @@ public class EvaluationContext : DbContext
         modelBuilder.ApplyConfiguration(new EvaluationCategoryEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new EvaluationCommentEntityTypeConfiguration());
     }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        //开启以下EF日志辅助开发
+        optionsBuilder.EnableSensitiveDataLogging();
+        optionsBuilder.EnableDetailedErrors();
+    }
 }
 
 public class EvaluationContextDesignFactory : IDesignTimeDbContextFactory<EvaluationContext>

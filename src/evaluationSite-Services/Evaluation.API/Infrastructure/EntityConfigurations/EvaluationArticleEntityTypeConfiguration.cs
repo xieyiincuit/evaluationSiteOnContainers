@@ -7,10 +7,10 @@ class EvaluationArticleEntityTypeConfiguration : IEntityTypeConfiguration<Evalua
         builder.ToTable("evaluation_article")
             .HasComment("游戏测评文章信息表");
 
-        builder.HasKey(x => x.Id);
+        builder.HasKey(x => x.ArticleId);
 
-        builder.Property(x => x.Id)
-            .HasColumnName("id")
+        builder.Property(x => x.ArticleId)
+            .HasColumnName("article_id")
             .HasComment("主键")
             .ValueGeneratedOnAdd()
             .IsRequired();
@@ -52,20 +52,20 @@ class EvaluationArticleEntityTypeConfiguration : IEntityTypeConfiguration<Evalua
             .HasComment("测评内容更新时间")
             .IsRequired(false);
 
-        builder.Property(x=>x.Traffic)
-            .HasColumnName("traffic")
+        builder.Property(x=>x.JoinCount)
+            .HasColumnName("join_count")
             .HasComment("文章浏览量")
             .HasDefaultValue(0)
             .IsRequired();
 
-        builder.Property(x => x.CommentNums)
-            .HasColumnName("comment_nums")
+        builder.Property(x => x.CommentsCount)
+            .HasColumnName("comments_count")
             .HasComment("文章评论数量")
             .HasDefaultValue(0)
             .IsRequired();
 
-        builder.Property(x => x.LikeNums)
-            .HasColumnName("like_nums")
+        builder.Property(x => x.SupportCount)
+            .HasColumnName("support_count")
             .HasComment("文章点赞数量")
             .HasDefaultValue(0)
             .IsRequired();

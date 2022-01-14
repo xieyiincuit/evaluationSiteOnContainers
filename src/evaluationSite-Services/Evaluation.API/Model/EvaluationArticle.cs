@@ -2,35 +2,57 @@
 
 public class EvaluationArticle
 {    
-    public int Id { get; set; }
+    public int ArticleId { get; set; }
   
+    /// <summary>
+    /// 作者
+    /// </summary>
     public string Author { get; set; }
 
+    /// <summary>
+    /// 标题
+    /// </summary>
     public string Title { get; set; }
 
+    /// <summary>
+    /// 略缩图
+    /// </summary>
     public string? DesciptionImage { get; set; }
+
+    /// <summary>
+    /// 详情图
+    /// </summary>
     public string? ArticleImage { get; set; }
 
+    /// <summary>
+    /// 内容
+    /// </summary>
     public string Content { get; set; }
 
+    /// <summary>
+    /// 创建时间
+    /// </summary>
     public DateTime CreateTime { get; set; }
 
+    /// <summary>
+    /// 更新时间
+    /// </summary>
     public DateTime? UpdateTime { get; set; }
 
     /// <summary>
     /// 访问量
     /// </summary>
-    public int Traffic { get; set; }
+    public int JoinCount { get; set; }
 
     /// <summary>
     /// 评论数量
     /// </summary>
-    public int CommentNums { get; set; }
+    public int CommentsCount { get; set; }
 
     /// <summary>
     /// 点赞数量
     /// </summary>
-    public int LikeNums { get; set; }
+    public int SupportCount { get; set; }
 
     /// <summary>
     /// 逻辑删除
@@ -48,12 +70,12 @@ public class EvaluationArticle
     public ArticleStatus Status { get; set; }
 
     /// <summary>
-    /// 类别Id
+    /// 测评类别Id
     /// </summary>
     public int CategoryTypeId { get; set; }
 
     /// <summary>
-    /// 类别导航属性
+    /// 测评类别导航属性
     /// </summary>
     public EvaluationCategory CategoryType { get; set; }
 

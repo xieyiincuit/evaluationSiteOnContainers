@@ -68,7 +68,7 @@ public class EvaluationContextSeed
             {
                 Content = "5e 2800",
                 UserId = 1,
-                UserName = "Luocl",
+                NickName = "Luocl",
                 CreateTime = DateTime.Now.AddHours(1),
                 ArticleId = 1
             },
@@ -76,7 +76,7 @@ public class EvaluationContextSeed
             {
                 Content = "b5 2100",
                 UserId = 2,
-                UserName = "Chenxy",
+                NickName = "Chenxy",
                 CreateTime = DateTime.Now.AddMinutes(26),
                 ArticleId = 1
             },
@@ -84,7 +84,7 @@ public class EvaluationContextSeed
             {
                 Content = "我觉得确实是挺有意思的",
                 UserId = 3,
-                UserName = "Zhousl",
+                NickName = "Zhousl",
                 CreateTime = DateTime.Now.AddMinutes(44),
                 ArticleId = 2
             },
@@ -92,7 +92,7 @@ public class EvaluationContextSeed
             {
                 Content = "正确的 正确的",
                 UserId = 4,
-                UserName = "Hanbaoyi",
+                NickName = "Hanbaoyi",
                 CreateTime = DateTime.Now.AddHours(1).AddMinutes(20),
                 ArticleId = 2,
                 IsReplay = true,
@@ -105,11 +105,11 @@ public class EvaluationContextSeed
     {
         return new List<EvaluationCategory>()
         {
-            new EvaluationCategory() { Type = "单机" },
-            new EvaluationCategory() { Type = "Xbox" },
-            new EvaluationCategory() { Type = "独立游戏" },
-            new EvaluationCategory() { Type = "网游" },
-            new EvaluationCategory() { Type = "手游" }        
+            new EvaluationCategory() { CategoryType = "单机" },
+            new EvaluationCategory() { CategoryType = "Xbox" },
+            new EvaluationCategory() { CategoryType = "独立游戏" },
+            new EvaluationCategory() { CategoryType = "网游" },
+            new EvaluationCategory() { CategoryType = "手游" }        
         };
     }
 

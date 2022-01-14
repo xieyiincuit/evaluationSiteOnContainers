@@ -2,10 +2,10 @@
 
 public class EvaluationCategory
 {
-    public int Id { get; set; }
+    public int CategoryId { get; set; }
 
     /// <summary>
     /// 测评类别
     /// </summary>
-    public string Type { get; set; }
+    public string CategoryType { get; set; }
 }

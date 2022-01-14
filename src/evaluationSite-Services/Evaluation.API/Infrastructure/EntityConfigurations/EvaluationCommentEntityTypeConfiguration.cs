@@ -7,10 +7,10 @@ public class EvaluationCommentEntityTypeConfiguration : IEntityTypeConfiguration
         builder.ToTable("evaluation_comment")
             .HasComment("测评文章评论表");
 
-        builder.HasKey(e => e.Id);
+        builder.HasKey(e => e.CommentId);
 
-        builder.Property(e => e.Id)
-            .HasColumnName("id")
+        builder.Property(e => e.CommentId)
+            .HasColumnName("comment_id")
             .HasComment("评论主键")
             .ValueGeneratedOnAdd()
             .IsRequired();
@@ -21,8 +21,8 @@ public class EvaluationCommentEntityTypeConfiguration : IEntityTypeConfiguration
             .IsRequired()
             .HasMaxLength(500);
 
-        builder.Property(e => e.LikeNums)
-            .HasColumnName("like_nums")
+        builder.Property(e => e.SupportCount)
+            .HasColumnName("support_count")
             .HasComment("评论点赞数量")
             .HasDefaultValue(0)
             .IsRequired();
@@ -32,13 +32,13 @@ public class EvaluationCommentEntityTypeConfiguration : IEntityTypeConfiguration
            .HasComment("用户id")
            .IsRequired();
 
-        builder.Property(e => e.UserName)
-          .HasColumnName("user_name")
+        builder.Property(e => e.NickName)
+          .HasColumnName("nick_name")
           .HasComment("用户名")
           .IsRequired();
 
-        builder.Property(e => e.UserAvatar)
-          .HasColumnName("user_avatar")
+        builder.Property(e => e.Avatar)
+          .HasColumnName("avatar")
           .HasComment("用户头像")
           .IsRequired(false);
 
