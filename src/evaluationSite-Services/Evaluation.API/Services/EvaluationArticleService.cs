@@ -25,11 +25,11 @@ public class EvaluationArticleService : IEvaluationArticle
         }
         else
         {
-            articles = await _evaluationContext.Articles
-                .AsNoTracking()
+            articles = await _evaluationContext.Articles              
                 .OrderBy(c => c.CreateTime)
                 .Skip(pageSize * (pageIndex - 1))
                 .Take(pageSize)
+                .AsNoTracking()
                 .ToListAsync();
 
             //兼容图片显示
