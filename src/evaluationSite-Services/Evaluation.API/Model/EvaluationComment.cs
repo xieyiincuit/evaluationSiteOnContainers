@@ -31,7 +31,7 @@ public class EvaluationComment
     /// <summary>
     /// 回复的用户Id
     /// </summary>
-    public int ReplyUserId { get; set; }
+    public int? ReplyUserId { get; set; }
 
     /// <summary>
     /// 回复的用户名

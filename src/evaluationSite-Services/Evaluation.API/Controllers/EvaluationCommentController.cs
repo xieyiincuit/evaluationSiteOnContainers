@@ -17,13 +17,13 @@ public class EvaluationCommentController : ControllerBase
     [Route("article/{articleId:int}/comments")]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> GetArticleComments([FromRoute] int articleId)
+    public async Task<IActionResult> GetArticleComments([FromRoute] int articleId, [FromQuery] int pageIndex = 1)
     {
         if (articleId <= 0 || articleId >= int.MaxValue) return BadRequest();
 
         if (await _articleService.IsArticleExist(articleId) == false) return NotFound();
 
-        var comments = await _commentService.GetArticleComments(articleId);
+        var comments = await _commentService.GetArticleComments(pageIndex, 5, articleId);
         return Ok(comments);
     }
 
