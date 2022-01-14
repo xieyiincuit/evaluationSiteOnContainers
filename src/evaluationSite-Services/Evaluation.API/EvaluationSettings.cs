@@ -2,6 +2,7 @@
 
 public class EvaluationSettings
 {
-    public string PicBaseUrl { get; set; }
+    public string ArticlePicBaseUrl { get; set; }
+    public string DescriptionPicBaseUrl { get; set; }
     public string EventBusConnection { get; set; }
 }

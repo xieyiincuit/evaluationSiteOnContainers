@@ -8,3 +8,12 @@ dotnet_diagnostic.CS8631.severity = none
 
 # CS8620: Argument cannot be used for parameter due to differences in the nullability of reference types.
 dotnet_diagnostic.CS8620.severity = none
+
+# CS1998: Async method lacks 'await' operators and will run synchronously
+dotnet_diagnostic.CS1998.severity = none
+
+# CS8625: Cannot convert null literal to non-nullable reference type.
+dotnet_diagnostic.CS8625.severity = none
+
+# CS8603: Possible null reference return.
+dotnet_diagnostic.CS8603.severity = none

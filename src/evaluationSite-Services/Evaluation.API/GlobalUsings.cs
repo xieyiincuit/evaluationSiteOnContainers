@@ -8,6 +8,7 @@ global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.Metadata.Builders;
 global using Microsoft.EntityFrameworkCore.Design;
 global using Microsoft.OpenApi.Models;
+global using Microsoft.Extensions.Options;
 global using HealthChecks.UI.Client;
 global using Microsoft.Extensions.Diagnostics.HealthChecks;
 global using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -23,4 +24,7 @@ global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Infrast
 global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Infrastructure.Exceptions;
 global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Infrastructure.Filters;
 global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Infrastructure.EntityConfigurations;
+global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.ViewModel;
 global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Extensions;
+global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Interfaces;
+global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Services;

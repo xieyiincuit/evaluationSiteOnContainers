@@ -33,9 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
     <Folder Include="Infrastructure\EvaluationMigrations\" />
-    <Folder Include="Pics\" />
     <Folder Include="Setup\" />
   </ItemGroup>
 
