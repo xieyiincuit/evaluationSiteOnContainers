@@ -3,17 +3,19 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Infrastructure;
 
 #nullable disable
 
-namespace Evaluation.API.Infrastructure.EvaluationMigrations
+namespace Evaluation.API.Infrastructure.EntityConfigurations
 {
     [DbContext(typeof(EvaluationContext))]
-    partial class EvaluationContextModelSnapshot : ModelSnapshot
+    [Migration("20220114130652_addUserInfoInComment")]
+    partial class addUserInfoInComment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
