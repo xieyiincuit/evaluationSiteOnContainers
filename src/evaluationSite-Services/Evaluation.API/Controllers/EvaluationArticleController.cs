@@ -54,7 +54,7 @@ public class EvaluationArticleController : ControllerBase
     [ProducesResponseType(typeof(EvaluationArticle), (int)HttpStatusCode.OK)]
     public async Task<ActionResult<EvaluationArticle>> GetArticleByIdAsync(int id)
     {
-        if (id <= 0) return BadRequest();
+        if (id <= 0 || id >= int.MaxValue) return BadRequest();
 
         var article = await _articleService.GetArticleAsync(id);
 
@@ -73,7 +73,7 @@ public class EvaluationArticleController : ControllerBase
         var categories = await _categoryService.GetEvaluationCategoriesAsync();
 
         //invalid categoryId
-        if (!categories.Select(x => x.Id).Contains(categoryId))
+        if (!categories.Select(x => x.CategoryId).Contains(categoryId))
         {
             return BadRequest("categoryId value invalid, wrong format or no exist");
         }

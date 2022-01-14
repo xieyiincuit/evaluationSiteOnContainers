@@ -90,7 +90,7 @@ public class EvaluationArticleService : IEvaluationArticle
         }
 
         var idsToSelect = numIds.Select(id => id.Value);
-        var items = await _evaluationContext.Articles.AsNoTracking().Where(ci => idsToSelect.Contains(ci.Id)).ToListAsync();
+        var items = await _evaluationContext.Articles.AsNoTracking().Where(ci => idsToSelect.Contains(ci.ArticleId)).ToListAsync();
 
         //检查pics设置
         items = ChangePicsUri(items);

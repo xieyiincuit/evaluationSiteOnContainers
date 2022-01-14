@@ -11,11 +11,13 @@ public class EvaluationCommentService : IEvaluationComment
 
     public Task<List<EvaluationComment>> GetArticleComments(int articleId)
     {
-        throw new NotImplementedException();
+        var comments = _evaluationContext.Comments.Where(x=>x.ArticleId == articleId).AsNoTracking().ToListAsync();
+        return comments;
     }
 
     public Task<List<EvaluationComment>> GetUserComments(int userId)
     {
-        throw new NotImplementedException();
+        var comments = _evaluationContext.Comments.Where(x => x.UserId == userId).AsNoTracking().ToListAsync();
+        return comments;
     }
 }
