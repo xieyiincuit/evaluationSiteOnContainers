@@ -1,4 +1,4 @@
-﻿namespace Evaluation.API.Infrastructure.Profiles;
+﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Infrastructure.Profiles;
 
 public class ArticleCommentProfile : Profile
 {
