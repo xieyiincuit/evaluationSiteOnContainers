@@ -98,7 +98,8 @@ public class EvaluationContextSeed
                 IsReplay = true,
                 ReplayCommentId = 3,
                 ReplyUserId = 3,
-                ReplyNickName = "Zhousl"
+                ReplyNickName = "Zhousl",
+                RootCommentId = 3
             },
             new EvaluationComment()
             {
@@ -110,7 +111,8 @@ public class EvaluationContextSeed
                 IsReplay = true,
                 ReplayCommentId = 4,
                 ReplyUserId = 4,
-                ReplyNickName = "Hanbaoyi"
+                ReplyNickName = "Hanbaoyi",
+                RootCommentId = 3
             },
             new EvaluationComment()
             {
@@ -122,7 +124,8 @@ public class EvaluationContextSeed
                 IsReplay = true,
                 ReplayCommentId = 5,
                 ReplyUserId = 3,
-                ReplyNickName = "Zhousl"
+                ReplyNickName = "Zhousl",
+                RootCommentId = 3
             },
         };
     }

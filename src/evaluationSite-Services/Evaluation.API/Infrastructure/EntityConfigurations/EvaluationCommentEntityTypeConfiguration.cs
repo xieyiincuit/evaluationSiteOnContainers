@@ -71,6 +71,10 @@ public class EvaluationCommentEntityTypeConfiguration : IEntityTypeConfiguration
           .HasColumnName("replay_nickname")
           .HasComment("回复的玩家名")
           .IsRequired(false);
+        builder.Property(e => e.RootCommentId)
+          .HasColumnName("root_comment_id")
+          .HasComment("回复评论属于哪个主评论")
+          .IsRequired(false);
 
         builder.Property(e => e.ArticleId)
           .HasColumnName("article_id")

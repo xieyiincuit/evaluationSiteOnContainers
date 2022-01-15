@@ -2,6 +2,9 @@
 
 public class EvaluationContext : DbContext
 {
+    //Print EF Query SQL ON Console
+    public static readonly ILoggerFactory MyLoggerFactory = LoggerFactory.Create(builder => { builder.AddConsole(); });
+
     public EvaluationContext(DbContextOptions<EvaluationContext> options) : base(options) { }
 
     public DbSet<EvaluationArticle> Articles { get; set; }
@@ -18,6 +21,7 @@ public class EvaluationContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         //开启以下EF日志辅助开发
+        optionsBuilder.UseLoggerFactory(MyLoggerFactory);
         optionsBuilder.EnableSensitiveDataLogging();
         optionsBuilder.EnableDetailedErrors();
     }
