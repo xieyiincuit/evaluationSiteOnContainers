@@ -13,7 +13,7 @@ public class EvaluationArticleService : IEvaluationArticle
 
     public async Task<long> CountArticlesAsync() => await _evaluationContext.Articles.LongCountAsync();
 
-    public async Task<long> CountArticlesByTypeAsync(int categoryId) => await _evaluationContext.Articles.Where(x=>x.CategoryTypeId == categoryId).LongCountAsync();
+    public async Task<long> CountArticlesByTypeAsync(int categoryId) => await _evaluationContext.Articles.Where(x => x.CategoryTypeId == categoryId).LongCountAsync();
 
     public async Task<List<EvaluationArticle>> GetArticlesAsync(int pageSize, int pageIndex, string ids = null)
     {
@@ -25,7 +25,7 @@ public class EvaluationArticleService : IEvaluationArticle
         }
         else
         {
-            articles = await _evaluationContext.Articles              
+            articles = await _evaluationContext.Articles
                 .OrderBy(c => c.CreateTime)
                 .Skip(pageSize * (pageIndex - 1))
                 .Take(pageSize)
@@ -75,6 +75,30 @@ public class EvaluationArticleService : IEvaluationArticle
         return article != null;
     }
 
+    public async Task<bool> AddArticleAsync(EvaluationArticle evaluationArticle)
+    {
+        await _evaluationContext.Articles.AddAsync(evaluationArticle);
+        return await _evaluationContext.SaveChangesAsync() > 0;
+    }
+
+    public async Task<bool> DeleteArticleAsync(int id)
+    {
+        var deleteEntity = await _evaluationContext.Articles.FindAsync(id);
+        if (deleteEntity != null)
+        {
+            _evaluationContext.Articles.Remove(deleteEntity);
+            if (await _evaluationContext.SaveChangesAsync() > 0)
+                return true;
+        }
+        return false;
+    }
+
+    public async Task<bool> UpdateArticleAsync(EvaluationArticle article)
+    {
+        _evaluationContext.Articles.Update(article);
+        return await _evaluationContext.SaveChangesAsync() > 0;
+    }
+
     /// <summary>
     /// Bulks get articles
     /// </summary>
@@ -115,4 +139,6 @@ public class EvaluationArticleService : IEvaluationArticle
 
         return items;
     }
+
+
 }

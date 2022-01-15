@@ -6,11 +6,14 @@ public class EvaluationArticleController : ControllerBase
 {
     private readonly IEvaluationArticle _articleService;
     private readonly IEvaluationCategory _categoryService;
+    private readonly IMapper _mapper;
 
-    public EvaluationArticleController(IEvaluationArticle articleService, IEvaluationCategory categoryService)
+    public EvaluationArticleController(IEvaluationArticle articleService, IEvaluationCategory categoryService,
+        IMapper mapper)
     {
         _articleService = articleService;
         _categoryService = categoryService;
+        _mapper = mapper;
     }
 
     // GET api/v1/evaluation/articles[?pageSize=10&pageIndex=1]
@@ -48,7 +51,7 @@ public class EvaluationArticleController : ControllerBase
 
     // GET api/v1/evaluation/articles/1
     [HttpGet]
-    [Route("articles/{id:int}")]
+    [Route("article/{id:int}")]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(EvaluationArticle), (int)HttpStatusCode.OK)]
@@ -89,5 +92,58 @@ public class EvaluationArticleController : ControllerBase
             await _articleService.GetArticlesAsync(pageSize, pageIndex, categoryId));
 
         return Ok(model);
+    }
+
+
+    // Post api/v1/evaluation/articles
+    [HttpPost]
+    [Route("article")]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(EvaluationArticle), (int)HttpStatusCode.Created)]
+    public async Task<IActionResult> CreateArticleAsync([FromBody] ArticleAddDto articleAddDto)
+    {
+        if (articleAddDto == null) return BadRequest();
+
+        //mapping
+        var entity = _mapper.Map<EvaluationArticle>(articleAddDto);
+        entity.CreateTime = DateTime.Now.ToLocalTime();
+
+        await _articleService.AddArticleAsync(entity);
+        return CreatedAtRoute(nameof(GetArticleByIdAsync), new { id = entity.ArticleId }, entity);
+    }
+
+    // Delete api/v1/evaluation/articles/{id}
+    [HttpDelete]
+    [Route("article/{id:int}")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    public async Task<IActionResult> DeleteArticleByIdAsync([FromRoute] int id)
+    {
+        if (id <= 0 || id >= int.MaxValue) return BadRequest();
+
+        if (await _articleService.IsArticleExist(id) == false) return NotFound();
+
+        await _articleService.DeleteArticleAsync(id);
+        return NoContent();
+    }
+
+    // Put api/v1/evaluation/articles
+    [HttpPut]
+    [Route("article/{id:int}")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    public async Task<IActionResult> UpdateArticleAsync([FromRoute] int id, [FromBody] ArticleUpdateDto articleUpdateDto)
+    {
+        if (id <= 0 || id >= int.MaxValue) return BadRequest();
+        if (await _articleService.IsArticleExist(id) == false) return NotFound();
+
+        var articleToUpdate = await _articleService.GetArticleAsync(id);
+        _mapper.Map(articleUpdateDto, articleToUpdate);
+
+        articleToUpdate.UpdateTime = DateTime.Now.ToLocalTime();
+        await _articleService.UpdateArticleAsync(articleToUpdate);
+        return NoContent();
     }
 }
