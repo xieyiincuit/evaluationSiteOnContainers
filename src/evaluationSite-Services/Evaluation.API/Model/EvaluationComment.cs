@@ -36,7 +36,12 @@ public class EvaluationComment
     /// <summary>
     /// 回复的用户名
     /// </summary>
-    public string ReplyNickName { get; set; }
+    public string? ReplyNickName { get; set; }
+
+    /// <summary>
+    /// 回复评论所属于哪个主评论
+    /// </summary>
+    public int? RootCommentId { get; set; }
 
     /// <summary>
     /// 关联测评的外键
