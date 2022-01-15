@@ -11,7 +11,8 @@ public class ArticleCommentDto
     public DateTime CreateTime { get; set; }
     public int RepliesCount { get; set; }
 
-    public List<ReplyCommentDto> Replies { get; set; }
+    //Prevent null exception
+    public List<ReplyCommentDto> Replies { get; set; } = new List<ReplyCommentDto>();
 }
 
 public class ReplyCommentDto
@@ -20,11 +21,9 @@ public class ReplyCommentDto
     public int UserId { get; set; }
     public string NickName { get; set; }
     public string? Avatar { get; set; }
-    public string ReplyContent { get; set; }
+    public string Content { get; set; }
     public int SupportCount { get; set; }
     public DateTime CreateTime { get; set; }
-
-    public List<ReplyCommentDto> Replies { get; set; }
 
     /// <summary>
     /// 回复的评论Id
