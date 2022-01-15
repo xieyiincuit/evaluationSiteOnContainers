@@ -28,7 +28,7 @@ public class EvaluationCommentController : ControllerBase
         var totalComments = await _commentService.CountArticleRootCommentsAsync(articleId);
         var maxPageIndex = (int)Math.Ceiling((totalComments / (double)pageSize));
         if (pageIndex > maxPageIndex) return NotFound();
-       
+            
         var comments = await _commentService.GetArticleCommentsAsync(pageIndex, pageSize, articleId);
 
         var model = new PaginatedItemsDtoModel<ArticleCommentDto>(pageIndex, pageSize, totalComments, comments);
