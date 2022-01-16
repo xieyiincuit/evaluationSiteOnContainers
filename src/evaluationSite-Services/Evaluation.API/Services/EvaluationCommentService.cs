@@ -16,6 +16,15 @@ public class EvaluationCommentService : IEvaluationComment
         return await _evaluationContext.SaveChangesAsync() > 0;
     }
 
+    public async Task<bool> DeleteCommentAsync(int commentId)
+    {
+        var comment = await _evaluationContext.Comments.FindAsync(commentId);
+        if (comment == null) return false;
+
+        _evaluationContext.Comments.Remove(comment);
+        return await _evaluationContext.SaveChangesAsync() > 0;
+    }
+
     public async Task<int> CountArticleCommentAsync(int articleId)
     {
         return await _evaluationContext.Comments.CountAsync(comment => comment.ArticleId == articleId);
@@ -78,5 +87,5 @@ public class EvaluationCommentService : IEvaluationComment
             .Include(x => x.EvaluationArticle)
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.CommentId == commentId);
-    }
+    } 
 }

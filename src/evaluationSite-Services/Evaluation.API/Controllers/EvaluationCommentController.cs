@@ -133,4 +133,12 @@ public class EvaluationCommentController : ControllerBase
         return new ObjectResult(comment) { StatusCode = (int)HttpStatusCode.Created };
     }
 
+    [HttpDelete]
+    [Route("article/comments/{commentId:int}")]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    public async Task<IActionResult> DeleteCommentAsync([FromRoute] int commentId)
+    {
+        throw new NotImplementedException();
+    }
 }

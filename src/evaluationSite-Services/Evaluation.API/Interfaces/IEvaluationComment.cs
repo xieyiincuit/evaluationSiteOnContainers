@@ -7,6 +7,7 @@ public interface IEvaluationComment
     Task<List<EvaluationComment>> GetUserCommentsAsync(int pageIndex, int pageSize, int userId);
     Task<EvaluationComment> GetCommentById(int commentId);
     Task<bool> AddCommentArticleAsync(EvaluationComment comment);
+    Task<bool> DeleteCommentAsync(int commentId);
     Task<int> CountArticleCommentAsync(int articleId);
     Task<int> CountUserCommentAsync(int userId);
     Task<int> CountArticleRootCommentsAsync(int articleId);
