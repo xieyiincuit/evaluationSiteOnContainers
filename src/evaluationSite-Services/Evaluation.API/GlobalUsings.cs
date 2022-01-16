@@ -2,6 +2,8 @@
 global using Autofac;
 global using Serilog;
 global using AutoMapper;
+global using FluentValidation;
+global using FluentValidation.AspNetCore;
 global using Microsoft.AspNetCore;
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.AspNetCore.Mvc.Filters;
@@ -25,6 +27,7 @@ global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Infrast
 global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Infrastructure.Exceptions;
 global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Infrastructure.Filters;
 global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Infrastructure.EntityConfigurations;
+global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Infrastructure.Validations;
 global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.DtoModel;
 global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Extensions;
 global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Interfaces;

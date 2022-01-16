@@ -106,8 +106,10 @@ public class EvaluationArticleController : ControllerBase
     {
         if (articleAddDto == null) return BadRequest();
 
-        //mapping
+        //mapping        
         var entity = _mapper.Map<EvaluationArticle>(articleAddDto);
+        //TODO Author从用户信息中获取
+        entity.Author = "default user";
         entity.CreateTime = DateTime.Now.ToLocalTime();
 
         await _articleService.AddArticleAsync(entity);

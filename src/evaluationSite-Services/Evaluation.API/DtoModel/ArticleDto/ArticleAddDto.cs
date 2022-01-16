@@ -2,7 +2,6 @@
 
 public class ArticleAddDto
 {
-    public string Author { get; set; }
     public string Title { get; set; }
     public string? DesciptionImage { get; set; }
     public string? ArticleImage { get; set; }

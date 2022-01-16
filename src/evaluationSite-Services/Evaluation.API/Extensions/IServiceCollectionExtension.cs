@@ -38,7 +38,12 @@ public static class IServiceCollectionExtension
         {
             options.Filters.Add(typeof(HttpGlobalExceptionFilter));
         })
-        .AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = true);
+        .AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = true)
+        .AddFluentValidation(options =>
+        {
+            //禁用框架的validator
+            options.DisableDataAnnotationsValidation = true;
+        });
 
         services.AddCors(options =>
         {
@@ -103,6 +108,14 @@ public static class IServiceCollectionExtension
     public static IServiceCollection AddCustomMapper(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+        return services;
+    }
+
+    public static IServiceCollection AddCustomValidator(this IServiceCollection services, IConfiguration configuration)
+    {
+        //在确定不存在循环引用的情况下，使用单例模式可以提升每次request的服务加载时间
+        services.AddSingleton<IValidator<ArticleAddDto>, ArticleAddDtoValidator>();
+        services.AddSingleton<IValidator<ArticleUpdateDto>, ArticleUpdateDtoValidator>();
         return services;
     }
 }

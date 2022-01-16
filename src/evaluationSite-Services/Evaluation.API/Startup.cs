@@ -18,7 +18,8 @@ public class Startup
             .AddCustomHealthCheck(Configuration)
             .AddCustomServicesInjection(Configuration)
             .AddCustomOptions(Configuration)
-            .AddCustomMapper(Configuration);
+            .AddCustomMapper(Configuration)
+            .AddCustomValidator(Configuration);
 
         //use autofac
         var container = new ContainerBuilder();
