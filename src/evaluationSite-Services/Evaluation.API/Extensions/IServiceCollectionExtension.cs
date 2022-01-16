@@ -59,17 +59,15 @@ public static class IServiceCollectionExtension
     }
 
     public static IServiceCollection AddCustomHealthCheck(this IServiceCollection services, IConfiguration configuration)
-    {
-        string connectionString = configuration["ConnectionString:DataBaseConnectString"];
-        var hcBuilder = services.AddHealthChecks();
-
-        hcBuilder
-            .AddCheck("self-db", () => HealthCheckResult.Healthy())
+    {       
+        services.AddHealthChecks()
+            .AddCheck("self", () => HealthCheckResult.Healthy())
             .AddSqlServer(
-                connectionString,
-                name: "EvaluationDB-check",
-                tags: new string[] { "evaluationdb" });
-
+                configuration["ConnectionStrings:DataBaseConnectString"],
+                healthQuery: "SELECT 1;",
+                name: "sql",
+                failureStatus: HealthStatus.Degraded,
+                tags: new string[] { "db", "sql", "sqlserver" });
         return services;
     }
 
