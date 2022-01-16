@@ -77,6 +77,7 @@ public class EvaluationArticle
     /// <summary>
     /// 测评类别导航属性
     /// </summary>
+    [JsonIgnore]
     public EvaluationCategory CategoryType { get; set; }
 
     /// <summary>
@@ -91,7 +92,8 @@ public class EvaluationArticle
 
     /// <summary>
     /// 测评的评论
-    /// </summary>
+    /// </summary> 
+    [JsonIgnore]
     public List<EvaluationComment> EvaluationComments { get; set; }
 }
 

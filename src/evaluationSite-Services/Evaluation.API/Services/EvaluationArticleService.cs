@@ -77,6 +77,7 @@ public class EvaluationArticleService : IEvaluationArticle
 
     public async Task<bool> AddArticleAsync(EvaluationArticle evaluationArticle)
     {
+        evaluationArticle.CreateTime = DateTime.Now.ToLocalTime();
         await _evaluationContext.Articles.AddAsync(evaluationArticle);
         return await _evaluationContext.SaveChangesAsync() > 0;
     }
@@ -140,6 +141,4 @@ public class EvaluationArticleService : IEvaluationArticle
 
         return items;
     }
-
-
 }

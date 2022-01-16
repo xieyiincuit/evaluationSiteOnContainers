@@ -9,6 +9,15 @@ public class EvaluationArticleController : ControllerBase
     private readonly IMapper _mapper;
     const int _pageSize = 10;
 
+    private readonly Dictionary<int, string> _userDic = new Dictionary<int, string>()
+    {
+        {1,"Zhousl" },
+        {2,"Hanby" },
+        {3,"Chenxy" },
+        {4,"Wangxb" },
+        {5,"Lvcf" },
+    };
+
     public EvaluationArticleController(IEvaluationArticle articleService, IEvaluationCategory categoryService,
         IMapper mapper)
     {
@@ -26,12 +35,12 @@ public class EvaluationArticleController : ControllerBase
     public async Task<IActionResult> GetArticlesAsync([FromQuery] int pageIndex = 1, string? ids = null)
     {
         if (!string.IsNullOrEmpty(ids))
-        {         
+        {
             var articles = await _articleService.GetArticlesAsync(_pageSize, pageIndex, ids);
 
-            if (!articles.Any())         
+            if (!articles.Any())
                 return BadRequest("ids value invalid. Must be comma-separated list of numbers: like ids=1,2,3");
-            
+
             var articleToReturn = _mapper.Map<List<ArticleDto>>(articles);
             return Ok(articleToReturn);
         }
@@ -41,8 +50,9 @@ public class EvaluationArticleController : ControllerBase
         if (ParameterValidateHelper.IsInvalidPageIndex(totalArticles, _pageSize, pageIndex)) pageIndex = 1; // pageIndex不合法重设
 
         var articlesToReturn = _mapper.Map<List<ArticleDto>>(await _articleService.GetArticlesAsync(_pageSize, pageIndex));
-        var model = new PaginatedItemsDtoModel<ArticleDto>(pageIndex, _pageSize, totalArticles, articlesToReturn);
+        articlesToReturn.ForEach(article => article.Author = _userDic[article.UserId]);
 
+        var model = new PaginatedItemsDtoModel<ArticleDto>(pageIndex, _pageSize, totalArticles, articlesToReturn);
         return Ok(model);
     }
 
@@ -51,7 +61,7 @@ public class EvaluationArticleController : ControllerBase
     [Route("article/{id:int}")]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(EvaluationArticle), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(ArticleDto), (int)HttpStatusCode.OK)]
     public async Task<ActionResult<ArticleDto>> GetArticleByIdAsync(int id)
     {
         if (id <= 0 || id >= int.MaxValue) return BadRequest();
@@ -61,6 +71,8 @@ public class EvaluationArticleController : ControllerBase
         if (article == null) return NotFound();
 
         var articleToReturn = _mapper.Map<ArticleDto>(article);
+        articleToReturn.Author = _userDic[article.UserId];
+
         return Ok(articleToReturn);
     }
 
@@ -77,14 +89,14 @@ public class EvaluationArticleController : ControllerBase
         if (!categories.Select(x => x.CategoryId).Contains(categoryId))
             return BadRequest("categoryId value invalid, wrong format or no exist");
 
-
         //validate parameter
         var totalArticles = await _articleService.CountArticlesByTypeAsync(categoryId);
         if (ParameterValidateHelper.IsInvalidPageIndex(totalArticles, _pageSize, pageIndex)) pageIndex = 1;
 
         var articlesToReturn = _mapper.Map<List<ArticleDto>>(await _articleService.GetArticlesAsync(_pageSize, pageIndex, categoryId));
-        var model = new PaginatedItemsDtoModel<ArticleDto>(pageIndex, _pageSize, totalArticles, articlesToReturn);
+        articlesToReturn.ForEach(article => article.Author = _userDic[article.UserId]);
 
+        var model = new PaginatedItemsDtoModel<ArticleDto>(pageIndex, _pageSize, totalArticles, articlesToReturn);
         return Ok(model);
     }
 
@@ -101,10 +113,9 @@ public class EvaluationArticleController : ControllerBase
         var entity = _mapper.Map<EvaluationArticle>(articleAddDto);
         //TODO Author从用户信息中获取
         entity.UserId = 1;
-        entity.CreateTime = DateTime.Now.ToLocalTime();
 
         await _articleService.AddArticleAsync(entity);
-        return CreatedAtRoute(nameof(GetArticleByIdAsync), new { id = entity.ArticleId }, entity);
+        return new ObjectResult(entity) { StatusCode = (int)HttpStatusCode.Created };
     }
 
     // Delete api/v1/evaluation/articles/{id}
