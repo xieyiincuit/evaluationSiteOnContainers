@@ -7,5 +7,6 @@ public class AriticleProfile : Profile
         CreateMap<ArticleAddDto, EvaluationArticle>();
         CreateMap<ArticleUpdateDto, EvaluationArticle>();
         CreateMap<EvaluationArticle, ArticleUpdateDto>();
+        CreateMap<EvaluationArticle, ArticleDto>();
     }
 }

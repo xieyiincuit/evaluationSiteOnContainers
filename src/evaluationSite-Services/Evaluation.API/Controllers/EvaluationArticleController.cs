@@ -32,7 +32,8 @@ public class EvaluationArticleController : ControllerBase
                 return BadRequest("ids value invalid. Must be comma-separated list of numbers: like ids=1,2,3");
             }
 
-            return Ok(articles);
+            var articleToReturn = _mapper.Map<List<ArticleDto>>(articles);
+            return Ok(articleToReturn);
         }
 
         //validate parameter
@@ -43,8 +44,8 @@ public class EvaluationArticleController : ControllerBase
         var maxPageIndex = (int)Math.Ceiling((totalArticles / (double)pageSize));
         pageIndex = pageIndex <= 0 || pageIndex > maxPageIndex ? 1 : pageIndex;
 
-        var model = new PaginatedItemsDtoModel<EvaluationArticle>(pageIndex, pageSize, totalArticles,
-            await _articleService.GetArticlesAsync(pageSize, pageIndex));
+        var articlesToReturn = _mapper.Map<List<ArticleDto>>(await _articleService.GetArticlesAsync(pageSize, pageIndex));
+        var model = new PaginatedItemsDtoModel<ArticleDto>(pageIndex, pageSize, totalArticles, articlesToReturn);
 
         return Ok(model);
     }
@@ -55,7 +56,7 @@ public class EvaluationArticleController : ControllerBase
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(EvaluationArticle), (int)HttpStatusCode.OK)]
-    public async Task<ActionResult<EvaluationArticle>> GetArticleByIdAsync(int id)
+    public async Task<ActionResult<ArticleDto>> GetArticleByIdAsync(int id)
     {
         if (id <= 0 || id >= int.MaxValue) return BadRequest();
 
@@ -63,7 +64,8 @@ public class EvaluationArticleController : ControllerBase
 
         if (article == null) return NotFound();
 
-        return Ok(article);
+        var articleToReturn = _mapper.Map<ArticleDto>(article);
+        return Ok(articleToReturn);
     }
 
     // GET api/v1/evaluation/type/articles
@@ -88,8 +90,8 @@ public class EvaluationArticleController : ControllerBase
         var maxPageIndex = (int)Math.Ceiling((totalArticles / (double)pageSize));
         pageIndex = pageIndex <= 0 || pageIndex > maxPageIndex ? 1 : pageIndex;
 
-        var model = new PaginatedItemsDtoModel<EvaluationArticle>(pageIndex, pageSize, totalArticles,
-            await _articleService.GetArticlesAsync(pageSize, pageIndex, categoryId));
+        var articlesToReturn = _mapper.Map<List<ArticleDto>>(await _articleService.GetArticlesAsync(pageSize, pageIndex, categoryId));
+        var model = new PaginatedItemsDtoModel<ArticleDto>(pageIndex, pageSize, totalArticles, articlesToReturn);
 
         return Ok(model);
     }
