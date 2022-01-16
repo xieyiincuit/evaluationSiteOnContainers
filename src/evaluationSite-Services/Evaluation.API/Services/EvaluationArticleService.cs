@@ -11,9 +11,9 @@ public class EvaluationArticleService : IEvaluationArticle
         _settings = settings.Value;
     }
 
-    public async Task<long> CountArticlesAsync() => await _evaluationContext.Articles.LongCountAsync();
+    public async Task<int> CountArticlesAsync() => await _evaluationContext.Articles.CountAsync();
 
-    public async Task<long> CountArticlesByTypeAsync(int categoryId) => await _evaluationContext.Articles.Where(x => x.CategoryTypeId == categoryId).LongCountAsync();
+    public async Task<int> CountArticlesByTypeAsync(int categoryId) => await _evaluationContext.Articles.Where(x => x.CategoryTypeId == categoryId).CountAsync();
 
     public async Task<List<EvaluationArticle>> GetArticlesAsync(int pageSize, int pageIndex, string ids = null)
     {

@@ -2,10 +2,12 @@
 
 public interface IEvaluationComment
 {
-    Task<List<ArticleCommentDto>> GetArticleCommentsAsync(int pageIndex, int pageSize, int articleId);
-    Task<List<EvaluationComment>> GetUserCommentsAsync(int userId);
-
+    Task<List<EvaluationComment>> GetArticleCommentsAsync(int pageIndex, int pageSize, int articleId);
+    Task<List<EvaluationComment>> GetCommentReplyAsync(int pageIndex, int pageSize, int parentCommentId);
+    Task<List<EvaluationComment>> GetUserCommentsAsync(int pageIndex, int pageSize, int userId);
+    Task<bool> AddCommentArticleAsync(EvaluationComment comment);
     Task<int> CountArticleCommentAsync(int articleId);
+    Task<int> CountUserCommentAsync(int userId);
     Task<int> CountArticleRootCommentsAsync(int articleId);
     Task<int> CountCommentChildrenCommentsAsync(int rootCommentId);
 }
