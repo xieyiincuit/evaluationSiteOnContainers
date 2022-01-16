@@ -109,7 +109,7 @@ public class EvaluationArticleController : ControllerBase
         //mapping        
         var entity = _mapper.Map<EvaluationArticle>(articleAddDto);
         //TODO Author从用户信息中获取
-        entity.Author = "default user";
+        entity.UserId = 1;
         entity.CreateTime = DateTime.Now.ToLocalTime();
 
         await _articleService.AddArticleAsync(entity);
@@ -146,7 +146,6 @@ public class EvaluationArticleController : ControllerBase
         var articleToUpdate = await _articleService.GetArticleAsync(id);
         _mapper.Map(articleUpdateDto, articleToUpdate);
 
-        articleToUpdate.UpdateTime = DateTime.Now.ToLocalTime();
         await _articleService.UpdateArticleAsync(articleToUpdate);
         return NoContent();
     }

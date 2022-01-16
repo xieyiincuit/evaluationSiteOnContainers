@@ -35,7 +35,7 @@ public class EvaluationContextSeed
         {
             new EvaluationArticle()
             {
-                Author = "Zhousl",
+                UserId = 1,
                 Title = "《反恐精英—全球攻势》在全球的FPS领域中影响都是非常大的",
                 Content = "枪械、地图、道具大变化！全新大行动任务玩法、全新探员、全新枪械皮肤、全新武器箱、全新印花和布章上线！登录国服购买通行证，即刻体验“激流大行动”冲浪快感！",
                 CreateTime = DateTime.Now,
@@ -47,7 +47,7 @@ public class EvaluationContextSeed
             },
             new EvaluationArticle()
             {
-                Author = "Hanby",
+                UserId = 2,
                 Title = "《双人成行》在2021年的Steam年度促销达到第一名",
                 Content = "Mei and Kodi, Do some grate job to maintain thire relationship",
                 CreateTime = DateTime.Now.AddDays(1),

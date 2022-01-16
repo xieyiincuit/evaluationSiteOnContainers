@@ -15,11 +15,10 @@ class EvaluationArticleEntityTypeConfiguration : IEntityTypeConfiguration<Evalua
             .ValueGeneratedOnAdd()
             .IsRequired();
 
-        builder.Property(x => x.Author)
-            .HasColumnName("author")
-            .HasComment("测评内容作者")
-            .IsRequired()
-            .HasMaxLength(50);
+        builder.Property(x => x.UserId)
+            .HasColumnName("user_id")
+            .HasComment("测评内容作者id")
+            .IsRequired();
 
         builder.Property(x => x.Title)
             .HasColumnName("title")

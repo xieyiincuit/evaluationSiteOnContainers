@@ -95,6 +95,7 @@ public class EvaluationArticleService : IEvaluationArticle
 
     public async Task<bool> UpdateArticleAsync(EvaluationArticle article)
     {
+        article.UpdateTime = DateTime.Now.ToLocalTime();
         _evaluationContext.Articles.Update(article);
         return await _evaluationContext.SaveChangesAsync() > 0;
     }
