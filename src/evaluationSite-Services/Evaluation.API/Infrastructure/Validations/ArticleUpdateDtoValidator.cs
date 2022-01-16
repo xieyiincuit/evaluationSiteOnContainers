@@ -21,7 +21,8 @@ public class ArticleUpdateDtoValidator : AbstractValidator<ArticleUpdateDto>
             .GreaterThan(0).WithMessage("invalid | 不存在的游戏");
 
         RuleFor(x => x.GameName)
-            .NotNull().WithMessage("required | 游戏名不应为空字符串");
+            .NotNull().WithMessage("required | 游戏名不应为空字符串")
+            .MaximumLength(50).WithMessage("length | 游戏名过长");
 
         RuleFor(x => x.Status)
             .NotNull().WithMessage("required | 请勾选您的测评文章状态")
