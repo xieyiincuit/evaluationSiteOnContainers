@@ -6,5 +6,9 @@ public class ArticleCommentProfile : Profile
     {
         CreateMap<EvaluationComment, ArticleCommentDto>();
         CreateMap<EvaluationComment, ReplyCommentDto>();
+
+        CreateMap<ArticleCommentAddDto, EvaluationComment>();
+        CreateMap<ReplyCommentAddDto, EvaluationComment>();
+
     }
 }

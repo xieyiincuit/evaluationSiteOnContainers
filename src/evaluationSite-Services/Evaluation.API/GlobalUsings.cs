@@ -20,6 +20,7 @@ global using Polly;
 global using Polly.Retry;
 global using System.Net;
 global using System.Reflection;
+global using System.Text.Json.Serialization;
 global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API;
 global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Model;
 global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Infrastructure;

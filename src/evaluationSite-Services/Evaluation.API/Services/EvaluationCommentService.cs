@@ -11,6 +11,7 @@ public class EvaluationCommentService : IEvaluationComment
 
     public async Task<bool> AddCommentArticleAsync(EvaluationComment comment)
     {
+        comment.CreateTime = DateTime.Now.ToLocalTime();
         await _evaluationContext.Comments.AddAsync(comment);
         return await _evaluationContext.SaveChangesAsync() > 0;
     }
@@ -32,7 +33,7 @@ public class EvaluationCommentService : IEvaluationComment
 
     public async Task<int> CountUserCommentAsync(int userId)
     {
-        return  await _evaluationContext.Comments.CountAsync(x => x.UserId == userId);
+        return await _evaluationContext.Comments.CountAsync(x => x.UserId == userId);
     }
 
     public async Task<List<EvaluationComment>> GetArticleCommentsAsync(int pageIndex, int pageSize, int articleId)
@@ -45,7 +46,7 @@ public class EvaluationCommentService : IEvaluationComment
             .Take(pageSize)
             .AsNoTracking().ToListAsync();
 
-        return parentComments;       
+        return parentComments;
     }
 
     public async Task<List<EvaluationComment>> GetUserCommentsAsync(int pageIndex, int pageSize, int userId)
@@ -69,5 +70,13 @@ public class EvaluationCommentService : IEvaluationComment
             .AsNoTracking().ToListAsync();
 
         return replies;
+    }
+
+    public async Task<EvaluationComment> GetCommentById(int commentId)
+    {
+        return await _evaluationContext.Comments
+            .Include(x => x.EvaluationArticle)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.CommentId == commentId);
     }
 }
