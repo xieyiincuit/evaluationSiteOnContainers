@@ -21,9 +21,9 @@ public class EvaluationContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         //开启以下EF日志辅助开发
-        optionsBuilder.UseLoggerFactory(MyLoggerFactory);
-        optionsBuilder.EnableSensitiveDataLogging();
-        optionsBuilder.EnableDetailedErrors();
+        //optionsBuilder.UseLoggerFactory(MyLoggerFactory);
+        //optionsBuilder.EnableSensitiveDataLogging();
+        //optionsBuilder.EnableDetailedErrors();
     }
 }
 

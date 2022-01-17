@@ -18,6 +18,7 @@ global using Microsoft.OpenApi.Models;
 global using Polly;
 global using Polly.Retry;
 global using Serilog;
+global using Serilog.Events;
 global using System.Net;
 global using System.Reflection;
 global using System.Text.Json.Serialization;

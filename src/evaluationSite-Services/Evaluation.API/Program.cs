@@ -47,6 +47,7 @@ Serilog.ILogger CreateSerilogLogger(IConfiguration configuration)
 {
     return new LoggerConfiguration()
         .MinimumLevel.Verbose()
+        .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
         .Enrich.WithProperty("ApplicationContext", Program.AppName)
         .Enrich.FromLogContext()
         .WriteTo.Console()
