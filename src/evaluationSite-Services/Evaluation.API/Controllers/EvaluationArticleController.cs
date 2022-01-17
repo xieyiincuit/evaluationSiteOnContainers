@@ -30,7 +30,7 @@ public class EvaluationArticleController : ControllerBase
     [HttpGet]
     [Route("articles")]
     [ProducesResponseType(typeof(PaginatedItemsDtoModel<EvaluationArticle>), (int)HttpStatusCode.OK)]
-    [ProducesResponseType(typeof(IEnumerable<EvaluationArticle>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<ArticleDto>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> GetArticlesAsync([FromQuery] int pageIndex = 1, string? ids = null)
     {
@@ -79,7 +79,7 @@ public class EvaluationArticleController : ControllerBase
     // GET api/v1/evaluation/type/articles
     [HttpGet]
     [Route("type/articles")]
-    [ProducesResponseType(typeof(PaginatedItemsDtoModel<EvaluationArticle>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(PaginatedItemsDtoModel<ArticleDto>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> GetArticleByTypeAsync(int categoryId, [FromQuery] int pageIndex = 1)
     {
