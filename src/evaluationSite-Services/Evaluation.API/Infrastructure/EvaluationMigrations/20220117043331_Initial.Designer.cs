@@ -12,8 +12,8 @@ using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Infrastructure
 namespace Evaluation.API.Infrastructure.EvaluationMigrations
 {
     [DbContext(typeof(EvaluationContext))]
-    [Migration("20220114083739_Initalize")]
-    partial class Initalize
+    [Migration("20220117043331_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -26,36 +26,29 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
 
             modelBuilder.Entity("Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Model.EvaluationArticle", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("ArticleId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasColumnName("id")
+                        .HasColumnName("article_id")
                         .HasComment("主键");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ArticleId"), 1L, 1);
 
                     b.Property<string>("ArticleImage")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("article_image")
                         .HasComment("内容Top呈现图");
 
-                    b.Property<string>("Author")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasColumnName("author")
-                        .HasComment("测评内容作者");
-
-                    b.Property<int>("CategoryTypeId")
+                    b.Property<int?>("CategoryTypeId")
                         .HasColumnType("int")
                         .HasColumnName("category_type_id")
                         .HasComment("测评类别主键");
 
-                    b.Property<int>("CommentNums")
+                    b.Property<int>("CommentsCount")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValue(0)
-                        .HasColumnName("comment_nums")
+                        .HasColumnName("comments_count")
                         .HasComment("文章评论数量");
 
                     b.Property<string>("Content")
@@ -96,17 +89,24 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                         .HasColumnName("is_deleted")
                         .HasComment("逻辑删除");
 
-                    b.Property<int>("LikeNums")
+                    b.Property<int>("JoinCount")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValue(0)
-                        .HasColumnName("like_nums")
-                        .HasComment("文章点赞数量");
+                        .HasColumnName("join_count")
+                        .HasComment("文章浏览量");
 
                     b.Property<int>("Status")
                         .HasColumnType("int")
                         .HasColumnName("article_status")
                         .HasComment("文章发布状态");
+
+                    b.Property<int>("SupportCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("support_count")
+                        .HasComment("文章点赞数量");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -115,19 +115,17 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                         .HasColumnName("title")
                         .HasComment("测评文章标题");
 
-                    b.Property<int>("Traffic")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0)
-                        .HasColumnName("traffic")
-                        .HasComment("文章浏览量");
-
                     b.Property<DateTime?>("UpdateTime")
                         .HasColumnType("datetime2")
                         .HasColumnName("update_time")
                         .HasComment("测评内容更新时间");
 
-                    b.HasKey("Id");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("user_id")
+                        .HasComment("测评内容作者id");
+
+                    b.HasKey("ArticleId");
 
                     b.HasIndex("CategoryTypeId");
 
@@ -138,22 +136,22 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
 
             modelBuilder.Entity("Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Model.EvaluationCategory", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("CategoryId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasColumnName("id")
+                        .HasColumnName("category_id")
                         .HasComment("测评类别主键");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoryId"), 1L, 1);
 
-                    b.Property<string>("Type")
+                    b.Property<string>("CategoryType")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)")
-                        .HasColumnName("type")
+                        .HasColumnName("category_type")
                         .HasComment("测评类别名");
 
-                    b.HasKey("Id");
+                    b.HasKey("CategoryId");
 
                     b.ToTable("evaluation_category", (string)null);
 
@@ -162,18 +160,23 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
 
             modelBuilder.Entity("Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Model.EvaluationComment", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("CommentId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasColumnName("id")
+                        .HasColumnName("comment_id")
                         .HasComment("评论主键");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CommentId"), 1L, 1);
 
                     b.Property<int>("ArticleId")
                         .HasColumnType("int")
                         .HasColumnName("article_id")
                         .HasComment("评论对应的测评id");
+
+                    b.Property<string>("Avatar")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("avatar")
+                        .HasComment("用户头像");
 
                     b.Property<string>("Content")
                         .IsRequired()
@@ -197,35 +200,45 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                         .HasColumnName("is_replay")
                         .HasComment("该评论是否为回复");
 
-                    b.Property<int>("LikeNums")
+                    b.Property<string>("NickName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("nick_name")
+                        .HasComment("用户名");
+
+                    b.Property<int?>("ReplayCommentId")
+                        .HasColumnType("int")
+                        .HasColumnName("replay_comment_id")
+                        .HasComment("回复的评论id");
+
+                    b.Property<string>("ReplyNickName")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("replay_nickname")
+                        .HasComment("回复的玩家名");
+
+                    b.Property<int?>("ReplyUserId")
+                        .HasColumnType("int")
+                        .HasColumnName("replay_userid")
+                        .HasComment("回复的玩家Id");
+
+                    b.Property<int?>("RootCommentId")
+                        .HasColumnType("int")
+                        .HasColumnName("root_comment_id")
+                        .HasComment("回复评论属于哪个主评论");
+
+                    b.Property<int>("SupportCount")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValue(0)
-                        .HasColumnName("like_nums")
+                        .HasColumnName("support_count")
                         .HasComment("评论点赞数量");
-
-                    b.Property<int?>("ReplayId")
-                        .HasColumnType("int")
-                        .HasColumnName("replay_id")
-                        .HasComment("回复的评论id");
-
-                    b.Property<string>("UserAvatar")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("user_avatar")
-                        .HasComment("用户头像");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int")
                         .HasColumnName("user_id")
                         .HasComment("用户id");
 
-                    b.Property<string>("UserName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("user_name")
-                        .HasComment("用户名");
-
-                    b.HasKey("Id");
+                    b.HasKey("CommentId");
 
                     b.HasIndex("ArticleId");
 
@@ -239,8 +252,7 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                     b.HasOne("Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Model.EvaluationCategory", "CategoryType")
                         .WithMany()
                         .HasForeignKey("CategoryTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
+                        .OnDelete(DeleteBehavior.NoAction)
                         .HasConstraintName("foreignKey_type_article");
 
                     b.Navigation("CategoryType");

@@ -12,8 +12,8 @@ using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Infrastructure
 namespace Evaluation.API.Infrastructure.EvaluationMigrations
 {
     [DbContext(typeof(EvaluationContext))]
-    [Migration("20220114102403_ChangeModelsName")]
-    partial class ChangeModelsName
+    [Migration("20220117043914_SetLogicDelete")]
+    partial class SetLogicDelete
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -39,14 +39,7 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                         .HasColumnName("article_image")
                         .HasComment("内容Top呈现图");
 
-                    b.Property<string>("Author")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasColumnName("author")
-                        .HasComment("测评内容作者");
-
-                    b.Property<int>("CategoryTypeId")
+                    b.Property<int?>("CategoryTypeId")
                         .HasColumnType("int")
                         .HasColumnName("category_type_id")
                         .HasComment("测评类别主键");
@@ -127,6 +120,11 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                         .HasColumnName("update_time")
                         .HasComment("测评内容更新时间");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("user_id")
+                        .HasComment("测评内容作者id");
+
                     b.HasKey("ArticleId");
 
                     b.HasIndex("CategoryTypeId");
@@ -152,6 +150,13 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                         .HasColumnType("nvarchar(10)")
                         .HasColumnName("category_type")
                         .HasComment("测评类别名");
+
+                    b.Property<bool?>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted")
+                        .HasComment("逻辑删除");
 
                     b.HasKey("CategoryId");
 
@@ -208,10 +213,25 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                         .HasColumnName("nick_name")
                         .HasComment("用户名");
 
-                    b.Property<int?>("ReplayId")
+                    b.Property<int?>("ReplayCommentId")
                         .HasColumnType("int")
-                        .HasColumnName("replay_id")
+                        .HasColumnName("replay_comment_id")
                         .HasComment("回复的评论id");
+
+                    b.Property<string>("ReplyNickName")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("replay_nickname")
+                        .HasComment("回复的玩家名");
+
+                    b.Property<int?>("ReplyUserId")
+                        .HasColumnType("int")
+                        .HasColumnName("replay_userid")
+                        .HasComment("回复的玩家Id");
+
+                    b.Property<int?>("RootCommentId")
+                        .HasColumnType("int")
+                        .HasColumnName("root_comment_id")
+                        .HasComment("回复评论属于哪个主评论");
 
                     b.Property<int>("SupportCount")
                         .ValueGeneratedOnAdd()
@@ -239,8 +259,6 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                     b.HasOne("Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Model.EvaluationCategory", "CategoryType")
                         .WithMany()
                         .HasForeignKey("CategoryTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
                         .HasConstraintName("foreignKey_type_article");
 
                     b.Navigation("CategoryType");

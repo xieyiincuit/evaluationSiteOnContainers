@@ -4,23 +4,24 @@
 
 namespace Evaluation.API.Infrastructure.EvaluationMigrations
 {
-    public partial class addRootCommentId : Migration
+    public partial class SetLogicDelete : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
-                name: "root_comment_id",
-                table: "evaluation_comment",
-                type: "int",
+            migrationBuilder.AddColumn<bool>(
+                name: "is_deleted",
+                table: "evaluation_category",
+                type: "bit",
                 nullable: true,
-                comment: "回复评论属于哪个主评论");
+                defaultValue: false,
+                comment: "逻辑删除");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "root_comment_id",
-                table: "evaluation_comment");
+                name: "is_deleted",
+                table: "evaluation_category");
         }
     }
 }

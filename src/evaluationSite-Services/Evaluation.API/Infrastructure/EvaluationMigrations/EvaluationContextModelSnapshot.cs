@@ -37,7 +37,7 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                         .HasColumnName("article_image")
                         .HasComment("内容Top呈现图");
 
-                    b.Property<int>("CategoryTypeId")
+                    b.Property<int?>("CategoryTypeId")
                         .HasColumnType("int")
                         .HasColumnName("category_type_id")
                         .HasComment("测评类别主键");
@@ -149,6 +149,13 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                         .HasColumnName("category_type")
                         .HasComment("测评类别名");
 
+                    b.Property<bool?>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted")
+                        .HasComment("逻辑删除");
+
                     b.HasKey("CategoryId");
 
                     b.ToTable("evaluation_category", (string)null);
@@ -250,8 +257,6 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                     b.HasOne("Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Model.EvaluationCategory", "CategoryType")
                         .WithMany()
                         .HasForeignKey("CategoryTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
                         .HasConstraintName("foreignKey_type_article");
 
                     b.Navigation("CategoryType");
