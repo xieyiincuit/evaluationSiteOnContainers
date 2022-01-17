@@ -8,4 +8,6 @@ public class EvaluationCategory
     /// 测评类别
     /// </summary>
     public string CategoryType { get; set; }
+
+    public bool? IsDeleted { get; set; }
 }

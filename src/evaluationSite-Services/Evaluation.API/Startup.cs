@@ -32,6 +32,7 @@ public class Startup
     {
         app.UseBundleSwagger(Configuration);
 
+        app.UseSerilogRequestLogging();
         app.UseRouting();
         app.UseCors("CorsPolicy");
 

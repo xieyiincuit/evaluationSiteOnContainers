@@ -43,7 +43,7 @@ class EvaluationArticleEntityTypeConfiguration : IEntityTypeConfiguration<Evalua
 
         builder.Property(x => x.CreateTime)
             .HasColumnName("create_time")
-            .HasComment("测评内容创建时间")           
+            .HasComment("测评内容创建时间")
             .IsRequired();
 
         builder.Property(x => x.UpdateTime)
@@ -51,7 +51,7 @@ class EvaluationArticleEntityTypeConfiguration : IEntityTypeConfiguration<Evalua
             .HasComment("测评内容更新时间")
             .IsRequired(false);
 
-        builder.Property(x=>x.JoinCount)
+        builder.Property(x => x.JoinCount)
             .HasColumnName("join_count")
             .HasComment("文章浏览量")
             .HasDefaultValue(0)
@@ -98,11 +98,11 @@ class EvaluationArticleEntityTypeConfiguration : IEntityTypeConfiguration<Evalua
         builder.Property(x => x.CategoryTypeId)
             .HasColumnName("category_type_id")
             .HasComment("测评类别主键")
-            .IsRequired();
+            .IsRequired(false);
 
         builder.HasOne(x => x.CategoryType)
             .WithMany()
             .HasForeignKey(x => x.CategoryTypeId)
-            .HasConstraintName("foreignKey_type_article");             
+            .HasConstraintName("foreignKey_type_article");
     }
 }

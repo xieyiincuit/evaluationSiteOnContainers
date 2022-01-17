@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-
-namespace Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Controllers;
+﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Controllers;
 
 [ApiController]
 [Route("api/v1/evaluation")]

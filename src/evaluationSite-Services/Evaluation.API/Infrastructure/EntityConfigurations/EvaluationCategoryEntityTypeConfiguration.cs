@@ -20,6 +20,12 @@ public class EvaluationCategoryEntityTypeConfiguration : IEntityTypeConfiguratio
             .HasComment("测评类别名")
             .IsRequired()
             .HasMaxLength(10);
+
+        builder.Property(cb => cb.IsDeleted)
+            .HasColumnName("is_deleted")
+            .HasComment("逻辑删除")
+            .IsRequired(false)
+            .HasDefaultValue(false);
     }
 }
 

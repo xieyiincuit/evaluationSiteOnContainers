@@ -111,9 +111,8 @@ public static class IServiceCollectionExtension
 
     public static IServiceCollection AddCustomValidator(this IServiceCollection services, IConfiguration configuration)
     {
-        //在确定不存在循环引用的情况下，使用单例模式可以提升每次request的服务加载时间
-        services.AddSingleton<IValidator<ArticleAddDto>, ArticleAddDtoValidator>();
-        services.AddSingleton<IValidator<ArticleUpdateDto>, ArticleUpdateDtoValidator>();
+        //在确定不存在循环引用的情况下，使用单例模式可以提升每次request的服务加载时间      
+        services.AddValidatorsFromAssemblyContaining<ArticleAddDto>(ServiceLifetime.Singleton);
         return services;
     }
 }

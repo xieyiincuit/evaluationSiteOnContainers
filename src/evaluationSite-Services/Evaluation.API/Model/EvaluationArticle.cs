@@ -72,7 +72,7 @@ public class EvaluationArticle
     /// <summary>
     /// 测评类别Id
     /// </summary>
-    public int CategoryTypeId { get; set; }
+    public int? CategoryTypeId { get; set; }
 
     /// <summary>
     /// 测评类别导航属性

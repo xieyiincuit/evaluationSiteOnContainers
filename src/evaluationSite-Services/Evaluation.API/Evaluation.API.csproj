@@ -35,6 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Infrastructure\EvaluationMigrations\" />
     <Folder Include="Setup\" />
   </ItemGroup>
 
