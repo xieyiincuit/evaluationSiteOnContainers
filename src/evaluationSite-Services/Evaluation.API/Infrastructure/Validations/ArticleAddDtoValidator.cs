@@ -4,7 +4,7 @@ public class ArticleAddDtoValidator : AbstractValidator<ArticleAddDto>
 {
     public ArticleAddDtoValidator()
     {
-        RuleFor(x=>x.Title)
+        RuleFor(x => x.Title)
             .NotEmpty().WithMessage("required | 请输入测评文章的标题")
             .MaximumLength(50).WithMessage("length | 文章标题不应超过50个字符");
 
@@ -22,6 +22,6 @@ public class ArticleAddDtoValidator : AbstractValidator<ArticleAddDto>
 
         RuleFor(x => x.GameName)
             .NotNull().WithMessage("required | 游戏名不应为空字符串")
-            .MaximumLength(50).WithMessage("length | 游戏名过长");   
+            .MaximumLength(50).WithMessage("length | 游戏名过长");
     }
 }

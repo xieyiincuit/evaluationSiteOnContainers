@@ -1,9 +1,9 @@
 ﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Model;
 
 public class EvaluationArticle
-{    
+{
     public int ArticleId { get; set; }
-  
+
     /// <summary>
     /// 作者
     /// </summary>

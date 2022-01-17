@@ -87,5 +87,5 @@ public class EvaluationCommentService : IEvaluationComment
             .Include(x => x.EvaluationArticle)
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.CommentId == commentId);
-    } 
+    }
 }

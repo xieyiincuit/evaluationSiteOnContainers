@@ -2,6 +2,6 @@
 
 public class CategoryUpdateDto
 {
-    public int CategoryId { get; set;}
+    public int CategoryId { get; set; }
     public string CategoryType { get; set; }
 }

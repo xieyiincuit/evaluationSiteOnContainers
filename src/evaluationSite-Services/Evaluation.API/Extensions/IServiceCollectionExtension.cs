@@ -59,7 +59,7 @@ public static class IServiceCollectionExtension
     }
 
     public static IServiceCollection AddCustomHealthCheck(this IServiceCollection services, IConfiguration configuration)
-    {       
+    {
         services.AddHealthChecks()
             .AddCheck("self", () => HealthCheckResult.Healthy())
             .AddSqlServer(
