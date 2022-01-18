@@ -34,6 +34,22 @@ public class Startup
                 .AllowCredentials());
         });
 
+        var serverVersion = new MySqlServerVersion(new Version(8, 0, 27));
+        var connectionString = Configuration.GetConnectionString("DataBaseConnectString");
+        services.AddDbContext<GameRepoContext>(
+            dbContextOptions => dbContextOptions
+                .UseMySql(connectionString, serverVersion, 
+                            mySqlOptionsAction: sqlOptions =>
+                            {
+                                sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
+                            })               
+                // The following three options help with debugging, but should
+                // be changed or removed for production.
+                .LogTo(Console.WriteLine, LogLevel.Information)
+                .EnableSensitiveDataLogging()
+                .EnableDetailedErrors()
+        );
+
         //use autofac
         var container = new ContainerBuilder();
         container.Populate(services);
