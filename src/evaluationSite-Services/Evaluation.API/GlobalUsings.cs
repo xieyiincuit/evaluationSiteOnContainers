@@ -31,5 +31,5 @@ global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Infrast
 global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Infrastructure.Exceptions;
 global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Infrastructure.Filters;
 global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Interfaces;
-global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Model;
+global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Models;
 global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Services;

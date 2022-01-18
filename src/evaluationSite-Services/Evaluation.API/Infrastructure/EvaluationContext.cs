@@ -31,9 +31,15 @@ public class EvaluationContextDesignFactory : IDesignTimeDbContextFactory<Evalua
 {
     public EvaluationContext CreateDbContext(string[] args)
     {
-        var optionsBuilder = new DbContextOptionsBuilder<EvaluationContext>()
-            .UseSqlServer("Server=.;Initial Catalog=evaluationSiteOnContainers.Services.evaluation;Integrated Security=true"); ;
+        IConfigurationRoot configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
 
-        return new EvaluationContext(optionsBuilder.Options);
+        var builder = new DbContextOptionsBuilder<EvaluationContext>();
+        var connectionString = configuration.GetConnectionString("DataBaseConnectString");
+        builder.UseSqlServer(connectionString); ;
+
+        return new EvaluationContext(builder.Options);
     }
 }

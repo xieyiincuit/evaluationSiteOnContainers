@@ -10,8 +10,10 @@ try
     Log.Information("Applying migrations ({ApplicationContext})...", Program.AppName);
     host.MigrateDbContext<EvaluationContext>((context, services) =>
     {
+        var env = services.GetService<IWebHostEnvironment>();
+        var settings = services.GetService<IOptions<EvaluationSettings>>();
         var logger = services.GetRequiredService<ILogger<EvaluationContextSeed>>();
-        new EvaluationContextSeed().SeedAsync(context, logger).Wait();
+        new EvaluationContextSeed().SeedAsync(context, logger, settings, env).Wait();
     });
     Log.Information("Migrations Applyed ({ApplicationContext})...", Program.AppName);
 
