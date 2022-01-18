@@ -13,5 +13,7 @@ public class GameTag
     public string TagName { get; set; }
 
     [Column("is_deleted"), Comment("逻辑删除")]
-    public bool? IsDeleted { get; set; }    
+    public bool? IsDeleted { get; set; }
+
+    public List<GameInfo> GameInfos { get; set; }
 }

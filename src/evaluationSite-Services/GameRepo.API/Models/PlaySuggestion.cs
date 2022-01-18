@@ -28,11 +28,8 @@ public class PlaySuggestion
     [Column("graphics_card"), Comment("显卡型号建议")]
     public string GraphicsCard { get; set; }
 
-    public PlayLevel Level { get; set; }
-}
+    //一对一关系建立
+    public int GameId { get; set; }
+    public GameInfo GameInfo { get; set; }
 
-public enum PlayLevel
-{
-    Lowest = 0,
-    Suggestion = 1
 }

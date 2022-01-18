@@ -12,9 +12,9 @@ public class GameInfo
     [Column("name"), Comment("游戏名")]
     public string Name { get; set; }
 
-    [MaxLength(1000)]
+    [Required, MaxLength(1000)]
     [Column("description"), Comment("游戏描述")]
-    public string? Description { get; set; }
+    public string Description { get; set; }
 
     [Column("details_picture"), Comment("游戏展示图大图")]
     public string? DetailsPicture { get; set; }
@@ -25,16 +25,24 @@ public class GameInfo
     [Column("average_score"), Comment("游戏评分")]
     public double? AverageScore { get; set; }
 
-    [Column("sell_time"), Comment("上市时间")]
+    [Column("sell_time"), Comment("开售时间")]
     public DateTime? SellTime { get; set; }
 
+    [Required, MaxLength(100)]
     [Column("dev_company"), Comment("开发公司")]
     public string DevCompany { get; set; }
 
+    [Required, MaxLength(50)]
+    [Column("support_platform"), Comment("游玩平台")]
+    public string SupportPlatform { get; set; }
 
+    //单向依赖外键
     [Column("type_id"), Comment("类型外键")]
     public int TypeId { get; set; }
     public GameCategory GameCategory { get; set; }
+
+    //一对一
+    public PlaySuggestion PlaySuggestion { get; set; }
 
     public List<GameTag> GameTags { get; set; }
 }
