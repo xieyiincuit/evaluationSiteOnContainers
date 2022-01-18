@@ -105,7 +105,7 @@ public class EvaluationCommentController : ControllerBase
 
         var comment = _mapper.Map<EvaluationComment>(commentAddDto);
 
-        //TODO Get really UserInfo
+        //TODO Get real userInfo
         comment.UserId = 1;
         comment.NickName = _userDic[comment.UserId];
 
