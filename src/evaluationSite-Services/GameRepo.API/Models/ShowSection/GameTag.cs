@@ -16,4 +16,5 @@ public class GameTag
     public bool? IsDeleted { get; set; }
 
     public List<GameInfo> GameInfos { get; set; }
+    public List<GameInfoTag> GameInfoTags { get; set; }
 }

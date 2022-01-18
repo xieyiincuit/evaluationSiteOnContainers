@@ -25,7 +25,7 @@ public class GameInfo
     [Column("average_score"), Comment("游戏评分")]
     public double? AverageScore { get; set; }
 
-    [Column("sell_time"), Comment("开售时间")]
+    [Column("sell_time"), Comment("发售时间")]
     public DateTime? SellTime { get; set; }
 
     [Required, MaxLength(100)]
@@ -36,13 +36,13 @@ public class GameInfo
     [Column("support_platform"), Comment("游玩平台")]
     public string SupportPlatform { get; set; }
 
-    //单向依赖外键
-    [Column("type_id"), Comment("类型外键")]
-    public int TypeId { get; set; }
+    public GameCompany GameCompany { get; set; }
+
     public GameCategory GameCategory { get; set; }
 
     //一对一
     public PlaySuggestion PlaySuggestion { get; set; }
 
     public List<GameTag> GameTags { get; set; }
+    public List<GameInfoTag> GameInfoTags { get; set; }
 }

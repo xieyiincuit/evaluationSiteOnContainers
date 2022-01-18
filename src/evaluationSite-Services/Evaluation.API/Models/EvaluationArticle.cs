@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Model;
+﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Models;
 
 public class EvaluationArticle
 {

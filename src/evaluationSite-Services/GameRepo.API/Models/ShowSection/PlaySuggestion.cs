@@ -29,7 +29,7 @@ public class PlaySuggestion
     public string GraphicsCard { get; set; }
 
     //一对一关系建立
-    public int GameId { get; set; }
+    [ForeignKey("game_id")]
     public GameInfo GameInfo { get; set; }
 
 }
