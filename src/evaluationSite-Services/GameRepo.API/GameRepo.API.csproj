@@ -23,7 +23,9 @@
 
   <ItemGroup>
     <Folder Include="Controllers\" />
+    <Folder Include="DtoModels\" />
     <Folder Include="Infrastructure\GameRepoMigrations\" />
+    <Folder Include="Infrastructure\Profiles\" />
   </ItemGroup>
 
 </Project>
