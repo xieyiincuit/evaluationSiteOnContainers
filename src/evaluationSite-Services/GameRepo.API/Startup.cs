@@ -80,7 +80,7 @@ public class Startup
         app.UseSwagger()
            .UseSwaggerUI(setup =>
            {
-               setup.SwaggerEndpoint($"{ (!string.IsNullOrEmpty(pathBase) ? pathBase : string.Empty) }/swagger/v1/swagger.json", "Basket.API V1");
+               setup.SwaggerEndpoint($"{ (!string.IsNullOrEmpty(pathBase) ? pathBase : string.Empty) }/swagger/v1/swagger.json", "GameRepo.API V1");
            });
 
         app.UseSerilogRequestLogging();
