@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.DtoModel;
+﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.DtoModels;
 
 public class ReplyCommentAddDto
 {

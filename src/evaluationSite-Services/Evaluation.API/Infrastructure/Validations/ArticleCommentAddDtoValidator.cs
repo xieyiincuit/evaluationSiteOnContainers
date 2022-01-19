@@ -6,7 +6,8 @@ public class ArticleCommentAddDtoValidator : AbstractValidator<ArticleCommentAdd
     {
         RuleFor(r => r.ArticleId)
             .NotNull().WithMessage("required | 未能识别到评测文章")
-            .GreaterThan(0).WithMessage("invalid | 非法参数: articleId");
+            .GreaterThan(0).WithMessage("invalid | 非法参数: articleId")
+            .LessThan(int.MaxValue).WithMessage("invalid | 非法参数: articleId");
 
         RuleFor(a => a.Content)
             .NotEmpty().WithMessage("required | 请输入您的评论内容")

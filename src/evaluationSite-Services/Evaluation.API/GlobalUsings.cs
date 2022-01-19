@@ -23,7 +23,7 @@ global using System.Net;
 global using System.Reflection;
 global using System.Text.Json.Serialization;
 global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API;
-global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.DtoModel;
+global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.DtoModels;
 global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Extensions;
 global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Infrastructure;
 global using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Infrastructure.ActionResults;

@@ -18,7 +18,8 @@ public class ArticleAddDtoValidator : AbstractValidator<ArticleAddDto>
 
         RuleFor(x => x.GameId)
             .NotNull().WithMessage("required | 请选择您测评的游戏")
-            .GreaterThan(0).WithMessage("invalid | 不存在的游戏");
+            .GreaterThan(0).WithMessage("invalid | 不存在的游戏")
+            .LessThan(int.MaxValue).WithMessage("invalid | 不存在的游戏");
 
         RuleFor(x => x.GameName)
             .NotNull().WithMessage("required | 游戏名不应为空字符串")
