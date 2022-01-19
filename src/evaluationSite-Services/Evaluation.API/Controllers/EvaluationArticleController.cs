@@ -1,6 +1,6 @@
 ﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Controllers;
 
-[Route("api/v1/evaluation")]
+[Route("api/v1/e")]
 [ApiController]
 public class EvaluationArticleController : ControllerBase
 {

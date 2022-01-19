@@ -39,20 +39,6 @@ public class EvaluationArticleService : IEvaluationArticle
         return articles;
     }
 
-    public async Task<EvaluationArticle> GetArticleAsync(int id)
-    {
-        var article = await _evaluationContext.Articles.FindAsync(id);
-
-        if (article != null)
-        {
-            var articlePicBaseUrl = _settings.ArticlePicBaseUrl;
-            var descriptionPicBaseUrl = _settings.DescriptionPicBaseUrl;
-            article.FillDefaultArticlePicture(articlePicBaseUrl, descriptionPicBaseUrl);
-        }
-
-        return article;
-    }
-
     public async Task<List<EvaluationArticle>> GetArticlesAsync(int pageSize, int pageIndex, int categoryTypeId)
     {
         var articles = await _evaluationContext.Articles
@@ -67,6 +53,20 @@ public class EvaluationArticleService : IEvaluationArticle
         articles = ChangePicsUri(articles);
 
         return articles;
+    }
+
+    public async Task<EvaluationArticle> GetArticleAsync(int id)
+    {
+        var article = await _evaluationContext.Articles.FindAsync(id);
+
+        if (article != null)
+        {
+            var articlePicBaseUrl = _settings.ArticlePicBaseUrl;
+            var descriptionPicBaseUrl = _settings.DescriptionPicBaseUrl;
+            article.FillDefaultArticlePicture(articlePicBaseUrl, descriptionPicBaseUrl);
+        }
+
+        return article;
     }
 
     public async Task<bool> IsArticleExist(int id)

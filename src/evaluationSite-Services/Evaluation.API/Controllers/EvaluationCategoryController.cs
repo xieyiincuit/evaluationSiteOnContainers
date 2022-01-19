@@ -1,7 +1,7 @@
 ﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Controllers;
 
 [ApiController]
-[Route("api/v1/evaluation")]
+[Route("api/v1/e")]
 public class EvaluationCategoryController : ControllerBase
 {
     private readonly IEvaluationCategory _categoryService;
