@@ -1,39 +1,50 @@
-﻿namespace GameRepo.API.Services;
+﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Services;
 
 public class GameCategoryService : IGameCategory
 {
-    public GameCategoryService()
-    {
+    private readonly GameRepoContext _repoContext;
 
+    public GameCategoryService(GameRepoContext repoContext)
+    {
+        _repoContext = repoContext;
     }
 
     public async Task<bool> AddCategoryAsync(GameCategory gameCategory)
     {
-        throw new NotImplementedException();
+        await _repoContext.GameCategories.AddAsync(gameCategory);
+        return await _repoContext.SaveChangesAsync() > 0;
     }
 
-    public Task<int> CountCategoryAsync()
+    public async Task<int> CountCategoryAsync()
     {
-        throw new NotImplementedException();
+        return await _repoContext.GameCategories.CountAsync();
     }
 
-    public Task<bool> DeleteCategoryAsync(int categoryId)
+    public async Task<bool> DeleteCategoryAsync(int categoryId)
     {
-        throw new NotImplementedException();
+        var category = await _repoContext.GameCategories.FindAsync(categoryId);
+        if (category == null) return false;
+        _repoContext.GameCategories.Remove(category);
+        return await _repoContext.SaveChangesAsync() > 0;
     }
 
-    public Task<List<GameCategory>> GetGameCategoriesAsync()
+    public async Task<List<GameCategory>> GetGameCategoriesAsync()
     {
-        throw new NotImplementedException();
+        var categoies = await _repoContext.GameCategories
+            .AsNoTracking()
+            .ToListAsync();
+        return categoies;
     }
 
-    public Task<GameCategory> GetGameCategoryAsync(int categoryId)
+    public async Task<GameCategory> GetGameCategoryAsync(int categoryId)
     {
-        throw new NotImplementedException();
+        var category = await _repoContext.GameCategories.FindAsync(categoryId);
+        return category;
     }
 
-    public Task<bool> UpdeteCategoryAsync(GameCategory gameCategory)
+    public async Task<bool> UpdeteCategoryAsync(GameCategory gameCategory)
     {
-        throw new NotImplementedException();
+        _repoContext.GameCategories.Update(gameCategory);
+        return await _repoContext.SaveChangesAsync() > 0;
     }
 }

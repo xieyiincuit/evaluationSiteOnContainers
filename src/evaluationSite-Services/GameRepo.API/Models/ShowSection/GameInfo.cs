@@ -37,7 +37,7 @@ public class GameInfo
     [Required, MaxLength(50)]
     [Column("support_platform"), Comment("游玩平台")]
     public string SupportPlatform { get; set; }
-    
+
     [Column("hot_points"), Comment("游戏热度")]
     public long? HotPoints { get; set; }
 

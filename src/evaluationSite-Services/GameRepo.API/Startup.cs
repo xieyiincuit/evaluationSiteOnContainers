@@ -11,6 +11,7 @@ public class Startup
     // This method gets called by the runtime. Use this method to add services to the container.
     public virtual IServiceProvider ConfigureServices(IServiceCollection services)
     {
+        #region MvcSettings
         services.AddControllers()
             .AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = true);
 
@@ -23,6 +24,7 @@ public class Startup
                 Description = "The Control of GameInfo Service HTTP API"
             });
         });
+        #endregion
 
         services.AddCors(options =>
         {
@@ -34,21 +36,29 @@ public class Startup
                 .AllowCredentials());
         });
 
+        #region DbSettings
         var serverVersion = new MySqlServerVersion(new Version(8, 0, 27));
         var connectionString = Configuration.GetConnectionString("DataBaseConnectString");
         services.AddDbContext<GameRepoContext>(
             dbContextOptions => dbContextOptions
-                .UseMySql(connectionString, serverVersion, 
+                .UseMySql(connectionString, serverVersion,
                             mySqlOptionsAction: sqlOptions =>
                             {
                                 sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
-                            })               
+                            })
                 // The following three options help with debugging, but should
                 // be changed or removed for production.
                 .LogTo(Console.WriteLine, LogLevel.Information)
                 .EnableSensitiveDataLogging()
                 .EnableDetailedErrors()
         );
+        #endregion
+
+
+        services.AddScoped<IGameCategory, GameCategoryService>();
+        services.AddScoped<IGameTag, GameTagService>();
+        services.AddScoped<IGameCompany, GameCompanyService>();
+        services.AddScoped<IGameInfo, GameInfoService>();
 
         //use autofac
         var container = new ContainerBuilder();
