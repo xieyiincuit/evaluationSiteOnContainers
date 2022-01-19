@@ -1,6 +1,6 @@
 ﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Interfaces;
 
-public interface IGameCompany
+public interface IGameCompanyService
 {
     Task<List<GameCompany>> GetGameCompaniesAsync(int pageIndex, int pageSize);
     Task<GameCompany> GetGameCompanyAsync(int companyId);

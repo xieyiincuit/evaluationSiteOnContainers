@@ -2,8 +2,8 @@
 
 public class GameCategoryUpdateDto
 {
-    [Required(ErrorMessage = "required | category id")]
-    [Range(1, int.MaxValue, ErrorMessage = "invalid | 非法参数: categoryId")]
+    [Required(ErrorMessage = "required | id loss")]
+    [Range(1, int.MaxValue, ErrorMessage = "invalid | 非法参数: id")]
     public int Id { get; set; }
 
     [Required(ErrorMessage = "required | 请填写游戏类型名")]

@@ -1,6 +1,6 @@
 ﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Services;
 
-public class GameTagService : IGameTag
+public class GameTagService : IGameTagService
 {
     private readonly GameRepoContext _repoContext;
 
@@ -42,9 +42,11 @@ public class GameTagService : IGameTag
         return tag;
     }
 
-    public async Task<List<GameTag>> GetGameTagsAsync()
+    public async Task<List<GameTag>> GetGameTagsAsync(int pageIndex, int pageSize)
     {
         var tags = await _repoContext.GameTags
+            .Skip((pageIndex - 1) * pageSize)
+            .Take(pageSize)
             .AsNoTracking()
             .ToListAsync();
         return tags;

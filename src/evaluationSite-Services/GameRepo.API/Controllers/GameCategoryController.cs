@@ -4,10 +4,10 @@
 [Route("api/v1/g")]
 public class GameCategoryController : ControllerBase
 {
-    private readonly IGameCategory _categoryService;
+    private readonly IGameCategoryService _categoryService;
     private readonly IMapper _mapper;
     private const int _pageSize = 10;
-    public GameCategoryController(IGameCategory categoryService, IMapper mapper)
+    public GameCategoryController(IGameCategoryService categoryService, IMapper mapper)
     {
         _categoryService = categoryService;
         _mapper = mapper;

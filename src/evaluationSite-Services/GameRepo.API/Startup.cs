@@ -56,10 +56,11 @@ public class Startup
 
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-        services.AddScoped<IGameCategory, GameCategoryService>();
-        services.AddScoped<IGameTag, GameTagService>();
-        services.AddScoped<IGameCompany, GameCompanyService>();
-        services.AddScoped<IGameInfo, GameInfoService>();
+        services.AddScoped<IGameCategoryService, GameCategoryService>();
+        services.AddScoped<IGameTagService, GameTagService>();
+        services.AddScoped<IGameCompanyService, GameCompanyService>();
+        services.AddScoped<IGameInfoService, GameInfoService>();
+        services.AddScoped<IPlaySuggestionService, PlaySuggestionService>();
 
         //use autofac
         var container = new ContainerBuilder();

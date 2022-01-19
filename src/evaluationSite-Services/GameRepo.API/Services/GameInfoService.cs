@@ -1,6 +1,6 @@
 ﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Services;
 
-public class GameInfoService : IGameInfo
+public class GameInfoService : IGameInfoService
 {
     private readonly GameRepoContext _repoContext;
 

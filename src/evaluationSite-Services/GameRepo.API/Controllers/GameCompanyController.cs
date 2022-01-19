@@ -4,11 +4,11 @@
 [Route("api/v1/g")]
 public class GameCompanyController : ControllerBase
 {
-    private readonly IGameCompany _companyService;
+    private readonly IGameCompanyService _companyService;
     private readonly IMapper _mapper;
     private const int _pageSize = 10;
 
-    public GameCompanyController(IGameCompany companyService, IMapper mapper)
+    public GameCompanyController(IGameCompanyService companyService, IMapper mapper)
     {
         _companyService = companyService;
         _mapper = mapper;
@@ -20,13 +20,13 @@ public class GameCompanyController : ControllerBase
     [ProducesResponseType(typeof(PaginatedItemsDtoModel<GameCompany>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetCompaniesAsync([FromQuery] int pageIndex = 1)
     {
-        var totalCategoies = await _companyService.CountCompanyAsync();
-        if (ParameterValidateHelper.IsInvalidPageIndex(totalCategoies, _pageSize, pageIndex)) pageIndex = 1;
+        var totalCompanies = await _companyService.CountCompanyAsync();
+        if (ParameterValidateHelper.IsInvalidPageIndex(totalCompanies, _pageSize, pageIndex)) pageIndex = 1;
 
         var companies = await _companyService.GetGameCompaniesAsync(pageIndex, _pageSize);
         if (!companies.Any()) return NotFound();
 
-        var model = new PaginatedItemsDtoModel<GameCompany>(pageIndex, _pageSize, totalCategoies, companies);
+        var model = new PaginatedItemsDtoModel<GameCompany>(pageIndex, _pageSize, totalCompanies, companies);
         return Ok(model);
     }
 
@@ -38,10 +38,10 @@ public class GameCompanyController : ControllerBase
     {
         if (companyId <= 0 || companyId >= int.MaxValue) return BadRequest();
 
-        var category = await _companyService.GetGameCompanyAsync(companyId);
+        var company = await _companyService.GetGameCompanyAsync(companyId);
 
-        if (category == null) return NotFound();
-        return Ok(category);
+        if (company == null) return NotFound();
+        return Ok(company);
     }
 
     [HttpPost]

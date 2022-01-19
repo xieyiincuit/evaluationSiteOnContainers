@@ -1,8 +1,8 @@
 ﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Interfaces;
 
-public interface IGameTag
+public interface IGameTagService
 {
-    Task<List<GameTag>> GetGameTagsAsync();
+    Task<List<GameTag>> GetGameTagsAsync(int pageIndex, int pageSize);
     Task<GameTag> GetGameTagAsync(int tagId);
     Task<int> CountTagsAsync();
     Task<bool> AddGameTagAsync(GameTag gameTag);

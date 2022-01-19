@@ -1,5 +1,5 @@
 ﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Interfaces;
-public interface IGameInfo
+public interface IGameInfoService
 {
     Task<List<GameInfo>> GetGameInfosAsync(int pageIndex, int pageSize);
     Task<GameInfo> GetGameInfoAsync(int gameId);

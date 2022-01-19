@@ -1,6 +1,6 @@
 ﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Services;
 
-public class GameCategoryService : IGameCategory
+public class GameCategoryService : IGameCategoryService
 {
     private readonly GameRepoContext _repoContext;
 

@@ -1,8 +1,8 @@
 ﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Interfaces;
 
-public interface IPlaySuggestion
+public interface IPlaySuggestionService
 {
-    Task<List<PlaySuggestion>> GetPlaySuggestionsAsync();
+    Task<List<PlaySuggestion>> GetPlaySuggestionsAsync(int pageIndex, int pageSize);
     Task<PlaySuggestion> GetPlaySuggestionAsync(int suggestionId);
     Task<int> CountPlaySuggestionsAsync();
     Task<bool> AddPlaySuggestionAsync(PlaySuggestion playSuggestion);
