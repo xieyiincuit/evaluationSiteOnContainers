@@ -26,8 +26,8 @@ public class EvaluationCategoryController : ControllerBase
         return Ok(categories);
     }
 
-    [HttpGet]
-    [Route("category/{id:int}")]
+    [HttpGet("category/{id:int}", Name = nameof(GetEvaluateCategoryAsync))]
+    //[Route("category/{id:int}")]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(EvaluationCategory), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetEvaluateCategoryAsync([FromRoute] int id)
@@ -63,7 +63,7 @@ public class EvaluationCategoryController : ControllerBase
 
         var entity = _mapper.Map<EvaluationCategory>(categoryAddDto);
         await _categoryService.AddEvaluationCategoryAsync(entity);
-        return new ObjectResult(entity) { StatusCode = (int)HttpStatusCode.Created };
+        return CreatedAtRoute(nameof(GetEvaluateCategoryAsync), new { id = entity.CategoryId }, null);
     }
 
     [HttpDelete]

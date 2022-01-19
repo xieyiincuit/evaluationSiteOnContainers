@@ -57,8 +57,8 @@ public class EvaluationArticleController : ControllerBase
     }
 
     // GET api/v1/evaluation/articles/1
-    [HttpGet]
-    [Route("article/{id:int}")]
+    [HttpGet("article/{id:int}", Name = nameof(GetArticleByIdAsync))]
+    //[Route("article/{id:int}")] 使用HTTPGET获取route则不能使用Route重新定义
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(ArticleDto), (int)HttpStatusCode.OK)]
@@ -116,7 +116,7 @@ public class EvaluationArticleController : ControllerBase
 
         await _articleService.AddArticleAsync(entity);
         //TODO 用CreateAtXXX替换POST和PUT
-        return new ObjectResult(entity) { StatusCode = (int)HttpStatusCode.Created };
+        return CreatedAtRoute(nameof(GetArticleByIdAsync), new { id = entity.ArticleId }, null);
     }
 
     // Delete api/v1/evaluation/articles/{id}

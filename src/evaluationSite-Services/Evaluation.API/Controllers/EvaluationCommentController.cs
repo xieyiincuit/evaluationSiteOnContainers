@@ -80,12 +80,12 @@ public class EvaluationCommentController : ControllerBase
         return Ok(comments);
     }
 
-    [HttpGet]
-    [Route("comments/{commentId:int}")]
+    [HttpGet("comments/{commentId:int}", Name = nameof(GetCommentByIdAsync))]
+    //[Route("comments/{commentId:int}")]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(EvaluationComment), (int)HttpStatusCode.OK)]
-    public async Task<ActionResult<EvaluationComment>> GetCommentAsync([FromRoute] int commentId)
+    public async Task<ActionResult<EvaluationComment>> GetCommentByIdAsync([FromRoute] int commentId)
     {
         if (commentId <= 0 || commentId >= int.MaxValue) return BadRequest();
 
@@ -110,7 +110,7 @@ public class EvaluationCommentController : ControllerBase
         comment.NickName = _userDic[comment.UserId];
 
         await _commentService.AddCommentArticleAsync(comment);
-        return new ObjectResult(comment) { StatusCode = (int)HttpStatusCode.Created };
+        return CreatedAtRoute(nameof(GetCommentByIdAsync), new { commentId = comment.CommentId }, null);
     }
 
     [HttpPost]
@@ -130,7 +130,7 @@ public class EvaluationCommentController : ControllerBase
         comment.ReplyNickName = _userDic[comment.ReplyUserId.Value];
 
         await _commentService.AddCommentArticleAsync(comment);
-        return new ObjectResult(comment) { StatusCode = (int)HttpStatusCode.Created };
+        return CreatedAtRoute(nameof(GetCommentByIdAsync), new { commentId = comment.CommentId }, null);
     }
 
     [HttpDelete]
