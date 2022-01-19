@@ -26,7 +26,7 @@ public class GameRepoContext : DbContext
                 .WithMany(g => g.GameInfoTags)
                 .HasForeignKey(f => f.GameId),
                 j => j.HasKey(t => new { t.GameId, t.TagId })
-                );      
+                );
     }
 }
 
