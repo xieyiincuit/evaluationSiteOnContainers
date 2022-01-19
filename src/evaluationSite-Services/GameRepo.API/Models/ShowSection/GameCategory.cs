@@ -13,5 +13,6 @@ public class GameCategory
     public string CategoryName { get; set; }
 
     [Column("is_deleted"), Comment("逻辑删除")]
+    [JsonIgnore]
     public bool? IsDeleted { get; set; }
 }

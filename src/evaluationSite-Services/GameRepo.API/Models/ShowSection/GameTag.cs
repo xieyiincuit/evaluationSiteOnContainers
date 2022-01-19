@@ -13,8 +13,12 @@ public class GameTag
     public string TagName { get; set; }
 
     [Column("is_deleted"), Comment("逻辑删除")]
+    [JsonIgnore]
     public bool? IsDeleted { get; set; }
 
+    [JsonIgnore]
     public List<GameInfo> GameInfos { get; set; }
+
+    [JsonIgnore]
     public List<GameInfoTag> GameInfoTags { get; set; }
 }
