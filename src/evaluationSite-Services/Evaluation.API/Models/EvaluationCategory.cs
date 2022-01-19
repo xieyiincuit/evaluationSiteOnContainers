@@ -9,5 +9,6 @@ public class EvaluationCategory
     /// </summary>
     public string CategoryType { get; set; }
 
+    [JsonIgnore]
     public bool? IsDeleted { get; set; }
 }

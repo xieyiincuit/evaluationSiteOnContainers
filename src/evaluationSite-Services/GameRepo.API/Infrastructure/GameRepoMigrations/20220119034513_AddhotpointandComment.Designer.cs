@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Infrastructure;
 
@@ -10,9 +11,10 @@ using Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Infrastructure;
 namespace GameRepo.API.Infrastructure.GameRepoMigrations
 {
     [DbContext(typeof(GameRepoContext))]
-    partial class GameRepoContextModelSnapshot : ModelSnapshot
+    [Migration("20220119034513_AddhotpointandComment")]
+    partial class AddhotpointandComment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

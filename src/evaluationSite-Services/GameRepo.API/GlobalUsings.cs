@@ -38,3 +38,5 @@ global using Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Infrastru
 global using Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Infrastructure.Exceptions;
 global using Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Infrastructure.ActionResults;
 global using Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Extensions;
+global using Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Services;
+global using Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Interfaces;

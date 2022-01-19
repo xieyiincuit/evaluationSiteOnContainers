@@ -26,12 +26,7 @@ public class GameRepoContext : DbContext
                 .WithMany(g => g.GameInfoTags)
                 .HasForeignKey(f => f.GameId),
                 j => j.HasKey(t => new { t.GameId, t.TagId })
-                );
-
-        modelBuilder.Entity<GameInfo>()
-            .Property(g => g.HotPoints)
-            .HasDefaultValue(1);
-
+                );      
     }
 }
 

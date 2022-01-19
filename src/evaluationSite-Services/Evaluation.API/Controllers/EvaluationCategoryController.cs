@@ -22,7 +22,7 @@ public class EvaluationCategoryController : ControllerBase
     public async Task<IActionResult> GetEvaluateCategoriesAsync()
     {
         var categories = await _categoryService.GetEvaluationCategoriesAsync();
-        if (categories == null) return NotFound();
+        if (categories == null || categories.Count == 0) return NotFound();
         return Ok(categories);
     }
 

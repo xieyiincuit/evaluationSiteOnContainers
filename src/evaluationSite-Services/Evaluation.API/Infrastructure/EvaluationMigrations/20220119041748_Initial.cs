@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -14,7 +15,8 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                 {
                     category_id = table.Column<int>(type: "int", nullable: false, comment: "测评类别主键")
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    category_type = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false, comment: "测评类别名")
+                    category_type = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false, comment: "测评类别名"),
+                    is_deleted = table.Column<bool>(type: "bit", nullable: true, defaultValue: false, comment: "逻辑删除")
                 },
                 constraints: table =>
                 {
@@ -30,8 +32,8 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     user_id = table.Column<int>(type: "int", nullable: false, comment: "测评内容作者id"),
                     title = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false, comment: "测评文章标题"),
-                    desciption_image = table.Column<string>(type: "nvarchar(max)", nullable: true, comment: "展示略缩图"),
-                    article_image = table.Column<string>(type: "nvarchar(max)", nullable: true, comment: "内容Top呈现图"),
+                    desciption_image = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true, comment: "展示略缩图"),
+                    article_image = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true, comment: "内容Top呈现图"),
                     content = table.Column<string>(type: "nvarchar(max)", nullable: false, comment: "测评文章内容"),
                     create_time = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "测评内容创建时间"),
                     update_time = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "测评内容更新时间"),
@@ -43,7 +45,7 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                     article_status = table.Column<int>(type: "int", nullable: false, comment: "文章发布状态"),
                     category_type_id = table.Column<int>(type: "int", nullable: true, comment: "测评类别主键"),
                     game_id = table.Column<int>(type: "int", nullable: false, comment: "测评内容关联游戏id"),
-                    game_name = table.Column<string>(type: "nvarchar(max)", nullable: false, comment: "测评内容关联游戏名")
+                    game_name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false, comment: "测评内容关联游戏名")
                 },
                 constraints: table =>
                 {
@@ -52,7 +54,8 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                         name: "foreignKey_type_article",
                         column: x => x.category_type_id,
                         principalTable: "evaluation_category",
-                        principalColumn: "category_id");
+                        principalColumn: "category_id",
+                        onDelete: ReferentialAction.SetNull);
                 },
                 comment: "游戏测评文章信息表");
 

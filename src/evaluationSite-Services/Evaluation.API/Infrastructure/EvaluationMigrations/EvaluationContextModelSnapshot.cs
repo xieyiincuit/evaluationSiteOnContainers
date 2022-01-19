@@ -22,7 +22,7 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Model.EvaluationArticle", b =>
+            modelBuilder.Entity("Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Models.EvaluationArticle", b =>
                 {
                     b.Property<int>("ArticleId")
                         .ValueGeneratedOnAdd()
@@ -33,7 +33,8 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ArticleId"), 1L, 1);
 
                     b.Property<string>("ArticleImage")
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)")
                         .HasColumnName("article_image")
                         .HasComment("内容Top呈现图");
 
@@ -61,7 +62,8 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                         .HasComment("测评内容创建时间");
 
                     b.Property<string>("DesciptionImage")
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)")
                         .HasColumnName("desciption_image")
                         .HasComment("展示略缩图");
 
@@ -78,7 +80,8 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
 
                     b.Property<string>("GameName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("game_name")
                         .HasComment("测评内容关联游戏名");
 
@@ -132,7 +135,7 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                     b.HasComment("游戏测评文章信息表");
                 });
 
-            modelBuilder.Entity("Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Model.EvaluationCategory", b =>
+            modelBuilder.Entity("Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Models.EvaluationCategory", b =>
                 {
                     b.Property<int>("CategoryId")
                         .ValueGeneratedOnAdd()
@@ -163,7 +166,7 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                     b.HasComment("测评文章分类表");
                 });
 
-            modelBuilder.Entity("Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Model.EvaluationComment", b =>
+            modelBuilder.Entity("Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Models.EvaluationComment", b =>
                 {
                     b.Property<int>("CommentId")
                         .ValueGeneratedOnAdd()
@@ -252,19 +255,20 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                     b.HasComment("测评文章评论表");
                 });
 
-            modelBuilder.Entity("Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Model.EvaluationArticle", b =>
+            modelBuilder.Entity("Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Models.EvaluationArticle", b =>
                 {
-                    b.HasOne("Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Model.EvaluationCategory", "CategoryType")
+                    b.HasOne("Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Models.EvaluationCategory", "CategoryType")
                         .WithMany()
                         .HasForeignKey("CategoryTypeId")
+                        .OnDelete(DeleteBehavior.SetNull)
                         .HasConstraintName("foreignKey_type_article");
 
                     b.Navigation("CategoryType");
                 });
 
-            modelBuilder.Entity("Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Model.EvaluationComment", b =>
+            modelBuilder.Entity("Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Models.EvaluationComment", b =>
                 {
-                    b.HasOne("Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Model.EvaluationArticle", "EvaluationArticle")
+                    b.HasOne("Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Models.EvaluationArticle", "EvaluationArticle")
                         .WithMany("EvaluationComments")
                         .HasForeignKey("ArticleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -274,7 +278,7 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                     b.Navigation("EvaluationArticle");
                 });
 
-            modelBuilder.Entity("Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Model.EvaluationArticle", b =>
+            modelBuilder.Entity("Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Models.EvaluationArticle", b =>
                 {
                     b.Navigation("EvaluationComments");
                 });

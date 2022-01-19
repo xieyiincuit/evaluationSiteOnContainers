@@ -19,21 +19,20 @@ public class EvaluationCategoryService : IEvaluationCategory
     {
         var category = await _evaluationContext.Categories.FindAsync(categoryId);
         if (category == null) return false;
-        category.IsDeleted = true;
-        _evaluationContext.Categories.Update(category);
+        //category.IsDeleted = true;
+        _evaluationContext.Categories.Remove(category);
         return await _evaluationContext.SaveChangesAsync() > 0;
     }
 
     public async Task<List<EvaluationCategory>> GetEvaluationCategoriesAsync()
     {
-        var category = await _evaluationContext.Categories.Where(x => x.IsDeleted == null).AsNoTracking().ToListAsync();
+        var category = await _evaluationContext.Categories.AsNoTracking().ToListAsync();
         return category;
     }
 
     public async Task<EvaluationCategory> GetEvaluationCategoryAsync(int categoryId)
     {
-        return await _evaluationContext.Categories
-            .Where(x => x.IsDeleted == null).FirstOrDefaultAsync(x => x.CategoryId == categoryId);
+        return await _evaluationContext.Categories.FirstOrDefaultAsync(x => x.CategoryId == categoryId);
     }
 
     public async Task<bool> UpdateEvaluationCategoryAsync(EvaluationCategory category)
