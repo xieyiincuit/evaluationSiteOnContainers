@@ -28,6 +28,10 @@ public class GameRepoContext : DbContext
                 j => j.HasKey(t => new { t.GameId, t.TagId })
                 );
 
+        modelBuilder.Entity<GameInfo>()
+            .Property(g => g.HotPoints)
+            .HasDefaultValue(1);
+
     }
 }
 

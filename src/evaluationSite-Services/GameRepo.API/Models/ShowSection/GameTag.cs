@@ -8,7 +8,7 @@ public class GameTag
     [Column("tag_id"), Comment("主键")]
     public int Id { get; set; }
 
-    [Required, MaxLength(10)]
+    [Required, MaxLength(50)]
     [Column("tag_name"), Comment("游戏标签名")]
     public string TagName { get; set; }
 

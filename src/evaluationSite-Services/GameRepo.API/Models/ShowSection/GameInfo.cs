@@ -12,13 +12,15 @@ public class GameInfo
     [Column("name"), Comment("游戏名")]
     public string Name { get; set; }
 
-    [Required, MaxLength(1000)]
+    [Required, MaxLength(500)]
     [Column("description"), Comment("游戏描述")]
     public string Description { get; set; }
 
+    [MaxLength(200)]
     [Column("details_picture"), Comment("游戏展示图大图")]
     public string? DetailsPicture { get; set; }
 
+    [MaxLength(200)]
     [Column("routh_picture"), Comment("游戏展示图小图")]
     public string? RoughPicture { get; set; }
 
@@ -35,9 +37,14 @@ public class GameInfo
     [Required, MaxLength(50)]
     [Column("support_platform"), Comment("游玩平台")]
     public string SupportPlatform { get; set; }
+    
+    [Column("hot_points"), Comment("游戏热度")]
+    public long? HotPoints { get; set; }
 
+    [ForeignKey("company_id"), Comment("发行公司外键")]
     public GameCompany GameCompany { get; set; }
 
+    [ForeignKey("category_id"), Comment("游戏类型外键")]
     public GameCategory GameCategory { get; set; }
 
     //一对一

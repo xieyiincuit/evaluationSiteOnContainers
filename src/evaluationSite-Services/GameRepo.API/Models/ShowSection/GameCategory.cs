@@ -8,7 +8,7 @@ public class GameCategory
     [Column("type_id"), Comment("主键")]
     public int Id { get; set; }
 
-    [Required, MaxLength(10)]
+    [Required, MaxLength(50)]
     [Column("category_name"), Comment("游戏类型名")]
     public string CategoryName { get; set; }
 

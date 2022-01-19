@@ -18,18 +18,18 @@ public class PlaySuggestion
 
     [Required]
     [Column("memory_size"), Comment("内存大小建议")]
-    public int MemorySize { get; set; }
+    public double MemorySize { get; set; }
 
     [Required]
     [Column("disk_size"), Comment("磁盘大小建议")]
-    public int DiskSize { get; set; }
+    public double DiskSize { get; set; }
 
     [Required]
     [Column("graphics_card"), Comment("显卡型号建议")]
     public string GraphicsCard { get; set; }
 
     //一对一关系建立
-    [ForeignKey("game_id")]
+    [ForeignKey("game_id"), Comment("游戏外键id")]
     public GameInfo GameInfo { get; set; }
 
 }
