@@ -1,4 +1,5 @@
 ﻿global using Autofac;
+global using AutoMapper;
 global using Autofac.Extensions.DependencyInjection;
 global using Microsoft.AspNetCore;
 global using Microsoft.AspNetCore.Builder;
@@ -21,7 +22,9 @@ global using System.IO;
 global using System.Linq;
 global using System.Net;
 global using System.Threading.Tasks;
+global using System.Text.Json.Serialization;
 global using Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API;
+global using Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.DtoModels;
 global using Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Extensions;
 global using Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Infrastructure;
 global using Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Infrastructure.ActionResults;

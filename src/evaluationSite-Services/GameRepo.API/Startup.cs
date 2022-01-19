@@ -54,6 +54,7 @@ public class Startup
         );
         #endregion
 
+        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
         services.AddScoped<IGameCategory, GameCategoryService>();
         services.AddScoped<IGameTag, GameTagService>();

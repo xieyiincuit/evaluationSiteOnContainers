@@ -28,9 +28,11 @@ public class GameCategoryService : IGameCategory
         return await _repoContext.SaveChangesAsync() > 0;
     }
 
-    public async Task<List<GameCategory>> GetGameCategoriesAsync()
+    public async Task<List<GameCategory>> GetGameCategoriesAsync(int pageIndex, int pageSize)
     {
         var categoies = await _repoContext.GameCategories
+            .Skip((pageIndex - 1) * pageSize)
+            .Take(pageSize)
             .AsNoTracking()
             .ToListAsync();
         return categoies;
@@ -38,7 +40,8 @@ public class GameCategoryService : IGameCategory
 
     public async Task<GameCategory> GetGameCategoryAsync(int categoryId)
     {
-        var category = await _repoContext.GameCategories.FindAsync(categoryId);
+        var category = await _repoContext.GameCategories
+            .AsNoTracking().FirstOrDefaultAsync(x => x.Id == categoryId);
         return category;
     }
 

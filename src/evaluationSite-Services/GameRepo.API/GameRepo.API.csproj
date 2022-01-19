@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.2.0" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -22,9 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DtoModels\" />
     <Folder Include="Infrastructure\GameRepoMigrations\" />
-    <Folder Include="Infrastructure\Profiles\" />
   </ItemGroup>
 
 </Project>

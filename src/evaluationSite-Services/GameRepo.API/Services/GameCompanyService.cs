@@ -28,9 +28,11 @@ public class GameCompanyService : IGameCompany
         return await _repoContext.SaveChangesAsync() > 0;
     }
 
-    public async Task<List<GameCompany>> GetGameCompaniesAsync()
+    public async Task<List<GameCompany>> GetGameCompaniesAsync(int pageIndex, int pageSize)
     {
         var companies = await _repoContext.GameCompanies
+            .Skip((pageIndex - 1) * pageSize)
+            .Take(pageSize)
             .AsNoTracking()
             .ToListAsync();
         return companies;
