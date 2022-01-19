@@ -29,11 +29,13 @@ class EvaluationArticleEntityTypeConfiguration : IEntityTypeConfiguration<Evalua
         builder.Property(x => x.ArticleImage)
           .HasColumnName("article_image")
           .HasComment("内容Top呈现图")
+          .HasMaxLength(200)
           .IsRequired(false);
 
         builder.Property(x => x.DesciptionImage)
          .HasColumnName("desciption_image")
          .HasComment("展示略缩图")
+         .HasMaxLength(200)
          .IsRequired(false);
 
         builder.Property(x => x.Content)
@@ -88,6 +90,7 @@ class EvaluationArticleEntityTypeConfiguration : IEntityTypeConfiguration<Evalua
         builder.Property(x => x.GameName)
             .HasColumnName("game_name")
             .HasComment("测评内容关联游戏名")
+            .HasMaxLength(100)
             .IsRequired();
 
         builder.Property(x => x.Status)
@@ -103,6 +106,7 @@ class EvaluationArticleEntityTypeConfiguration : IEntityTypeConfiguration<Evalua
         builder.HasOne(x => x.CategoryType)
             .WithMany()
             .HasForeignKey(x => x.CategoryTypeId)
-            .HasConstraintName("foreignKey_type_article");
+            .HasConstraintName("foreignKey_type_article")
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }
