@@ -30,10 +30,6 @@ public class GameInfo
     [Column("sell_time"), Comment("发售时间")]
     public DateTime? SellTime { get; set; }
 
-    [Required, MaxLength(100)]
-    [Column("dev_company"), Comment("开发公司")]
-    public string DevCompany { get; set; }
-
     [Required, MaxLength(50)]
     [Column("support_platform"), Comment("游玩平台")]
     public string SupportPlatform { get; set; }
@@ -41,13 +37,17 @@ public class GameInfo
     [Column("hot_points"), Comment("游戏热度")]
     public long? HotPoints { get; set; }
 
-    [ForeignKey("company_id"), Comment("发行公司外键")]
+    [Column("company_id"), Comment("游戏公司外键")]
+    public int? GameCompanyId { get; set; }
     public GameCompany GameCompany { get; set; }
 
-    [ForeignKey("category_id"), Comment("游戏类型外键")]
+
+    [Column("category_id"), Comment("游戏类别外键")]
+    public int? GameCategoryId { get; set; }
     public GameCategory GameCategory { get; set; }
 
-    //一对一
+    [Column("play_suggestion_id"), Comment("游戏游玩建议外键")]
+    public int? PlaySuggestionId { get; set; }
     public PlaySuggestion PlaySuggestion { get; set; }
 
     public List<GameTag> GameTags { get; set; }
