@@ -107,6 +107,6 @@ class EvaluationArticleEntityTypeConfiguration : IEntityTypeConfiguration<Evalua
             .WithMany()
             .HasForeignKey(x => x.CategoryTypeId)
             .HasConstraintName("foreignKey_type_article")
-            .OnDelete(DeleteBehavior.SetNull);
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }
