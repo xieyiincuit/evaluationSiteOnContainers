@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API;
 
 public class Startup
 {
@@ -6,13 +6,14 @@ public class Startup
     {
         Configuration = configuration;
     }
+
     public IConfiguration Configuration { get; }
 
     // This method gets called by the runtime. Use this method to add services to the container.
     public virtual IServiceProvider ConfigureServices(IServiceCollection services)
     {
         services
-            .AddCustomMVC(Configuration)
+            .AddCustomMvc(Configuration)
             .AddCustomSwagger(Configuration)
             .AddCustomDbContext(Configuration)
             .AddCustomHealthCheck(Configuration)
@@ -44,7 +45,7 @@ public class Startup
             endpoints.MapDefaultControllerRoute();
             endpoints.MapControllers();
 
-            endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
+            endpoints.MapHealthChecks("/hc", new HealthCheckOptions
             {
                 Predicate = _ => true,
                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse

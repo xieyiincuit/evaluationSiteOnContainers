@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Interfaces;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Interfaces;
 
 public interface IGameCompanyService
 {
@@ -6,6 +6,6 @@ public interface IGameCompanyService
     Task<GameCompany> GetGameCompanyAsync(int companyId);
     Task<int> CountCompanyAsync();
     Task<bool> AddGameCompanyAsync(GameCompany gameCompany);
-    Task<bool> UpdeteGameCompanyAsync(GameCompany gameCompany);
+    Task<bool> UpdateGameCompanyAsync(GameCompany gameCompany);
     Task<bool> DeleteGameCompanyAsync(int companyId);
 }

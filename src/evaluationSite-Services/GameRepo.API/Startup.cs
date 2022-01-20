@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API;
 
 public class Startup
 {

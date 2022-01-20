@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.DtoModels;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.DtoModels;
 
 public class ArticleDto
 {
@@ -10,7 +10,7 @@ public class ArticleDto
 
     public string Title { get; set; }
 
-    public string? DesciptionImage { get; set; }
+    public string? DescriptionImage { get; set; }
 
     public string? ArticleImage { get; set; }
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -54,7 +55,7 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                         column: x => x.category_type_id,
                         principalTable: "evaluation_category",
                         principalColumn: "category_id",
-                        onDelete: ReferentialAction.SetNull);
+                        onDelete: ReferentialAction.Restrict);
                 },
                 comment: "游戏测评文章信息表");
 

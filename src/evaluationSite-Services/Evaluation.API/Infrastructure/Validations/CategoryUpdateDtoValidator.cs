@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Infrastructure.Validations;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Infrastructure.Validations;
 
 public class CategoryUpdateDtoValidator : AbstractValidator<CategoryUpdateDto>
 {

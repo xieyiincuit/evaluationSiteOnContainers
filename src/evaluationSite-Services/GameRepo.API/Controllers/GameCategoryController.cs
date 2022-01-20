@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Controllers;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Controllers;
 
 [ApiController]
 [Route("api/v1/g")]
@@ -78,7 +78,7 @@ public class GameCategoryController : ControllerBase
         if (categoryUpdateDto == null) return BadRequest();
 
         var entityToUpdate = _mapper.Map<GameCategory>(categoryUpdateDto);
-        await _categoryService.UpdeteCategoryAsync(entityToUpdate);
+        await _categoryService.UpdateCategoryAsync(entityToUpdate);
         return NoContent();
     }
 }

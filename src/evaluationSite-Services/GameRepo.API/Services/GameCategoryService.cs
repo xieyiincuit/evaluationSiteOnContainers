@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Services;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Services;
 
 public class GameCategoryService : IGameCategoryService
 {
@@ -46,7 +46,7 @@ public class GameCategoryService : IGameCategoryService
         return category;
     }
 
-    public async Task<bool> UpdeteCategoryAsync(GameCategory gameCategory)
+    public async Task<bool> UpdateCategoryAsync(GameCategory gameCategory)
     {
         _repoContext.GameCategories.Update(gameCategory);
         return await _repoContext.SaveChangesAsync() > 0;

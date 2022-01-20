@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Models;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models;
 
 [Table("game_type")]
 [Comment("游戏类型分类表")]

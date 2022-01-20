@@ -1,9 +1,9 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.DtoModels;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.DtoModels;
 
 public class ArticleUpdateDto
 {
     public string Title { get; set; }
-    public string? DesciptionImage { get; set; }
+    public string? DescriptionImage { get; set; }
     public string? ArticleImage { get; set; }
     public string Content { get; set; }
     public ArticleStatus Status { get; set; }

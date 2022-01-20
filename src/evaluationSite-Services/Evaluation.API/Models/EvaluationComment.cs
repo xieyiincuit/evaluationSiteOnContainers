@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Models;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Models;
 
 public class EvaluationComment
 {
@@ -19,37 +19,37 @@ public class EvaluationComment
     public bool? IsDeleted { get; set; }
 
     /// <summary>
-    /// 是否为回复
+    ///     是否为回复
     /// </summary>
     public bool? IsReplay { get; set; }
 
     /// <summary>
-    /// 回复的评论Id
+    ///     回复的评论Id
     /// </summary>
     public int? ReplayCommentId { get; set; }
 
     /// <summary>
-    /// 回复的用户Id
+    ///     回复的用户Id
     /// </summary>
     public int? ReplyUserId { get; set; }
 
     /// <summary>
-    /// 回复的用户名
+    ///     回复的用户名
     /// </summary>
     public string? ReplyNickName { get; set; }
 
     /// <summary>
-    /// 回复评论所属于哪个主评论
+    ///     回复评论所属于哪个主评论
     /// </summary>
     public int? RootCommentId { get; set; }
 
     /// <summary>
-    /// 关联测评的外键
+    ///     关联测评的外键
     /// </summary>
     public int ArticleId { get; set; }
 
     /// <summary>
-    /// 测评导航属性
+    ///     测评导航属性
     /// </summary>
     public EvaluationArticle EvaluationArticle { get; set; }
 }

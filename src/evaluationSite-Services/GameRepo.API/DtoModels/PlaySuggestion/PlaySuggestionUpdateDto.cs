@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.DtoModels;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.DtoModels;
 
 public class PlaySuggestionUpdateDto
 {
@@ -16,11 +16,11 @@ public class PlaySuggestionUpdateDto
     public string CPUName { get; set; }
 
     [Required(ErrorMessage = "required | 请填写建议的内存大小")]
-    [Range(0, 64, ErrorMessage = "invaild | 非法参数: memorySize")]
+    [Range(0, 64, ErrorMessage = "invalid | 非法参数: memorySize")]
     public double MemorySize { get; set; }
 
     [Required(ErrorMessage = "required | 请填写建议的磁盘大小")]
-    [Range(0, 1000, ErrorMessage = "invaild | 非法参数: diskSize")]
+    [Range(0, 1000, ErrorMessage = "invalid | 非法参数: diskSize")]
     public double DiskSize { get; set; }
 
     [Required(ErrorMessage = "required | 请填写建议的显卡型号")]

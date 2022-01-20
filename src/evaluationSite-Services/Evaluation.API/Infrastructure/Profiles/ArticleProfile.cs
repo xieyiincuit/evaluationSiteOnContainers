@@ -1,8 +1,8 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Infrastructure.Profiles;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Infrastructure.Profiles;
 
-public class AriticleProfile : Profile
+public class ArticleProfile : Profile
 {
-    public AriticleProfile()
+    public ArticleProfile()
     {
         CreateMap<ArticleAddDto, EvaluationArticle>();
         CreateMap<ArticleUpdateDto, EvaluationArticle>();

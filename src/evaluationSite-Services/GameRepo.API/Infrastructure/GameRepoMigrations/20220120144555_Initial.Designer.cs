@@ -4,15 +4,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Infrastructure;
+using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Infrastructure;
 
 #nullable disable
 
 namespace GameRepo.API.Infrastructure.GameRepoMigrations
 {
     [DbContext(typeof(GameRepoContext))]
-    [Migration("20220120065003_gameIdInSuggestion")]
-    partial class gameIdInSuggestion
+    [Migration("20220120144555_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -21,7 +21,7 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
                 .HasAnnotation("ProductVersion", "6.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            modelBuilder.Entity("Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Models.GameCategory", b =>
+            modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameCategory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -48,7 +48,7 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
                     b.HasComment("游戏类型分类表");
                 });
 
-            modelBuilder.Entity("Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Models.GameCompany", b =>
+            modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameCompany", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -75,7 +75,7 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
                     b.HasComment("发行公司");
                 });
 
-            modelBuilder.Entity("Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Models.GameInfo", b =>
+            modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameInfo", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -160,7 +160,7 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
                     b.HasComment("游戏信息表");
                 });
 
-            modelBuilder.Entity("Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Models.GameInfoTag", b =>
+            modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameInfoTag", b =>
                 {
                     b.Property<int>("GameId")
                         .HasColumnType("int")
@@ -181,7 +181,7 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
                     b.HasComment("游戏与标签的多对多链接表");
                 });
 
-            modelBuilder.Entity("Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Models.GameTag", b =>
+            modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameTag", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -208,7 +208,7 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
                     b.HasComment("游戏标签表");
                 });
 
-            modelBuilder.Entity("Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Models.PlaySuggestion", b =>
+            modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.PlaySuggestion", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -257,19 +257,19 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
                     b.HasComment("游玩游戏配置建议表");
                 });
 
-            modelBuilder.Entity("Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Models.GameInfo", b =>
+            modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameInfo", b =>
                 {
-                    b.HasOne("Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Models.GameCategory", "GameCategory")
+                    b.HasOne("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameCategory", "GameCategory")
                         .WithMany()
                         .HasForeignKey("GameCategoryId");
 
-                    b.HasOne("Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Models.GameCompany", "GameCompany")
+                    b.HasOne("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameCompany", "GameCompany")
                         .WithMany()
                         .HasForeignKey("GameCompanyId");
 
-                    b.HasOne("Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Models.PlaySuggestion", "PlaySuggestion")
+                    b.HasOne("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.PlaySuggestion", "PlaySuggestion")
                         .WithOne("GameInfo")
-                        .HasForeignKey("Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Models.GameInfo", "PlaySuggestionId");
+                        .HasForeignKey("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameInfo", "PlaySuggestionId");
 
                     b.Navigation("GameCategory");
 
@@ -278,15 +278,15 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
                     b.Navigation("PlaySuggestion");
                 });
 
-            modelBuilder.Entity("Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Models.GameInfoTag", b =>
+            modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameInfoTag", b =>
                 {
-                    b.HasOne("Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Models.GameInfo", "GameInfo")
+                    b.HasOne("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameInfo", "GameInfo")
                         .WithMany("GameInfoTags")
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Models.GameTag", "GameTag")
+                    b.HasOne("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameTag", "GameTag")
                         .WithMany("GameInfoTags")
                         .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -297,17 +297,17 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
                     b.Navigation("GameTag");
                 });
 
-            modelBuilder.Entity("Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Models.GameInfo", b =>
+            modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameInfo", b =>
                 {
                     b.Navigation("GameInfoTags");
                 });
 
-            modelBuilder.Entity("Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Models.GameTag", b =>
+            modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameTag", b =>
                 {
                     b.Navigation("GameInfoTags");
                 });
 
-            modelBuilder.Entity("Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Models.PlaySuggestion", b =>
+            modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.PlaySuggestion", b =>
                 {
                     b.Navigation("GameInfo")
                         .IsRequired();

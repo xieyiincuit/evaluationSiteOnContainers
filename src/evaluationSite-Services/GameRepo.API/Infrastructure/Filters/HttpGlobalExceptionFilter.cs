@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Infrastructure.Filters;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Infrastructure.Filters;
 
 public class HttpGlobalExceptionFilter : IExceptionFilter
 {

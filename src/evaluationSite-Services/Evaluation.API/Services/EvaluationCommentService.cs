@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Services;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Services;
 
 public class EvaluationCommentService : IEvaluationComment
 {
@@ -32,7 +32,8 @@ public class EvaluationCommentService : IEvaluationComment
 
     public async Task<int> CountArticleRootCommentsAsync(int articleId)
     {
-        return await _evaluationContext.Comments.CountAsync(comment => comment.ArticleId == articleId && comment.IsReplay == null);
+        return await _evaluationContext.Comments.CountAsync(comment =>
+            comment.ArticleId == articleId && comment.IsReplay == null);
     }
 
     public Task<int> CountCommentChildrenCommentsAsync(int rootCommentId)
@@ -72,7 +73,8 @@ public class EvaluationCommentService : IEvaluationComment
 
     public async Task<List<EvaluationComment>> GetCommentReplyAsync(int pageIndex, int pageSize, int parentCommentId)
     {
-        var replies = await _evaluationContext.Comments.Where(rpl => rpl.IsReplay == true && rpl.RootCommentId == parentCommentId)
+        var replies = await _evaluationContext.Comments
+            .Where(rpl => rpl.IsReplay == true && rpl.RootCommentId == parentCommentId)
             .OrderBy(c => c.CreateTime)
             .Skip(pageSize * (pageIndex - 1))
             .Take(pageSize)

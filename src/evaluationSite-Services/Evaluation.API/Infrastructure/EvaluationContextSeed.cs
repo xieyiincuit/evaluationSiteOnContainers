@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Infrastructure;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Infrastructure;
 
 public class EvaluationContextSeed
 {
@@ -17,29 +17,29 @@ public class EvaluationContextSeed
             {
                 await context.Categories.AddRangeAsync(useCustomizationData
                     ? GetEvaluationCategoriesFromFile(contentRootPath, logger)
-                    : GetPreconfigurationEvaluationCategory());
+                    : GetPreConfigurationEvaluationCategory());
                 await context.SaveChangesAsync();
             }
 
             if (!context.Articles.Any())
             {
-                await context.Articles.AddRangeAsync(GetPreconfigurationEvaluationArticle());
+                await context.Articles.AddRangeAsync(GetPreConfigurationEvaluationArticle());
                 await context.SaveChangesAsync();
             }
 
             if (!context.Comments.Any())
             {
-                await context.Comments.AddRangeAsync(GetPreconfigurationEvaluationComment());
+                await context.Comments.AddRangeAsync(GetPreConfigurationEvaluationComment());
                 await context.SaveChangesAsync();
             }
         });
     }
 
-    private IEnumerable<EvaluationArticle> GetPreconfigurationEvaluationArticle()
+    private IEnumerable<EvaluationArticle> GetPreConfigurationEvaluationArticle()
     {
-        return new List<EvaluationArticle>()
+        return new List<EvaluationArticle>
         {
-            new EvaluationArticle()
+            new()
             {
                 UserId = 1,
                 Title = "《反恐精英—全球攻势》是全球最受欢迎的FPS游戏",
@@ -49,28 +49,28 @@ public class EvaluationContextSeed
                 Status = ArticleStatus.Normal,
                 CategoryTypeId = 2,
                 GameId = 1,
-                GameName = "CSGO",
+                GameName = "CSGO"
             },
-            new EvaluationArticle()
+            new()
             {
                 UserId = 2,
                 Title = "《双人成行》在2021年的Steam年度促销达到第一名",
-                Content = "Mei and Kodi, Do some grate job to maintain thire relationship",
+                Content = "Mei and Kodi, Do some grate job to maintain their relationship",
                 CreateTime = DateTime.Now.AddDays(1),
                 Description = "Sell Top 1  GAME IN Steam on 2021",
                 Status = ArticleStatus.Normal,
                 CategoryTypeId = 2,
                 GameId = 2,
-                GameName = "It Take two",
+                GameName = "It Take two"
             }
         };
     }
 
-    private IEnumerable<EvaluationComment> GetPreconfigurationEvaluationComment()
+    private IEnumerable<EvaluationComment> GetPreConfigurationEvaluationComment()
     {
-        return new List<EvaluationComment>()
+        return new List<EvaluationComment>
         {
-            new EvaluationComment()
+            new()
             {
                 Content = "我 5e 2800",
                 UserId = 1,
@@ -78,7 +78,7 @@ public class EvaluationContextSeed
                 CreateTime = DateTime.Now.AddHours(1),
                 ArticleId = 1
             },
-            new EvaluationComment()
+            new()
             {
                 Content = "我 b5 2100",
                 UserId = 2,
@@ -86,7 +86,7 @@ public class EvaluationContextSeed
                 CreateTime = DateTime.Now.AddMinutes(26),
                 ArticleId = 1
             },
-            new EvaluationComment()
+            new()
             {
                 Content = "我觉得确实是挺有意思的",
                 UserId = 1,
@@ -94,7 +94,7 @@ public class EvaluationContextSeed
                 CreateTime = DateTime.Now.AddMinutes(44),
                 ArticleId = 2
             },
-            new EvaluationComment()
+            new()
             {
                 Content = "正确的 正确的",
                 UserId = 2,
@@ -107,7 +107,7 @@ public class EvaluationContextSeed
                 ReplyNickName = "Zhousl",
                 RootCommentId = 3
             },
-            new EvaluationComment()
+            new()
             {
                 Content = "不是正确的 不是正确的",
                 UserId = 1,
@@ -117,10 +117,10 @@ public class EvaluationContextSeed
                 IsReplay = true,
                 ReplayCommentId = 4,
                 ReplyUserId = 1,
-                ReplyNickName = "Hanbaoyi",
+                ReplyNickName = "Hanby",
                 RootCommentId = 3
             },
-            new EvaluationComment()
+            new()
             {
                 Content = "我觉得Zhousl说的对",
                 UserId = 4,
@@ -132,63 +132,57 @@ public class EvaluationContextSeed
                 ReplyUserId = 1,
                 ReplyNickName = "Zhousl",
                 RootCommentId = 3
-            },
+            }
         };
     }
 
-    private IEnumerable<EvaluationCategory> GetEvaluationCategoriesFromFile(string contentRootPath, ILogger<EvaluationContextSeed> logger)
+    private IEnumerable<EvaluationCategory> GetEvaluationCategoriesFromFile(string contentRootPath,
+        ILogger<EvaluationContextSeed> logger)
     {
-        var csvFileEvaluationCategories = Path.Combine(contentRootPath, "Setup", "EvaulationCategories.csv");
+        var csvFileEvaluationCategories = Path.Combine(contentRootPath, "Setup", "EvaluationCategories.csv");
 
-        if (!File.Exists(csvFileEvaluationCategories))
-        {
-            return GetPreconfigurationEvaluationCategory();
-        }
+        if (!File.Exists(csvFileEvaluationCategories)) return GetPreConfigurationEvaluationCategory();
 
         string[] csvheaders;
         try
         {
-            string[] requiredHeaders = { "evaulationcategories" };
+            string[] requiredHeaders = {"evaluationcategories"};
             csvheaders = GetHeaders(csvFileEvaluationCategories, requiredHeaders);
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "EXCEPTION ERROR: {Message}", ex.Message);
-            return GetPreconfigurationEvaluationCategory();
+            return GetPreConfigurationEvaluationCategory();
         }
 
         return File.ReadAllLines(csvFileEvaluationCategories)
-                                    .Skip(1) // skip header row
-                                    .SelectTry(x => CreateEvaluationCategory(x))
-                                    .OnCaughtException(ex => { logger.LogError(ex, "EXCEPTION ERROR: {Message}", ex.Message); return null; })
-                                    .Where(x => x != null);
+            .Skip(1) // skip header row
+            .SelectTry(CreateEvaluationCategory)
+            .OnCaughtException(ex =>
+            {
+                logger.LogError(ex, "EXCEPTION ERROR: {Message}", ex.Message);
+                return null;
+            })
+            .Where(x => x != null);
     }
 
     private string[] GetHeaders(string csvfile, string[] requiredHeaders, string[] optionalHeaders = null)
     {
-        string[] csvheaders = File.ReadLines(csvfile).First().ToLowerInvariant().Split(',');
+        var csvheaders = File.ReadLines(csvfile).First().ToLowerInvariant().Split(',');
 
         if (csvheaders.Count() < requiredHeaders.Count())
-        {
-            throw new Exception($"requiredHeader count '{ requiredHeaders.Count()}' is bigger then csv header count '{csvheaders.Count()}' ");
-        }
+            throw new Exception(
+                $"requiredHeader count '{requiredHeaders.Count()}' is bigger then csv header count '{csvheaders.Count()}' ");
 
         if (optionalHeaders != null)
-        {
-            if (csvheaders.Count() > (requiredHeaders.Count() + optionalHeaders.Count()))
-            {
-                throw new Exception($"csv header count '{csvheaders.Count()}'  is larger then required '{requiredHeaders.Count()}' " +
+            if (csvheaders.Count() > requiredHeaders.Count() + optionalHeaders.Count())
+                throw new Exception(
+                    $"csv header count '{csvheaders.Count()}'  is larger then required '{requiredHeaders.Count()}' " +
                     $"and optional '{optionalHeaders.Count()}' headers count");
-            }
-        }
 
         foreach (var requiredHeader in requiredHeaders)
-        {
             if (!csvheaders.Contains(requiredHeader))
-            {
                 throw new Exception($"does not contain required header '{requiredHeader}'");
-            }
-        }
 
         return csvheaders;
     }
@@ -197,42 +191,38 @@ public class EvaluationContextSeed
     {
         category = category.Trim('"').Trim();
 
-        if (string.IsNullOrEmpty(category))
-        {
-            throw new Exception("evaluation category Name is empty");
-        }
+        if (string.IsNullOrEmpty(category)) throw new Exception("evaluation category Name is empty");
 
         return new EvaluationCategory
         {
-            CategoryType = category,
+            CategoryType = category
         };
     }
 
-    private IEnumerable<EvaluationCategory> GetPreconfigurationEvaluationCategory()
+    private IEnumerable<EvaluationCategory> GetPreConfigurationEvaluationCategory()
     {
-        return new List<EvaluationCategory>()
+        return new List<EvaluationCategory>
         {
-            new EvaluationCategory() { CategoryType = "单机" },
-            new EvaluationCategory() { CategoryType = "Xbox" },
-            new EvaluationCategory() { CategoryType = "独立" },
-            new EvaluationCategory() { CategoryType = "网游" },
-            new EvaluationCategory() { CategoryType = "手游" }
+            new() {CategoryType = "单机"},
+            new() {CategoryType = "Xbox"},
+            new() {CategoryType = "独立"},
+            new() {CategoryType = "网游"},
+            new() {CategoryType = "手游"}
         };
     }
 
     private AsyncRetryPolicy CreatePolicy(ILogger<EvaluationContextSeed> logger, string prefix, int retries = 3)
     {
-        return Policy.Handle<SqlException>().
-            WaitAndRetryAsync(
-                retryCount: retries,
-                sleepDurationProvider: retry => TimeSpan.FromSeconds(5),
-                onRetry: (exception, timeSpan, retry, ctx) =>
-                {
-                    //记录重试日志
-                    logger.LogWarning(exception, "[{prefix}] Exception {ExceptionType} with message {Message} detected on attempt {retry} of {retries}",
-                        prefix, exception.GetType().Name, exception.Message, retry, retries);
-                }
-            );
+        return Policy.Handle<SqlException>().WaitAndRetryAsync(
+            retries,
+            retry => TimeSpan.FromSeconds(5),
+            (exception, timeSpan, retry, ctx) =>
+            {
+                //记录重试日志
+                logger.LogWarning(exception,
+                    "[{prefix}] Exception {ExceptionType} with message {Message} detected on attempt {retry} of {retries}",
+                    prefix, exception.GetType().Name, exception.Message, retry, retries);
+            }
+        );
     }
 }
-

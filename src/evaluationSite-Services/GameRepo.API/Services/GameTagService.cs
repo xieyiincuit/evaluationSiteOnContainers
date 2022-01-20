@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Services;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Services;
 
 public class GameTagService : IGameTagService
 {

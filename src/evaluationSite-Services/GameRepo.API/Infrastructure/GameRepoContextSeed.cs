@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Infrastructure;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Infrastructure;
 
 public class GameRepoContextSeed
 {
@@ -54,7 +54,7 @@ public class GameRepoContextSeed
 
         return File.ReadAllLines(csvFileCatalogTypes)
                                     .Skip(1) // skip header row
-                                    .SelectTry(x => CreateCatalogType(x))
+                                    .SelectTry(CreateCatalogType)
                                     .OnCaughtException(ex => { logger.LogError(ex, "EXCEPTION ERROR: {Message}", ex.Message); return null; })
                                     .Where(x => x != null);
     }
@@ -102,7 +102,7 @@ public class GameRepoContextSeed
 
         return File.ReadAllLines(csvFileCatalogTypes)
                                     .Skip(1) // skip header row
-                                    .SelectTry(x => CreateGameTag(x))
+                                    .SelectTry(CreateGameTag)
                                     .OnCaughtException(ex => { logger.LogError(ex, "EXCEPTION ERROR: {Message}", ex.Message); return null; })
                                     .Where(x => x != null);
     }
@@ -149,7 +149,7 @@ public class GameRepoContextSeed
 
         return File.ReadAllLines(csvFileCatalogTypes)
                                     .Skip(1) // skip header row
-                                    .SelectTry(x => CreateGameCompany(x))
+                                    .SelectTry(CreateGameCompany)
                                     .OnCaughtException(ex => { logger.LogError(ex, "EXCEPTION ERROR: {Message}", ex.Message); return null; })
                                     .Where(x => x != null);
     }

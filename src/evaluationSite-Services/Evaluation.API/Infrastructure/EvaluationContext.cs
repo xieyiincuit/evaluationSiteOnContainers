@@ -1,11 +1,13 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Infrastructure;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Infrastructure;
 
 public class EvaluationContext : DbContext
 {
     //Print EF Query SQL ON Console
     public static readonly ILoggerFactory MyLoggerFactory = LoggerFactory.Create(builder => { builder.AddConsole(); });
 
-    public EvaluationContext(DbContextOptions<EvaluationContext> options) : base(options) { }
+    public EvaluationContext(DbContextOptions<EvaluationContext> options) : base(options)
+    {
+    }
 
     public DbSet<EvaluationArticle> Articles { get; set; }
     public DbSet<EvaluationCategory> Categories { get; set; }
@@ -31,14 +33,15 @@ public class EvaluationContextDesignFactory : IDesignTimeDbContextFactory<Evalua
 {
     public EvaluationContext CreateDbContext(string[] args)
     {
-        IConfigurationRoot configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
-                .Build();
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json")
+            .Build();
 
         var builder = new DbContextOptionsBuilder<EvaluationContext>();
         var connectionString = configuration.GetConnectionString("DataBaseConnectString");
-        builder.UseSqlServer(connectionString); ;
+        builder.UseSqlServer(connectionString);
+        ;
 
         return new EvaluationContext(builder.Options);
     }

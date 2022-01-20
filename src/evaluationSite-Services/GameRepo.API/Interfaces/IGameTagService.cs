@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Interfaces;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Interfaces;
 
 public interface IGameTagService
 {

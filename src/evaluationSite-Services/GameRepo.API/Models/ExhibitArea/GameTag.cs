@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Models;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models;
 
 [Table("game_tag")]
 [Comment("游戏标签表")]

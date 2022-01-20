@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Extensions;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Extensions;
 
 public static class ParameterValidateHelper
 {
@@ -6,7 +6,7 @@ public static class ParameterValidateHelper
     {
         if (pageIndex <= 0) return true;
 
-        var maxPageIndex = (int)Math.Ceiling(totalCount / (double)pageSize);
+        var maxPageIndex = (int) Math.Ceiling(totalCount / (double) pageSize);
         return pageIndex > maxPageIndex;
     }
 }

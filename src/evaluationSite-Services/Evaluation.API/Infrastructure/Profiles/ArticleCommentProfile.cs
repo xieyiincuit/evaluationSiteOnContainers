@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Infrastructure.Profiles;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Infrastructure.Profiles;
 
 public class ArticleCommentProfile : Profile
 {
@@ -9,6 +9,5 @@ public class ArticleCommentProfile : Profile
 
         CreateMap<ArticleCommentAddDto, EvaluationComment>();
         CreateMap<ReplyCommentAddDto, EvaluationComment>();
-
     }
 }

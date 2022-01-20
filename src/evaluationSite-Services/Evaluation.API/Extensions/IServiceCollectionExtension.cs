@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Extensions;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Extensions;
 
 public static class IServiceCollectionExtension
 {
@@ -10,7 +10,7 @@ public static class IServiceCollectionExtension
             {
                 Title = "evaluationSiteOnContainers - Evaluation HTTP API",
                 Version = "v1",
-                Description = "The Evalution Service HTTP API"
+                Description = "The Evaluation Service HTTP API"
             });
         });
 
@@ -21,53 +21,51 @@ public static class IServiceCollectionExtension
     {
         services.AddDbContext<EvaluationContext>(options =>
         {
-            string connectionString = configuration["ConnectionStrings:DataBaseConnectString"];
+            var connectionString = configuration["ConnectionStrings:DataBaseConnectString"];
             options.UseSqlServer(connectionString,
-                                   sqlServerOptionsAction: sqlOptions =>
-                                   {
-                                       sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
-                                       sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
-                                   });
+                sqlOptions =>
+                {
+                    sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
+                    sqlOptions.EnableRetryOnFailure(15, TimeSpan.FromSeconds(30), null);
+                });
         });
         return services;
     }
 
-    public static IServiceCollection AddCustomMVC(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddCustomMvc(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddControllers(options =>
-        {
-            options.Filters.Add(typeof(HttpGlobalExceptionFilter));
-        })
-        .AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = true)
-        .AddFluentValidation(options =>
-        {
-            //禁用框架的validator
-            options.DisableDataAnnotationsValidation = true;
-        });
+        services.AddControllers(options => { options.Filters.Add(typeof(HttpGlobalExceptionFilter)); })
+            .AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = true)
+            .AddFluentValidation(options =>
+            {
+                //禁用框架的validator
+                options.DisableDataAnnotationsValidation = true;
+            });
 
         services.AddCors(options =>
         {
             options.AddPolicy("CorsPolicy",
                 builder => builder
-                .SetIsOriginAllowed((host) => true)
-                .AllowAnyMethod()
-                .AllowAnyHeader()
-                .AllowCredentials());
+                    .SetIsOriginAllowed(host => true)
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials());
         });
 
         return services;
     }
 
-    public static IServiceCollection AddCustomHealthCheck(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddCustomHealthCheck(this IServiceCollection services,
+        IConfiguration configuration)
     {
         services.AddHealthChecks()
             .AddCheck("self", () => HealthCheckResult.Healthy())
             .AddSqlServer(
                 configuration["ConnectionStrings:DataBaseConnectString"],
-                healthQuery: "SELECT 1;",
-                name: "sql",
-                failureStatus: HealthStatus.Degraded,
-                tags: new string[] { "db", "sql", "sqlserver" });
+                "SELECT 1;",
+                "sql",
+                HealthStatus.Degraded,
+                new[] {"db", "sql", "sqlserver"});
         return services;
     }
 
@@ -87,7 +85,7 @@ public static class IServiceCollectionExtension
 
                 return new BadRequestObjectResult(problemDetails)
                 {
-                    ContentTypes = { "application/problem+json", "application/problem+xml" }
+                    ContentTypes = {"application/problem+json", "application/problem+xml"}
                 };
             };
         });
@@ -95,7 +93,8 @@ public static class IServiceCollectionExtension
         return services;
     }
 
-    public static IServiceCollection AddCustomServicesInjection(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddCustomServicesInjection(this IServiceCollection services,
+        IConfiguration configuration)
     {
         services.AddScoped<IEvaluationArticle, EvaluationArticleService>();
         services.AddScoped<IEvaluationCategory, EvaluationCategoryService>();

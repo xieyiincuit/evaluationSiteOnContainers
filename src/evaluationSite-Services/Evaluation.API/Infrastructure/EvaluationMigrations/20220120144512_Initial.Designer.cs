@@ -5,14 +5,14 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Infrastructure;
+using Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Infrastructure;
 
 #nullable disable
 
 namespace Evaluation.API.Infrastructure.EvaluationMigrations
 {
     [DbContext(typeof(EvaluationContext))]
-    [Migration("20220119041748_Initial")]
+    [Migration("20220120144512_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,7 +24,7 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Models.EvaluationArticle", b =>
+            modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Models.EvaluationArticle", b =>
                 {
                     b.Property<int>("ArticleId")
                         .ValueGeneratedOnAdd()
@@ -137,7 +137,7 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                     b.HasComment("游戏测评文章信息表");
                 });
 
-            modelBuilder.Entity("Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Models.EvaluationCategory", b =>
+            modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Models.EvaluationCategory", b =>
                 {
                     b.Property<int>("CategoryId")
                         .ValueGeneratedOnAdd()
@@ -168,7 +168,7 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                     b.HasComment("测评文章分类表");
                 });
 
-            modelBuilder.Entity("Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Models.EvaluationComment", b =>
+            modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Models.EvaluationComment", b =>
                 {
                     b.Property<int>("CommentId")
                         .ValueGeneratedOnAdd()
@@ -257,20 +257,20 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                     b.HasComment("测评文章评论表");
                 });
 
-            modelBuilder.Entity("Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Models.EvaluationArticle", b =>
+            modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Models.EvaluationArticle", b =>
                 {
-                    b.HasOne("Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Models.EvaluationCategory", "CategoryType")
+                    b.HasOne("Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Models.EvaluationCategory", "CategoryType")
                         .WithMany()
                         .HasForeignKey("CategoryTypeId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("foreignKey_type_article");
 
                     b.Navigation("CategoryType");
                 });
 
-            modelBuilder.Entity("Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Models.EvaluationComment", b =>
+            modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Models.EvaluationComment", b =>
                 {
-                    b.HasOne("Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Models.EvaluationArticle", "EvaluationArticle")
+                    b.HasOne("Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Models.EvaluationArticle", "EvaluationArticle")
                         .WithMany("EvaluationComments")
                         .HasForeignKey("ArticleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -280,7 +280,7 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                     b.Navigation("EvaluationArticle");
                 });
 
-            modelBuilder.Entity("Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Models.EvaluationArticle", b =>
+            modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Models.EvaluationArticle", b =>
                 {
                     b.Navigation("EvaluationComments");
                 });

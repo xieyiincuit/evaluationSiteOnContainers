@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Infrastructure.EntityConfigurations;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Infrastructure.EntityConfigurations;
 
 public class EvaluationCategoryEntityTypeConfiguration : IEntityTypeConfiguration<EvaluationCategory>
 {
@@ -28,4 +28,3 @@ public class EvaluationCategoryEntityTypeConfiguration : IEntityTypeConfiguratio
             .HasDefaultValue(false);
     }
 }
-

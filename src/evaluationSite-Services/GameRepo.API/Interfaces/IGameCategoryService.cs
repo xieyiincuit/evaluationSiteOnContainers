@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Interfaces;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Interfaces;
 
 public interface IGameCategoryService
 {
@@ -6,6 +6,6 @@ public interface IGameCategoryService
     Task<GameCategory> GetGameCategoryAsync(int categoryId);
     Task<int> CountCategoryAsync();
     Task<bool> AddCategoryAsync(GameCategory gameCategory);
-    Task<bool> UpdeteCategoryAsync(GameCategory gameCategory);
+    Task<bool> UpdateCategoryAsync(GameCategory gameCategory);
     Task<bool> DeleteCategoryAsync(int categoryId);
 }

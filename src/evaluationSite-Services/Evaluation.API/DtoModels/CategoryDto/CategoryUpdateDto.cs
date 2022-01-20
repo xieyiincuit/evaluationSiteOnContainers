@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.DtoModels;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.DtoModels;
 
 public class CategoryUpdateDto
 {

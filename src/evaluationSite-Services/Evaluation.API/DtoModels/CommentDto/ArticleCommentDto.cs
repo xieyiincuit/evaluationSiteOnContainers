@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.DtoModels;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.DtoModels;
 
 public class ArticleCommentDto
 {
@@ -12,5 +12,5 @@ public class ArticleCommentDto
     public int RepliesCount { get; set; }
 
     //Prevent null exception
-    public List<ReplyCommentDto> Replies { get; set; } = new List<ReplyCommentDto>();
+    public List<ReplyCommentDto> Replies { get; set; } = new();
 }

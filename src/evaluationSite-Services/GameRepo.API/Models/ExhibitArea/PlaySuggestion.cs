@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Models;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models;
 
 [Table("play_suggestion")]
 [Comment("游玩游戏配置建议表")]

@@ -1,13 +1,15 @@
+using ILogger = Serilog.ILogger;
+
 var configuration = GetConfiguration();
 
 Log.Logger = CreateSerilogLogger(configuration);
 
 try
 {
-    Log.Information("Configuring web host ({ApplicationContext})...", Program.AppName);
+    Log.Information("Configuring web host ({ApplicationContext})...", AppName);
     var host = BuildWebHost(configuration, args);
 
-    Log.Information("Applying migrations ({ApplicationContext})...", Program.AppName);
+    Log.Information("Applying migrations ({ApplicationContext})...", AppName);
     host.MigrateDbContext<EvaluationContext>((context, services) =>
     {
         var env = services.GetService<IWebHostEnvironment>();
@@ -15,16 +17,16 @@ try
         var logger = services.GetRequiredService<ILogger<EvaluationContextSeed>>();
         new EvaluationContextSeed().SeedAsync(context, logger, settings, env).Wait();
     });
-    Log.Information("Migrations Applyed ({ApplicationContext})...", Program.AppName);
+    Log.Information("Migrations Applied ({ApplicationContext})...", AppName);
 
-    Log.Information("Starting web host ({ApplicationContext})...", Program.AppName);
+    Log.Information("Starting web host ({ApplicationContext})...", AppName);
     host.Run();
 
     return 0;
 }
 catch (Exception ex)
 {
-    Log.Fatal(ex, "Program terminated unexpectedly ({ApplicationContext})!", Program.AppName);
+    Log.Fatal(ex, "Program terminated unexpectedly ({ApplicationContext})!", AppName);
     return 1;
 }
 finally
@@ -45,12 +47,12 @@ IWebHost BuildWebHost(IConfiguration configuration, string[] args)
 }
 
 //Set Logging Middleware
-Serilog.ILogger CreateSerilogLogger(IConfiguration configuration)
+ILogger CreateSerilogLogger(IConfiguration configuration)
 {
     return new LoggerConfiguration()
         .MinimumLevel.Verbose()
         .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
-        .Enrich.WithProperty("ApplicationContext", Program.AppName)
+        .Enrich.WithProperty("ApplicationContext", AppName)
         .Enrich.FromLogContext()
         .WriteTo.Console()
         .ReadFrom.Configuration(configuration)
@@ -61,7 +63,7 @@ IConfiguration GetConfiguration()
 {
     var builder = new ConfigurationBuilder()
         .SetBasePath(Directory.GetCurrentDirectory())
-        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+        .AddJsonFile("appsettings.json", false, true)
         .AddEnvironmentVariables();
 
     var config = builder.Build();
@@ -73,4 +75,3 @@ public partial class Program
     public static string Namespace = typeof(Startup).Namespace;
     public static string AppName = Namespace.Substring(Namespace.LastIndexOf('.', Namespace.LastIndexOf('.') - 1) + 1);
 }
-

@@ -1,6 +1,6 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Infrastructure.EntityConfigurations;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Infrastructure.EntityConfigurations;
 
-class EvaluationArticleEntityTypeConfiguration : IEntityTypeConfiguration<EvaluationArticle>
+internal class EvaluationArticleEntityTypeConfiguration : IEntityTypeConfiguration<EvaluationArticle>
 {
     public void Configure(EntityTypeBuilder<EvaluationArticle> builder)
     {
@@ -27,16 +27,16 @@ class EvaluationArticleEntityTypeConfiguration : IEntityTypeConfiguration<Evalua
             .HasMaxLength(50);
 
         builder.Property(x => x.ArticleImage)
-          .HasColumnName("article_image")
-          .HasComment("内容Top呈现图")
-          .HasMaxLength(200)
-          .IsRequired(false);
+            .HasColumnName("article_image")
+            .HasComment("内容Top呈现图")
+            .HasMaxLength(200)
+            .IsRequired(false);
 
         builder.Property(x => x.DesciptionImage)
-         .HasColumnName("desciption_image")
-         .HasComment("展示略缩图")
-         .HasMaxLength(200)
-         .IsRequired(false);
+            .HasColumnName("desciption_image")
+            .HasComment("展示略缩图")
+            .HasMaxLength(200)
+            .IsRequired(false);
 
         builder.Property(x => x.Content)
             .HasColumnName("content")
@@ -77,10 +77,10 @@ class EvaluationArticleEntityTypeConfiguration : IEntityTypeConfiguration<Evalua
             .IsRequired(false);
 
         builder.Property(x => x.Description)
-           .HasColumnName("description")
-           .HasComment("文章测评简介")
-           .IsRequired(false)
-           .HasMaxLength(100);
+            .HasColumnName("description")
+            .HasComment("文章测评简介")
+            .IsRequired(false)
+            .HasMaxLength(100);
 
         builder.Property(x => x.GameId)
             .HasColumnName("game_id")

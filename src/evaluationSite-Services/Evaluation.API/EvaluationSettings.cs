@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API;
 
 public class EvaluationSettings
 {

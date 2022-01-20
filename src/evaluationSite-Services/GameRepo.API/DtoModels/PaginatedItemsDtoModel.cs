@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.DtoModels;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.DtoModels;
 
 public class PaginatedItemsDtoModel<TEntity> where TEntity : class
 {

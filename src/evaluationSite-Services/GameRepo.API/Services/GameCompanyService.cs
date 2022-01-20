@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Services;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Services;
 
 public class GameCompanyService : IGameCompanyService
 {
@@ -45,7 +45,7 @@ public class GameCompanyService : IGameCompanyService
         return company;
     }
 
-    public async Task<bool> UpdeteGameCompanyAsync(GameCompany gameCompany)
+    public async Task<bool> UpdateGameCompanyAsync(GameCompany gameCompany)
     {
         _repoContext.GameCompanies.Update(gameCompany);
         return await _repoContext.SaveChangesAsync() > 0;

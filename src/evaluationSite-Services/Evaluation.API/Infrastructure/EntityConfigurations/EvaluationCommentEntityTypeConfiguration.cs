@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Infrastructure.EntityConfigurations;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Infrastructure.EntityConfigurations;
 
 public class EvaluationCommentEntityTypeConfiguration : IEntityTypeConfiguration<EvaluationComment>
 {
@@ -28,19 +28,19 @@ public class EvaluationCommentEntityTypeConfiguration : IEntityTypeConfiguration
             .IsRequired();
 
         builder.Property(e => e.UserId)
-           .HasColumnName("user_id")
-           .HasComment("用户id")
-           .IsRequired();
+            .HasColumnName("user_id")
+            .HasComment("用户id")
+            .IsRequired();
 
         builder.Property(e => e.NickName)
-          .HasColumnName("nick_name")
-          .HasComment("用户名")
-          .IsRequired();
+            .HasColumnName("nick_name")
+            .HasComment("用户名")
+            .IsRequired();
 
         builder.Property(e => e.Avatar)
-          .HasColumnName("avatar")
-          .HasComment("用户头像")
-          .IsRequired(false);
+            .HasColumnName("avatar")
+            .HasComment("用户头像")
+            .IsRequired(false);
 
         builder.Property(e => e.IsDeleted)
             .HasColumnName("is_deleted")
@@ -58,29 +58,29 @@ public class EvaluationCommentEntityTypeConfiguration : IEntityTypeConfiguration
             .IsRequired(false);
 
         builder.Property(e => e.ReplayCommentId)
-           .HasColumnName("replay_comment_id")
-           .HasComment("回复的评论id")
-           .IsRequired(false);
+            .HasColumnName("replay_comment_id")
+            .HasComment("回复的评论id")
+            .IsRequired(false);
 
         builder.Property(e => e.ReplyUserId)
-          .HasColumnName("replay_userid")
-          .HasComment("回复的玩家Id")
-          .IsRequired(false);
+            .HasColumnName("replay_userid")
+            .HasComment("回复的玩家Id")
+            .IsRequired(false);
 
         builder.Property(e => e.ReplyNickName)
-          .HasColumnName("replay_nickname")
-          .HasComment("回复的玩家名")
-          .IsRequired(false);
+            .HasColumnName("replay_nickname")
+            .HasComment("回复的玩家名")
+            .IsRequired(false);
 
         builder.Property(e => e.RootCommentId)
-          .HasColumnName("root_comment_id")
-          .HasComment("回复评论属于哪个主评论")
-          .IsRequired(false);
+            .HasColumnName("root_comment_id")
+            .HasComment("回复评论属于哪个主评论")
+            .IsRequired(false);
 
         builder.Property(e => e.ArticleId)
-          .HasColumnName("article_id")
-          .HasComment("评论对应的测评id")
-          .IsRequired();
+            .HasColumnName("article_id")
+            .HasComment("评论对应的测评id")
+            .IsRequired();
 
         //设置外键约束
         builder.HasOne(e => e.EvaluationArticle)
@@ -90,4 +90,3 @@ public class EvaluationCommentEntityTypeConfiguration : IEntityTypeConfiguration
             .OnDelete(DeleteBehavior.Cascade);
     }
 }
-

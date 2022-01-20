@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Interfaces;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Interfaces;
 
 public interface IEvaluationComment
 {

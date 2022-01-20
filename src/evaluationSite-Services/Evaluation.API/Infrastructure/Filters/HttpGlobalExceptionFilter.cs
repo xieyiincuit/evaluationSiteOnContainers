@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Infrastructure.Filters;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Infrastructure.Filters;
 
 public class HttpGlobalExceptionFilter : IExceptionFilter
 {
@@ -19,33 +19,31 @@ public class HttpGlobalExceptionFilter : IExceptionFilter
 
         if (context.Exception.GetType() == typeof(EvaluationDomainException))
         {
-            var problemDetails = new ValidationProblemDetails()
+            var problemDetails = new ValidationProblemDetails
             {
                 Instance = context.HttpContext.Request.Path,
                 Status = StatusCodes.Status400BadRequest,
                 Detail = "Please refer to the errors property for additional details."
             };
 
-            problemDetails.Errors.Add("DomainValidations", new string[] { context.Exception.Message.ToString() });
+            problemDetails.Errors.Add("DomainValidations", new[] {context.Exception.Message});
 
             context.Result = new BadRequestObjectResult(problemDetails);
-            context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            context.HttpContext.Response.StatusCode = (int) HttpStatusCode.BadRequest;
         }
         else
         {
             var json = new JsonErrorResponse
             {
-                Messages = new[] { "An error ocurred." }
+                Messages = new[] {"An error occurred."}
             };
 
-            if (env.IsDevelopment())
-            {
-                json.DeveloperMessage = context.Exception;
-            }
+            if (env.IsDevelopment()) json.DeveloperMessage = context.Exception;
 
             context.Result = new InternalServerErrorObjectResult(json);
-            context.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            context.HttpContext.Response.StatusCode = (int) HttpStatusCode.InternalServerError;
         }
+
         context.ExceptionHandled = true;
     }
 

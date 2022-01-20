@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Extensions;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Extensions;
 
 public static class WebHostExtensions
 {

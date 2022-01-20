@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Infrastructure.ActionResults;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Infrastructure.ActionResults;
 
 public class InternalServerErrorObjectResult : ObjectResult
 {

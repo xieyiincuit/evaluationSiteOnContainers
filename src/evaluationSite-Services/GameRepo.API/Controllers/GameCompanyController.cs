@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.GameRepo.API.Controllers;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Controllers;
 
 [ApiController]
 [Route("api/v1/g")]
@@ -79,7 +79,7 @@ public class GameCompanyController : ControllerBase
         if (companyUpdateDto == null) return BadRequest();
 
         var entityToUpdate = _mapper.Map<GameCompany>(companyUpdateDto);
-        await _companyService.UpdeteGameCompanyAsync(entityToUpdate);
+        await _companyService.UpdateGameCompanyAsync(entityToUpdate);
         return NoContent();
     }
 }

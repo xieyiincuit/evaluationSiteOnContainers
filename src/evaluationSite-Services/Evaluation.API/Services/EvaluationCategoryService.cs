@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.Services;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Services;
 
 public class EvaluationCategoryService : IEvaluationCategory
 {

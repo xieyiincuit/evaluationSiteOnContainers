@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evalutionSiteOnContainers.Services.Evaluation.API.DtoModels;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.DtoModels;
 
 public class ReplyCommentDto
 {
@@ -11,17 +11,17 @@ public class ReplyCommentDto
     public DateTime CreateTime { get; set; }
 
     /// <summary>
-    /// 回复的评论Id
+    ///     回复的评论Id
     /// </summary>
     public int ReplyCommentId { get; set; }
 
     /// <summary>
-    /// 回复的用户名
+    ///     回复的用户名
     /// </summary>
     public string ReplyNickName { get; set; }
 
     /// <summary>
-    /// 每个子评论所属于的唯一父评论
+    ///     每个子评论所属于的唯一父评论
     /// </summary>
     public int RootCommentId { get; set; }
 }
