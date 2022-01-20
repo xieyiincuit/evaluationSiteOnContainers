@@ -39,6 +39,7 @@ public class PlaySuggestionService : IPlaySuggestionService
     public async Task<List<PlaySuggestion>> GetPlaySuggestionsAsync(int pageIndex, int pageSize)
     {
         var suggestions = await _repoContext.PlaySuggestions
+            .OrderBy(x => x.Id)
             .Skip((pageIndex - 1) * pageSize)
             .Take(pageSize)
             .AsNoTracking()

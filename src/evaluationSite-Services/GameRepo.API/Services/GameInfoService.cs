@@ -28,10 +28,13 @@ public class GameInfoService : IGameInfoService
     public async Task<List<GameInfo>> GetGameInfosAsync(int pageIndex, int pageSize)
     {
         return await _repoContext.GameInfos
-             .AsNoTracking()
-             .Skip((pageIndex - 1) * pageSize)
-             .Take(pageSize)
-             .ToListAsync();
+            .Include(info => info.GameCategory)
+            .Include(info => info.GameCompany)
+            .OrderBy(x => x.Name)
+            .AsNoTracking()
+            .Skip((pageIndex - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
     }
 
     public async Task<bool> RemoveGameInfoAsync(int gameId)

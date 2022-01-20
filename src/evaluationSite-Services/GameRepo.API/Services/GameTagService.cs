@@ -31,6 +31,7 @@ public class GameTagService : IGameTagService
     public async Task<List<GameCategory>> GetGameCategoriesAsync()
     {
         var categoies = await _repoContext.GameCategories
+            .OrderBy(x => x.CategoryName)
             .AsNoTracking()
             .ToListAsync();
         return categoies;
