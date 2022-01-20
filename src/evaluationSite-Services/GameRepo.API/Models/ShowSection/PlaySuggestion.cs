@@ -30,6 +30,8 @@ public class PlaySuggestion
 
     //一对一关系建立
     [ForeignKey("game_id"), Comment("游戏外键id")]
+    public int GameId { get; set; }
+
     [JsonIgnore]
     public GameInfo GameInfo { get; set; }
 

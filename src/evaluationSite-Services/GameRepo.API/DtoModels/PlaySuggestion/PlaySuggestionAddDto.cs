@@ -22,4 +22,8 @@ public class PlaySuggestionAddDto
     [Required(ErrorMessage = "required | 请填写建议的显卡型号")]
     [MaxLength(50, ErrorMessage = "length | 不能超过50个字符")]
     public string GraphicsCard { get; set; }
+
+    [Required(ErrorMessage = "required | gameid loss")]
+    [Range(1, int.MaxValue, ErrorMessage = "invalid | 非法参数: gameId")]
+    public int GameId { get; set; }
 }

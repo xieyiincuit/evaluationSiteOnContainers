@@ -30,11 +30,11 @@ public class PlaySuggestionController : ControllerBase
         return Ok(model);
     }
 
-    [HttpGet("suggestion/{suggestionId:int}", Name = nameof(GetSuggestionAsync))]
+    [HttpGet("suggestion/{suggestionId:int}", Name = nameof(GetSuggestionByIdAsync))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(PlaySuggestion), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> GetSuggestionAsync(int suggestionId)
+    public async Task<IActionResult> GetSuggestionByIdAsync(int suggestionId)
     {
         if (suggestionId <= 0 || suggestionId >= int.MaxValue) return BadRequest();
 
@@ -42,6 +42,32 @@ public class PlaySuggestionController : ControllerBase
 
         if (suggestion == null) return NotFound();
         return Ok(suggestion);
+    }
+
+    [HttpPost]
+    [Route("suggestion")]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.Created)]
+    public async Task<IActionResult> CreateSuggestionAsync([FromBody] PlaySuggestionAddDto suggestionAddDto)
+    {
+        if (suggestionAddDto == null) return BadRequest();
+
+        var entityToAdd = _mapper.Map<PlaySuggestion>(suggestionAddDto);
+        await _suggestionService.AddPlaySuggestionAsync(entityToAdd);
+        return CreatedAtRoute(nameof(GetSuggestionByIdAsync), new { suggestionId = entityToAdd.Id }, null);
+    }
+
+    [HttpPut]
+    [Route("suggestion")]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    public async Task<IActionResult> UpdateSuggestionAsync([FromBody] PlaySuggestionUpdateDto suggestionUpdateDto)
+    {
+        if (suggestionUpdateDto == null) return BadRequest();
+
+        var entityToUpdate = _mapper.Map<PlaySuggestion>(suggestionUpdateDto);
+        await _suggestionService.UpdatePlaySuggestionAsync(entityToUpdate);
+        return NoContent();
     }
 
     [HttpDelete]
@@ -54,18 +80,5 @@ public class PlaySuggestionController : ControllerBase
 
         var response = await _suggestionService.DeletePlaySuggestionAsync(id);
         return response == true ? NoContent() : NotFound();
-    }
-
-    [HttpPut]
-    [Route("suggestion")]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.NoContent)]
-    public async Task<IActionResult> UpdateCategoryAsync([FromBody] PlaySuggestionUpdateDto suggestionUpdateDto)
-    {
-        if (suggestionUpdateDto == null) return BadRequest();
-
-        var entityToUpdate = _mapper.Map<PlaySuggestion>(suggestionUpdateDto);
-        await _suggestionService.UpdatePlaySuggestionAsync(entityToUpdate);
-        return NoContent();
     }
 }
