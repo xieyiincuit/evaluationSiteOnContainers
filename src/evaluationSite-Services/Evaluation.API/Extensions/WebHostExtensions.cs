@@ -14,7 +14,7 @@ public static class WebHostExtensions
         {
             logger.LogInformation("Migrating database associated with context {DbContextName}", typeof(TContext).Name);
 
-            var retry = Policy.Handle<SqlException>()
+            var retry = Policy.Handle<MySqlException>()
                 .WaitAndRetry(new[]
                 {
                     TimeSpan.FromSeconds(3),

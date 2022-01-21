@@ -2,7 +2,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Infrastructure;
@@ -12,7 +11,7 @@ using Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Infrastructur
 namespace Evaluation.API.Infrastructure.EvaluationMigrations
 {
     [DbContext(typeof(EvaluationContext))]
-    [Migration("20220120144512_Initial")]
+    [Migration("20220121074830_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,9 +19,7 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "6.0.1")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
-
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+                .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Models.EvaluationArticle", b =>
                 {
@@ -32,11 +29,9 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                         .HasColumnName("article_id")
                         .HasComment("主键");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ArticleId"), 1L, 1);
-
                     b.Property<string>("ArticleImage")
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)")
+                        .HasColumnType("varchar(200)")
                         .HasColumnName("article_image")
                         .HasComment("内容Top呈现图");
 
@@ -54,24 +49,24 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("longtext")
                         .HasColumnName("content")
                         .HasComment("测评文章内容");
 
                     b.Property<DateTime>("CreateTime")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("datetime(6)")
                         .HasColumnName("create_time")
                         .HasComment("测评内容创建时间");
 
                     b.Property<string>("DesciptionImage")
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)")
+                        .HasColumnType("varchar(200)")
                         .HasColumnName("desciption_image")
                         .HasComment("展示略缩图");
 
                     b.Property<string>("Description")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("varchar(100)")
                         .HasColumnName("description")
                         .HasComment("文章测评简介");
 
@@ -83,12 +78,12 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                     b.Property<string>("GameName")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("varchar(100)")
                         .HasColumnName("game_name")
                         .HasComment("测评内容关联游戏名");
 
                     b.Property<bool?>("IsDeleted")
-                        .HasColumnType("bit")
+                        .HasColumnType("tinyint(1)")
                         .HasColumnName("is_deleted")
                         .HasComment("逻辑删除");
 
@@ -114,12 +109,12 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                        .HasColumnType("varchar(50)")
                         .HasColumnName("title")
                         .HasComment("测评文章标题");
 
                     b.Property<DateTime?>("UpdateTime")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("datetime(6)")
                         .HasColumnName("update_time")
                         .HasComment("测评内容更新时间");
 
@@ -145,18 +140,16 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                         .HasColumnName("category_id")
                         .HasComment("测评类别主键");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoryId"), 1L, 1);
-
                     b.Property<string>("CategoryType")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)")
+                        .HasColumnType("varchar(10)")
                         .HasColumnName("category_type")
                         .HasComment("测评类别名");
 
                     b.Property<bool?>("IsDeleted")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
+                        .HasColumnType("tinyint(1)")
                         .HasDefaultValue(false)
                         .HasColumnName("is_deleted")
                         .HasComment("逻辑删除");
@@ -176,43 +169,41 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                         .HasColumnName("comment_id")
                         .HasComment("评论主键");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CommentId"), 1L, 1);
-
                     b.Property<int>("ArticleId")
                         .HasColumnType("int")
                         .HasColumnName("article_id")
                         .HasComment("评论对应的测评id");
 
                     b.Property<string>("Avatar")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("longtext")
                         .HasColumnName("avatar")
                         .HasComment("用户头像");
 
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)")
+                        .HasColumnType("varchar(500)")
                         .HasColumnName("content")
                         .HasComment("评论内容");
 
                     b.Property<DateTime>("CreateTime")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("datetime(6)")
                         .HasColumnName("create_time")
                         .HasComment("评论时间");
 
                     b.Property<bool?>("IsDeleted")
-                        .HasColumnType("bit")
+                        .HasColumnType("tinyint(1)")
                         .HasColumnName("is_deleted")
                         .HasComment("逻辑删除");
 
                     b.Property<bool?>("IsReplay")
-                        .HasColumnType("bit")
+                        .HasColumnType("tinyint(1)")
                         .HasColumnName("is_replay")
                         .HasComment("该评论是否为回复");
 
                     b.Property<string>("NickName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("longtext")
                         .HasColumnName("nick_name")
                         .HasComment("用户名");
 
@@ -222,7 +213,7 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                         .HasComment("回复的评论id");
 
                     b.Property<string>("ReplyNickName")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("longtext")
                         .HasColumnName("replay_nickname")
                         .HasComment("回复的玩家名");
 

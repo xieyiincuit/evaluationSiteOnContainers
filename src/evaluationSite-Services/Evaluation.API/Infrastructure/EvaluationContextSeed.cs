@@ -213,7 +213,7 @@ public class EvaluationContextSeed
 
     private AsyncRetryPolicy CreatePolicy(ILogger<EvaluationContextSeed> logger, string prefix, int retries = 3)
     {
-        return Policy.Handle<SqlException>().WaitAndRetryAsync(
+        return Policy.Handle<MySqlException>().WaitAndRetryAsync(
             retries,
             retry => TimeSpan.FromSeconds(5),
             (exception, timeSpan, retry, ctx) =>

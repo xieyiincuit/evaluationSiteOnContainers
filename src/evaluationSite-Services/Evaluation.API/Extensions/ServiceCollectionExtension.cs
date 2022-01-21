@@ -1,6 +1,6 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Extensions;
 
-public static class IServiceCollectionExtension
+public static class ServiceCollectionExtension
 {
     public static IServiceCollection AddCustomSwagger(this IServiceCollection services, IConfiguration configuration)
     {
@@ -19,16 +19,21 @@ public static class IServiceCollectionExtension
 
     public static IServiceCollection AddCustomDbContext(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<EvaluationContext>(options =>
-        {
-            var connectionString = configuration["ConnectionStrings:DataBaseConnectString"];
-            options.UseSqlServer(connectionString,
-                sqlOptions =>
-                {
-                    sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
-                    sqlOptions.EnableRetryOnFailure(15, TimeSpan.FromSeconds(30), null);
-                });
-        });
+        var serverVersion = new MySqlServerVersion(new Version(8, 0, 27));
+        var connectionString = configuration.GetConnectionString("DataBaseConnectString");
+        services.AddDbContext<EvaluationContext>(
+            dbContextOptions => dbContextOptions
+                .UseMySql(connectionString, serverVersion,
+                    mySqlOptionsAction: sqlOptions =>
+                    {
+                        sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
+                    })
+                // The following three options help with debugging, but should
+                // be changed or removed for production.
+                .LogTo(Console.WriteLine, LogLevel.Information)
+                .EnableSensitiveDataLogging()
+                .EnableDetailedErrors()
+        );
         return services;
     }
 
@@ -60,12 +65,11 @@ public static class IServiceCollectionExtension
     {
         services.AddHealthChecks()
             .AddCheck("self", () => HealthCheckResult.Healthy())
-            .AddSqlServer(
+            .AddMySql(
                 configuration["ConnectionStrings:DataBaseConnectString"],
-                "SELECT 1;",
-                "sql",
+                "mysql",
                 HealthStatus.Degraded,
-                new[] {"db", "sql", "sqlserver"});
+                new[] {"db", "sql", "mysql"});
         return services;
     }
 

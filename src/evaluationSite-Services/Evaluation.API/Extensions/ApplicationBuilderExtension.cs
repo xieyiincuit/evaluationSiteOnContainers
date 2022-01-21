@@ -1,6 +1,6 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Extensions;
 
-public static class IApplicationBuilderExtension
+public static class ApplicationBuilderExtension
 {
     public static IApplicationBuilder UseBundleSwagger(this IApplicationBuilder builder, IConfiguration configuration)
     {

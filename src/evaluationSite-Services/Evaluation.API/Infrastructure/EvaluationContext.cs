@@ -40,8 +40,8 @@ public class EvaluationContextDesignFactory : IDesignTimeDbContextFactory<Evalua
 
         var builder = new DbContextOptionsBuilder<EvaluationContext>();
         var connectionString = configuration.GetConnectionString("DataBaseConnectString");
-        builder.UseSqlServer(connectionString);
-        ;
+        var serverVersion = new MySqlServerVersion(new Version(8, 0, 27));
+        builder.UseMySql(connectionString, serverVersion);
 
         return new EvaluationContext(builder.Options);
     }
