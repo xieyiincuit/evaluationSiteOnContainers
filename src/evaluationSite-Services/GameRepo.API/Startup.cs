@@ -24,37 +24,42 @@ public class Startup
                 Description = "The Control of GameInfo Service HTTP API"
             });
         });
-        #endregion
 
         services.AddCors(options =>
         {
             options.AddPolicy("CorsPolicy",
                 builder => builder
-                .SetIsOriginAllowed((host) => true)
-                .AllowAnyMethod()
-                .AllowAnyHeader()
-                .AllowCredentials());
+                    .SetIsOriginAllowed((host) => true)
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials());
         });
 
-        #region DbSettings
-        var serverVersion = new MySqlServerVersion(new Version(8, 0, 27));
-        var connectionString = Configuration.GetConnectionString("DataBaseConnectString");
-        services.AddDbContext<GameRepoContext>(
-            dbContextOptions => dbContextOptions
-                .UseMySql(connectionString, serverVersion,
-                            mySqlOptionsAction: sqlOptions =>
-                            {
-                                sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
-                            })
-                // The following three options help with debugging, but should
-                // be changed or removed for production.
-                .LogTo(Console.WriteLine, LogLevel.Information)
-                .EnableSensitiveDataLogging()
-                .EnableDetailedErrors()
-        );
         #endregion
 
-        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+        #region GameRepoDbSettings
+
+        {
+            var serverVersion = new MySqlServerVersion(new Version(8, 0, 27));
+            var connectionString = Configuration.GetConnectionString("DataBaseConnectString");
+            services.AddDbContext<GameRepoContext>(
+                dbContextOptions => dbContextOptions
+                    .UseMySql(connectionString, serverVersion,
+                        mySqlOptionsAction: sqlOptions =>
+                        {
+                            sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
+                        })
+                    // The following three options help with debugging, but should
+                    // be changed or removed for production.
+                    .LogTo(Console.WriteLine, LogLevel.Information)
+                    .EnableSensitiveDataLogging()
+                    .EnableDetailedErrors()
+            );
+        }
+
+        #endregion
+
+        #region GameRepoServices
 
         services.AddScoped<IGameCategoryService, GameCategoryService>();
         services.AddScoped<IGameTagService, GameTagService>();
@@ -62,6 +67,9 @@ public class Startup
         services.AddScoped<IGameInfoService, GameInfoService>();
         services.AddScoped<IPlaySuggestionService, PlaySuggestionService>();
 
+        #endregion
+
+        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         //use autofac
         var container = new ContainerBuilder();
         container.Populate(services);
@@ -80,7 +88,9 @@ public class Startup
         app.UseSwagger()
            .UseSwaggerUI(setup =>
            {
-               setup.SwaggerEndpoint($"{ (!string.IsNullOrEmpty(pathBase) ? pathBase : string.Empty) }/swagger/v1/swagger.json", "GameRepo.API V1");
+               setup.SwaggerEndpoint(
+                   $"{(!string.IsNullOrEmpty(pathBase) ? pathBase : string.Empty)}/swagger/v1/swagger.json",
+                   "GameRepo.API V1");
            });
 
         app.UseSerilogRequestLogging();
