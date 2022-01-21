@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.EventBus.Abstractions;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.EventBusBase.Abstractions;
 
 public interface IEventBus
 {

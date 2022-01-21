@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.EventBus;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.EventBusBase;
 
 /// <summary>
 /// 使用内存进行存储事件源和事件处理的映射字典

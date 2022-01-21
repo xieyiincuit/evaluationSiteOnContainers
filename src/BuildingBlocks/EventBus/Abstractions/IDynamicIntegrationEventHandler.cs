@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.EventBus.Abstractions;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.EventBusBase.Abstractions;
 
 /// <summary>
 /// 动态类型的事件处理接口

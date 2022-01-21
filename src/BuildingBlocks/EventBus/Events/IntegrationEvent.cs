@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.EventBus.Events;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.EventBusBase.Events;
 
 /// <summary>
 /// 事件源基类

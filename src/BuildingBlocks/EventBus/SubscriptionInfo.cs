@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.EventBus;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.EventBusBase;
 
 public partial class InMemoryEventBusSubscriptionsManager : IEventBusSubscriptionsManager
 {
