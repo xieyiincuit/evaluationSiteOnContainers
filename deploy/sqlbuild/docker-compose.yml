@@ -1,0 +1,23 @@
+version: '3.9'
+services:
+  db_evaluation:
+    image: mysql:latest
+    volumes:
+      - mysql_evaluation:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=Zhoushan!1n
+    ports:
+      - "3306:3306"
+
+  db_gamerepo:
+    image: mysql:latest
+    volumes:
+      - mysql_gamerepo:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=Gam2Rep0!!
+    ports:
+      - "3307:3306"
+
+volumes:
+  mysql_gamerepo:
+  mysql_evaluation:
