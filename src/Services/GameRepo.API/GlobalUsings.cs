@@ -16,6 +16,8 @@ global using System.ComponentModel.DataAnnotations;
 global using System.ComponentModel.DataAnnotations.Schema;
 global using System.Net;
 global using System.Text.Json.Serialization;
+global using System.Reflection;
+global using Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.IntegrationEventLogEF;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.DtoModels;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Extensions;

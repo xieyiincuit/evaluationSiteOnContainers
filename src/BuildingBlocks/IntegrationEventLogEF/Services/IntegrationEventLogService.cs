@@ -12,7 +12,7 @@ public class IntegrationEventLogService : IIntegrationEventLogService, IDisposab
         _dbConnection = dbConnection ?? throw new ArgumentNullException(nameof(dbConnection));
         _integrationEventLogContext = new IntegrationEventLogContext(
             new DbContextOptionsBuilder<IntegrationEventLogContext>()
-                .UseSqlServer(_dbConnection)
+                .UseMySql(_dbConnection, new MySqlServerVersion(new Version(8, 0, 27)))
                 .Options);
 
         //利用反射获取所有的集成事件

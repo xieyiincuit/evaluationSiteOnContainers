@@ -37,27 +37,52 @@ public class Startup
 
         #endregion
 
-        #region GameRepoDbSettings
+        #region DbSettings
 
         {
             var serverVersion = new MySqlServerVersion(new Version(8, 0, 27));
             var connectionString = Configuration.GetConnectionString("DataBaseConnectString");
+
             services.AddDbContext<GameRepoContext>(
-                dbContextOptions => dbContextOptions
-                    .UseMySql(connectionString, serverVersion,
-                        mySqlOptionsAction: sqlOptions =>
+                dbContextOptions =>
+                {
+                    dbContextOptions.UseMySql(connectionString, serverVersion,
+                        sqlOptions =>
                         {
-                            sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
-                        })
-                    // The following three options help with debugging, but should
-                    // be changed or removed for production.
-                    .LogTo(Console.WriteLine, LogLevel.Information)
-                    .EnableSensitiveDataLogging()
-                    .EnableDetailedErrors()
-            );
+                            sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
+                            sqlOptions.EnableRetryOnFailure(
+                                maxRetryCount: 15,
+                                maxRetryDelay: TimeSpan.FromSeconds(30),
+                                errorNumbersToAdd: null);
+                        });
+
+                    dbContextOptions.LogTo(Console.WriteLine, LogLevel.Information);
+                    dbContextOptions.EnableSensitiveDataLogging();
+                    dbContextOptions.EnableDetailedErrors();
+                });
+
+            services.AddDbContext<IntegrationEventLogContext>(
+                dbContextOptions =>
+                {
+                    dbContextOptions.UseMySql(connectionString, serverVersion,
+                        sqlOptions =>
+                        {
+                            sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
+                            sqlOptions.EnableRetryOnFailure(
+                                maxRetryCount: 15,
+                                maxRetryDelay: TimeSpan.FromSeconds(30),
+                                errorNumbersToAdd: null);
+                        });
+
+                    dbContextOptions.LogTo(Console.WriteLine, LogLevel.Information);
+                    dbContextOptions.EnableSensitiveDataLogging();
+                    dbContextOptions.EnableDetailedErrors();
+                });
         }
 
         #endregion
+
+
 
         #region GameRepoServices
 

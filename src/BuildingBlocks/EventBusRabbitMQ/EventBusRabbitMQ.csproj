@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EventBus\EventBusBase.csproj" />
+    <ProjectReference Include="..\EventBusBase\EventBusBase.csproj" />
   </ItemGroup>
 
 </Project>
