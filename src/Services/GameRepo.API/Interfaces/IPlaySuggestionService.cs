@@ -2,10 +2,10 @@
 
 public interface IPlaySuggestionService
 {
-    Task<List<PlaySuggestion>> GetPlaySuggestionsAsync(int pageIndex, int pageSize);
-    Task<PlaySuggestion> GetPlaySuggestionAsync(int suggestionId);
+    Task<List<GamePlaySuggestion>> GetPlaySuggestionsAsync(int pageIndex, int pageSize);
+    Task<GamePlaySuggestion> GetPlaySuggestionAsync(int suggestionId);
     Task<int> CountPlaySuggestionsAsync();
-    Task<bool> AddPlaySuggestionAsync(PlaySuggestion playSuggestion);
+    Task<bool> AddPlaySuggestionAsync(GamePlaySuggestion gamePlaySuggestion);
     Task<bool> DeletePlaySuggestionAsync(int suggestionId);
-    Task<bool> UpdatePlaySuggestionAsync(PlaySuggestion playSuggestion);
+    Task<bool> UpdatePlaySuggestionAsync(GamePlaySuggestion gamePlaySuggestion);
 }

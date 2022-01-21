@@ -45,4 +45,6 @@ public class EvaluationContextDesignFactory : IDesignTimeDbContextFactory<Evalua
 
         return new EvaluationContext(builder.Options);
     }
+    //.NET Cli
+    // dotnet ef migrations add Initial -o ./Infrastructure/EvaluationMigrations -v
 }

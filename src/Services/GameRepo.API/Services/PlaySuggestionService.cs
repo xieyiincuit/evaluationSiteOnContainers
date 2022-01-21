@@ -9,9 +9,9 @@ public class PlaySuggestionService : IPlaySuggestionService
         _repoContext = repoContext;
     }
 
-    public async Task<bool> AddPlaySuggestionAsync(PlaySuggestion playSuggestion)
+    public async Task<bool> AddPlaySuggestionAsync(GamePlaySuggestion gamePlaySuggestion)
     {
-        await _repoContext.PlaySuggestions.AddAsync(playSuggestion);
+        await _repoContext.PlaySuggestions.AddAsync(gamePlaySuggestion);
         return await _repoContext.SaveChangesAsync() > 0;
     }
 
@@ -29,14 +29,14 @@ public class PlaySuggestionService : IPlaySuggestionService
         return await _repoContext.SaveChangesAsync() > 0;
     }
 
-    public async Task<PlaySuggestion> GetPlaySuggestionAsync(int suggestionId)
+    public async Task<GamePlaySuggestion> GetPlaySuggestionAsync(int suggestionId)
     {
         var suggestion = await _repoContext.PlaySuggestions
             .AsNoTracking().FirstOrDefaultAsync(x => x.Id == suggestionId);
         return suggestion;
     }
 
-    public async Task<List<PlaySuggestion>> GetPlaySuggestionsAsync(int pageIndex, int pageSize)
+    public async Task<List<GamePlaySuggestion>> GetPlaySuggestionsAsync(int pageIndex, int pageSize)
     {
         var suggestions = await _repoContext.PlaySuggestions
             .OrderBy(x => x.Id)
@@ -48,9 +48,9 @@ public class PlaySuggestionService : IPlaySuggestionService
         return suggestions;
     }
 
-    public async Task<bool> UpdatePlaySuggestionAsync(PlaySuggestion playSuggestion)
+    public async Task<bool> UpdatePlaySuggestionAsync(GamePlaySuggestion gamePlaySuggestion)
     {
-        _repoContext.PlaySuggestions.Update(playSuggestion);
+        _repoContext.PlaySuggestions.Update(gamePlaySuggestion);
         return await _repoContext.SaveChangesAsync() > 0;
     }
 }

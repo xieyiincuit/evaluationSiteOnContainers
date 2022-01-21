@@ -17,7 +17,7 @@ public class PlaySuggestionController : ControllerBase
     [HttpGet]
     [Route("suggestions")]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType(typeof(PaginatedItemsDtoModel<PlaySuggestion>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(PaginatedItemsDtoModel<GamePlaySuggestion>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetSuggestionsAsync([FromQuery] int pageIndex = 1)
     {
         var totalSuggestions = await _suggestionService.CountPlaySuggestionsAsync();
@@ -26,14 +26,14 @@ public class PlaySuggestionController : ControllerBase
         var suggestions = await _suggestionService.GetPlaySuggestionsAsync(pageIndex, _pageSize);
         if (!suggestions.Any()) return NotFound();
 
-        var model = new PaginatedItemsDtoModel<PlaySuggestion>(pageIndex, _pageSize, totalSuggestions, suggestions);
+        var model = new PaginatedItemsDtoModel<GamePlaySuggestion>(pageIndex, _pageSize, totalSuggestions, suggestions);
         return Ok(model);
     }
 
     [HttpGet("suggestion/{suggestionId:int}", Name = nameof(GetSuggestionByIdAsync))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType(typeof(PlaySuggestion), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(GamePlaySuggestion), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetSuggestionByIdAsync(int suggestionId)
     {
         if (suggestionId <= 0 || suggestionId >= int.MaxValue) return BadRequest();
@@ -52,7 +52,7 @@ public class PlaySuggestionController : ControllerBase
     {
         if (suggestionAddDto == null) return BadRequest();
 
-        var entityToAdd = _mapper.Map<PlaySuggestion>(suggestionAddDto);
+        var entityToAdd = _mapper.Map<GamePlaySuggestion>(suggestionAddDto);
         await _suggestionService.AddPlaySuggestionAsync(entityToAdd);
         return CreatedAtRoute(nameof(GetSuggestionByIdAsync), new { suggestionId = entityToAdd.Id }, null);
     }
@@ -65,7 +65,7 @@ public class PlaySuggestionController : ControllerBase
     {
         if (suggestionUpdateDto == null) return BadRequest();
 
-        var entityToUpdate = _mapper.Map<PlaySuggestion>(suggestionUpdateDto);
+        var entityToUpdate = _mapper.Map<GamePlaySuggestion>(suggestionUpdateDto);
         await _suggestionService.UpdatePlaySuggestionAsync(entityToUpdate);
         return NoContent();
     }

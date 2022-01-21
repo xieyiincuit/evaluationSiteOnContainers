@@ -4,7 +4,7 @@ public class PlaySuggestionProfile : Profile
 {
     public PlaySuggestionProfile()
     {
-        CreateMap<PlaySuggestionAddDto, PlaySuggestion>();
-        CreateMap<PlaySuggestionUpdateDto, PlaySuggestion>();
+        CreateMap<PlaySuggestionAddDto, GamePlaySuggestion>();
+        CreateMap<PlaySuggestionUpdateDto, GamePlaySuggestion>();
     }
 }

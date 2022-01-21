@@ -14,6 +14,7 @@ try
         var logger = services.GetRequiredService<ILogger<GameRepoContextSeed>>();
         new GameRepoContextSeed().SeedAsync(context, logger, env).Wait();
     });
+    host.MigrateDbContext<IntegrationEventLogContext>((_, _) => { });
     Log.Information("Migrations Applied ({ApplicationContext})...", Program.AppName);
 
     Log.Information("Starting web host ({ApplicationContext})...", Program.AppName);

@@ -1,8 +1,8 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models;
 
-[Table("play_suggestion")]
+[Table("game_playsuggestion")]
 [Comment("游玩游戏配置建议表")]
-public class PlaySuggestion
+public class GamePlaySuggestion
 {
     [Key]
     [Column("suggestion_id"), Comment("主键")]
@@ -29,7 +29,7 @@ public class PlaySuggestion
     public string GraphicsCard { get; set; }
 
     //一对一关系建立
-    [ForeignKey("game_id"), Comment("游戏外键id")]
+    [ForeignKey("game_id"), Column("game_id"), Comment("游戏外键id")]
     public int GameId { get; set; }
 
     [JsonIgnore]

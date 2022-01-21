@@ -21,7 +21,7 @@ public class GameInfo
     public string? DetailsPicture { get; set; }
 
     [MaxLength(200)]
-    [Column("routh_picture"), Comment("游戏展示图小图")]
+    [Column("rough_picture"), Comment("游戏展示图小图")]
     public string? RoughPicture { get; set; }
 
     [Column("average_score"), Comment("游戏评分")]
@@ -46,9 +46,9 @@ public class GameInfo
     public int? GameCategoryId { get; set; }
     public GameCategory GameCategory { get; set; }
 
-    [Column("play_suggestion_id"), Comment("游戏游玩建议外键")]
-    public int? PlaySuggestionId { get; set; }
-    public PlaySuggestion PlaySuggestion { get; set; }
+    [Column("game_playsuggestion_id"), Comment("游戏游玩建议外键")]
+    public int? GamePlaySuggestionId { get; set; }
+    public GamePlaySuggestion GamePlaySuggestion { get; set; }
 
     public List<GameTag> GameTags { get; set; }
     public List<GameInfoTag> GameInfoTags { get; set; }

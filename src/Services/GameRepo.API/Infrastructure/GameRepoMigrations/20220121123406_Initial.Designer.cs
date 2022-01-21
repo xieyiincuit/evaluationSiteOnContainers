@@ -11,7 +11,7 @@ using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Infrastructure;
 namespace GameRepo.API.Infrastructure.GameRepoMigrations
 {
     [DbContext(typeof(GameRepoContext))]
-    [Migration("20220120144555_Initial")]
+    [Migration("20220121123406_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -111,6 +111,11 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
                         .HasColumnName("company_id")
                         .HasComment("游戏公司外键");
 
+                    b.Property<int?>("GamePlaySuggestionId")
+                        .HasColumnType("int")
+                        .HasColumnName("game_playsuggestion_id")
+                        .HasComment("游戏游玩建议外键");
+
                     b.Property<long?>("HotPoints")
                         .HasColumnType("bigint")
                         .HasColumnName("hot_points")
@@ -123,15 +128,10 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
                         .HasColumnName("name")
                         .HasComment("游戏名");
 
-                    b.Property<int?>("PlaySuggestionId")
-                        .HasColumnType("int")
-                        .HasColumnName("play_suggestion_id")
-                        .HasComment("游戏游玩建议外键");
-
                     b.Property<string>("RoughPicture")
                         .HasMaxLength(200)
                         .HasColumnType("varchar(200)")
-                        .HasColumnName("routh_picture")
+                        .HasColumnName("rough_picture")
                         .HasComment("游戏展示图小图");
 
                     b.Property<DateTime?>("SellTime")
@@ -152,7 +152,7 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
 
                     b.HasIndex("GameCompanyId");
 
-                    b.HasIndex("PlaySuggestionId")
+                    b.HasIndex("GamePlaySuggestionId")
                         .IsUnique();
 
                     b.ToTable("game_info");
@@ -179,6 +179,56 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
                     b.ToTable("gameinfo_tag");
 
                     b.HasComment("游戏与标签的多对多链接表");
+                });
+
+            modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GamePlaySuggestion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("suggestion_id")
+                        .HasComment("主键");
+
+                    b.Property<string>("CPUName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("cpu_name")
+                        .HasComment("CPU型号建议");
+
+                    b.Property<double>("DiskSize")
+                        .HasColumnType("double")
+                        .HasColumnName("disk_size")
+                        .HasComment("磁盘大小建议");
+
+                    b.Property<int>("GameId")
+                        .HasColumnType("int")
+                        .HasColumnName("game_id")
+                        .HasComment("游戏外键id");
+
+                    b.Property<string>("GraphicsCard")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("graphics_card")
+                        .HasComment("显卡型号建议");
+
+                    b.Property<double>("MemorySize")
+                        .HasColumnType("double")
+                        .HasColumnName("memory_size")
+                        .HasComment("内存大小建议");
+
+                    b.Property<string>("OperationSystem")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("operation_system")
+                        .HasComment("操作系统建议");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("game_playsuggestion");
+
+                    b.HasComment("游玩游戏配置建议表");
                 });
 
             modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameTag", b =>
@@ -208,55 +258,6 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
                     b.HasComment("游戏标签表");
                 });
 
-            modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.PlaySuggestion", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("suggestion_id")
-                        .HasComment("主键");
-
-                    b.Property<string>("CPUName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("cpu_name")
-                        .HasComment("CPU型号建议");
-
-                    b.Property<double>("DiskSize")
-                        .HasColumnType("double")
-                        .HasColumnName("disk_size")
-                        .HasComment("磁盘大小建议");
-
-                    b.Property<int>("GameId")
-                        .HasColumnType("int")
-                        .HasComment("游戏外键id");
-
-                    b.Property<string>("GraphicsCard")
-                        .IsRequired()
-                        .HasColumnType("longtext")
-                        .HasColumnName("graphics_card")
-                        .HasComment("显卡型号建议");
-
-                    b.Property<double>("MemorySize")
-                        .HasColumnType("double")
-                        .HasColumnName("memory_size")
-                        .HasComment("内存大小建议");
-
-                    b.Property<string>("OperationSystem")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("operation_system")
-                        .HasComment("操作系统建议");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("play_suggestion");
-
-                    b.HasComment("游玩游戏配置建议表");
-                });
-
             modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameInfo", b =>
                 {
                     b.HasOne("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameCategory", "GameCategory")
@@ -267,15 +268,15 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
                         .WithMany()
                         .HasForeignKey("GameCompanyId");
 
-                    b.HasOne("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.PlaySuggestion", "PlaySuggestion")
+                    b.HasOne("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GamePlaySuggestion", "GamePlaySuggestion")
                         .WithOne("GameInfo")
-                        .HasForeignKey("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameInfo", "PlaySuggestionId");
+                        .HasForeignKey("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameInfo", "GamePlaySuggestionId");
 
                     b.Navigation("GameCategory");
 
                     b.Navigation("GameCompany");
 
-                    b.Navigation("PlaySuggestion");
+                    b.Navigation("GamePlaySuggestion");
                 });
 
             modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameInfoTag", b =>
@@ -302,15 +303,15 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
                     b.Navigation("GameInfoTags");
                 });
 
-            modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameTag", b =>
-                {
-                    b.Navigation("GameInfoTags");
-                });
-
-            modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.PlaySuggestion", b =>
+            modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GamePlaySuggestion", b =>
                 {
                     b.Navigation("GameInfo")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameTag", b =>
+                {
+                    b.Navigation("GameInfoTags");
                 });
 #pragma warning restore 612, 618
         }

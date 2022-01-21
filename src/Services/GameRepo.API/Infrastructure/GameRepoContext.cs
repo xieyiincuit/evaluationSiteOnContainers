@@ -5,7 +5,7 @@ public class GameRepoContext : DbContext
     public GameRepoContext(DbContextOptions<GameRepoContext> options) : base(options) { }
 
     public DbSet<GameInfo> GameInfos { get; set; }
-    public DbSet<PlaySuggestion> PlaySuggestions { get; set; }
+    public DbSet<GamePlaySuggestion> PlaySuggestions { get; set; }
     public DbSet<GameTag> GameTags { get; set; }
     public DbSet<GameCategory> GameCategories { get; set; }
     public DbSet<GameCompany> GameCompanies { get; set; }
@@ -45,5 +45,8 @@ public class CatalogContextDesignFactory : IDesignTimeDbContextFactory<GameRepoC
         builder.UseMySql(connectionString, serverVersion);
         return new GameRepoContext(builder.Options);
     }
+
+    //.NET ClI
+    //dotnet ef migrations add Initial -o ./Infrastructure/GameRepoMigrations -c GameRepoContext -v
 }
 

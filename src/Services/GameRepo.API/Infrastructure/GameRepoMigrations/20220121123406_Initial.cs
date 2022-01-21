@@ -31,6 +31,29 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "game_playsuggestion",
+                columns: table => new
+                {
+                    suggestion_id = table.Column<int>(type: "int", nullable: false, comment: "主键")
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    operation_system = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false, comment: "操作系统建议")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    cpu_name = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false, comment: "CPU型号建议")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    memory_size = table.Column<double>(type: "double", nullable: false, comment: "内存大小建议"),
+                    disk_size = table.Column<double>(type: "double", nullable: false, comment: "磁盘大小建议"),
+                    graphics_card = table.Column<string>(type: "longtext", nullable: false, comment: "显卡型号建议")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    game_id = table.Column<int>(type: "int", nullable: false, comment: "游戏外键id")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_game_playsuggestion", x => x.suggestion_id);
+                },
+                comment: "游玩游戏配置建议表")
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "game_tag",
                 columns: table => new
                 {
@@ -65,29 +88,6 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "play_suggestion",
-                columns: table => new
-                {
-                    suggestion_id = table.Column<int>(type: "int", nullable: false, comment: "主键")
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    operation_system = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false, comment: "操作系统建议")
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    cpu_name = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false, comment: "CPU型号建议")
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    memory_size = table.Column<double>(type: "double", nullable: false, comment: "内存大小建议"),
-                    disk_size = table.Column<double>(type: "double", nullable: false, comment: "磁盘大小建议"),
-                    graphics_card = table.Column<string>(type: "longtext", nullable: false, comment: "显卡型号建议")
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    GameId = table.Column<int>(type: "int", nullable: false, comment: "游戏外键id")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_play_suggestion", x => x.suggestion_id);
-                },
-                comment: "游玩游戏配置建议表")
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
                 name: "game_info",
                 columns: table => new
                 {
@@ -99,7 +99,7 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     details_picture = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: true, comment: "游戏展示图大图")
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    routh_picture = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: true, comment: "游戏展示图小图")
+                    rough_picture = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: true, comment: "游戏展示图小图")
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     average_score = table.Column<double>(type: "double", nullable: true, comment: "游戏评分"),
                     sell_time = table.Column<DateTime>(type: "datetime(6)", nullable: true, comment: "发售时间"),
@@ -108,7 +108,7 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
                     hot_points = table.Column<long>(type: "bigint", nullable: true, comment: "游戏热度"),
                     company_id = table.Column<int>(type: "int", nullable: true, comment: "游戏公司外键"),
                     category_id = table.Column<int>(type: "int", nullable: true, comment: "游戏类别外键"),
-                    play_suggestion_id = table.Column<int>(type: "int", nullable: true, comment: "游戏游玩建议外键")
+                    game_playsuggestion_id = table.Column<int>(type: "int", nullable: true, comment: "游戏游玩建议外键")
                 },
                 constraints: table =>
                 {
@@ -119,15 +119,15 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
                         principalTable: "game_company",
                         principalColumn: "company_id");
                     table.ForeignKey(
+                        name: "FK_game_info_game_playsuggestion_game_playsuggestion_id",
+                        column: x => x.game_playsuggestion_id,
+                        principalTable: "game_playsuggestion",
+                        principalColumn: "suggestion_id");
+                    table.ForeignKey(
                         name: "FK_game_info_game_type_category_id",
                         column: x => x.category_id,
                         principalTable: "game_type",
                         principalColumn: "type_id");
-                    table.ForeignKey(
-                        name: "FK_game_info_play_suggestion_play_suggestion_id",
-                        column: x => x.play_suggestion_id,
-                        principalTable: "play_suggestion",
-                        principalColumn: "suggestion_id");
                 },
                 comment: "游戏信息表")
                 .Annotation("MySql:CharSet", "utf8mb4");
@@ -169,9 +169,9 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
                 column: "company_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_game_info_play_suggestion_id",
+                name: "IX_game_info_game_playsuggestion_id",
                 table: "game_info",
-                column: "play_suggestion_id",
+                column: "game_playsuggestion_id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -195,10 +195,10 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
                 name: "game_company");
 
             migrationBuilder.DropTable(
-                name: "game_type");
+                name: "game_playsuggestion");
 
             migrationBuilder.DropTable(
-                name: "play_suggestion");
+                name: "game_type");
         }
     }
 }

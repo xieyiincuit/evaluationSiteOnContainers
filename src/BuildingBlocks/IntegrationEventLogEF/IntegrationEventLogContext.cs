@@ -13,7 +13,7 @@ public class IntegrationEventLogContext : DbContext
 
     void ConfigureIntegrationEventLogEntry(EntityTypeBuilder<IntegrationEventLogEntry> builder)
     {
-        builder.ToTable("IntegrationEventLog")
+        builder.ToTable("integrationevent_log")
             .HasComment("事件日志表");
 
         builder.HasKey(e => e.EventId);
@@ -47,5 +47,10 @@ public class IntegrationEventLogContext : DbContext
             .IsRequired()
             .HasColumnName("event_type_name")
             .HasComment("事件类型名");
+
+        builder.Property(e => e.TransactionId)
+            .IsRequired()
+            .HasColumnName("transaction_id")
+            .HasComment("事务Id");
     }
 }
