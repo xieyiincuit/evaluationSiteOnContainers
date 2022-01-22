@@ -6,12 +6,23 @@ public class GameInfoController : ControllerBase
 {
     private readonly IGameInfoService _gameInfoService;
     private readonly IMapper _mapper;
+    private readonly ILogger<GameInfoController> _logger;
+    private readonly IGameRepoIntegrationEventService _repoIntegrationEventService;
+    private readonly IUnitOfWorkService _unitOfWorkService;
     private const int _pageSize = 20;
 
-    public GameInfoController(IGameInfoService gameInfoService, IMapper mapper)
+    public GameInfoController(
+        IGameInfoService gameInfoService,
+        IMapper mapper,
+        ILogger<GameInfoController> logger,
+        IGameRepoIntegrationEventService repoIntegrationEventService,
+        IUnitOfWorkService unitOfWorkService)
     {
-        _gameInfoService = gameInfoService;
-        _mapper = mapper;
+        _gameInfoService = gameInfoService ?? throw new ArgumentNullException(nameof(gameInfoService));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _repoIntegrationEventService = repoIntegrationEventService ?? throw new ArgumentNullException(nameof(repoIntegrationEventService));
+        _unitOfWorkService = unitOfWorkService ?? throw new ArgumentNullException(nameof(unitOfWorkService));
     }
 
     [HttpGet]
@@ -55,10 +66,11 @@ public class GameInfoController : ControllerBase
     {
         if (gameInfoAddDto == null) return BadRequest();
 
-        var entityToadd = _mapper.Map<GameInfo>(gameInfoAddDto);
+        var entityToAdd = _mapper.Map<GameInfo>(gameInfoAddDto);
 
-        await _gameInfoService.AddGameInfoAsync(entityToadd);
-        return CreatedAtRoute(nameof(GetGameInfoByIdAsync), new { gameId = entityToadd.Id }, null);
+        await _gameInfoService.AddGameInfoAsync(entityToAdd);
+        await _unitOfWorkService.SaveChangesAsync();
+        return CreatedAtRoute(nameof(GetGameInfoByIdAsync), new { gameId = entityToAdd.Id }, null);
     }
 
     [HttpPut]
@@ -69,8 +81,36 @@ public class GameInfoController : ControllerBase
     {
         if (gameInfoUpdateDto == null) return BadRequest();
 
+        var gameItem = await _gameInfoService.GetGameInfoAsync(gameInfoUpdateDto.Id);
+        if (gameItem == null)
+        {
+            return NotFound(new { Message = $"game with id {gameInfoUpdateDto.Id} not fount." });
+        }
+
+        //检查是否更新了游戏名，若更新需要发布集成事件通知其他相关服务
+        var oldName = gameItem.Name;
+        var raiseGameNameChangedEvent = oldName != gameInfoUpdateDto.Name;
+
+        //更新游戏信息
         var entityToUpdate = _mapper.Map<GameInfo>(gameInfoUpdateDto);
         await _gameInfoService.UpdateGameInfoAsync(entityToUpdate);
+
+        if (raiseGameNameChangedEvent)
+        {
+            _logger.LogInformation("----- GameNameChangedEvent Raised, Will Send a message to Event Bus");
+            //1. 初始化集成事件，待事件总线发布。
+            var nameChangedEvent = new GameNameChangedIntegrationEvent(gameItem.Id, oldName: oldName, newName: gameInfoUpdateDto.Name);
+            //2. 使用事务保证原子性的同时，在发布事件时同时记录事件日志。
+            await _repoIntegrationEventService.SaveEventAndGameRepoContextChangeAsync(nameChangedEvent);
+            //3. 将该事件发布并修改该事件发布状态为已发布
+            await _repoIntegrationEventService.PublishThroughEventBusAsync(nameChangedEvent);
+        }
+        else
+        {
+            // Just save the updated gameInfo because the Game's Name hasn't changed.
+            await _unitOfWorkService.SaveEntitiesAsync();
+        }
+
         return NoContent();
     }
 
@@ -83,9 +123,8 @@ public class GameInfoController : ControllerBase
     {
         if (id <= 0 || id >= int.MaxValue) return BadRequest();
 
-        var response = await _gameInfoService.RemoveGameInfoAsync(id);
-        if (response == false) return NotFound();
-
-        return NoContent();
+        await _gameInfoService.RemoveGameInfoAsync(id);
+        var response = await _unitOfWorkService.SaveEntitiesAsync();
+        return response == true ? NoContent() : NotFound();
     }
 }

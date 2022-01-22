@@ -1,6 +1,4 @@
-﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API;
-
-public class Startup
+﻿public class Startup
 {
     public Startup(IConfiguration configuration)
     {
@@ -29,7 +27,7 @@ public class Startup
         {
             options.AddPolicy("CorsPolicy",
                 builder => builder
-                    .SetIsOriginAllowed((host) => true)
+                    .SetIsOriginAllowed(allowAllHost => true)
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                     .AllowCredentials());
@@ -82,7 +80,90 @@ public class Startup
 
         #endregion
 
+        #region OptionSettings
 
+        services.Configure<GameRepoSettings>(Configuration);
+        services.Configure<EventBusSettings>(Configuration);
+        //开发环境时可返回详细的错误信息
+        services.Configure<ApiBehaviorOptions>(options =>
+        {
+            options.InvalidModelStateResponseFactory = context =>
+            {
+                var problemDetails = new ValidationProblemDetails(context.ModelState)
+                {
+                    Instance = context.HttpContext.Request.Path,
+                    Status = StatusCodes.Status400BadRequest,
+                    Detail = "Please refer to the errors property for additional details."
+                };
+
+                return new BadRequestObjectResult(problemDetails)
+                {
+                    ContentTypes = { "application/problem+json", "application/problem+xml" }
+                };
+            };
+        });
+
+        #endregion
+
+        #region IntegrationSettings
+
+        //注入IIntegrationEventLogService
+        services.AddTransient<Func<DbConnection, IIntegrationEventLogService>>(
+            sp => (DbConnection c) => new IntegrationEventLogService(c));
+
+        //该服务领域事件发布服务
+        services.AddTransient<IGameRepoIntegrationEventService, GameRepoIntegrationEventService>();
+
+        //注册IRabbitMQPersistentConnection服务用于设置RabbitMQ连接
+        services.AddSingleton<IRabbitMQPersistentConnection>(sp =>
+        {
+            var settings = sp.GetRequiredService<IOptions<EventBusSettings>>().Value;
+            var logger = sp.GetRequiredService<ILogger<DefaultRabbitMQPersistentConnection>>();
+
+            var factory = new ConnectionFactory()
+            {
+                HostName = settings.Connection,
+                DispatchConsumersAsync = true
+            };
+
+            if (!string.IsNullOrEmpty(settings.UserName))
+                factory.UserName = settings.UserName;
+
+            if (!string.IsNullOrEmpty(settings.PassWord))
+                factory.Password = settings.PassWord;
+
+            var retryCount = 5;
+            if (!string.IsNullOrEmpty(settings.RetryCount))
+                retryCount = int.Parse(settings.RetryCount);
+
+            return new DefaultRabbitMQPersistentConnection(factory, logger, retryCount);
+        });
+
+        #endregion
+
+        #region EventBusSettings
+
+        services.AddSingleton<IEventBus, EventBusRabbitMQ>(sp =>
+        {
+            var subscriptionClientName = Configuration["SubscriptionClientName"];
+            var eventBusSettings = sp.GetRequiredService<IOptions<EventBusSettings>>().Value;
+            var rabbitMQPersistentConnection = sp.GetRequiredService<IRabbitMQPersistentConnection>();
+            var iLifetimeScope = sp.GetRequiredService<ILifetimeScope>();
+            var logger = sp.GetRequiredService<ILogger<EventBusRabbitMQ>>();
+            var eventBusSubscriptionManager = sp.GetRequiredService<IEventBusSubscriptionsManager>();
+
+            var retryCount = 5;
+            if (!string.IsNullOrEmpty(eventBusSettings.RetryCount))
+                retryCount = int.Parse(eventBusSettings.RetryCount);
+
+            return new EventBusRabbitMQ(
+                rabbitMQPersistentConnection, logger, iLifetimeScope,
+                eventBusSubscriptionManager, subscriptionClientName, retryCount);
+        });
+
+        services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();
+
+        #endregion
 
         #region GameRepoServices
 
@@ -91,11 +172,13 @@ public class Startup
         services.AddScoped<IGameCompanyService, GameCompanyService>();
         services.AddScoped<IGameInfoService, GameInfoService>();
         services.AddScoped<IPlaySuggestionService, PlaySuggestionService>();
+        services.AddScoped<IUnitOfWorkService, UnitOfWorkService>();
 
         #endregion
 
+
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-        //use autofac
+
         var container = new ContainerBuilder();
         container.Populate(services);
         return new AutofacServiceProvider(container.Build());
@@ -131,5 +214,14 @@ public class Startup
             endpoints.MapDefaultControllerRoute();
             endpoints.MapControllers();
         });
+
+        ConfigureEventBus(app);
+
+    }
+
+    protected virtual void ConfigureEventBus(IApplicationBuilder app)
+    {
+        var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
+        //TODO 以下添加你需要订阅的集成事件和事件处理
     }
 }

@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <Folder Include="Infrastructure\GameRepoMigrations\" />
+    <Folder Include="IntegrationEvents\Events\" />
   </ItemGroup>
 
   <ItemGroup>

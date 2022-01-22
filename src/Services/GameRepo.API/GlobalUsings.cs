@@ -14,6 +14,7 @@ global using Serilog.Events;
 global using System;
 global using System.ComponentModel.DataAnnotations;
 global using System.ComponentModel.DataAnnotations.Schema;
+global using System.Data.Common;
 global using System.Net;
 global using System.Text.Json.Serialization;
 global using System.Reflection;
@@ -27,3 +28,16 @@ global using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Infrastr
 global using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Interfaces;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Services;
+global using Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.IntegrationEventLogEF.Services;
+global using Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.EventBusBase.Events;
+global using Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.EventBusBase.Abstractions;
+global using Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.IntegrationEventLogEF.Utilities;
+global using Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.EventBusRabbitMQ;
+global using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.IntegrationEvents;
+global using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.IntegrationEvents.Events;
+global using RabbitMQ.Client;
+global using Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.EventBusBase;
+global using Microsoft.Extensions.Options;
+
+
+

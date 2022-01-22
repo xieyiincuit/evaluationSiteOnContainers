@@ -6,13 +6,12 @@ public class GameInfoService : IGameInfoService
 
     public GameInfoService(GameRepoContext repoContext)
     {
-        _repoContext = repoContext;
+        _repoContext = repoContext ?? throw new ArgumentNullException(nameof(repoContext));
     }
 
-    public async Task<bool> AddGameInfoAsync(GameInfo gameInfo)
+    public async Task AddGameInfoAsync(GameInfo gameInfo)
     {
         await _repoContext.AddAsync(gameInfo);
-        return await _repoContext.SaveChangesAsync() > 0;
     }
 
     public async Task<int> CountGameInfoAsync()
@@ -37,16 +36,17 @@ public class GameInfoService : IGameInfoService
             .ToListAsync();
     }
 
-    public async Task<bool> RemoveGameInfoAsync(int gameId)
+    public async Task RemoveGameInfoAsync(int gameId)
     {
         var entity = await _repoContext.GameInfos.FindAsync(gameId);
+        if (entity == null)
+            return;
         _repoContext.GameInfos.Remove(entity);
-        return await _repoContext.SaveChangesAsync() > 0;
     }
 
-    public async Task<bool> UpdateGameInfoAsync(GameInfo gameInfo)
+    public Task UpdateGameInfoAsync(GameInfo gameInfo)
     {
         _repoContext.GameInfos.Update(gameInfo);
-        return await _repoContext.SaveChangesAsync() > 0;
+        return Task.CompletedTask;
     }
 }
