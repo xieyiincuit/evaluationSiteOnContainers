@@ -1,0 +1,53 @@
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.IntegrationEvents.EventHandling;
+
+public class GameNameChangedIntegrationEventHandler :
+    IIntegrationEventHandler<GameNameChangedIntegrationEvent>
+{
+    private readonly ILogger<GameNameChangedIntegrationEventHandler> _logger;
+    private readonly IEvaluationArticleService _articleService;
+
+    public GameNameChangedIntegrationEventHandler(
+        ILogger<GameNameChangedIntegrationEventHandler> logger,
+        IEvaluationArticleService articleService)
+    {
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _articleService = articleService ?? throw new ArgumentNullException(nameof(articleService));
+    }
+
+    public async Task Handle(GameNameChangedIntegrationEvent @event)
+    {
+        using (LogContext.PushProperty("IntegrationEventContext", $"{@event.Id}-{Program.AppName}"))
+        {
+            _logger.LogInformation("----- Handling integration event Begin: {IntegrationEventId} at {AppName} - {@IntegrationEvent}",
+                @event.Id, Program.AppName, @event);
+
+            //TODO 之后的订单服务也需要修改
+            await UpdateArticlesGameNameAsync(@event.GameId, @event.OldName, @event.NewName);
+
+            _logger.LogInformation("----- Handling integration event End: {IntegrationEventId} at {AppName} - {@IntegrationEvent}",
+                @event.Id, Program.AppName, @event);
+        }
+    }
+
+    private async Task UpdateArticlesGameNameAsync(int gameId, string oldName, string newName)
+    {
+        var articlesToUpdate = await _articleService.GetArticlesByGameInfoAsync(gameId);
+
+        if (articlesToUpdate != null && articlesToUpdate.Count != 0)
+        {
+            _logger.LogInformation("----- GameNameChangedIntegrationEventHandler Begin");
+
+            foreach (var article in articlesToUpdate)
+            {
+                _logger.LogInformation("----- Updating article's game name from {oldName} to {newName} => articleId: {articleId}",
+                    oldName, newName, article.ArticleId);
+
+                if (article.GameName == oldName) article.GameName = newName;
+            }
+
+            await _articleService.BatchUpdateArticlesAsync();
+        }
+        _logger.LogInformation("----- GameNameChangedIntegrationEventHandler End");
+
+    }
+}
