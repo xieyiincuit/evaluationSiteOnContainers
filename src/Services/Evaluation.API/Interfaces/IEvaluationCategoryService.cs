@@ -1,6 +1,6 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Interfaces;
 
-public interface IEvaluationCategory
+public interface IEvaluationCategoryService
 {
     Task<List<EvaluationCategory>> GetEvaluationCategoriesAsync();
     Task<EvaluationCategory> GetEvaluationCategoryAsync(int categoryId);

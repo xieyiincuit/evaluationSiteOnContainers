@@ -1,6 +1,6 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Interfaces;
 
-public interface IEvaluationComment
+public interface IEvaluationCommentService
 {
     Task<List<EvaluationComment>> GetArticleCommentsAsync(int pageIndex, int pageSize, int articleId);
     Task<List<EvaluationComment>> GetCommentReplyAsync(int pageIndex, int pageSize, int parentCommentId);
