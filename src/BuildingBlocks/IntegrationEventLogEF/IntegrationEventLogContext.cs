@@ -36,7 +36,7 @@ public class IntegrationEventLogContext : DbContext
         builder.Property(e => e.State)
             .IsRequired()
             .HasColumnName("state")
-            .HasComment("事件状态");
+            .HasComment("事件状态: 2-发送执行成功 3-发送但执行失败");
 
         builder.Property(e => e.TimesSent)
             .IsRequired()

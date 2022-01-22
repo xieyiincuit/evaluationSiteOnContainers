@@ -19,7 +19,7 @@ namespace IntegrationEventLogEF.Migrations
                     event_id = table.Column<Guid>(type: "char(36)", nullable: false, comment: "事件Id", collation: "ascii_general_ci"),
                     event_type_name = table.Column<string>(type: "longtext", nullable: false, comment: "事件类型名")
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    state = table.Column<int>(type: "int", nullable: false, comment: "事件状态"),
+                    state = table.Column<int>(type: "int", nullable: false, comment: "事件状态: 2-发送执行成功 3-发送但执行失败"),
                     times_sent = table.Column<int>(type: "int", nullable: false, comment: "发送次数"),
                     create_time = table.Column<DateTime>(type: "datetime(6)", nullable: false, comment: "记录时间"),
                     content = table.Column<string>(type: "longtext", nullable: false, comment: "事件内容")

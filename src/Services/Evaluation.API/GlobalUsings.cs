@@ -37,3 +37,8 @@ global using Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Interf
 global using Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Models;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Services;
 global using Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.EventBusBase.Events;
+global using System.Data.Common;
+global using RabbitMQ.Client;
+global using Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.EventBusBase;
+global using Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.EventBusRabbitMQ;
+global using Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.IntegrationEvents.EventHandling;

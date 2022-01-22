@@ -1,4 +1,6 @@
-﻿public class Startup
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API;
+
+public class Startup
 {
     public Startup(IConfiguration configuration)
     {
@@ -52,8 +54,8 @@
                                 maxRetryCount: 15,
                                 maxRetryDelay: TimeSpan.FromSeconds(30),
                                 errorNumbersToAdd: null);
+                            
                         });
-
                     dbContextOptions.LogTo(Console.WriteLine, LogLevel.Information);
                     dbContextOptions.EnableSensitiveDataLogging();
                     dbContextOptions.EnableDetailedErrors();
@@ -83,7 +85,7 @@
         #region OptionSettings
 
         services.Configure<GameRepoSettings>(Configuration);
-        services.Configure<EventBusSettings>(Configuration);
+        services.Configure<EventBusSettings>(Configuration.GetSection("EventBusSettings"));
         //开发环境时可返回详细的错误信息
         services.Configure<ApiBehaviorOptions>(options =>
         {
@@ -122,7 +124,10 @@
 
             var factory = new ConnectionFactory()
             {
+
                 HostName = settings.Connection,
+                Port = int.Parse(settings.Port),
+                ClientProvidedName = Program.AppName,
                 DispatchConsumersAsync = true
             };
 
@@ -199,6 +204,7 @@
                setup.SwaggerEndpoint(
                    $"{(!string.IsNullOrEmpty(pathBase) ? pathBase : string.Empty)}/swagger/v1/swagger.json",
                    "GameRepo.API V1");
+               setup.RoutePrefix = string.Empty;
            });
 
         app.UseSerilogRequestLogging();

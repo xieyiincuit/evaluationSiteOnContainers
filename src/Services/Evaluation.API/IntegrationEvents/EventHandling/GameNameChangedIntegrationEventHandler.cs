@@ -22,14 +22,14 @@ public class GameNameChangedIntegrationEventHandler :
                 @event.Id, Program.AppName, @event);
 
             //TODO 之后的订单服务也需要修改
-            await UpdateArticlesGameNameAsync(@event.GameId, @event.OldName, @event.NewName);
+            await UpdateArticlesGameNameAsync(@event.GameId, @event.NewName);
 
             _logger.LogInformation("----- Handling integration event End: {IntegrationEventId} at {AppName} - {@IntegrationEvent}",
                 @event.Id, Program.AppName, @event);
         }
     }
 
-    private async Task UpdateArticlesGameNameAsync(int gameId, string oldName, string newName)
+    private async Task UpdateArticlesGameNameAsync(int gameId, string newName)
     {
         var articlesToUpdate = await _articleService.GetArticlesByGameInfoAsync(gameId);
 
@@ -40,9 +40,10 @@ public class GameNameChangedIntegrationEventHandler :
             foreach (var article in articlesToUpdate)
             {
                 _logger.LogInformation("----- Updating article's game name from {oldName} to {newName} => articleId: {articleId}",
-                    oldName, newName, article.ArticleId);
+                    article.GameName, newName, article.ArticleId);
 
-                if (article.GameName == oldName) article.GameName = newName;
+                if (article.GameName != newName)
+                    article.GameName = newName;
             }
 
             await _articleService.BatchUpdateArticlesAsync();

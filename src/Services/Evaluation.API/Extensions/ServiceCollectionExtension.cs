@@ -39,7 +39,11 @@ public static class ServiceCollectionExtension
 
     public static IServiceCollection AddCustomMvc(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddControllers(options => { options.Filters.Add(typeof(HttpGlobalExceptionFilter)); })
+        services.AddControllers(options =>
+            {
+                options.Filters.Add(typeof(HttpGlobalExceptionFilter));
+                options.Filters.Add(typeof(ValidateModelStateFilter));
+            })
             .AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = true)
             .AddFluentValidation(options =>
             {
@@ -69,13 +73,15 @@ public static class ServiceCollectionExtension
                 configuration["ConnectionStrings:DataBaseConnectString"],
                 "mysql",
                 HealthStatus.Degraded,
-                new[] {"db", "sql", "mysql"});
+                new[] { "db", "sql", "mysql" });
         return services;
     }
 
     public static IServiceCollection AddCustomOptions(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<EvaluationSettings>(configuration);
+        services.Configure<EventBusSettings>(configuration.GetSection("EventBusSettings"));
+        services.AddOptions();
         services.Configure<ApiBehaviorOptions>(options =>
         {
             options.InvalidModelStateResponseFactory = context =>
@@ -89,7 +95,7 @@ public static class ServiceCollectionExtension
 
                 return new BadRequestObjectResult(problemDetails)
                 {
-                    ContentTypes = {"application/problem+json", "application/problem+xml"}
+                    ContentTypes = { "application/problem+json", "application/problem+xml" }
                 };
             };
         });
@@ -116,6 +122,63 @@ public static class ServiceCollectionExtension
     {
         //在确定不存在循环引用的情况下，使用单例模式可以提升每次request的服务加载时间      
         services.AddValidatorsFromAssemblyContaining<ArticleAddDto>(ServiceLifetime.Singleton);
+        return services;
+    }
+
+    public static IServiceCollection AddCustomIntegrationEvent(this IServiceCollection services, IConfiguration configuration)
+    {
+        //注册IRabbitMQPersistentConnection服务用于设置RabbitMQ连接
+        services.AddSingleton<IRabbitMQPersistentConnection>(sp =>
+        {
+            var settings = sp.GetRequiredService<IOptions<EventBusSettings>>().Value;
+            var logger = sp.GetRequiredService<ILogger<DefaultRabbitMQPersistentConnection>>();
+
+            var factory = new ConnectionFactory()
+            {
+                HostName = settings.Connection,
+                Port = int.Parse(settings.Port),
+                ClientProvidedName = Program.AppName,
+                DispatchConsumersAsync = true
+            };
+
+            if (!string.IsNullOrEmpty(settings.UserName))
+                factory.UserName = settings.UserName;
+
+            if (!string.IsNullOrEmpty(settings.PassWord))
+                factory.Password = settings.PassWord;
+
+            var retryCount = 5;
+            if (!string.IsNullOrEmpty(settings.RetryCount))
+                retryCount = int.Parse(settings.RetryCount);
+
+            return new DefaultRabbitMQPersistentConnection(factory, logger, retryCount);
+        });
+        return services;
+    }
+
+
+    public static IServiceCollection AddCustomEventBus(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddSingleton<IEventBus, EventBusRabbitMQ>(sp =>
+        {
+            var subscriptionClientName = configuration["SubscriptionClientName"];
+            var eventBusSettings = sp.GetRequiredService<IOptions<EventBusSettings>>().Value;
+            var rabbitMQPersistentConnection = sp.GetRequiredService<IRabbitMQPersistentConnection>();
+            var iLifetimeScope = sp.GetRequiredService<ILifetimeScope>();
+            var logger = sp.GetRequiredService<ILogger<EventBusRabbitMQ>>();
+            var eventBusSubscriptionManager = sp.GetRequiredService<IEventBusSubscriptionsManager>();
+
+            var retryCount = 5;
+            if (!string.IsNullOrEmpty(eventBusSettings.RetryCount))
+                retryCount = int.Parse(eventBusSettings.RetryCount);
+
+            return new EventBusRabbitMQ(
+                rabbitMQPersistentConnection, logger, iLifetimeScope,
+                eventBusSubscriptionManager, subscriptionClientName, retryCount);
+        });
+
+        services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();
+        services.AddTransient<GameNameChangedIntegrationEventHandler>();
         return services;
     }
 }

@@ -92,8 +92,8 @@ public class GameInfoController : ControllerBase
         var raiseGameNameChangedEvent = oldName != gameInfoUpdateDto.Name;
 
         //更新游戏信息
-        var entityToUpdate = _mapper.Map<GameInfo>(gameInfoUpdateDto);
-        await _gameInfoService.UpdateGameInfoAsync(entityToUpdate);
+        _mapper.Map(gameInfoUpdateDto, gameItem);
+        await _gameInfoService.UpdateGameInfoAsync(gameItem);
 
         if (raiseGameNameChangedEvent)
         {

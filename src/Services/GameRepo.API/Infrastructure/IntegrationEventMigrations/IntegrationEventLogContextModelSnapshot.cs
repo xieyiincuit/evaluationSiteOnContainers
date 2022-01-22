@@ -47,7 +47,7 @@ namespace IntegrationEventLogEF.Migrations
                     b.Property<int>("State")
                         .HasColumnType("int")
                         .HasColumnName("state")
-                        .HasComment("事件状态");
+                        .HasComment("事件状态: 2-发送执行成功 3-发送但执行失败");
 
                     b.Property<int>("TimesSent")
                         .HasColumnType("int")

@@ -42,7 +42,8 @@ public class GameRepoIntegrationEventService : IGameRepoIntegrationEventService
     {
         try
         {
-            _logger.LogInformation("----- Publishing integration event: {IntegrationEventId_published} from {AppName} - ({@IntegrationEvent})", @event.Id, Program.AppName, @event);
+            _logger.LogInformation("----- Publishing integration event: {IntegrationEventId_published} from {AppName} - ({@IntegrationEvent})", 
+                @event.Id, Program.AppName, @event);
 
             await _eventLogService.MarkEventAsInProgressAsync(@event.Id);
             _eventBus.Publish(@event);
@@ -50,7 +51,8 @@ public class GameRepoIntegrationEventService : IGameRepoIntegrationEventService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "ERROR Publishing integration event: {IntegrationEventId} from {AppName} - ({@IntegrationEvent})", @event.Id, Program.AppName, @event);
+            _logger.LogError(ex, "ERROR Publishing integration event: {IntegrationEventId} from {AppName} - ({@IntegrationEvent})", 
+                @event.Id, Program.AppName, @event);
             await _eventLogService.MarkEventAsFailedAsync(@event.Id);
         }
     }

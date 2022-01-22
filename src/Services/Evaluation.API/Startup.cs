@@ -19,6 +19,8 @@ public class Startup
             .AddCustomHealthCheck(Configuration)
             .AddCustomServicesInjection(Configuration)
             .AddCustomOptions(Configuration)
+            .AddCustomIntegrationEvent(Configuration)
+            .AddCustomEventBus(Configuration)
             .AddCustomMapper(Configuration)
             .AddCustomValidator(Configuration);
 
@@ -55,5 +57,7 @@ public class Startup
                 Predicate = r => r.Name.Contains("self-db")
             });
         });
+
+        app.UseCustomEventBus();
     }
 }

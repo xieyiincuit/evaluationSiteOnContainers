@@ -18,6 +18,18 @@ services:
     ports:
       - "3307:3306"
 
+  mq_evaluation:
+    image: rabbitmq:3.9.13-management
+    volumes:
+      - rabbitmq_evaluation:/var/lib/rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=zhoushanlin
+      - RABBITMQ_DEFAULT_PASS=rabbitmq!!..
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+
 volumes:
   mysql_gamerepo:
   mysql_evaluation:
+  rabbitmq_evaluation:
