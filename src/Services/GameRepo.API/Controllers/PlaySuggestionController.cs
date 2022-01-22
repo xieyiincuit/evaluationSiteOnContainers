@@ -10,8 +10,8 @@ public class PlaySuggestionController : ControllerBase
 
     public PlaySuggestionController(IPlaySuggestionService suggestionService, IMapper mapper)
     {
-        _suggestionService = suggestionService;
-        _mapper = mapper;
+        _suggestionService = suggestionService ?? throw new ArgumentNullException(nameof(suggestionService));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
     [HttpGet]
@@ -34,7 +34,7 @@ public class PlaySuggestionController : ControllerBase
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(GamePlaySuggestion), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> GetSuggestionByIdAsync(int suggestionId)
+    public async Task<IActionResult> GetSuggestionByIdAsync([FromRoute] int suggestionId)
     {
         if (suggestionId <= 0 || suggestionId >= int.MaxValue) return BadRequest();
 
@@ -74,7 +74,7 @@ public class PlaySuggestionController : ControllerBase
     [Route("suggestion/{id:int}")]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
-    public async Task<IActionResult> DeleteSuggestionAsync(int id)
+    public async Task<IActionResult> DeleteSuggestionAsync([FromRoute] int id)
     {
         if (id <= 0 || id >= int.MaxValue) return BadRequest();
 

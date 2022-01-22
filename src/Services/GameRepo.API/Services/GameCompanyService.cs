@@ -6,7 +6,7 @@ public class GameCompanyService : IGameCompanyService
 
     public GameCompanyService(GameRepoContext repoContext)
     {
-        _repoContext = repoContext;
+        _repoContext = repoContext ?? throw new ArgumentNullException(nameof(repoContext));
     }
 
     public async Task<bool> AddGameCompanyAsync(GameCompany gameCompany)

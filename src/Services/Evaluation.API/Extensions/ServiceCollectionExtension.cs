@@ -100,9 +100,9 @@ public static class ServiceCollectionExtension
     public static IServiceCollection AddCustomServicesInjection(this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddScoped<IEvaluationArticle, EvaluationArticleService>();
-        services.AddScoped<IEvaluationCategory, EvaluationCategoryService>();
-        services.AddScoped<IEvaluationComment, EvaluationCommentService>();
+        services.AddScoped<IEvaluationArticleService, EvaluationArticleService>();
+        services.AddScoped<IEvaluationCategoryService, EvaluationCategoryService>();
+        services.AddScoped<IEvaluationCommentService, EvaluationCommentService>();
         return services;
     }
 

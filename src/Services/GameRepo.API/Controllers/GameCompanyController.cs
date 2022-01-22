@@ -10,8 +10,8 @@ public class GameCompanyController : ControllerBase
 
     public GameCompanyController(IGameCompanyService companyService, IMapper mapper)
     {
-        _companyService = companyService;
-        _mapper = mapper;
+        _companyService = companyService ?? throw new ArgumentNullException(nameof(companyService));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
     [HttpGet]
@@ -34,7 +34,7 @@ public class GameCompanyController : ControllerBase
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(GameCompany), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> GetCompanyByIdAsync(int companyId)
+    public async Task<IActionResult> GetCompanyByIdAsync([FromRoute] int companyId)
     {
         if (companyId <= 0 || companyId >= int.MaxValue) return BadRequest();
 
@@ -52,22 +52,22 @@ public class GameCompanyController : ControllerBase
     {
         if (companyAddDto == null) return BadRequest();
 
-        var entityToadd = _mapper.Map<GameCompany>(companyAddDto);
+        var entityToAdd = _mapper.Map<GameCompany>(companyAddDto);
 
-        await _companyService.AddGameCompanyAsync(entityToadd);
-        return CreatedAtRoute(nameof(GetCompanyByIdAsync), new { companyId = entityToadd.Id }, null);
+        await _companyService.AddGameCompanyAsync(entityToAdd);
+        return CreatedAtRoute(nameof(GetCompanyByIdAsync), new { companyId = entityToAdd.Id }, null);
     }
 
     [HttpDelete]
     [Route("company/{id:int}")]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
-    public async Task<IActionResult> DeleteCategoryAsync(int id)
+    public async Task<IActionResult> DeleteCategoryAsync([FromRoute] int id)
     {
         if (id <= 0 || id >= int.MaxValue) return BadRequest();
 
-        var result = await _companyService.DeleteGameCompanyAsync(id);
-        return result == true ? NoContent() : NotFound();
+        var response = await _companyService.DeleteGameCompanyAsync(id);
+        return response == true ? NoContent() : NotFound();
     }
 
     [HttpPut]

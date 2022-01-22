@@ -1,6 +1,6 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Services;
 
-public class EvaluationArticleService : IEvaluationArticle
+public class EvaluationArticleService : IEvaluationArticleService
 {
     private readonly EvaluationContext _evaluationContext;
     private readonly EvaluationSettings _settings;
@@ -23,7 +23,7 @@ public class EvaluationArticleService : IEvaluationArticle
 
     public async Task<List<EvaluationArticle>> GetArticlesAsync(int pageSize, int pageIndex, string ids = null)
     {
-        var articles = new List<EvaluationArticle>();
+        List<EvaluationArticle> articles;
 
         if (!string.IsNullOrEmpty(ids))
         {
@@ -105,6 +105,17 @@ public class EvaluationArticleService : IEvaluationArticle
     {
         article.UpdateTime = DateTime.Now.ToLocalTime();
         _evaluationContext.Articles.Update(article);
+        return await _evaluationContext.SaveChangesAsync() > 0;
+    }
+
+    public async Task<List<EvaluationArticle>> GetArticlesByGameInfoAsync(int gameId)
+    {
+        var articles = await _evaluationContext.Articles.Where(x => x.GameId == gameId).ToListAsync();
+        return articles;
+    }
+
+    public async Task<bool> BatchUpdateArticlesAsync()
+    {
         return await _evaluationContext.SaveChangesAsync() > 0;
     }
 

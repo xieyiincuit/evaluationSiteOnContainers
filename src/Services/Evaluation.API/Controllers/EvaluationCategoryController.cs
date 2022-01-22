@@ -4,11 +4,11 @@
 [Route("api/v1/e")]
 public class EvaluationCategoryController : ControllerBase
 {
-    private readonly IEvaluationCategory _categoryService;
+    private readonly IEvaluationCategoryService _categoryService;
     private readonly ILogger<EvaluationCategoryController> _logger;
     private readonly IMapper _mapper;
 
-    public EvaluationCategoryController(IEvaluationCategory categoryService, IMapper mapper,
+    public EvaluationCategoryController(IEvaluationCategoryService categoryService, IMapper mapper,
         ILogger<EvaluationCategoryController> logger)
     {
         _categoryService = categoryService;

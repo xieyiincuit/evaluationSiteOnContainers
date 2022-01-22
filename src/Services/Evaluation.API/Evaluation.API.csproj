@@ -34,6 +34,7 @@
 
   <ItemGroup>
     <Folder Include="Infrastructure\EvaluationMigrations\" />
+    <Folder Include="IntegrationEvents\EventHandling\" />
     <Folder Include="logs\" />
   </ItemGroup>
 

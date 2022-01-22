@@ -22,6 +22,9 @@ global using Serilog.Events;
 global using System.Net;
 global using System.Reflection;
 global using System.Text.Json.Serialization;
+global using Serilog.Context;
+global using Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.EventBusBase.Abstractions;
+global using Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.IntegrationEvents.Events;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.DtoModels;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Extensions;
@@ -33,3 +36,4 @@ global using Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Infras
 global using Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Interfaces;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Models;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Services;
+global using Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.EventBusBase.Events;

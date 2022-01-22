@@ -1,6 +1,6 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Services;
 
-public class EvaluationCategoryService : IEvaluationCategory
+public class EvaluationCategoryService : IEvaluationCategoryService
 {
     private readonly EvaluationContext _evaluationContext;
 
@@ -19,7 +19,6 @@ public class EvaluationCategoryService : IEvaluationCategory
     {
         var category = await _evaluationContext.Categories.FindAsync(categoryId);
         if (category == null) return false;
-        //category.IsDeleted = true;
         _evaluationContext.Categories.Remove(category);
         return await _evaluationContext.SaveChangesAsync() > 0;
     }
@@ -32,7 +31,7 @@ public class EvaluationCategoryService : IEvaluationCategory
 
     public async Task<EvaluationCategory> GetEvaluationCategoryAsync(int categoryId)
     {
-        return await _evaluationContext.Categories.FirstOrDefaultAsync(x => x.CategoryId == categoryId);
+        return await _evaluationContext.Categories.FindAsync(categoryId);
     }
 
     public async Task<bool> UpdateEvaluationCategoryAsync(EvaluationCategory category)

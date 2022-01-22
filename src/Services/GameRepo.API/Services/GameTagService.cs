@@ -6,7 +6,7 @@ public class GameTagService : IGameTagService
 
     public GameTagService(GameRepoContext repoContext)
     {
-        _repoContext = repoContext;
+        _repoContext = repoContext ?? throw new ArgumentNullException(nameof(repoContext));
     }
 
     public async Task<bool> AddGameTagAsync(GameTag gameTag)

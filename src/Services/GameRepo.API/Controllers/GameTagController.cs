@@ -9,8 +9,8 @@ public class GameTagController : ControllerBase
     private const int _pageSize = 10;
     public GameTagController(IGameTagService tagService, IMapper mapper)
     {
-        _tagService = tagService;
-        _mapper = mapper;
+        _tagService = tagService ?? throw new ArgumentNullException(nameof(tagService));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
     [HttpGet]
@@ -19,13 +19,13 @@ public class GameTagController : ControllerBase
     [ProducesResponseType(typeof(PaginatedItemsDtoModel<GameTag>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetTagsAsync([FromQuery] int pageIndex = 1)
     {
-        var totaltags = await _tagService.CountTagsAsync();
-        if (ParameterValidateHelper.IsInvalidPageIndex(totaltags, _pageSize, pageIndex)) pageIndex = 1;
+        var totalTags = await _tagService.CountTagsAsync();
+        if (ParameterValidateHelper.IsInvalidPageIndex(totalTags, _pageSize, pageIndex)) pageIndex = 1;
 
         var tags = await _tagService.GetGameTagsAsync(pageIndex, _pageSize);
         if (!tags.Any()) return NotFound();
 
-        var model = new PaginatedItemsDtoModel<GameTag>(pageIndex, _pageSize, totaltags, tags);
+        var model = new PaginatedItemsDtoModel<GameTag>(pageIndex, _pageSize, totalTags, tags);
         return Ok(model);
     }
 
@@ -33,7 +33,7 @@ public class GameTagController : ControllerBase
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(GameTag), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> GetTagByIdAsync(int tagId)
+    public async Task<IActionResult> GetTagByIdAsync([FromRoute] int tagId)
     {
         if (tagId <= 0 || tagId >= int.MaxValue) return BadRequest();
 
@@ -51,17 +51,17 @@ public class GameTagController : ControllerBase
     {
         if (tagAddDto == null) return BadRequest();
 
-        var entityToadd = _mapper.Map<GameTag>(tagAddDto);
+        var entityToAdd = _mapper.Map<GameTag>(tagAddDto);
 
-        await _tagService.AddGameTagAsync(entityToadd);
-        return CreatedAtRoute(nameof(GetTagByIdAsync), new { tagId = entityToadd.Id }, null);
+        await _tagService.AddGameTagAsync(entityToAdd);
+        return CreatedAtRoute(nameof(GetTagByIdAsync), new { tagId = entityToAdd.Id }, null);
     }
 
     [HttpDelete]
     [Route("tag/{id:int}")]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
-    public async Task<IActionResult> DeleteCategoryAsync(int id)
+    public async Task<IActionResult> DeleteCategoryAsync([FromRoute] int id)
     {
         if (id <= 0 || id >= int.MaxValue) return BadRequest();
 

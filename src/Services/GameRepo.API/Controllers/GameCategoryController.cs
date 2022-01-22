@@ -9,8 +9,8 @@ public class GameCategoryController : ControllerBase
     private const int _pageSize = 10;
     public GameCategoryController(IGameCategoryService categoryService, IMapper mapper)
     {
-        _categoryService = categoryService;
-        _mapper = mapper;
+        _categoryService = categoryService ?? throw new ArgumentNullException(nameof(categoryService));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
     [HttpGet]
@@ -19,13 +19,13 @@ public class GameCategoryController : ControllerBase
     [ProducesResponseType(typeof(PaginatedItemsDtoModel<GameCategory>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetCategoriesAsync([FromQuery] int pageIndex = 1)
     {
-        var totalCategoies = await _categoryService.CountCategoryAsync();
-        if (ParameterValidateHelper.IsInvalidPageIndex(totalCategoies, _pageSize, pageIndex)) pageIndex = 1;
+        var totalCategories = await _categoryService.CountCategoryAsync();
+        if (ParameterValidateHelper.IsInvalidPageIndex(totalCategories, _pageSize, pageIndex)) pageIndex = 1;
 
-        var categoies = await _categoryService.GetGameCategoriesAsync(pageIndex, _pageSize);
-        if (!categoies.Any()) return NotFound();
+        var categories = await _categoryService.GetGameCategoriesAsync(pageIndex, _pageSize);
+        if (!categories.Any()) return NotFound();
 
-        var model = new PaginatedItemsDtoModel<GameCategory>(pageIndex, _pageSize, totalCategoies, categoies);
+        var model = new PaginatedItemsDtoModel<GameCategory>(pageIndex, _pageSize, totalCategories, categories);
         return Ok(model);
     }
 
@@ -33,7 +33,7 @@ public class GameCategoryController : ControllerBase
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(GameCategory), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> GetCategoryAsync(int categoryId)
+    public async Task<IActionResult> GetCategoryAsync([FromRoute] int categoryId)
     {
         if (categoryId <= 0 || categoryId >= int.MaxValue) return BadRequest();
 
@@ -51,22 +51,22 @@ public class GameCategoryController : ControllerBase
     {
         if (categoryAddDto == null) return BadRequest();
 
-        var entityToadd = _mapper.Map<GameCategory>(categoryAddDto);
+        var entityToAdd = _mapper.Map<GameCategory>(categoryAddDto);
 
-        await _categoryService.AddCategoryAsync(entityToadd);
-        return CreatedAtRoute(nameof(GetCategoryAsync), new { categoryId = entityToadd.Id }, null);
+        await _categoryService.AddCategoryAsync(entityToAdd);
+        return CreatedAtRoute(nameof(GetCategoryAsync), new { categoryId = entityToAdd.Id }, null);
     }
 
     [HttpDelete]
     [Route("category/{id:int}")]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
-    public async Task<IActionResult> DeleteCategoryAsync(int id)
+    public async Task<IActionResult> DeleteCategoryAsync([FromRoute] int id)
     {
         if (id <= 0 || id >= int.MaxValue) return BadRequest();
 
-        var result = await _categoryService.DeleteCategoryAsync(id);
-        return result == true ? NoContent() : NotFound();
+        var response = await _categoryService.DeleteCategoryAsync(id);
+        return response == true ? NoContent() : NotFound();
     }
 
     [HttpPut]

@@ -5,8 +5,8 @@
 public class EvaluationArticleController : ControllerBase
 {
     private const int _pageSize = 10;
-    private readonly IEvaluationArticle _articleService;
-    private readonly IEvaluationCategory _categoryService;
+    private readonly IEvaluationArticleService _articleService;
+    private readonly IEvaluationCategoryService _categoryService;
     private readonly IMapper _mapper;
 
     private readonly Dictionary<int, string> _userDic = new()
@@ -18,7 +18,7 @@ public class EvaluationArticleController : ControllerBase
         {5, "Lvcf"}
     };
 
-    public EvaluationArticleController(IEvaluationArticle articleService, IEvaluationCategory categoryService,
+    public EvaluationArticleController(IEvaluationArticleService articleService, IEvaluationCategoryService categoryService,
         IMapper mapper)
     {
         _articleService = articleService;

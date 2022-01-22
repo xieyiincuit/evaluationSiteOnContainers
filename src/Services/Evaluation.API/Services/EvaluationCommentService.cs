@@ -1,6 +1,6 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Services;
 
-public class EvaluationCommentService : IEvaluationComment
+public class EvaluationCommentService : IEvaluationCommentService
 {
     private readonly EvaluationContext _evaluationContext;
 
@@ -87,7 +87,6 @@ public class EvaluationCommentService : IEvaluationComment
     {
         return await _evaluationContext.Comments
             .Include(x => x.EvaluationArticle)
-            .AsNoTracking()
             .FirstOrDefaultAsync(x => x.CommentId == commentId);
     }
 }

@@ -6,7 +6,7 @@ public class PlaySuggestionService : IPlaySuggestionService
 
     public PlaySuggestionService(GameRepoContext repoContext)
     {
-        _repoContext = repoContext;
+        _repoContext = repoContext ?? throw new ArgumentNullException(nameof(repoContext));
     }
 
     public async Task<bool> AddPlaySuggestionAsync(GamePlaySuggestion gamePlaySuggestion)

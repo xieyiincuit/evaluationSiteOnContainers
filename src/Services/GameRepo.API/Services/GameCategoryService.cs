@@ -6,7 +6,7 @@ public class GameCategoryService : IGameCategoryService
 
     public GameCategoryService(GameRepoContext repoContext)
     {
-        _repoContext = repoContext;
+        _repoContext = repoContext ?? throw new ArgumentNullException(nameof(repoContext));
     }
 
     public async Task<bool> AddCategoryAsync(GameCategory gameCategory)
@@ -30,13 +30,13 @@ public class GameCategoryService : IGameCategoryService
 
     public async Task<List<GameCategory>> GetGameCategoriesAsync(int pageIndex, int pageSize)
     {
-        var categoies = await _repoContext.GameCategories
+        var categories = await _repoContext.GameCategories
             .OrderBy(x => x.CategoryName)
             .Skip((pageIndex - 1) * pageSize)
             .Take(pageSize)
             .AsNoTracking()
             .ToListAsync();
-        return categoies;
+        return categories;
     }
 
     public async Task<GameCategory> GetGameCategoryAsync(int categoryId)
