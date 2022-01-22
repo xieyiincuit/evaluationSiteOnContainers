@@ -46,11 +46,4 @@ public class HttpGlobalExceptionFilter : IExceptionFilter
 
         context.ExceptionHandled = true;
     }
-
-    private class JsonErrorResponse
-    {
-        public string[] Messages { get; set; }
-
-        public object DeveloperMessage { get; set; }
-    }
 }
