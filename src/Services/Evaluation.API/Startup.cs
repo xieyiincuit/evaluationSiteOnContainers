@@ -54,7 +54,7 @@ public class Startup
             });
             endpoints.MapHealthChecks("/liveness", new HealthCheckOptions
             {
-                Predicate = r => r.Name.Contains("self-db")
+                Predicate = r => r.Name.Contains("self")
             });
         });
 

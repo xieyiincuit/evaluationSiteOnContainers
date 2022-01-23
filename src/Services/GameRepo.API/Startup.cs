@@ -54,7 +54,7 @@ public class Startup
                                 maxRetryCount: 15,
                                 maxRetryDelay: TimeSpan.FromSeconds(30),
                                 errorNumbersToAdd: null);
-                            
+
                         });
                     dbContextOptions.LogTo(Console.WriteLine, LogLevel.Information);
                     dbContextOptions.EnableSensitiveDataLogging();
@@ -181,6 +181,26 @@ public class Startup
 
         #endregion
 
+        #region HealthCheck
+
+        {
+            var hcBuilder = services.AddHealthChecks();
+
+            hcBuilder
+                .AddCheck("self", () => HealthCheckResult.Healthy())
+                .AddMySql(
+                    Configuration["ConnectionString"],
+                    name: "GameRepoDB-check",
+                    tags: new string[] { "db", "mysql", "gamerepo" });
+
+            hcBuilder
+                .AddRabbitMQ(
+                    $"amqp://{Configuration["EventBusSettings:Connection"]}",
+                    name: "gamerepo-rabbitmqbus-check",
+                    tags: new string[] { "rabbitmqbus" });
+        }
+
+        #endregion
 
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -219,10 +239,19 @@ public class Startup
         {
             endpoints.MapDefaultControllerRoute();
             endpoints.MapControllers();
+
+            endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
+            {
+                Predicate = _ => true,
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            });
+            endpoints.MapHealthChecks("/liveness", new HealthCheckOptions
+            {
+                Predicate = r => r.Name.Contains("self")
+            });
         });
 
         ConfigureEventBus(app);
-
     }
 
     protected virtual void ConfigureEventBus(IApplicationBuilder app)
