@@ -1,68 +1,85 @@
-﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API;
-public class Program
+﻿var configuration = GetConfiguration();
+
+Log.Logger = CreateSerilogLogger(configuration);
+
+try
 {
-    public static int Main(string[] args)
+    Log.Information("Configuring web host ({ApplicationContext})...", Program.AppName);
+    var host = BuildWebHost(configuration, args);
+
+    Log.Information("Applying migrations ({ApplicationContext})...", Program.AppName);
+    host.MigrateDbContext<ApplicationDbContext>((context, services) =>
     {
-        Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.Debug()
-            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-            .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
-            .MinimumLevel.Override("System", LogEventLevel.Warning)
-            .MinimumLevel.Override("Microsoft.AspNetCore.Authentication", LogEventLevel.Information)
-            .Enrich.FromLogContext()
-            // uncomment to write to Azure diagnostics stream
-            //.WriteTo.File(
-            //    @"D:\home\LogFiles\Application\identityserver.txt",
-            //    fileSizeLimitBytes: 1_000_000,
-            //    rollOnFileSizeLimit: true,
-            //    shared: true,
-            //    flushToDiskInterval: TimeSpan.FromSeconds(1))
-            .WriteTo.Console(
-                outputTemplate:
-                "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}",
-                theme: AnsiConsoleTheme.Code)
-            .CreateLogger();
+        var env = services.GetService<IWebHostEnvironment>();
+        var logger = services.GetRequiredService<ILogger<ApplicationDbContextSeed>>();
+        new ApplicationDbContextSeed().SeedAsync(context, env, logger).Wait();
+    });
+    host.MigrateDbContext<PersistedGrantDbContext>((_, _) => { });
+    host.MigrateDbContext<ConfigurationDbContext>((context, services) =>
+    {
+        new ConfigurationDbContextSeed()
+            .SeedAsync(context, configuration)
+            .Wait();
+    });
+    Log.Information("Migrations Applied ({ApplicationContext})...", Program.AppName);
 
-        try
-        {
-            var seed = args.Contains("/seed");
-            if (seed)
-            {
-                args = args.Except(new[] { "/seed" }).ToArray();
-            }
+    Log.Information("Starting web host ({ApplicationContext})...", Program.AppName);
+    host.Run();
 
-            var host = CreateHostBuilder(args).Build();
+    return 0;
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Program terminated unexpectedly ({ApplicationContext})!", Program.AppName);
+    return 1;
+}
+finally
+{
+    Log.CloseAndFlush();
+}
 
-            if (seed)
-            {
-                Log.Information("Seeding database...");
-                var config = host.Services.GetRequiredService<IConfiguration>();
-                var connectionString = config.GetConnectionString("DefaultConnection");
-                SeedData.EnsureSeedData(connectionString);
-                Log.Information("Done seeding database.");
-                return 0;
-            }
+//Create Web Host
+IWebHost BuildWebHost(IConfiguration configuration, string[] args)
+{
+    return WebHost.CreateDefaultBuilder(args)
+        .CaptureStartupErrors(false)
+        .ConfigureAppConfiguration(x => x.AddConfiguration(configuration))
+        .UseStartup<Startup>()
+        .UseContentRoot(Directory.GetCurrentDirectory())
+        .UseSerilog()
+        .Build();
+}
 
-            Log.Information("Starting host...");
-            host.Run();
-            return 0;
-        }
-        catch (Exception ex)
-        {
-            Log.Fatal(ex, "Host terminated unexpectedly.");
-            return 1;
-        }
-        finally
-        {
-            Log.CloseAndFlush();
-        }
-    }
+//Set Logging Middleware
+Serilog.ILogger CreateSerilogLogger(IConfiguration configuration)
+{
+    return new LoggerConfiguration()
+        .MinimumLevel.Debug()
+        .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+        .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
+        .MinimumLevel.Override("System", LogEventLevel.Warning)
+        .MinimumLevel.Override("Microsoft.AspNetCore.Authentication", LogEventLevel.Information)
+        .Enrich.WithProperty("ApplicationContext", Program.AppName)
+        .Enrich.FromLogContext()
+        .WriteTo.Console(
+            outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}",
+            theme: AnsiConsoleTheme.Code)
+        .ReadFrom.Configuration(configuration)
+        .CreateLogger();
+}
 
-    public static IHostBuilder CreateHostBuilder(string[] args) =>
-        Host.CreateDefaultBuilder(args)
-            .UseSerilog()
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder.UseStartup<Startup>();
-            });
+IConfiguration GetConfiguration()
+{
+    var builder = new ConfigurationBuilder()
+        .SetBasePath(Directory.GetCurrentDirectory())
+        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+        .AddEnvironmentVariables();
+
+    return builder.Build();
+}
+
+public partial class Program
+{
+    public static string Namespace = typeof(Startup).Namespace;
+    public static string AppName = Namespace.Substring(Namespace.LastIndexOf('.', Namespace.LastIndexOf('.') - 1) + 1);
 }

@@ -14,7 +14,7 @@ public static class EvaluationArticleExtensions
     {
         if (article != null)
         {
-            if (string.IsNullOrEmpty(article.DesciptionImage)) article.DesciptionImage = descriptionPicBaseUrl;
+            if (string.IsNullOrEmpty(article.DescriptionImage)) article.DescriptionImage = descriptionPicBaseUrl;
 
             if (string.IsNullOrEmpty(article.ArticleImage)) article.ArticleImage = articlePicBaseUrl;
         }

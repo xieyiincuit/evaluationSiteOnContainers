@@ -38,7 +38,7 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                     user_id = table.Column<int>(type: "int", nullable: false, comment: "测评内容作者id"),
                     title = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false, comment: "测评文章标题")
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    desciption_image = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: true, comment: "展示略缩图")
+                    description_image = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: true, comment: "展示略缩图")
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     article_image = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: true, comment: "内容Top呈现图")
                         .Annotation("MySql:CharSet", "utf8mb4"),

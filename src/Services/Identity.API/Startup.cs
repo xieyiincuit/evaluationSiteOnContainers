@@ -1,4 +1,5 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API;
+
 public class Startup
 {
     public IWebHostEnvironment Environment { get; }
@@ -10,51 +11,27 @@ public class Startup
         Configuration = configuration;
     }
 
-    public void ConfigureServices(IServiceCollection services)
+    public IServiceProvider ConfigureServices(IServiceCollection services)
     {
         services.AddControllersWithViews();
 
-        var connectionString = Configuration.GetConnectionString("DefaultConnection");
+        services.AddCustomIdentityDbContext(Configuration);
 
-        var builder = services.AddIdentityServer(options =>
+        services.AddIdentityServer(options =>
         {
             options.Events.RaiseErrorEvents = true;
             options.Events.RaiseInformationEvents = true;
             options.Events.RaiseFailureEvents = true;
             options.Events.RaiseSuccessEvents = true;
-
-            // see https://identityserver4.readthedocs.io/en/latest/topics/resources.html
             options.EmitStaticAudienceClaim = true;
         })
-            .AddTestUsers(TestUsers.Users)
-            // this adds the config data from DB (clients, resources, CORS)
-            .AddConfigurationStore(options =>
-            {
-                options.ConfigureDbContext = builder => builder.UseSqlite(connectionString);
-            })
-            // this adds the operational data from DB (codes, tokens, consents)
-            .AddOperationalStore(options =>
-            {
-                options.ConfigureDbContext = builder => builder.UseSqlite(connectionString);
+        .AddCustomIdentityStoreService(Configuration)
+        .AddAspNetIdentity<ApplicationUser>();
 
-                // this enables automatic token cleanup. this is optional.
-                options.EnableTokenCleanup = true;
-            });
+        var container = new ContainerBuilder();
+        container.Populate(services);
 
-        // not recommended for production - you need to store your key material somewhere secure
-        builder.AddDeveloperSigningCredential();
-
-        services.AddAuthentication()
-            .AddGoogle(options =>
-            {
-                options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-
-                // register your IdentityServer with Google at https://console.developers.google.com
-                // enable the Google+ API
-                // set the redirect URI to https://localhost:5001/signin-google
-                options.ClientId = "copy client ID from Google here";
-                options.ClientSecret = "copy client secret from Google here";
-            });
+        return new AutofacServiceProvider(container.Build());
     }
 
     public void Configure(IApplicationBuilder app)
@@ -65,13 +42,90 @@ public class Startup
         }
 
         app.UseStaticFiles();
-
         app.UseRouting();
+
         app.UseIdentityServer();
         app.UseAuthorization();
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapDefaultControllerRoute();
         });
+    }
+}
+
+
+public static class CustomExtensionMethod
+{
+    /// <summary>
+    /// 初始化ApplicationUserContext
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="configuration"></param>
+    /// <returns></returns>
+    public static IServiceCollection AddCustomIdentityDbContext(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        // Add framework services.
+        services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
+                sqlServerOptionsAction: sqlOptions =>
+                {
+                    sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
+                    sqlOptions.EnableRetryOnFailure(
+                        maxRetryCount: 15,
+                        maxRetryDelay: TimeSpan.FromSeconds(30),
+                        errorNumbersToAdd: null);
+                }));
+
+        services.AddIdentity<ApplicationUser, IdentityRole>()
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
+        return services;
+    }
+
+    /// <summary>
+    /// 整合初始化Store
+    /// </summary>
+    /// <param name="builder"></param>
+    /// <param name="configuration"></param>
+    /// <returns></returns>
+    public static IIdentityServerBuilder AddCustomIdentityStoreService(
+        this IIdentityServerBuilder builder,
+        IConfiguration configuration)
+    {
+        var connectionString = configuration.GetConnectionString("DefaultConnection");
+        var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+        builder.AddTestUsers(TestUsers.Users)
+            .AddConfigurationStore(options =>
+            {
+                options.ConfigureDbContext = builder => builder.UseSqlServer(connectionString,
+                    sqlServerOptionsAction: sqlOptions =>
+                    {
+                        sqlOptions.MigrationsAssembly(migrationsAssembly);
+                        sqlOptions.EnableRetryOnFailure(
+                            maxRetryCount: 15,
+                            maxRetryDelay: TimeSpan.FromSeconds(30),
+                            errorNumbersToAdd: null);
+                    });
+            })
+            .AddOperationalStore(options =>
+            {
+                options.ConfigureDbContext = builder => builder.UseSqlServer(connectionString,
+                    sqlServerOptionsAction: sqlOptions =>
+                    {
+                        sqlOptions.MigrationsAssembly(migrationsAssembly);
+                        sqlOptions.EnableRetryOnFailure(
+                            maxRetryCount: 15,
+                            maxRetryDelay: TimeSpan.FromSeconds(30),
+                            errorNumbersToAdd: null);
+                    });
+                // this enables automatic token cleanup. this is optional.
+                options.EnableTokenCleanup = true;
+            });
+
+        // not recommended for production - you need to store your key material somewhere secure
+        builder.AddDeveloperSigningCredential();
+        return builder;
     }
 }

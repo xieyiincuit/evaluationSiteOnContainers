@@ -17,7 +17,7 @@ public class EvaluationArticle
     /// <summary>
     ///     略缩图
     /// </summary>
-    public string? DesciptionImage { get; set; }
+    public string? DescriptionImage { get; set; }
 
     /// <summary>
     ///     详情图

@@ -56,10 +56,10 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                         .HasColumnName("create_time")
                         .HasComment("测评内容创建时间");
 
-                    b.Property<string>("DesciptionImage")
+                    b.Property<string>("DescriptionImage")
                         .HasMaxLength(200)
                         .HasColumnType("varchar(200)")
-                        .HasColumnName("desciption_image")
+                        .HasColumnName("description_image")
                         .HasComment("展示略缩图");
 
                     b.Property<string>("Description")

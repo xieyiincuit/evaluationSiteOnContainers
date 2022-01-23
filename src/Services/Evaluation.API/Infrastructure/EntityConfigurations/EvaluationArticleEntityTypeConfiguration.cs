@@ -32,8 +32,8 @@ internal class EvaluationArticleEntityTypeConfiguration : IEntityTypeConfigurati
             .HasMaxLength(200)
             .IsRequired(false);
 
-        builder.Property(x => x.DesciptionImage)
-            .HasColumnName("desciption_image")
+        builder.Property(x => x.DescriptionImage)
+            .HasColumnName("description_image")
             .HasComment("展示略缩图")
             .HasMaxLength(200)
             .IsRequired(false);

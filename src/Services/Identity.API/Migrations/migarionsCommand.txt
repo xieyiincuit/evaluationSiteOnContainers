@@ -1,0 +1,4 @@
+﻿dotnet ef migrations add ConfigurationInit -c ConfigurationDbContext -o ./Migrations/ConfigurationDb -v
+dotnet ef migrations add GrantsInit -c PersistedGrantDbContext -o ./Migrations/PersistedGrantDb -v
+dotnet ef migrations add ApplicationUserInit -c AllicationDbContext -o ./Migrations -v
+
