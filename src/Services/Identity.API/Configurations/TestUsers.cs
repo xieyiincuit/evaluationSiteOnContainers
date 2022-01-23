@@ -1,15 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-
-
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Text.Json;
-using IdentityModel;
-using IdentityServer4;
-using IdentityServer4.Test;
-
-namespace Identity.API.Configurations;
+﻿namespace Identity.API.Configurations;
 public class TestUsers
 {
     public static List<TestUser> Users

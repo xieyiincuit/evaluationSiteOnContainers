@@ -1,31 +1,8 @@
-// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Identity.API.DtoModels.Device;
-using Identity.API.Extensions;
-using Identity.API.Extensions.Options;
-using Identity.API.ViewModels.Consent;
-using Identity.API.ViewModels.Device;
-using IdentityServer4.Configuration;
-using IdentityServer4.Events;
-using IdentityServer4.Extensions;
-using IdentityServer4.Models;
-using IdentityServer4.Services;
-using IdentityServer4.Validation;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-
 namespace Identity.API.Controllers;
+
 [Authorize]
 [SecurityHeaders]
-public class DeviceController : Microsoft.AspNetCore.Mvc.Controller
+public class DeviceController : Controller
 {
     private readonly IDeviceFlowInteractionService _interaction;
     private readonly IEventService _events;

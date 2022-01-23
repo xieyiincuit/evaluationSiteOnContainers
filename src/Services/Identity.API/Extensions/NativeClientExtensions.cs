@@ -1,8 +1,3 @@
-using System;
-using Identity.API.ViewModels.Login;
-using IdentityServer4.Models;
-using Microsoft.AspNetCore.Mvc;
-
 namespace Identity.API.Extensions;
 public static class NativeClientExtensions
 {

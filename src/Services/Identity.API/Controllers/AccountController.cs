@@ -1,28 +1,3 @@
-// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-
-
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Identity.API.Configurations;
-using Identity.API.DtoModels.Login;
-using Identity.API.Extensions;
-using Identity.API.Extensions.Options;
-using Identity.API.ViewModels.Login;
-using IdentityModel;
-using IdentityServer4;
-using IdentityServer4.Events;
-using IdentityServer4.Extensions;
-using IdentityServer4.Models;
-using IdentityServer4.Services;
-using IdentityServer4.Stores;
-using IdentityServer4.Test;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-
 namespace Identity.API.Controllers;
 /// <summary>
 /// This sample controller implements a typical login/logout/provision workflow for local and external accounts.
@@ -31,7 +6,7 @@ namespace Identity.API.Controllers;
 /// </summary>
 [SecurityHeaders]
 [AllowAnonymous]
-public class AccountController : Microsoft.AspNetCore.Mvc.Controller
+public class AccountController : Controller
 {
     private readonly TestUserStore _users;
     private readonly IIdentityServerInteractionService _interaction;
