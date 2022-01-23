@@ -28,8 +28,18 @@ services:
     ports:
       - "15672:15672"
       - "5672:5672"
+  db_indentity:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      - SA_PASSWORD=Zh0u!1,,
+      - ACCEPT_EULA=Y
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql_identity:/var/opt/mssql
 
 volumes:
   mysql_gamerepo:
   mysql_evaluation:
   rabbitmq_evaluation:
+  mssql_identity:
