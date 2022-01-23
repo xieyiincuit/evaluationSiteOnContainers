@@ -114,11 +114,10 @@ public class EvaluationArticleController : ControllerBase
 
         //mapping        
         var entity = _mapper.Map<EvaluationArticle>(articleAddDto);
-        //TODO Author从用户信息中获取
+        //TODO Get real userInfo
         entity.UserId = 1;
 
         await _articleService.AddArticleAsync(entity);
-        //TODO 用CreateAtXXX替换POST和PUT
         return CreatedAtRoute(nameof(GetArticleByIdAsync), new {id = entity.ArticleId}, null);
     }
 
