@@ -11,11 +11,11 @@ public class EvaluationArticleController : ControllerBase
 
     private readonly Dictionary<int, string> _userDic = new()
     {
-        {1, "Zhousl"},
-        {2, "Hanby"},
-        {3, "Chenxy"},
-        {4, "Wangxb"},
-        {5, "Lvcf"}
+        { 1, "Zhousl" },
+        { 2, "Hanby" },
+        { 3, "Chenxy" },
+        { 4, "Wangxb" },
+        { 5, "Lvcf" }
     };
 
     public EvaluationArticleController(IEvaluationArticleService articleService, IEvaluationCategoryService categoryService,
@@ -29,9 +29,9 @@ public class EvaluationArticleController : ControllerBase
     // GET api/v1/evaluation/articles[?pageSize=10&pageIndex=1]
     [HttpGet]
     [Route("articles")]
-    [ProducesResponseType(typeof(PaginatedItemsDtoModel<EvaluationArticle>), (int) HttpStatusCode.OK)]
-    [ProducesResponseType(typeof(IEnumerable<ArticleDto>), (int) HttpStatusCode.OK)]
-    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(PaginatedItemsDtoModel<EvaluationArticle>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<ArticleDto>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> GetArticlesAsync([FromQuery] int pageIndex = 1, string? ids = null)
     {
         if (!string.IsNullOrEmpty(ids))
@@ -61,9 +61,9 @@ public class EvaluationArticleController : ControllerBase
     // GET api/v1/evaluation/articles/1
     [HttpGet("article/{id:int}", Name = nameof(GetArticleByIdAsync))]
     //[Route("article/{id:int}")] 使用HTTP GET获取route则不能使用Route重新定义
-    [ProducesResponseType((int) HttpStatusCode.NotFound)]
-    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(ArticleDto), (int) HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(ArticleDto), (int)HttpStatusCode.OK)]
     public async Task<ActionResult<ArticleDto>> GetArticleByIdAsync(int id)
     {
         if (id <= 0 || id >= int.MaxValue) return BadRequest();
@@ -81,8 +81,8 @@ public class EvaluationArticleController : ControllerBase
     // GET api/v1/evaluation/type/articles
     [HttpGet]
     [Route("type/articles")]
-    [ProducesResponseType(typeof(PaginatedItemsDtoModel<ArticleDto>), (int) HttpStatusCode.OK)]
-    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(PaginatedItemsDtoModel<ArticleDto>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> GetArticleByTypeAsync(int categoryId, [FromQuery] int pageIndex = 1)
     {
         var categories = await _categoryService.GetEvaluationCategoriesAsync();
@@ -106,8 +106,8 @@ public class EvaluationArticleController : ControllerBase
     // Post api/v1/evaluation/articles
     [HttpPost]
     [Route("article")]
-    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(EvaluationArticle), (int) HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(EvaluationArticle), (int)HttpStatusCode.Created)]
     public async Task<IActionResult> CreateArticleAsync([FromBody] ArticleAddDto articleAddDto)
     {
         if (articleAddDto == null) return BadRequest();
@@ -118,15 +118,15 @@ public class EvaluationArticleController : ControllerBase
         entity.UserId = 1;
 
         await _articleService.AddArticleAsync(entity);
-        return CreatedAtRoute(nameof(GetArticleByIdAsync), new {id = entity.ArticleId}, null);
+        return CreatedAtRoute(nameof(GetArticleByIdAsync), new { id = entity.ArticleId }, null);
     }
 
     // Delete api/v1/evaluation/articles/{id}
     [HttpDelete]
     [Route("article/{id:int}")]
-    [ProducesResponseType((int) HttpStatusCode.NoContent)]
-    [ProducesResponseType((int) HttpStatusCode.NotFound)]
-    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> DeleteArticleByIdAsync([FromRoute] int id)
     {
         if (id <= 0 || id >= int.MaxValue) return BadRequest();
@@ -140,9 +140,9 @@ public class EvaluationArticleController : ControllerBase
     // Put api/v1/evaluation/articles
     [HttpPut]
     [Route("article/{id:int}")]
-    [ProducesResponseType((int) HttpStatusCode.NoContent)]
-    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int) HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<IActionResult> UpdateArticleAsync([FromRoute] int id,
         [FromBody] ArticleUpdateDto articleUpdateDto)
     {

@@ -146,7 +146,7 @@ public class EvaluationContextSeed
         string[] csvheaders;
         try
         {
-            string[] requiredHeaders = {"evaluationcategories"};
+            string[] requiredHeaders = { "evaluationcategories" };
             csvheaders = GetHeaders(csvFileEvaluationCategories, requiredHeaders);
         }
         catch (Exception ex)

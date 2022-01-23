@@ -71,9 +71,14 @@ public static class ServiceCollectionExtension
             .AddCheck("self", () => HealthCheckResult.Healthy())
             .AddMySql(
                 configuration["ConnectionStrings:DataBaseConnectString"],
-                "mysql",
+                "EvaluationDB-check",
                 HealthStatus.Degraded,
-                new[] { "db", "sql", "mysql" });
+                new[] { "db", "evaluation", "mysql" })
+            .AddRabbitMQ(
+                $"amqp://{configuration["EventBusSettings:Connection"]}",
+                name: "evaluation-rabbitmqbus-check",
+                tags: new string[] { "rabbitmqbus" });
+
         return services;
     }
 

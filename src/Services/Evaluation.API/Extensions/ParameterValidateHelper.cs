@@ -6,7 +6,7 @@ public static class ParameterValidateHelper
     {
         if (pageIndex <= 0) return true;
 
-        var maxPageIndex = (int) Math.Ceiling(totalCount / (double) pageSize);
+        var maxPageIndex = (int)Math.Ceiling(totalCount / (double)pageSize);
         return pageIndex > maxPageIndex;
     }
 }

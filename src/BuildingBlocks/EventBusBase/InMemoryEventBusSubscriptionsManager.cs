@@ -145,9 +145,9 @@ public partial class InMemoryEventBusSubscriptionsManager : IEventBusSubscriptio
 
     private SubscriptionInfo DoFindSubscriptionToRemove(string eventName, Type handlerType)
     {
-        if (!HasSubscriptionsForEvent(eventName))       
+        if (!HasSubscriptionsForEvent(eventName))
             return null;
-        
+
         return _handlers[eventName].SingleOrDefault(subscript => subscript.HandlerType == handlerType);
     }
 
@@ -163,5 +163,5 @@ public partial class InMemoryEventBusSubscriptionsManager : IEventBusSubscriptio
     public string GetEventKey<T>()
     {
         return typeof(T).Name;
-    }  
+    }
 }
