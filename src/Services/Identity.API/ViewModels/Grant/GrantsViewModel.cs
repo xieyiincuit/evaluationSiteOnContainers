@@ -1,4 +1,4 @@
-﻿namespace Identity.API.ViewModels.Grant;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.ViewModels.Grant;
 public class GrantsViewModel
 {
     public IEnumerable<GrantViewModel> Grants { get; set; }

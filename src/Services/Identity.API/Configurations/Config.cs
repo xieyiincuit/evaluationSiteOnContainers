@@ -1,4 +1,4 @@
-﻿namespace Identity.API.Configurations;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Configurations;
 
 public static class Config
 {

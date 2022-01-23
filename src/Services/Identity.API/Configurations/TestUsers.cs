@@ -1,4 +1,4 @@
-﻿namespace Identity.API.Configurations;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Configurations;
 public class TestUsers
 {
     public static List<TestUser> Users

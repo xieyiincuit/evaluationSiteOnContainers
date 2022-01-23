@@ -1,4 +1,4 @@
-namespace Identity.API.ViewModels.Login;
+namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.ViewModels.Login;
 
 public class RedirectViewModel
 {

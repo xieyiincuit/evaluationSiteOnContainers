@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 using System;
 
-namespace Identity.API.Migrations.PersistedGrantDb;
+namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Migrations.PersistedGrantDb;
 public partial class Grants : Migration
 {
     protected override void Up(MigrationBuilder migrationBuilder)

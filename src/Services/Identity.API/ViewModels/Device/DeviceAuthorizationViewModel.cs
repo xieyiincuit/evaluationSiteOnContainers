@@ -1,4 +1,4 @@
-namespace Identity.API.ViewModels.Device;
+namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.ViewModels.Device;
 
 public class DeviceAuthorizationViewModel : ConsentViewModel
 {

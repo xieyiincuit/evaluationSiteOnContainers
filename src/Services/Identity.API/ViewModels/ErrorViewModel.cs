@@ -1,4 +1,4 @@
-﻿namespace Identity.API.ViewModels;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.ViewModels;
 public class ErrorViewModel
 {
     public ErrorViewModel()

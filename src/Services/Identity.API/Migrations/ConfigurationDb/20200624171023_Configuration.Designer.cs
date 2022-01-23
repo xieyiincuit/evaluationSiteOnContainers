@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
 
-namespace Identity.API.Migrations.ConfigurationDb;
+namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Migrations.ConfigurationDb;
 [DbContext(typeof(ConfigurationDbContext))]
 [Migration("20200624171023_Configuration")]
 partial class Configuration

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
 
-namespace Identity.API.Migrations.PersistedGrantDb;
+namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Migrations.PersistedGrantDb;
 [DbContext(typeof(PersistedGrantDbContext))]
 [Migration("20200624171018_Grants")]
 partial class Grants

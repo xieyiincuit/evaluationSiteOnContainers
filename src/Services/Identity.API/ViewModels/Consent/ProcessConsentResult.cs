@@ -1,4 +1,4 @@
-namespace Identity.API.ViewModels.Consent;
+namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.ViewModels.Consent;
 public class ProcessConsentResult
 {
     public bool IsRedirect => RedirectUri != null;

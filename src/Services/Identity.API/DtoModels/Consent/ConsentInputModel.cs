@@ -1,4 +1,4 @@
-﻿namespace Identity.API.DtoModels.Consent;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.DtoModels.Consent;
 
 public class ConsentInputModel
 {

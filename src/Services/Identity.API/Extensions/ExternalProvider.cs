@@ -1,4 +1,4 @@
-﻿namespace Identity.API.Extensions;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Extensions;
 
 public class ExternalProvider
 {

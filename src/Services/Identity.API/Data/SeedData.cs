@@ -1,4 +1,4 @@
-﻿namespace Identity.API.Data;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Data;
 
 public class SeedData
 {

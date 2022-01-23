@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
 
-namespace Identity.API.Migrations.ConfigurationDb;
+namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Migrations.ConfigurationDb;
 [DbContext(typeof(ConfigurationDbContext))]
 partial class ConfigurationDbContextModelSnapshot : ModelSnapshot
 {

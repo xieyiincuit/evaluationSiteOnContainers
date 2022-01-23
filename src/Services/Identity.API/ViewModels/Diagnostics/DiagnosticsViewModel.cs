@@ -1,4 +1,4 @@
-namespace Identity.API.ViewModels.Diagnostics;
+namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.ViewModels.Diagnostics;
 public class DiagnosticsViewModel
 {
     public DiagnosticsViewModel(AuthenticateResult result)
