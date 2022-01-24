@@ -24,9 +24,15 @@ public class Startup
             options.Events.RaiseFailureEvents = true;
             options.Events.RaiseSuccessEvents = true;
             options.EmitStaticAudienceClaim = true;
+
+            options.Authentication.CookieLifetime = TimeSpan.FromHours(2);
+
         })
         .AddCustomIdentityStoreService(Configuration)
-        .AddAspNetIdentity<ApplicationUser>();
+        .AddAspNetIdentity<ApplicationUser>()
+        .AddDeveloperSigningCredential(); //开发环境使用方便
+
+        services.AddAuthentication();
 
         var container = new ContainerBuilder();
         container.Populate(services);
@@ -44,7 +50,14 @@ public class Startup
         app.UseStaticFiles();
         app.UseRouting();
 
+        app.UseForwardedHeaders();
         app.UseIdentityServer();
+
+        // Fix a problem with chrome. Chrome enabled a new feature "Cookies without SameSite must be secure", 
+        // the cookies should be expired from https, but in this app, the internal communication in aks and docker compose is http.
+        // To avoid this problem, the policy of cookies should be in Lax mode.
+        app.UseCookiePolicy(new CookiePolicyOptions { MinimumSameSitePolicy = SameSiteMode.Lax });
+
         app.UseAuthorization();
         app.UseEndpoints(endpoints =>
         {
@@ -52,7 +65,6 @@ public class Startup
         });
     }
 }
-
 
 public static class CustomExtensionMethod
 {
@@ -96,8 +108,7 @@ public static class CustomExtensionMethod
     {
         var connectionString = configuration.GetConnectionString("DefaultConnection");
         var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
-        builder.AddTestUsers(TestUsers.Users)
-            .AddConfigurationStore(options =>
+        builder.AddConfigurationStore(options =>
             {
                 options.ConfigureDbContext = builder => builder.UseSqlServer(connectionString,
                     sqlServerOptionsAction: sqlOptions =>
@@ -124,8 +135,6 @@ public static class CustomExtensionMethod
                 options.EnableTokenCleanup = true;
             });
 
-        // not recommended for production - you need to store your key material somewhere secure
-        builder.AddDeveloperSigningCredential();
         return builder;
     }
 }

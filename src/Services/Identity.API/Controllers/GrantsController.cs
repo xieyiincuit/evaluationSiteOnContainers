@@ -1,10 +1,10 @@
-namespace Identity.API.Controllers;
+namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Controllers;
 /// <summary>
 /// This sample controller allows a user to revoke grants given to clients
 /// </summary>
 [SecurityHeaders]
 [Authorize]
-public class GrantsController : Microsoft.AspNetCore.Mvc.Controller
+public class GrantsController : Controller
 {
     private readonly IIdentityServerInteractionService _interaction;
     private readonly IClientStore _clients;

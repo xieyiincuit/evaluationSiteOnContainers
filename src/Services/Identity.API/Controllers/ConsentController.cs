@@ -1,4 +1,4 @@
-namespace Identity.API.Controllers;
+namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Controllers;
 /// <summary>
 /// This controller processes the consent UI
 /// </summary>
@@ -86,7 +86,7 @@ public class ConsentController : Controller
         ConsentResponse grantedConsent = null;
 
         // user clicked 'no' - send back the standard 'access_denied' response
-        if (model?.Button == "no")
+        if (model.Button == "no")
         {
             grantedConsent = new ConsentResponse { Error = AuthorizationError.AccessDenied };
 
@@ -94,7 +94,7 @@ public class ConsentController : Controller
             await _events.RaiseAsync(new ConsentDeniedEvent(User.GetSubjectId(), request.Client.ClientId, request.ValidatedResources.RawScopeValues));
         }
         // user clicked 'yes' - validate the data
-        else if (model?.Button == "yes")
+        else if (model.Button == "yes")
         {
             // if the user consented to some scope, build the response model
             if (model.ScopesConsented != null && model.ScopesConsented.Any())
@@ -102,7 +102,7 @@ public class ConsentController : Controller
                 var scopes = model.ScopesConsented;
                 if (ConsentOptions.EnableOfflineAccess == false)
                 {
-                    scopes = scopes.Where(x => x != IdentityServer4.IdentityServerConstants.StandardScopes.OfflineAccess);
+                    scopes = scopes.Where(x => x != IdentityServerConstants.StandardScopes.OfflineAccess);
                 }
 
                 grantedConsent = new ConsentResponse
@@ -190,7 +190,8 @@ public class ConsentController : Controller
         }
         if (ConsentOptions.EnableOfflineAccess && request.ValidatedResources.Resources.OfflineAccess)
         {
-            apiScopes.Add(GetOfflineAccessScope(vm.ScopesConsented.Contains(IdentityServer4.IdentityServerConstants.StandardScopes.OfflineAccess) || model == null));
+            apiScopes.Add(GetOfflineAccessScope(vm.ScopesConsented.Contains(
+                IdentityServerConstants.StandardScopes.OfflineAccess) || model == null));
         }
         vm.ApiScopes = apiScopes;
 
@@ -213,7 +214,7 @@ public class ConsentController : Controller
     public ScopeViewModel CreateScopeViewModel(ParsedScopeValue parsedScopeValue, ApiScope apiScope, bool check)
     {
         var displayName = apiScope.DisplayName ?? apiScope.Name;
-        if (!String.IsNullOrWhiteSpace(parsedScopeValue.ParsedParameter))
+        if (!string.IsNullOrWhiteSpace(parsedScopeValue.ParsedParameter))
         {
             displayName += ":" + parsedScopeValue.ParsedParameter;
         }
@@ -233,7 +234,7 @@ public class ConsentController : Controller
     {
         return new ScopeViewModel
         {
-            Value = IdentityServer4.IdentityServerConstants.StandardScopes.OfflineAccess,
+            Value = IdentityServerConstants.StandardScopes.OfflineAccess,
             DisplayName = ConsentOptions.OfflineAccessDisplayName,
             Description = ConsentOptions.OfflineAccessDescription,
             Emphasize = true,

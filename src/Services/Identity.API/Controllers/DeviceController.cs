@@ -1,4 +1,4 @@
-namespace Identity.API.Controllers;
+namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Controllers;
 
 [Authorize]
 [SecurityHeaders]
@@ -83,7 +83,7 @@ public class DeviceController : Controller
                 var scopes = model.ScopesConsented;
                 if (ConsentOptions.EnableOfflineAccess == false)
                 {
-                    scopes = scopes.Where(x => x != IdentityServer4.IdentityServerConstants.StandardScopes.OfflineAccess);
+                    scopes = scopes.Where(x => x != IdentityServerConstants.StandardScopes.OfflineAccess);
                 }
 
                 grantedConsent = new ConsentResponse
@@ -165,7 +165,8 @@ public class DeviceController : Controller
         }
         if (ConsentOptions.EnableOfflineAccess && request.ValidatedResources.Resources.OfflineAccess)
         {
-            apiScopes.Add(GetOfflineAccessScope(vm.ScopesConsented.Contains(IdentityServer4.IdentityServerConstants.StandardScopes.OfflineAccess) || model == null));
+            apiScopes.Add(GetOfflineAccessScope(vm.ScopesConsented.Contains(
+                IdentityServerConstants.StandardScopes.OfflineAccess) || model == null));
         }
         vm.ApiScopes = apiScopes;
 
@@ -202,7 +203,7 @@ public class DeviceController : Controller
     {
         return new ScopeViewModel
         {
-            Value = IdentityServer4.IdentityServerConstants.StandardScopes.OfflineAccess,
+            Value = IdentityServerConstants.StandardScopes.OfflineAccess,
             DisplayName = ConsentOptions.OfflineAccessDisplayName,
             Description = ConsentOptions.OfflineAccessDescription,
             Emphasize = true,
