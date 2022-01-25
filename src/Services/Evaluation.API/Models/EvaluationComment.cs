@@ -8,7 +8,7 @@ public class EvaluationComment
 
     public int SupportCount { get; set; }
 
-    public int UserId { get; set; }
+    public string UserId { get; set; }
 
     public string NickName { get; set; }
 
@@ -31,7 +31,7 @@ public class EvaluationComment
     /// <summary>
     ///     回复的用户Id
     /// </summary>
-    public int? ReplyUserId { get; set; }
+    public string? ReplyUserId { get; set; }
 
     /// <summary>
     ///     回复的用户名

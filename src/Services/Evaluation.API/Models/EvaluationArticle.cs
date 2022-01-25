@@ -7,7 +7,7 @@ public class EvaluationArticle
     /// <summary>
     ///     作者
     /// </summary>
-    public int UserId { get; set; }
+    public string UserId { get; set; }
 
     /// <summary>
     ///     标题

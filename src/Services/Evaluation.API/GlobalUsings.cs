@@ -40,4 +40,9 @@ global using Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Integr
 global using Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Interfaces;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Models;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Services;
-
+global using Microsoft.AspNetCore.Mvc.Authorization;
+global using Swashbuckle.AspNetCore.SwaggerGen;
+global using Microsoft.AspNetCore.Authorization;
+global using System.IdentityModel.Tokens.Jwt;
+global using Microsoft.AspNetCore.Authentication.JwtBearer;
+global using Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Auth;

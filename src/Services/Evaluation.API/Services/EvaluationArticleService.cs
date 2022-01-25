@@ -63,7 +63,7 @@ public class EvaluationArticleService : IEvaluationArticleService
 
     public async Task<EvaluationArticle> GetArticleAsync(int id)
     {
-        var article = await _evaluationContext.Articles.FindAsync(id);
+        var article = await _evaluationContext.Articles.AsNoTracking().FirstOrDefaultAsync(x => x.ArticleId == id);
 
         if (article != null)
         {
@@ -77,7 +77,7 @@ public class EvaluationArticleService : IEvaluationArticleService
 
     public async Task<bool> IsArticleExist(int id)
     {
-        var article = await _evaluationContext.Articles.FindAsync(id);
+        var article = await _evaluationContext.Articles.AsNoTracking().FirstOrDefaultAsync(x => x.ArticleId == id);
         return article != null;
     }
 
@@ -108,8 +108,10 @@ public class EvaluationArticleService : IEvaluationArticleService
         return await _evaluationContext.SaveChangesAsync() > 0;
     }
 
+
     public async Task<List<EvaluationArticle>> GetArticlesByGameInfoAsync(int gameId)
     {
+        //追踪实体修改游戏名
         var articles = await _evaluationContext.Articles.Where(x => x.GameId == gameId).ToListAsync();
         return articles;
     }
@@ -131,7 +133,8 @@ public class EvaluationArticleService : IEvaluationArticleService
         if (!numIds.All(nid => nid.Ok)) return new List<EvaluationArticle>();
 
         var idsToSelect = numIds.Select(id => id.Value);
-        var items = await _evaluationContext.Articles.AsNoTracking().Where(ci => idsToSelect.Contains(ci.ArticleId))
+        var items = await _evaluationContext.Articles.AsNoTracking()
+            .Where(ci => idsToSelect.Contains(ci.ArticleId))
             .ToListAsync();
 
         //检查pics设置

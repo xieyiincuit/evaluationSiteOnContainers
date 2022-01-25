@@ -13,7 +13,10 @@ public static class ApplicationBuilderExtension
             setup.SwaggerEndpoint(
                 $"{(!string.IsNullOrEmpty(pathBase) ? pathBase : string.Empty)}/swagger/v1/swagger.json",
                 "Evaluation.API V1");
-            setup.RoutePrefix = string.Empty;
+            setup.OAuthClientId("evaluationswaggerui");
+            setup.OAuthAppName("Evaluation Swagger UI");
+
+            setup.OAuth2RedirectUrl("http://localhost:55000/swagger/oauth2-redirect.html");
         });
 
         return builder;

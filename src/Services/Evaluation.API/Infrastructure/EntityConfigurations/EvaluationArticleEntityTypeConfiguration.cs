@@ -8,14 +8,15 @@ internal class EvaluationArticleEntityTypeConfiguration : IEntityTypeConfigurati
             .HasComment("游戏测评文章信息表");
 
         builder.HasKey(x => x.ArticleId);
+        builder.HasIndex(x => x.UserId);
 
         builder.Property(x => x.ArticleId)
             .HasColumnName("article_id")
             .HasComment("主键")
-            .ValueGeneratedOnAdd()
-            .IsRequired();
+            .UseMySqlIdentityColumn();
 
         builder.Property(x => x.UserId)
+            .HasMaxLength(450)
             .HasColumnName("user_id")
             .HasComment("测评内容作者id")
             .IsRequired();

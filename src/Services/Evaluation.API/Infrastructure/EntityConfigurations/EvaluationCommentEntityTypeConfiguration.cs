@@ -8,6 +8,8 @@ public class EvaluationCommentEntityTypeConfiguration : IEntityTypeConfiguration
             .HasComment("测评文章评论表");
 
         builder.HasKey(e => e.CommentId);
+        builder.HasIndex(e => e.UserId);
+        builder.HasIndex(e => e.RootCommentId);
 
         builder.Property(e => e.CommentId)
             .HasColumnName("comment_id")
@@ -28,6 +30,7 @@ public class EvaluationCommentEntityTypeConfiguration : IEntityTypeConfiguration
             .IsRequired();
 
         builder.Property(e => e.UserId)
+            .HasMaxLength(450)
             .HasColumnName("user_id")
             .HasComment("用户id")
             .IsRequired();
@@ -63,6 +66,7 @@ public class EvaluationCommentEntityTypeConfiguration : IEntityTypeConfiguration
             .IsRequired(false);
 
         builder.Property(e => e.ReplyUserId)
+            .HasMaxLength(450)
             .HasColumnName("replay_userid")
             .HasComment("回复的玩家Id")
             .IsRequired(false);

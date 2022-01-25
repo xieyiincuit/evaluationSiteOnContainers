@@ -41,7 +41,7 @@ public class EvaluationCommentService : IEvaluationCommentService
         return _evaluationContext.Comments.CountAsync(comment => comment.RootCommentId == rootCommentId);
     }
 
-    public async Task<int> CountUserCommentAsync(int userId)
+    public async Task<int> CountUserCommentAsync(string userId)
     {
         return await _evaluationContext.Comments.CountAsync(x => x.UserId == userId);
     }
@@ -59,7 +59,7 @@ public class EvaluationCommentService : IEvaluationCommentService
         return parentComments;
     }
 
-    public async Task<List<EvaluationComment>> GetUserCommentsAsync(int pageIndex, int pageSize, int userId)
+    public async Task<List<EvaluationComment>> GetUserCommentsAsync(int pageIndex, int pageSize, string userId)
     {
         var comments = await _evaluationContext.Comments
             .Where(x => x.UserId == userId)

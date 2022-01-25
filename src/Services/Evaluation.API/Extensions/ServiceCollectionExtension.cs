@@ -12,6 +12,28 @@ public static class ServiceCollectionExtension
                 Version = "v1",
                 Description = "The Evaluation Service HTTP API"
             });
+
+            //Swagger授权
+            options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+            {
+                Type = SecuritySchemeType.OAuth2,
+                Flows = new OpenApiOAuthFlows()
+                {
+                    Implicit = new OpenApiOAuthFlow()
+                    {
+                        AuthorizationUrl = new Uri($"{configuration.GetValue<string>("IdentityUrlExternal")}/connect/authorize"),
+                        TokenUrl = new Uri($"{configuration.GetValue<string>("IdentityUrlExternal")}/connect/token"),
+                        Scopes = new Dictionary<string, string>()
+                        {
+                            {"eval-write", "评测服务写权限"},
+                            {"eval-manage", "评测服务管理权限"}
+                        }
+                    }
+                }
+            });
+
+            options.OperationFilter<AuthorizeCheckOperationFilter>();
+
         });
 
         return services;
@@ -77,7 +99,7 @@ public static class ServiceCollectionExtension
             .AddRabbitMQ(
                 $"amqp://{configuration["EventBusSettings:Connection"]}",
                 name: "evaluation-rabbitmqbus-check",
-                tags: new string[] { "rabbitmqbus" });
+                tags: new[] { "rabbitmqbus" });
 
         return services;
     }
