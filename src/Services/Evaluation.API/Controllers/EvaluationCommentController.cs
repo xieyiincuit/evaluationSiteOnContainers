@@ -9,15 +9,6 @@ public class EvaluationCommentController : ControllerBase
     private readonly IEvaluationCommentService _commentService;
     private readonly IMapper _mapper;
 
-    private readonly Dictionary<int, string> _userDic = new()
-    {
-        { 1, "Zhousl" },
-        { 2, "Hanby" },
-        { 3, "Chenxy" },
-        { 4, "Wangxb" },
-        { 5, "Lvcf" }
-    };
-
     public EvaluationCommentController(IEvaluationArticleService articleService, IEvaluationCommentService commentService,
         IMapper mapper)
     {
@@ -26,6 +17,7 @@ public class EvaluationCommentController : ControllerBase
         _mapper = mapper;
     }
 
+    [AllowAnonymous]
     [HttpGet]
     [Route("article/{articleId:int}/comments")]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -66,18 +58,20 @@ public class EvaluationCommentController : ControllerBase
         return Ok(model);
     }
 
+    [Authorize]
     [HttpGet]
-    [Route("u/{userId:int}/comments")]
+    [Route("u/comments")]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> GetUserComments([FromRoute] int userId, [FromQuery] int pageIndex = 1)
+    public async Task<IActionResult> GetUserComments([FromQuery] int pageIndex = 1)
     {
-        if (userId <= 0 || userId >= int.MaxValue) return BadRequest();
+        var loginUserId = User.FindFirst("sub").Value;
+        if (string.IsNullOrEmpty(loginUserId)) return BadRequest();
 
-        var totalComments = await _commentService.CountUserCommentAsync(userId);
+        var totalComments = await _commentService.CountUserCommentAsync(loginUserId);
         if (ParameterValidateHelper.IsInvalidPageIndex(totalComments, _pageSize, pageIndex)) pageIndex = 1;
 
-        var comments = await _commentService.GetUserCommentsAsync(pageIndex, _pageSize, userId);
+        var comments = await _commentService.GetUserCommentsAsync(pageIndex, _pageSize, loginUserId);
         return Ok(comments);
     }
 
@@ -106,9 +100,9 @@ public class EvaluationCommentController : ControllerBase
 
         var comment = _mapper.Map<EvaluationComment>(commentAddDto);
 
-        //TODO Get real userInfo
-        comment.UserId = 1;
-        comment.NickName = _userDic[comment.UserId];
+        var loginUserId = User.FindFirst("sub").Value;
+        comment.UserId = loginUserId;
+        comment.NickName = User.Identity.Name;
 
         await _commentService.AddCommentArticleAsync(comment);
         return CreatedAtRoute(nameof(GetCommentByIdAsync), new { commentId = comment.CommentId }, null);
@@ -125,10 +119,11 @@ public class EvaluationCommentController : ControllerBase
 
         var comment = _mapper.Map<EvaluationComment>(replyAddDto);
 
-        comment.UserId = 1;
-        comment.NickName = _userDic[comment.UserId];
+        var loginUserId = User.FindFirst("sub").Value;
+        comment.UserId = loginUserId;
+        comment.NickName = User.Identity.Name;
         comment.IsReplay = true;
-        comment.ReplyNickName = _userDic[comment.ReplyUserId.Value];
+        comment.ReplyNickName = replyAddDto.RelayUserName;
 
         await _commentService.AddCommentArticleAsync(comment);
         return CreatedAtRoute(nameof(GetCommentByIdAsync), new { commentId = comment.CommentId }, null);

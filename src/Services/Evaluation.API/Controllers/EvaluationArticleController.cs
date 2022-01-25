@@ -4,29 +4,28 @@
 [ApiController]
 public class EvaluationArticleController : ControllerBase
 {
+    private const string _adminRole = "administrator";
+    private const string _evaluatorRole = "evaluator";
     private const int _pageSize = 10;
     private readonly IEvaluationArticleService _articleService;
     private readonly IEvaluationCategoryService _categoryService;
     private readonly IMapper _mapper;
+    private readonly ILogger<EvaluationArticleController> _logger;
 
-    private readonly Dictionary<int, string> _userDic = new()
+    public EvaluationArticleController(
+        IEvaluationArticleService articleService,
+        IEvaluationCategoryService categoryService,
+        IMapper mapper,
+        ILogger<EvaluationArticleController> logger)
     {
-        { 1, "Zhousl" },
-        { 2, "Hanby" },
-        { 3, "Chenxy" },
-        { 4, "Wangxb" },
-        { 5, "Lvcf" }
-    };
-
-    public EvaluationArticleController(IEvaluationArticleService articleService, IEvaluationCategoryService categoryService,
-        IMapper mapper)
-    {
-        _articleService = articleService;
-        _categoryService = categoryService;
-        _mapper = mapper;
+        _articleService = articleService ?? throw new ArgumentNullException(nameof(articleService));
+        _categoryService = categoryService ?? throw new ArgumentNullException(nameof(categoryService));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     // GET api/v1/evaluation/articles[?pageSize=10&pageIndex=1]
+    [AllowAnonymous]
     [HttpGet]
     [Route("articles")]
     [ProducesResponseType(typeof(PaginatedItemsDtoModel<EvaluationArticle>), (int)HttpStatusCode.OK)]
@@ -50,17 +49,17 @@ public class EvaluationArticleController : ControllerBase
         if (ParameterValidateHelper.IsInvalidPageIndex(totalArticles, _pageSize, pageIndex))
             pageIndex = 1; // pageIndex不合法重设
 
-        var articlesToReturn =
-            _mapper.Map<List<ArticleDto>>(await _articleService.GetArticlesAsync(_pageSize, pageIndex));
-        articlesToReturn.ForEach(article => article.Author = _userDic[article.UserId]);
+        //TODO 考虑是否集成时间并限制用户的改名次数
+        var articlesToReturn = _mapper.Map<List<ArticleDto>>(await _articleService.GetArticlesAsync(_pageSize, pageIndex));
+        articlesToReturn.ForEach(article => article.Author = "default");
 
         var model = new PaginatedItemsDtoModel<ArticleDto>(pageIndex, _pageSize, totalArticles, articlesToReturn);
         return Ok(model);
     }
 
     // GET api/v1/evaluation/articles/1
+    [AllowAnonymous]
     [HttpGet("article/{id:int}", Name = nameof(GetArticleByIdAsync))]
-    //[Route("article/{id:int}")] 使用HTTP GET获取route则不能使用Route重新定义
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(ArticleDto), (int)HttpStatusCode.OK)]
@@ -73,12 +72,14 @@ public class EvaluationArticleController : ControllerBase
         if (article == null) return NotFound();
 
         var articleToReturn = _mapper.Map<ArticleDto>(article);
-        articleToReturn.Author = _userDic[article.UserId];
+        //TODO 选择服务通信获取用户姓名
+        articleToReturn.Author = "default";
 
         return Ok(articleToReturn);
     }
 
     // GET api/v1/evaluation/type/articles
+    [AllowAnonymous]
     [HttpGet]
     [Route("type/articles")]
     [ProducesResponseType(typeof(PaginatedItemsDtoModel<ArticleDto>), (int)HttpStatusCode.OK)]
@@ -97,13 +98,14 @@ public class EvaluationArticleController : ControllerBase
 
         var articlesToReturn =
             _mapper.Map<List<ArticleDto>>(await _articleService.GetArticlesAsync(_pageSize, pageIndex, categoryId));
-        articlesToReturn.ForEach(article => article.Author = _userDic[article.UserId]);
+        articlesToReturn.ForEach(article => article.Author = "default");
 
         var model = new PaginatedItemsDtoModel<ArticleDto>(pageIndex, _pageSize, totalArticles, articlesToReturn);
         return Ok(model);
     }
 
     // Post api/v1/evaluation/articles
+    [Authorize(Roles = _evaluatorRole)]
     [HttpPost]
     [Route("article")]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -114,14 +116,15 @@ public class EvaluationArticleController : ControllerBase
 
         //mapping        
         var entity = _mapper.Map<EvaluationArticle>(articleAddDto);
-        //TODO Get real userInfo
-        entity.UserId = 1;
+        entity.UserId = User.FindFirst("sub").Value;
 
         await _articleService.AddArticleAsync(entity);
+        _logger.LogInformation($"---- evaluator:id:{entity.UserId}, name:{User.Identity.Name} create a article -> id:{entity.ArticleId}, title:{articleAddDto.Title}");
         return CreatedAtRoute(nameof(GetArticleByIdAsync), new { id = entity.ArticleId }, null);
     }
 
     // Delete api/v1/evaluation/articles/{id}
+    [Authorize(Roles = _adminRole)]
     [HttpDelete]
     [Route("article/{id:int}")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
@@ -134,10 +137,14 @@ public class EvaluationArticleController : ControllerBase
         if (await _articleService.IsArticleExist(id) == false) return NotFound();
 
         await _articleService.DeleteArticleAsync(id);
+
+        var userId = User.FindFirst("sub").Value;
+        _logger.LogInformation($"---- administrator:id:{userId}, name:{User.Identity.Name} delete a article -> id:{id}");
         return NoContent();
     }
 
     // Put api/v1/evaluation/articles
+    [Authorize(Roles = _evaluatorRole)]
     [HttpPut]
     [Route("article/{id:int}")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
@@ -150,9 +157,15 @@ public class EvaluationArticleController : ControllerBase
         if (await _articleService.IsArticleExist(id) == false) return NotFound();
 
         var articleToUpdate = await _articleService.GetArticleAsync(id);
+        //校验该文章是否为当前请求修改用户吻合
+        var userId = User.FindFirst("sub").Value;
+        if (userId != articleToUpdate.UserId) return BadRequest();
+
         _mapper.Map(articleUpdateDto, articleToUpdate);
 
         await _articleService.UpdateArticleAsync(articleToUpdate);
+        _logger.LogInformation("---- evaluator:id:{UserId}, name:{Name} update a article -> id:{Id} content:{@content}",
+            userId, User.Identity.Name, id, articleToUpdate);
         return NoContent();
     }
 }
