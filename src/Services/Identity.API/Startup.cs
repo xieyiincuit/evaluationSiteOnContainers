@@ -25,8 +25,8 @@ public class Startup
             options.Events.RaiseSuccessEvents = true;
             options.EmitStaticAudienceClaim = true;
 
+            options.IssuerUri = "http://identity-api";
             options.Authentication.CookieLifetime = TimeSpan.FromHours(2);
-
         })
         .AddCustomIdentityStoreService(Configuration)
         .AddAspNetIdentity<ApplicationUser>()
@@ -133,7 +133,7 @@ public static class CustomExtensionMethod
                     });
                 // this enables automatic token cleanup. this is optional.
                 options.EnableTokenCleanup = true;
-            });
+            }).Services.AddTransient<IProfileService, ProfileService<ApplicationUser>>();
 
         return builder;
     }

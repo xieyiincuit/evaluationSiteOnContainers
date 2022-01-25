@@ -9,31 +9,37 @@ public static class Config
             new IdentityResources.Profile(),
         };
 
-    public static IEnumerable<ApiResource> ApiScopes =>
+
+    public static IEnumerable<ApiResource> ApiResources =>
         new ApiResource[]
         {
-            new ApiResource("evaluation", "评测服务相关API"),
-            new ApiResource("gamerepo", "游戏信息服务相关API"),
+            new ApiResource("evaluation", "Evaluation API")
+            {
+                Scopes = { "eval-write", "eval-manage"}
+            },
+
+            new ApiResource("gamerepo", "Gamerepo API")
+            {
+                Scopes = { "repo-manage" }
+            }
+        };
+
+    public static IEnumerable<ApiScope> ApiScopes =>
+        new ApiScope[]
+        {
+            new ApiScope("eval-write", "评测服务写权限",
+                new List<string> {JwtClaimTypes.Role, JwtClaimTypes.Name, JwtClaimTypes.Id}),
+
+            new ApiScope("eval-manage", "评测服务管理权限",
+                new List<string> {JwtClaimTypes.Role, JwtClaimTypes.Name, JwtClaimTypes.Id}),
+
+            new ApiScope("repo-manage", "游戏信息服务管理权限",
+                new List<string> {JwtClaimTypes.Role, JwtClaimTypes.Name, JwtClaimTypes.Id})
         };
 
     public static IEnumerable<Client> Clients(Dictionary<string, string> clientsUrl) =>
         new Client[]
         {
-            new Client
-            {
-                ClientId = "gamereposwaggerui",
-                ClientName = "GameRepo Swagger UI",
-                AllowedGrantTypes = GrantTypes.Implicit,
-                AllowAccessTokensViaBrowser = true,
-                RedirectUris = {$"{clientsUrl["GameRepoApi"]}/swagger/oauth2-redirect.html"},
-                PostLogoutRedirectUris = {$"{clientsUrl["GameRepoApi"]}/swagger/"},
-
-                AllowedScopes =
-                {
-                    "gamerepo"
-                }
-            },
-
             new Client
             {
                 ClientId = "evaluationswaggerui",
@@ -42,10 +48,29 @@ public static class Config
                 AllowAccessTokensViaBrowser = true,
                 RedirectUris = {$"{clientsUrl["EvaluationApi"]}/swagger/oauth2-redirect.html"},
                 PostLogoutRedirectUris = {$"{clientsUrl["EvaluationApi"]}/swagger/"},
-
+                AccessTokenLifetime = 2,
                 AllowedScopes =
                 {
-                    "evaluation"
+                    IdentityServerConstants.StandardScopes.OpenId,
+                    IdentityServerConstants.StandardScopes.Profile,
+                    "eval-write",
+                    "eval-manage"
+                }
+            },
+            new Client
+            {
+                ClientId = "gamereposwaggerui",
+                ClientName = "GameRepo Swagger UI",
+                AllowedGrantTypes = GrantTypes.Implicit,
+                AllowAccessTokensViaBrowser = true,
+                RedirectUris = {$"{clientsUrl["GameRepoApi"]}/swagger/oauth2-redirect.html"},
+                PostLogoutRedirectUris = {$"{clientsUrl["GameRepoApi"]}/swagger/"},
+                AccessTokenLifetime = 2,
+                AllowedScopes =
+                {
+                    IdentityServerConstants.StandardScopes.OpenId,
+                    IdentityServerConstants.StandardScopes.Profile,
+                    "repo-manage"
                 }
             },
         };

@@ -9,8 +9,8 @@ public class ConfigurationDbContextSeed
         //callbacks urls from config:
         var clientUrls = new Dictionary<string, string>
         {
-            {"GameRepoApi", configuration.GetValue<string>("GameRepoApiClient")},
-            {"EvaluationApi", configuration.GetValue<string>("EvaluationApiClient")}
+            {"EvaluationApi", configuration.GetValue<string>("EvaluationApiClient")},
+            {"GameRepoApi", configuration.GetValue<string>("GameRepoApiClient")}
         };
 
         if (!context.Clients.Any())
@@ -50,9 +50,19 @@ public class ConfigurationDbContextSeed
             await context.SaveChangesAsync();
         }
 
-        if (!context.ApiResources.Any())
+        if (!context.ApiScopes.Any())
         {
             foreach (var api in Config.ApiScopes)
+            {
+                context.ApiScopes.Add(api.ToEntity());
+            }
+
+            await context.SaveChangesAsync();
+        }
+
+        if (!context.ApiResources.Any())
+        {
+            foreach (var api in Config.ApiResources)
             {
                 context.ApiResources.Add(api.ToEntity());
             }
