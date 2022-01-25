@@ -9,7 +9,6 @@ public static class Config
             new IdentityResources.Profile(),
         };
 
-
     public static IEnumerable<ApiResource> ApiResources =>
         new ApiResource[]
         {
@@ -48,7 +47,7 @@ public static class Config
                 AllowAccessTokensViaBrowser = true,
                 RedirectUris = {$"{clientsUrl["EvaluationApi"]}/swagger/oauth2-redirect.html"},
                 PostLogoutRedirectUris = {$"{clientsUrl["EvaluationApi"]}/swagger/"},
-                AccessTokenLifetime = 2,
+                AccessTokenLifetime = 3600 * 12,
                 AllowedScopes =
                 {
                     IdentityServerConstants.StandardScopes.OpenId,
@@ -65,7 +64,7 @@ public static class Config
                 AllowAccessTokensViaBrowser = true,
                 RedirectUris = {$"{clientsUrl["GameRepoApi"]}/swagger/oauth2-redirect.html"},
                 PostLogoutRedirectUris = {$"{clientsUrl["GameRepoApi"]}/swagger/"},
-                AccessTokenLifetime = 2,
+                AccessTokenLifetime = 3600 * 12,
                 AllowedScopes =
                 {
                     IdentityServerConstants.StandardScopes.OpenId,

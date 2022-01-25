@@ -41,3 +41,11 @@ global using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Integrat
 global using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Interfaces;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Services;
+global using Microsoft.AspNetCore.HttpLogging;
+global using System.IdentityModel.Tokens.Jwt;
+global using Microsoft.AspNetCore.Authentication.JwtBearer;
+global using Microsoft.IdentityModel.Tokens;
+global using Microsoft.AspNetCore.Authorization;
+global using Microsoft.AspNetCore.Mvc.Authorization;
+global using Swashbuckle.AspNetCore.SwaggerGen;
+global using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Auth;

@@ -23,6 +23,26 @@ public class Startup
                 Version = "v1",
                 Description = "The Control of GameInfo Service HTTP API"
             });
+
+            //Swagger授权
+            options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+            {
+                Type = SecuritySchemeType.OAuth2,
+                Flows = new OpenApiOAuthFlows()
+                {
+                    Implicit = new OpenApiOAuthFlow()
+                    {
+                        AuthorizationUrl = new Uri($"{Configuration.GetValue<string>("IdentityUrlExternal")}/connect/authorize"),
+                        TokenUrl = new Uri($"{Configuration.GetValue<string>("IdentityUrlExternal")}/connect/token"),
+                        Scopes = new Dictionary<string, string>()
+                        {
+                            {"repo-manage", "游戏信息服务管理权限"}
+                        }
+                    }
+                }
+            });
+
+            options.OperationFilter<AuthorizeCheckOperationFilter>();
         });
 
         services.AddCors(options =>
@@ -204,6 +224,41 @@ public class Startup
 
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+        services.AddHttpLogging(options =>
+        {
+            options.LoggingFields =
+                HttpLoggingFields.RequestPath | HttpLoggingFields.RequestMethod |
+                HttpLoggingFields.RequestQuery | HttpLoggingFields.RequestHeaders |
+                HttpLoggingFields.RequestBody | HttpLoggingFields.ResponseStatusCode |
+                HttpLoggingFields.ResponseHeaders | HttpLoggingFields.ResponseBody;
+            options.RequestHeaders.Add("Authorization");
+            options.MediaTypeOptions.AddText("application/json");
+            options.RequestBodyLogLimit = 1024;
+            options.ResponseBodyLogLimit = 2048;
+        });
+
+        // prevent from mapping "sub" claim to nameIdentifier.
+        JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+        var identityUrl = Configuration.GetValue<string>("IdentityUrl");
+
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+        }).AddJwtBearer(options =>
+        {
+            options.Authority = identityUrl;
+            options.RequireHttpsMetadata = false;
+            options.Audience = "gamerepo";
+            options.TokenValidationParameters = new TokenValidationParameters()
+            {
+                NameClaimType = "name",
+                RoleClaimType = "role",
+                ValidIssuer = "http://identity-api"
+            };
+        });
+
         var container = new ContainerBuilder();
         container.Populate(services);
         return new AutofacServiceProvider(container.Build());
@@ -224,10 +279,12 @@ public class Startup
                setup.SwaggerEndpoint(
                    $"{(!string.IsNullOrEmpty(pathBase) ? pathBase : string.Empty)}/swagger/v1/swagger.json",
                    "GameRepo.API V1");
-               setup.RoutePrefix = string.Empty;
+               setup.OAuthClientId("gamereposwaggerui");
+               setup.OAuthAppName("GameRepo Swagger UI");
+               setup.OAuth2RedirectUrl("http://localhost:55001/swagger/oauth2-redirect.html");
            });
 
-        app.UseSerilogRequestLogging();
+        app.UseHttpLogging();
 
         app.UseRouting();
         app.UseCors("CorsPolicy");

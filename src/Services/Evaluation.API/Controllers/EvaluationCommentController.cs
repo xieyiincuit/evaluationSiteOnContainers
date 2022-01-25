@@ -8,13 +8,18 @@ public class EvaluationCommentController : ControllerBase
     private readonly IEvaluationArticleService _articleService;
     private readonly IEvaluationCommentService _commentService;
     private readonly IMapper _mapper;
+    private readonly ILogger<EvaluationCommentController> _logger;
 
-    public EvaluationCommentController(IEvaluationArticleService articleService, IEvaluationCommentService commentService,
-        IMapper mapper)
+    public EvaluationCommentController(
+        IEvaluationArticleService articleService, 
+        IEvaluationCommentService commentService,
+        IMapper mapper,
+        ILogger<EvaluationCommentController> logger)
     {
-        _articleService = articleService;
-        _commentService = commentService;
-        _mapper = mapper;
+        _articleService = articleService ?? throw new ArgumentNullException(nameof(articleService));
+        _commentService = commentService ?? throw new ArgumentNullException(nameof(commentService));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     [AllowAnonymous]
@@ -76,7 +81,6 @@ public class EvaluationCommentController : ControllerBase
     }
 
     [HttpGet("comments/{commentId:int}", Name = nameof(GetCommentByIdAsync))]
-    //[Route("comments/{commentId:int}")]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(EvaluationComment), (int)HttpStatusCode.OK)]
@@ -90,6 +94,7 @@ public class EvaluationCommentController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "administrator, evaluator, normaluser")]
     [Route("article/comments")]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.Created)]
@@ -109,6 +114,7 @@ public class EvaluationCommentController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "administrator, evaluator, normaluser")]
     [Route("article/comments/reply")]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.Created)]
@@ -130,6 +136,7 @@ public class EvaluationCommentController : ControllerBase
     }
 
     [HttpDelete]
+    [Authorize(Roles = "administrator, evaluator")]
     [Route("article/comments/{commentId:int}")]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]

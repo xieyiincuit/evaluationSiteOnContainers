@@ -25,7 +25,7 @@ public class GameInfoUpdateDto
     [MaxLength(200, ErrorMessage = "length | {0}的uri过长, 控制在200字符以内")]
     public string? RoughPicture { get; set; }
 
-    [DataType(DataType.Date)]
+    [DataType(System.ComponentModel.DataAnnotations.DataType.Date)]
     [Display(Name = "发售时间")]
     public DateTime? SellTime { get; set; }
 
