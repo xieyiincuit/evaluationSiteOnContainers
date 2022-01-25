@@ -27,6 +27,12 @@ public class GameRepoContext : DbContext
                 .HasForeignKey(f => f.GameId),
                 j => j.HasKey(t => new { t.GameId, t.TagId })
                 );
+
+        modelBuilder.Entity<GameInfo>()
+            .HasOne(g => g.GamePlaySuggestion)
+            .WithOne(g => g.GameInfo)
+            .HasForeignKey<GamePlaySuggestion>(pl => pl.GameId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
 

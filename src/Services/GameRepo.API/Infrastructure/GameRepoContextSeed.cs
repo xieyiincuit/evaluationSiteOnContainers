@@ -88,7 +88,7 @@ public class GameRepoContextSeed
                SupportPlatform = "PC/XBox",
                GameCompanyId = 14,
                GameCategoryId = 1,
-               GamePlaySuggestionId = 1
+               GamePlaySuggestionId = 1,
             },
             new()
             {
@@ -97,7 +97,7 @@ public class GameRepoContextSeed
                 SupportPlatform = "PC/XBox/PS4/PS5",
                 GameCompanyId = 15,
                 GameCategoryId = 15,
-                GamePlaySuggestionId = 2
+                GamePlaySuggestionId = 2,
             }
         };
     }
