@@ -1,8 +1,8 @@
 namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.DtoModels.Login;
 public class LoginInputModel
 {
-    [Display(Name = "用户名")]
-    [Required(ErrorMessage = "请输入用户名")]
+    [Display(Name = "用户名/邮箱")]
+    [Required(ErrorMessage = "请输入用户名/邮箱")]
     public string Username { get; set; }
 
     [Display(Name = "密码")]

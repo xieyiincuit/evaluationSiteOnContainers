@@ -85,7 +85,7 @@ public class AccountController : Controller
             {
                 var user = await _userManager.FindByNameAsync(model.Username);
 
-                await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, 
+                await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id,
                     user.UserName, clientId: context?.Client.ClientId));
 
                 if (context != null)
@@ -178,6 +178,71 @@ public class AccountController : Controller
     public IActionResult AccessDenied()
     {
         return View();
+    }
+
+    // GET: /Account/Register
+    [HttpGet]
+    [AllowAnonymous]
+    public IActionResult Register(string returnUrl = null)
+    {
+        ViewData["ReturnUrl"] = returnUrl;
+        return View();
+    }
+
+    [HttpPost]
+    [AllowAnonymous]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
+    {
+        ViewData["ReturnUrl"] = returnUrl;
+
+        var emailExist = await _userManager.Users.FirstOrDefaultAsync(x=>x.NormalizedEmail == model.Email.ToUpperInvariant());
+        if (emailExist != null)
+        {
+            ModelState.AddModelError("email", "此邮箱已被注册");
+            return View(model);
+        }
+
+        var nickNameExist = await _userManager.Users.FirstOrDefaultAsync(x=>x.NickName == model.User.NickName);
+        if (nickNameExist != null)
+        {
+            ModelState.AddModelError("email", "此昵称已被使用");
+            return View(model);
+        }
+
+        if (ModelState.IsValid)
+        {
+            var user = new ApplicationUser
+            {
+                UserName = model.Email,
+                Email = model.Email,
+                NickName = model.User.NickName,
+                SecurityQuestion = model.User.SecurityQuestion,
+                SecurityAnswer = model.User.SecurityAnswer,
+                RegistrationDate = DateTime.Now.ToLocalTime(),
+                Avatar = "~/assert/user/avatar/default.jpg",
+            };
+            var result = await _userManager.CreateAsync(user, model.Password);
+            if (result.Errors.Any())
+            {
+                AddErrors(result);
+                // If we got this far, something failed, redisplay form
+                return View(model);
+            }
+        }
+
+        if (returnUrl != null)
+        {
+            if (HttpContext.User.Identity.IsAuthenticated)
+                return Redirect(returnUrl);
+            else
+            if (ModelState.IsValid)
+                return RedirectToAction("login", "account", new { returnUrl = returnUrl });
+            else
+                return View(model);
+        }
+
+        return RedirectToAction("index", "home");
     }
 
 
@@ -310,5 +375,13 @@ public class AccountController : Controller
         }
 
         return vm;
+    }
+
+    private void AddErrors(IdentityResult result)
+    {
+        foreach (var error in result.Errors)
+        {
+            ModelState.AddModelError(string.Empty, error.Description);
+        }
     }
 }

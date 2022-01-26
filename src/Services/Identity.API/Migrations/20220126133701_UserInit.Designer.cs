@@ -12,7 +12,7 @@ using Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Data;
 namespace Identity.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220123132310_UserInit")]
+    [Migration("20220126133701_UserInit")]
     partial class UserInit
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -166,7 +166,6 @@ namespace Identity.API.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Avatar")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -192,6 +191,9 @@ namespace Identity.API.Migrations
 
                     b.Property<string>("Introduction")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastChangeNameTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -237,7 +239,7 @@ namespace Identity.API.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Sex")
+                    b.Property<int?>("Sex")
                         .HasColumnType("int");
 
                     b.Property<bool>("TwoFactorEnabled")

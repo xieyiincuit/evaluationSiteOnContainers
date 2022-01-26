@@ -48,6 +48,8 @@ public static class Config
                 RedirectUris = {$"{clientsUrl["EvaluationApi"]}/swagger/oauth2-redirect.html"},
                 PostLogoutRedirectUris = {$"{clientsUrl["EvaluationApi"]}/swagger/"},
                 AccessTokenLifetime = 7200,
+                AlwaysSendClientClaims = true,
+                AlwaysIncludeUserClaimsInIdToken = true,
                 AllowedScopes =
                 {
                     IdentityServerConstants.StandardScopes.OpenId,
@@ -65,6 +67,8 @@ public static class Config
                 RedirectUris = {$"{clientsUrl["GameRepoApi"]}/swagger/oauth2-redirect.html"},
                 PostLogoutRedirectUris = {$"{clientsUrl["GameRepoApi"]}/swagger/"},
                 AccessTokenLifetime = 7200,
+                AlwaysSendClientClaims = true,
+                AlwaysIncludeUserClaimsInIdToken = true,
                 AllowedScopes =
                 {
                     IdentityServerConstants.StandardScopes.OpenId,

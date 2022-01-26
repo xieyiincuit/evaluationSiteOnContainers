@@ -8,7 +8,7 @@
     }
 }
 
-<div class="nav-page">
+<div>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 
         <a href="~/" class="navbar-brand">
@@ -18,14 +18,14 @@
 
         @if (!string.IsNullOrWhiteSpace(name))
         {
-            <ul class="navbar-nav mr-auto d-flex">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">@name <b class="caret"></b></a>
-                    
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" asp-action="Logout" asp-controller="Account">注销</a>
-                    </div>
-              </li>
+                    <a href="#" class="nav-link dropdown-toggle text-light" data-bs-toggle="dropdown" id="navbarDropdown"
+                   aria-expanded="False">@name<b class="caret"></b></a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" asp-action="Logout" asp-controller="Account">Logout</a></li>
+                    </ul>
+                </li>
             </ul>
         }
     </nav>

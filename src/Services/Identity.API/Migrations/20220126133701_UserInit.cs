@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -28,11 +29,12 @@ namespace Identity.API.Migrations
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     NickName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Avatar = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Sex = table.Column<int>(type: "int", nullable: false),
+                    Avatar = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    Sex = table.Column<int>(type: "int", nullable: true),
                     SecurityQuestion = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     SecurityAnswer = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     RegistrationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LastChangeNameTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     BirthOfYear = table.Column<int>(type: "int", nullable: true),
                     BirthOfMonth = table.Column<int>(type: "int", nullable: true),
                     BirthOfDay = table.Column<int>(type: "int", nullable: true),

@@ -119,11 +119,11 @@ public class ApplicationDbContextSeed
         evaluator.PasswordHash = _passwordHasher.HashPassword(evaluator, "zhou11..");
 
         return new List<ApplicationUser>()
-            {
-                admin,
-                evaluator,
-                user
-            };
+        {
+            admin,
+            evaluator,
+            user
+        };
     }
 
     private IEnumerable<IdentityRole> GetDefaultRoles()
@@ -165,14 +165,14 @@ public class ApplicationDbContextSeed
 
     private async Task<List<IdentityUserRole<string>>> SetUserRolesAsync(ApplicationDbContext context)
     {
-        var admin = await context.Users.FirstOrDefaultAsync(x => x.NormalizedUserName == "ZHOUSLTHERE".ToUpper());
-        var adminRole = await context.Roles.FirstOrDefaultAsync(x => x.NormalizedName == "ADMINISTRATOR".ToUpper());
+        var admin = await context.Users.FirstOrDefaultAsync(x => x.UserName == "ZHOUSLTHERE".ToLower());
+        var adminRole = await context.Roles.FirstOrDefaultAsync(x => x.Name == "ADMINISTRATOR".ToLower());
 
-        var user = await context.Users.FirstOrDefaultAsync(x => x.NormalizedUserName == "ZYWOOTHERE".ToUpper());
-        var userRole = await context.Roles.FirstOrDefaultAsync(x => x.NormalizedName == "NORMALUSER".ToUpper());
+        var user = await context.Users.FirstOrDefaultAsync(x => x.UserName == "ZYWOOTHERE".ToLower());
+        var userRole = await context.Roles.FirstOrDefaultAsync(x => x.Name == "NORMALUSER".ToLower());
 
-        var evaluator = await context.Users.FirstOrDefaultAsync(x => x.NormalizedUserName == "NIKOTHERE".ToUpper());
-        var evaluatorRole = await context.Roles.FirstOrDefaultAsync(x => x.NormalizedName == "EVALUATOR".ToUpper());
+        var evaluator = await context.Users.FirstOrDefaultAsync(x => x.UserName == "NIKOTHERE".ToLower());
+        var evaluatorRole = await context.Roles.FirstOrDefaultAsync(x => x.Name == "EVALUATOR".ToLower());
 
         var linkRoles = new List<IdentityUserRole<string>>()
             {
