@@ -94,6 +94,13 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                         .HasColumnName("join_count")
                         .HasComment("文章浏览量");
 
+                    b.Property<string>("NickName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("user_name")
+                        .HasComment("测评内容作者姓名");
+
                     b.Property<int>("Status")
                         .HasColumnType("int")
                         .HasColumnName("article_status")

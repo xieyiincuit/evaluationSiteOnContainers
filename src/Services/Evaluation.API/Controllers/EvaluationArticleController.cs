@@ -49,9 +49,7 @@ public class EvaluationArticleController : ControllerBase
         if (ParameterValidateHelper.IsInvalidPageIndex(totalArticles, _pageSize, pageIndex))
             pageIndex = 1; // pageIndex不合法重设
 
-        //TODO 考虑是否集成时间并限制用户的改名次数
         var articlesToReturn = _mapper.Map<List<ArticleDto>>(await _articleService.GetArticlesAsync(_pageSize, pageIndex));
-        articlesToReturn.ForEach(article => article.Author = "default");
 
         var model = new PaginatedItemsDtoModel<ArticleDto>(pageIndex, _pageSize, totalArticles, articlesToReturn);
         return Ok(model);
@@ -72,9 +70,7 @@ public class EvaluationArticleController : ControllerBase
         if (article == null) return NotFound();
 
         var articleToReturn = _mapper.Map<ArticleDto>(article);
-        //TODO 选择服务通信获取用户姓名
-        articleToReturn.Author = "default";
-
+        
         return Ok(articleToReturn);
     }
 
@@ -116,7 +112,8 @@ public class EvaluationArticleController : ControllerBase
 
         //mapping        
         var entity = _mapper.Map<EvaluationArticle>(articleAddDto);
-        entity.UserId = User.FindFirst("sub").Value;
+        entity.UserId = User.FindFirstValue("sub");
+        entity.NickName = User.FindFirstValue("nick_name");
 
         await _articleService.AddArticleAsync(entity);
         _logger.LogInformation($"---- evaluator:id:{entity.UserId}, name:{User.Identity.Name} create a article -> id:{entity.ArticleId}, title:{articleAddDto.Title}");

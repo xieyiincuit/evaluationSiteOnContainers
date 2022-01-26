@@ -46,3 +46,4 @@ global using Microsoft.AspNetCore.Authorization;
 global using System.IdentityModel.Tokens.Jwt;
 global using Microsoft.AspNetCore.Authentication.JwtBearer;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Auth;
+global using System.Security.Claims;

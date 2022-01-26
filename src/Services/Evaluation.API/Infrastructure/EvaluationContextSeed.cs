@@ -42,6 +42,7 @@ public class EvaluationContextSeed
             new()
             {
                 UserId = "1",
+                NickName = "default user",
                 Title = "《反恐精英—全球攻势》是全球最受欢迎的FPS游戏",
                 Content = "枪械、地图、道具大变化！全新大行动任务玩法、全新探员、全新枪械皮肤、全新武器箱、全新印花和布章上线！登录国服购买通行证，即刻体验“激流大行动”冲浪快感！",
                 CreateTime = DateTime.Now,
@@ -54,6 +55,7 @@ public class EvaluationContextSeed
             new()
             {
                 UserId = "2",
+                NickName = "default user",
                 Title = "《双人成行》在2021年的Steam年度促销达到第一名",
                 Content = "Mei and Kodi, Do some grate job to maintain their relationship",
                 CreateTime = DateTime.Now.AddDays(1),

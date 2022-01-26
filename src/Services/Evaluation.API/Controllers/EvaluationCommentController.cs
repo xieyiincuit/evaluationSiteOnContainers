@@ -11,7 +11,7 @@ public class EvaluationCommentController : ControllerBase
     private readonly ILogger<EvaluationCommentController> _logger;
 
     public EvaluationCommentController(
-        IEvaluationArticleService articleService, 
+        IEvaluationArticleService articleService,
         IEvaluationCommentService commentService,
         IMapper mapper,
         ILogger<EvaluationCommentController> logger)
@@ -70,7 +70,7 @@ public class EvaluationCommentController : ControllerBase
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> GetUserComments([FromQuery] int pageIndex = 1)
     {
-        var loginUserId = User.FindFirst("sub").Value;
+        var loginUserId = User.FindFirstValue("sub");
         if (string.IsNullOrEmpty(loginUserId)) return BadRequest();
 
         var totalComments = await _commentService.CountUserCommentAsync(loginUserId);
@@ -105,9 +105,9 @@ public class EvaluationCommentController : ControllerBase
 
         var comment = _mapper.Map<EvaluationComment>(commentAddDto);
 
-        var loginUserId = User.FindFirst("sub").Value;
+        var loginUserId = User.FindFirstValue("sub");
         comment.UserId = loginUserId;
-        comment.NickName = User.Identity.Name;
+        comment.NickName = User.FindFirstValue("nick_name");
 
         await _commentService.AddCommentArticleAsync(comment);
         return CreatedAtRoute(nameof(GetCommentByIdAsync), new { commentId = comment.CommentId }, null);
@@ -125,9 +125,9 @@ public class EvaluationCommentController : ControllerBase
 
         var comment = _mapper.Map<EvaluationComment>(replyAddDto);
 
-        var loginUserId = User.FindFirst("sub").Value;
+        var loginUserId = User.FindFirstValue("sub");
         comment.UserId = loginUserId;
-        comment.NickName = User.Identity.Name;
+        comment.NickName = User.FindFirstValue("nick_name");
         comment.IsReplay = true;
         comment.ReplyNickName = replyAddDto.RelayUserName;
 

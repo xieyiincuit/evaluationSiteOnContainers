@@ -21,6 +21,12 @@ internal class EvaluationArticleEntityTypeConfiguration : IEntityTypeConfigurati
             .HasComment("测评内容作者id")
             .IsRequired();
 
+        builder.Property(x => x.NickName)
+            .HasMaxLength(100)
+            .HasColumnName("user_name")
+            .HasComment("测评内容作者姓名")
+            .IsRequired();
+
         builder.Property(x => x.Title)
             .HasColumnName("title")
             .HasComment("测评文章标题")

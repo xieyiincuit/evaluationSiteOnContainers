@@ -5,9 +5,14 @@ public class EvaluationArticle
     public int ArticleId { get; set; }
 
     /// <summary>
-    ///     作者
+    ///     作者Id
     /// </summary>
     public string UserId { get; set; }
+
+    /// <summary>
+    ///     作者姓名
+    /// </summary>
+    public string NickName { get; set; }  
 
     /// <summary>
     ///     标题

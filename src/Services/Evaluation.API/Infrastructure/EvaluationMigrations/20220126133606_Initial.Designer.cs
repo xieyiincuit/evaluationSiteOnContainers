@@ -12,8 +12,8 @@ using Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Infrastructur
 namespace Evaluation.API.Infrastructure.EvaluationMigrations
 {
     [DbContext(typeof(EvaluationContext))]
-    [Migration("20220125085258_changeUserName")]
-    partial class changeUserName
+    [Migration("20220126133606_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -95,6 +95,13 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                         .HasDefaultValue(0)
                         .HasColumnName("join_count")
                         .HasComment("文章浏览量");
+
+                    b.Property<string>("NickName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("user_name")
+                        .HasComment("测评内容作者姓名");
 
                     b.Property<int>("Status")
                         .HasColumnType("int")

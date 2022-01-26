@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -35,7 +36,10 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                 {
                     article_id = table.Column<int>(type: "int", nullable: false, comment: "主键")
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    user_id = table.Column<int>(type: "int", nullable: false, comment: "测评内容作者id"),
+                    user_id = table.Column<string>(type: "varchar(450)", maxLength: 450, nullable: false, comment: "测评内容作者id")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    user_name = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false, comment: "测评内容作者姓名")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     title = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false, comment: "测评文章标题")
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     description_image = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: true, comment: "展示略缩图")
@@ -80,7 +84,8 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                     content = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: false, comment: "评论内容")
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     support_count = table.Column<int>(type: "int", nullable: false, defaultValue: 0, comment: "评论点赞数量"),
-                    user_id = table.Column<int>(type: "int", nullable: false, comment: "用户id"),
+                    user_id = table.Column<string>(type: "varchar(450)", maxLength: 450, nullable: false, comment: "用户id")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     nick_name = table.Column<string>(type: "longtext", nullable: false, comment: "用户名")
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     avatar = table.Column<string>(type: "longtext", nullable: true, comment: "用户头像")
@@ -89,7 +94,8 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                     is_deleted = table.Column<bool>(type: "tinyint(1)", nullable: true, comment: "逻辑删除"),
                     is_replay = table.Column<bool>(type: "tinyint(1)", nullable: true, comment: "该评论是否为回复"),
                     replay_comment_id = table.Column<int>(type: "int", nullable: true, comment: "回复的评论id"),
-                    replay_userid = table.Column<int>(type: "int", nullable: true, comment: "回复的玩家Id"),
+                    replay_userid = table.Column<string>(type: "varchar(450)", maxLength: 450, nullable: true, comment: "回复的玩家Id")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     replay_nickname = table.Column<string>(type: "longtext", nullable: true, comment: "回复的玩家名")
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     root_comment_id = table.Column<int>(type: "int", nullable: true, comment: "回复评论属于哪个主评论"),
@@ -114,9 +120,24 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                 column: "category_type_id");
 
             migrationBuilder.CreateIndex(
+                name: "IX_evaluation_article_user_id",
+                table: "evaluation_article",
+                column: "user_id");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_evaluation_comment_article_id",
                 table: "evaluation_comment",
                 column: "article_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_evaluation_comment_root_comment_id",
+                table: "evaluation_comment",
+                column: "root_comment_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_evaluation_comment_user_id",
+                table: "evaluation_comment",
+                column: "user_id");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
