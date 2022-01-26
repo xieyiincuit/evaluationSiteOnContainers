@@ -11,7 +11,7 @@ using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Infrastructure;
 namespace GameRepo.API.Infrastructure.GameRepoMigrations
 {
     [DbContext(typeof(GameRepoContext))]
-    [Migration("20220121123406_Initial")]
+    [Migration("20220126133635_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -152,9 +152,6 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
 
                     b.HasIndex("GameCompanyId");
 
-                    b.HasIndex("GamePlaySuggestionId")
-                        .IsUnique();
-
                     b.ToTable("game_info");
 
                     b.HasComment("游戏信息表");
@@ -226,6 +223,9 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("GameId")
+                        .IsUnique();
+
                     b.ToTable("game_playsuggestion");
 
                     b.HasComment("游玩游戏配置建议表");
@@ -268,15 +268,9 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
                         .WithMany()
                         .HasForeignKey("GameCompanyId");
 
-                    b.HasOne("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GamePlaySuggestion", "GamePlaySuggestion")
-                        .WithOne("GameInfo")
-                        .HasForeignKey("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameInfo", "GamePlaySuggestionId");
-
                     b.Navigation("GameCategory");
 
                     b.Navigation("GameCompany");
-
-                    b.Navigation("GamePlaySuggestion");
                 });
 
             modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameInfoTag", b =>
@@ -298,14 +292,22 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
                     b.Navigation("GameTag");
                 });
 
+            modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GamePlaySuggestion", b =>
+                {
+                    b.HasOne("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameInfo", "GameInfo")
+                        .WithOne("GamePlaySuggestion")
+                        .HasForeignKey("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GamePlaySuggestion", "GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GameInfo");
+                });
+
             modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameInfo", b =>
                 {
                     b.Navigation("GameInfoTags");
-                });
 
-            modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GamePlaySuggestion", b =>
-                {
-                    b.Navigation("GameInfo")
+                    b.Navigation("GamePlaySuggestion")
                         .IsRequired();
                 });
 

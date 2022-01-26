@@ -295,7 +295,7 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
                     b.HasOne("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameInfo", "GameInfo")
                         .WithOne("GamePlaySuggestion")
                         .HasForeignKey("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GamePlaySuggestion", "GameId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("GameInfo");

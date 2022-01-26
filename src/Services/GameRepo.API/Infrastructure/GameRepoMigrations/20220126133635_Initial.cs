@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -27,29 +28,6 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
                     table.PrimaryKey("PK_game_company", x => x.company_id);
                 },
                 comment: "发行公司")
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "game_playsuggestion",
-                columns: table => new
-                {
-                    suggestion_id = table.Column<int>(type: "int", nullable: false, comment: "主键")
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    operation_system = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false, comment: "操作系统建议")
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    cpu_name = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false, comment: "CPU型号建议")
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    memory_size = table.Column<double>(type: "double", nullable: false, comment: "内存大小建议"),
-                    disk_size = table.Column<double>(type: "double", nullable: false, comment: "磁盘大小建议"),
-                    graphics_card = table.Column<string>(type: "longtext", nullable: false, comment: "显卡型号建议")
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    game_id = table.Column<int>(type: "int", nullable: false, comment: "游戏外键id")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_game_playsuggestion", x => x.suggestion_id);
-                },
-                comment: "游玩游戏配置建议表")
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
@@ -118,17 +96,41 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
                         principalTable: "game_company",
                         principalColumn: "company_id");
                     table.ForeignKey(
-                        name: "FK_game_info_game_playsuggestion_game_playsuggestion_id",
-                        column: x => x.game_playsuggestion_id,
-                        principalTable: "game_playsuggestion",
-                        principalColumn: "suggestion_id");
-                    table.ForeignKey(
                         name: "FK_game_info_game_type_category_id",
                         column: x => x.category_id,
                         principalTable: "game_type",
                         principalColumn: "type_id");
                 },
                 comment: "游戏信息表")
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "game_playsuggestion",
+                columns: table => new
+                {
+                    suggestion_id = table.Column<int>(type: "int", nullable: false, comment: "主键")
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    operation_system = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false, comment: "操作系统建议")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    cpu_name = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false, comment: "CPU型号建议")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    memory_size = table.Column<double>(type: "double", nullable: false, comment: "内存大小建议"),
+                    disk_size = table.Column<double>(type: "double", nullable: false, comment: "磁盘大小建议"),
+                    graphics_card = table.Column<string>(type: "longtext", nullable: false, comment: "显卡型号建议")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    game_id = table.Column<int>(type: "int", nullable: false, comment: "游戏外键id")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_game_playsuggestion", x => x.suggestion_id);
+                    table.ForeignKey(
+                        name: "FK_game_playsuggestion_game_info_game_id",
+                        column: x => x.game_id,
+                        principalTable: "game_info",
+                        principalColumn: "game_id",
+                        onDelete: ReferentialAction.Cascade);
+                },
+                comment: "游玩游戏配置建议表")
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
@@ -168,9 +170,9 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
                 column: "company_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_game_info_game_playsuggestion_id",
-                table: "game_info",
-                column: "game_playsuggestion_id",
+                name: "IX_game_playsuggestion_game_id",
+                table: "game_playsuggestion",
+                column: "game_id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -182,6 +184,9 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "game_playsuggestion");
+
+            migrationBuilder.DropTable(
                 name: "gameinfo_tag");
 
             migrationBuilder.DropTable(
@@ -192,9 +197,6 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
 
             migrationBuilder.DropTable(
                 name: "game_company");
-
-            migrationBuilder.DropTable(
-                name: "game_playsuggestion");
 
             migrationBuilder.DropTable(
                 name: "game_type");
