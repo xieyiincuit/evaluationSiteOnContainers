@@ -58,3 +58,5 @@ global using Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.ViewMode
 global using Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.ViewModels.Login;
 global using IdentityServer4.AspNetIdentity;
 global using IdentityServer4.EntityFramework.Options;
+global using Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Services;
+global using System.IdentityModel.Tokens.Jwt;

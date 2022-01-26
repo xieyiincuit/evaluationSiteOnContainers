@@ -28,8 +28,8 @@ public class Startup
                 options.IssuerUri = "http://identity-api";
                 options.Authentication.CookieLifetime = TimeSpan.FromHours(2);
             })
+            .AddAspNetIdentity<ApplicationUser>() //这个DI注入在前面需要，后面的IProfile才会复写成功
             .AddCustomIdentityStoreService(Configuration)
-            .AddAspNetIdentity<ApplicationUser>()
             .AddDeveloperSigningCredential(); //开发环境使用方便
 
         services.AddAuthentication()
@@ -158,7 +158,7 @@ public static class CustomExtensionMethod
                     });
                 // this enables automatic token cleanup. this is optional.
                 options.EnableTokenCleanup = true;
-            }).Services.AddTransient<IProfileService, ProfileService<ApplicationUser>>();
+            }).Services.AddTransient<IProfileService, ProfileService>();
 
         return builder;
     }
