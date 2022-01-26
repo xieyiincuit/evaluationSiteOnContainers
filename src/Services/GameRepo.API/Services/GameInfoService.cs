@@ -38,7 +38,7 @@ public class GameInfoService : IGameInfoService
 
     public async Task RemoveGameInfoAsync(int gameId)
     {
-        var entity = await _repoContext.GameInfos.FindAsync(gameId);
+        var entity = await _repoContext.GameInfos.AsNoTracking().FirstOrDefaultAsync(x => x.Id == gameId);
         if (entity == null)
             return;
         _repoContext.GameInfos.Remove(entity);

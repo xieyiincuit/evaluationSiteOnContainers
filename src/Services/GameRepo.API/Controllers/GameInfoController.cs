@@ -60,6 +60,7 @@ public class GameInfoController : ControllerBase
 
     [HttpPost]
     [Route("info")]
+    [Authorize(Roles = "administrator")]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.Created)]
     public async Task<IActionResult> CreateGameInfoAsync([FromBody] GameInfoAddDto gameInfoAddDto)
@@ -68,6 +69,8 @@ public class GameInfoController : ControllerBase
 
         var entityToAdd = _mapper.Map<GameInfo>(gameInfoAddDto);
 
+        _logger.LogInformation($"administrator: id:{User.FindFirst("sub").Value}, name:{User.Identity.Name} add a gameInfo -> GameName:{gameInfoAddDto.Name}");
+
         await _gameInfoService.AddGameInfoAsync(entityToAdd);
         await _unitOfWorkService.SaveChangesAsync();
         return CreatedAtRoute(nameof(GetGameInfoByIdAsync), new { gameId = entityToAdd.Id }, null);
@@ -75,6 +78,7 @@ public class GameInfoController : ControllerBase
 
     [HttpPut]
     [Route("info")]
+    [Authorize(Roles = "administrator")]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     public async Task<IActionResult> UpdateGameInfoAsync([FromBody] GameInfoUpdateDto gameInfoUpdateDto)
@@ -116,6 +120,7 @@ public class GameInfoController : ControllerBase
 
     [HttpDelete]
     [Route("info/{id:int}")]
+    [Authorize(Roles = "administrator")]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
@@ -125,6 +130,7 @@ public class GameInfoController : ControllerBase
 
         await _gameInfoService.RemoveGameInfoAsync(id);
         var response = await _unitOfWorkService.SaveEntitiesAsync();
+        _logger.LogInformation($"administrator: id:{User.FindFirst("sub").Value}, name:{User.Identity.Name} delete a gameInfo -> Id:{id}");
         return response == true ? NoContent() : NotFound();
     }
 }

@@ -232,6 +232,12 @@ public class Startup
                 HttpLoggingFields.RequestBody | HttpLoggingFields.ResponseStatusCode |
                 HttpLoggingFields.ResponseHeaders | HttpLoggingFields.ResponseBody;
             options.RequestHeaders.Add("Authorization");
+
+            options.RequestHeaders.Remove("Connection");
+            options.RequestHeaders.Remove("User-Agent");
+            options.RequestHeaders.Remove("Accept-Encoding");
+            options.RequestHeaders.Remove("Accept-Language");
+
             options.MediaTypeOptions.AddText("application/json");
             options.RequestBodyLogLimit = 1024;
             options.ResponseBodyLogLimit = 2048;

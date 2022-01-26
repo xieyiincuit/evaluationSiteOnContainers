@@ -60,8 +60,9 @@ public class GameCategoryController : ControllerBase
 
         var entityToAdd = _mapper.Map<GameCategory>(categoryAddDto);
         await _categoryService.AddCategoryAsync(entityToAdd);
-        _logger.LogInformation(
-            $"administrator: id:{User.FindFirst("sub").Value}, name:{User.Identity.Name} add a category -> categoryName:{categoryAddDto.CategoryName}");
+
+        _logger.LogInformation($"administrator: id:{User.FindFirst("sub").Value}, name:{User.Identity.Name} add a category -> categoryName:{categoryAddDto.CategoryName}");
+
         return CreatedAtRoute(nameof(GetCategoryAsync), new { categoryId = entityToAdd.Id }, null);
     }
 
@@ -94,7 +95,7 @@ public class GameCategoryController : ControllerBase
         }
         _logger.LogInformation($"administrator: id:{User.FindFirst("sub").Value}, name:{User.Identity.Name} update a category -> old:{entityToUpdate.CategoryName}, new:{categoryUpdateDto.CategoryName}");
 
-        entityToUpdate.CategoryName = categoryUpdateDto.CategoryName;
+        _mapper.Map(categoryUpdateDto, entityToUpdate);
         await _categoryService.UpdateCategoryAsync(entityToUpdate);
 
         return NoContent();

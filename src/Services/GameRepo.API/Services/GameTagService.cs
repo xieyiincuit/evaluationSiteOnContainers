@@ -28,18 +28,9 @@ public class GameTagService : IGameTagService
         return await _repoContext.SaveChangesAsync() > 0;
     }
 
-    public async Task<List<GameCategory>> GetGameCategoriesAsync()
-    {
-        var categoies = await _repoContext.GameCategories
-            .OrderBy(x => x.CategoryName)
-            .AsNoTracking()
-            .ToListAsync();
-        return categoies;
-    }
-
     public async Task<GameTag> GetGameTagAsync(int tagId)
     {
-        var tag = await _repoContext.GameTags.FindAsync(tagId);
+        var tag = await _repoContext.GameTags.AsNoTracking().FirstOrDefaultAsync(x => x.Id == tagId);
         return tag;
     }
 

@@ -41,7 +41,7 @@ public class GameCompanyService : IGameCompanyService
 
     public async Task<GameCompany> GetGameCompanyAsync(int companyId)
     {
-        var company = await _repoContext.GameCompanies.FindAsync(companyId);
+        var company = await _repoContext.GameCompanies.AsNoTracking().FirstOrDefaultAsync(x => x.Id == companyId);
         return company;
     }
 
