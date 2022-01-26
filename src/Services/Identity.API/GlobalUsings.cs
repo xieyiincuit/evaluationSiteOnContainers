@@ -57,3 +57,4 @@ global using Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.ViewMode
 global using Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.ViewModels.Grant;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.ViewModels.Login;
 global using IdentityServer4.AspNetIdentity;
+global using IdentityServer4.EntityFramework.Options;

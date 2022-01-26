@@ -13,21 +13,20 @@
 
         <a href="~/" class="navbar-brand">
             <img src="~/icon.png" class="icon-banner">
-            IdentityServer4
+            Identity
         </a>
 
         @if (!string.IsNullOrWhiteSpace(name))
         {
-            <ul class="navbar-nav mr-auto">
+            <ul class="navbar-nav mr-auto d-flex">
                 <li class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">@name <b class="caret"></b></a>
                     
                     <div class="dropdown-menu">
-                        <a class="dropdown-item" asp-action="Logout" asp-controller="Account">Logout</a>
+                        <a class="dropdown-item" asp-action="Logout" asp-controller="Account">注销</a>
                     </div>
               </li>
             </ul>
         }
-    
     </nav>
 </div>

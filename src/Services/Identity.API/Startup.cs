@@ -18,21 +18,46 @@ public class Startup
         services.AddCustomIdentityDbContext(Configuration);
 
         services.AddIdentityServer(options =>
-        {
-            options.Events.RaiseErrorEvents = true;
-            options.Events.RaiseInformationEvents = true;
-            options.Events.RaiseFailureEvents = true;
-            options.Events.RaiseSuccessEvents = true;
-            options.EmitStaticAudienceClaim = true;
+            {
+                options.Events.RaiseErrorEvents = true;
+                options.Events.RaiseInformationEvents = true;
+                options.Events.RaiseFailureEvents = true;
+                options.Events.RaiseSuccessEvents = true;
+                options.EmitStaticAudienceClaim = true;
 
-            options.IssuerUri = "http://identity-api";
-            options.Authentication.CookieLifetime = TimeSpan.FromHours(2);
-        })
-        .AddCustomIdentityStoreService(Configuration)
-        .AddAspNetIdentity<ApplicationUser>()
-        .AddDeveloperSigningCredential(); //开发环境使用方便
+                options.IssuerUri = "http://identity-api";
+                options.Authentication.CookieLifetime = TimeSpan.FromHours(2);
+            })
+            .AddCustomIdentityStoreService(Configuration)
+            .AddAspNetIdentity<ApplicationUser>()
+            .AddDeveloperSigningCredential(); //开发环境使用方便
 
-        services.AddAuthentication();
+        services.AddAuthentication()
+            .AddGoogle("Google", options =>
+            {
+                options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+
+                options.ClientId = "<insert here>";
+                options.ClientSecret = "<insert here>";
+            }).AddMicrosoftAccount("Microsoft", microsoftOptions =>
+            {
+                microsoftOptions.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+
+                microsoftOptions.ClientId = "<insert here>";
+                microsoftOptions.ClientSecret = "<insert here>";
+            }).AddQQ("QQ", options =>
+            {
+                options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+
+                options.ClientId = "<insert here>";
+                options.ClientSecret = "<insert here>";
+            }).AddWeixin("Weixin", options =>
+            {
+                options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+
+                options.ClientId = "<insert here>";
+                options.ClientSecret = "<insert here>";
+            });
 
         var container = new ContainerBuilder();
         container.Populate(services);

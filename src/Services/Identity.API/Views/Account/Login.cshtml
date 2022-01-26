@@ -1,49 +1,49 @@
 @model Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.ViewModels.Login.LoginViewModel
 
-<div class="login-page">
-    <div class="lead">
-        <h1>Login</h1>
-        <p>Choose how to login</p>
-    </div>
-
+<div>
     <partial name="_ValidationSummary" />
-
     <div class="row">
-
         @if (Model.EnableLocalLogin)
         {
             <div class="col-sm-6">
                 <div class="card">
                     <div class="card-header">
-                        <h2>Local Account</h2>
+                        <h2>µÇÂ¼</h2>
                     </div>
 
                     <div class="card-body">
                         <form asp-route="Login">
                             <input type="hidden" asp-for="ReturnUrl" />
 
-                            <div class="form-group">
+                            <div class="form-group mb-3">
                                 <label asp-for="Username"></label>
                                 <input class="form-control" placeholder="Username" asp-for="Username" autofocus>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group mb-3">
                                 <label asp-for="Password"></label>
                                 <input type="password" class="form-control" placeholder="Password" asp-for="Password" autocomplete="off">
                             </div>
-                            @if (Model.AllowRememberLogin)
-                            {
-                                <div class="form-group">
+
+                            <div class="form-group">
+                                <button name="button" value="login" class="form-control btn btn-primary rounded submit px-3">µÇÂ¼</button>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
                                     <div class="form-check">
                                         <input class="form-check-input" asp-for="RememberLogin">
                                         <label class="form-check-label" asp-for="RememberLogin">
-                                            Remember My Login
+                                            ¼Ç×¡ÃÜÂë?
                                         </label>
                                     </div>
                                 </div>
-                            }
-                            <button class="btn btn-primary" name="button" value="login">Login</button>
-                            <button class="btn btn-secondary" name="button" value="cancel">Cancel</button>
+
+                                <div class="col-md-6 text-md-right">
+                                    <a href="#">Íü¼ÇÃÜÂë?</a>
+                                </div>
+                            </div>
                         </form>
+                        <p class="text-center">Ã»ÓÐÕËºÅ? <a data-toggle="tab" href="#signup">È¥×¢²á</a></p>
                     </div>
                 </div>
             </div>
@@ -54,7 +54,7 @@
             <div class="col-sm-6">
                 <div class="card">
                     <div class="card-header">
-                        <h2>External Account</h2>
+                        <h2>¿ìËÙµÇÂ¼</h2>
                     </div>
                     <div class="card-body">
                         <ul class="list-inline">
@@ -62,10 +62,10 @@
                             {
                                 <li class="list-inline-item">
                                     <a class="btn btn-secondary"
-                                       asp-controller="External"
-                                       asp-action="Challenge"
-                                       asp-route-scheme="@provider.AuthenticationScheme"
-                                       asp-route-returnUrl="@Model.ReturnUrl">
+                               asp-controller="External"
+                               asp-action="Challenge"
+                               asp-route-scheme="@provider.AuthenticationScheme"
+                               asp-route-returnUrl="@Model.ReturnUrl">
                                         @provider.DisplayName
                                     </a>
                                 </li>

@@ -1,9 +1,5 @@
 namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Controllers;
-/// <summary>
-/// This sample controller implements a typical login/logout/provision workflow for local and external accounts.
-/// The login service encapsulates the interactions with the user data store. This data store is in-memory only and cannot be used for production!
-/// The interaction service provides a way for the UI to communicate with identityserver for validation and context retrieval
-/// </summary>
+
 [SecurityHeaders]
 [AllowAnonymous]
 public class AccountController : Controller
@@ -31,9 +27,6 @@ public class AccountController : Controller
         _events = events;
     }
 
-    /// <summary>
-    /// Entry point into the login workflow
-    /// </summary>
     [HttpGet]
     public async Task<IActionResult> Login(string returnUrl)
     {
@@ -49,9 +42,6 @@ public class AccountController : Controller
         return View(vm);
     }
 
-    /// <summary>
-    /// Handle postback from username/password login
-    /// </summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginInputModel model, string button)
@@ -88,11 +78,15 @@ public class AccountController : Controller
 
         if (ModelState.IsValid)
         {
-            var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberLogin, lockoutOnFailure: true);
+            var result = await _signInManager.PasswordSignInAsync(
+                model.Username, model.Password, model.RememberLogin, lockoutOnFailure: true);
+
             if (result.Succeeded)
             {
                 var user = await _userManager.FindByNameAsync(model.Username);
-                await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName, clientId: context?.Client.ClientId));
+
+                await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, 
+                    user.UserName, clientId: context?.Client.ClientId));
 
                 if (context != null)
                 {
@@ -133,9 +127,6 @@ public class AccountController : Controller
     }
 
 
-    /// <summary>
-    /// Show logout page
-    /// </summary>
     [HttpGet]
     public async Task<IActionResult> Logout(string logoutId)
     {
@@ -152,9 +143,6 @@ public class AccountController : Controller
         return View(vm);
     }
 
-    /// <summary>
-    /// Handle logout page postback
-    /// </summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout(LogoutInputModel model)

@@ -15,22 +15,3 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         // Add your customizations after calling base.OnModelCreating(builder);
     }
 }
-
-public class ApplicationDbContextDesignFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
-{
-    public ApplicationDbContext CreateDbContext(string[] args)
-    {
-        var configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json")
-            .Build();
-
-        var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
-        var connectionString = configuration.GetConnectionString("DefaultConnection");
-        builder.UseSqlServer(connectionString);
-
-        return new ApplicationDbContext(builder.Options);
-    }
-    //.NET Cli
-    // dotnet ef migrations add UserInit -c ApplicationDbContext -o ./Migrations -v
-}
