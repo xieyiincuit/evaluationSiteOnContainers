@@ -20,7 +20,7 @@ public class ProfileService : IProfileService
             throw new ArgumentException("Invalid subject identifier");
 
         var claims = GetClaimsFromUser(user);
-        context.IssuedClaims = claims.ToList();
+        context.IssuedClaims = claims.Result.ToList();
     }
 
     public async Task IsActiveAsync(IsActiveContext context)
@@ -55,12 +55,15 @@ public class ProfileService : IProfileService
     //额外设置 可以发送到Client
     //AlwaysSendClientClaims = true,
     //AlwaysIncludeUserClaimsInIdToken = true
-    private IEnumerable<Claim> GetClaimsFromUser(ApplicationUser user)
+    private async Task<IEnumerable<Claim>> GetClaimsFromUser(ApplicationUser user)
     {
+        var roles = await _userManager.GetRolesAsync(user);
+
         var claims = new List<Claim>
         {
             new Claim(JwtClaimTypes.Subject, user.Id),
             new Claim(JwtClaimTypes.Name, user.UserName),
+            new Claim(JwtClaimTypes.Role, roles.FirstOrDefault() ?? string.Empty),
         };
 
         if (!string.IsNullOrWhiteSpace(user.NickName))
