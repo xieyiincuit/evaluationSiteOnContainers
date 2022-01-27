@@ -12,7 +12,11 @@ public class Startup
     public virtual IServiceProvider ConfigureServices(IServiceCollection services)
     {
         #region MvcSettings
-        services.AddControllers()
+
+        services.AddControllers(options =>
+            {
+                options.Filters.Add(typeof(HttpGlobalExceptionFilter));
+            })
             .AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = true);
 
         services.AddSwaggerGen(options =>
