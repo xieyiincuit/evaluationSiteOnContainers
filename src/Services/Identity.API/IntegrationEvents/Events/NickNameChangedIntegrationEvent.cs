@@ -1,8 +1,8 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.IntegrationEvents.Events;
 
-public record NickNameChangeIntegrationEvent : IntegrationEvent
+public record NickNameChangedIntegrationEvent : IntegrationEvent
 {
-    public NickNameChangeIntegrationEvent(string userId, string oldName, string newName)
+    public NickNameChangedIntegrationEvent(string userId, string oldName, string newName)
     {
         UserId = userId;
         OldName = oldName;
