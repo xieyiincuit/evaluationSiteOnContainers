@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Data;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Factories;
 
 public class ApplicationDbContextDesignFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
 {
