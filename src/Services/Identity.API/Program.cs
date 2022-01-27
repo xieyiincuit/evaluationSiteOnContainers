@@ -21,6 +21,7 @@ try
             .SeedAsync(context, configuration)
             .Wait();
     });
+    host.MigrateDbContext<IntegrationEventLogContext>((_, _) => { });
     Log.Information("Migrations Applied ({ApplicationContext})...", Program.AppName);
 
     Log.Information("Starting web host ({ApplicationContext})...", Program.AppName);
@@ -54,7 +55,7 @@ IWebHost BuildWebHost(IConfiguration configuration, string[] args)
 Serilog.ILogger CreateSerilogLogger(IConfiguration configuration)
 {
     return new LoggerConfiguration()
-        .MinimumLevel.Debug()
+        .MinimumLevel.Verbose()
         .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
         .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
         .MinimumLevel.Override("System", LogEventLevel.Warning)

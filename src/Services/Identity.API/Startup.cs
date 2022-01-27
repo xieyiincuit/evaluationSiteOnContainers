@@ -30,11 +30,11 @@ public class Startup
             })
             .AddAspNetIdentity<ApplicationUser>() //这个DI注入在前面需要，后面的IProfile才会复写成功
             .AddCustomIdentityStoreService(Configuration)
-            .AddDeveloperSigningCredential(); //开发环境使用方便
+            .AddDeveloperSigningCredential(); //开发环境使用证书
 
         services.Configure<IdentityOptions>(options =>
         {
-            // Password settings.
+            // 用户在添加时，密码的要求。
             options.Password.RequireDigit = true;
             options.Password.RequireLowercase = true;
             options.Password.RequireNonAlphanumeric = true;
@@ -42,12 +42,11 @@ public class Startup
             options.Password.RequiredLength = 6;
             options.Password.RequiredUniqueChars = 1;
 
-            // Lockout settings.
+            // 锁定账户
             options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
             options.Lockout.MaxFailedAccessAttempts = 5;
             options.Lockout.AllowedForNewUsers = true;
         });
-
 
         services.AddAuthentication()
             .AddGoogle("Google", options =>
@@ -75,6 +74,89 @@ public class Startup
                 options.ClientId = "<insert here>";
                 options.ClientSecret = "<insert here>";
             });
+
+
+        #region 集成事件相关服务注入
+
+        services.AddDbContext<IntegrationEventLogContext>(
+            dbContextOptions =>
+            {
+                dbContextOptions.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"),
+                    sqlOptions =>
+                    {
+                        sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
+                        sqlOptions.EnableRetryOnFailure(
+                            maxRetryCount: 15,
+                            maxRetryDelay: TimeSpan.FromSeconds(30),
+                            errorNumbersToAdd: null);
+                    });
+
+                dbContextOptions.LogTo(Console.WriteLine, LogLevel.Information);
+                dbContextOptions.EnableSensitiveDataLogging();
+                dbContextOptions.EnableDetailedErrors();
+            });
+
+        //注入IIntegrationEventLogService
+        services.AddTransient<Func<DbConnection, IIntegrationEventLogService>>(
+            sp => (DbConnection c) => new IntegrationEventLogService(c));
+
+        //该服务领域事件发布服务
+        services.AddTransient<IIdentityIntegrationEventService, IdentityIntegrationEventService>();
+
+        services.Configure<IdentitySettings>(Configuration);
+        services.Configure<EventBusSettings>(Configuration.GetSection("EventBusSettings"));
+
+        //注册IRabbitMQPersistentConnection服务用于设置RabbitMQ连接
+        services.AddSingleton<IRabbitMQPersistentConnection>(sp =>
+        {
+            var settings = sp.GetRequiredService<IOptions<EventBusSettings>>().Value;
+            var logger = sp.GetRequiredService<ILogger<DefaultRabbitMQPersistentConnection>>();
+
+            var factory = new ConnectionFactory()
+            {
+
+                HostName = settings.Connection,
+                Port = int.Parse(settings.Port),
+                ClientProvidedName = Program.AppName,
+                DispatchConsumersAsync = true
+            };
+
+            if (!string.IsNullOrEmpty(settings.UserName))
+                factory.UserName = settings.UserName;
+
+            if (!string.IsNullOrEmpty(settings.PassWord))
+                factory.Password = settings.PassWord;
+
+            var retryCount = 5;
+            if (!string.IsNullOrEmpty(settings.RetryCount))
+                retryCount = int.Parse(settings.RetryCount);
+
+            return new DefaultRabbitMQPersistentConnection(factory, logger, retryCount);
+        });
+
+        //连接RabbitMq集成事件总线服务
+        services.AddSingleton<IEventBus, EventBusRabbitMQ>(sp =>
+        {
+            var subscriptionClientName = Configuration["SubscriptionClientName"];
+            var eventBusSettings = sp.GetRequiredService<IOptions<EventBusSettings>>().Value;
+            var rabbitMQPersistentConnection = sp.GetRequiredService<IRabbitMQPersistentConnection>();
+            var iLifetimeScope = sp.GetRequiredService<ILifetimeScope>();
+            var logger = sp.GetRequiredService<ILogger<EventBusRabbitMQ>>();
+            var eventBusSubscriptionManager = sp.GetRequiredService<IEventBusSubscriptionsManager>();
+
+            var retryCount = 5;
+            if (!string.IsNullOrEmpty(eventBusSettings.RetryCount))
+                retryCount = int.Parse(eventBusSettings.RetryCount);
+
+            return new EventBusRabbitMQ(
+                rabbitMQPersistentConnection, logger, iLifetimeScope,
+                eventBusSubscriptionManager, subscriptionClientName, retryCount);
+        });
+
+        services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();
+
+
+        #endregion
 
         var container = new ContainerBuilder();
         container.Populate(services);
@@ -105,8 +187,19 @@ public class Startup
         {
             endpoints.MapDefaultControllerRoute();
         });
+
+        ConfigureEventBus(app);
+    }
+
+    protected virtual void ConfigureEventBus(IApplicationBuilder app)
+    {
+        //获取连接接口并订阅channel
+        var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
+        //TODO 以下添加你需要订阅的集成事件和事件处理
     }
 }
+
+
 
 public static class CustomExtensionMethod
 {
