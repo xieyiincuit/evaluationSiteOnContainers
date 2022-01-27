@@ -27,7 +27,7 @@ public static class ApplicationBuilderExtension
         var eventBus = builder.ApplicationServices.GetRequiredService<IEventBus>();
 
         eventBus.Subscribe<GameNameChangedIntegrationEvent, GameNameChangedIntegrationEventHandler>();
+        eventBus.Subscribe<NickNameChangedIntegrationEvent, NickNameChangedIntegrationEventHandler>();
         return builder;
-
     }
 }

@@ -116,6 +116,12 @@ public class EvaluationArticleService : IEvaluationArticleService
         return articles;
     }
 
+    public async Task<List<EvaluationArticle>> GetArticlesByAuthorInfoAsync(string userId)
+    {
+        var articles = await _evaluationContext.Articles.Where(x => x.UserId == userId).ToListAsync();
+        return articles;
+    }
+
     public async Task<bool> BatchUpdateArticlesAsync()
     {
         return await _evaluationContext.SaveChangesAsync() > 0;

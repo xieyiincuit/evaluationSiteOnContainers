@@ -12,5 +12,6 @@ public interface IEvaluationArticleService
     Task<bool> DeleteArticleAsync(int id);
     Task<bool> UpdateArticleAsync(EvaluationArticle article);
     Task<List<EvaluationArticle>> GetArticlesByGameInfoAsync(int gameId);
+    Task<List<EvaluationArticle>> GetArticlesByAuthorInfoAsync(string userId);
     Task<bool> BatchUpdateArticlesAsync();
 }
