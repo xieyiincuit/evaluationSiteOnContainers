@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Factories;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Data.Factories;
 
 public class PersistedGrantDbContextFactory : IDesignTimeDbContextFactory<PersistedGrantDbContext>
 {
