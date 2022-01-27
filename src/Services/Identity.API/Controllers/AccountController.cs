@@ -1,3 +1,5 @@
+using System.Net;
+
 namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Controllers;
 
 [SecurityHeaders]
@@ -196,19 +198,27 @@ public class AccountController : Controller
     {
         ViewData["ReturnUrl"] = returnUrl;
 
-        var emailExist = await _userManager.Users.FirstOrDefaultAsync(x=>x.NormalizedEmail == model.Email.ToUpperInvariant());
+        var emailExist = await _userManager.Users.FirstOrDefaultAsync(x => x.NormalizedEmail == model.Email.ToUpperInvariant());
         if (emailExist != null)
         {
             ModelState.AddModelError("email", "此邮箱已被注册");
             return View(model);
         }
 
-        var nickNameExist = await _userManager.Users.FirstOrDefaultAsync(x=>x.NickName == model.User.NickName);
+        var nickNameExist = await _userManager.Users.FirstOrDefaultAsync(x => x.NickName == model.User.NickName);
         if (nickNameExist != null)
         {
-            ModelState.AddModelError("email", "此昵称已被使用");
+            ModelState.AddModelError("nickName", "此昵称已被使用");
             return View(model);
         }
+
+        var phoneExist = await _userManager.Users.FirstOrDefaultAsync(x => x.PhoneNumber == model.PhoneNumber);
+        if (phoneExist != null)
+        {
+            ModelState.AddModelError("phone", "此电话已被绑定");
+            return View(model);
+        }
+
 
         if (ModelState.IsValid)
         {
@@ -221,6 +231,7 @@ public class AccountController : Controller
                 SecurityAnswer = model.User.SecurityAnswer,
                 RegistrationDate = DateTime.Now.ToLocalTime(),
                 Avatar = "~/assert/user/avatar/default.jpg",
+                PhoneNumber = model.PhoneNumber
             };
             var result = await _userManager.CreateAsync(user, model.Password);
             if (result.Errors.Any())
@@ -235,15 +246,95 @@ public class AccountController : Controller
         {
             if (HttpContext.User.Identity.IsAuthenticated)
                 return Redirect(returnUrl);
-            else
-            if (ModelState.IsValid)
+            else if (ModelState.IsValid)
                 return RedirectToAction("login", "account", new { returnUrl = returnUrl });
             else
                 return View(model);
         }
 
-        return RedirectToAction("index", "home");
+        return RedirectToAction("login", "account");
     }
+
+
+    [HttpGet]
+    [AllowAnonymous]
+    public IActionResult ForgotPassword(string returnUrl = null)
+    {
+        ViewData["ReturnUrl"] = returnUrl;
+        return View();
+    }
+
+    [HttpPost]
+    [AllowAnonymous]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model, string returnUrl = null)
+    {
+        ViewData["ReturnUrl"] = returnUrl;
+        var accountExist = await _userManager.Users.FirstOrDefaultAsync(x => x.Email == model.Email && x.PhoneNumber == model.PhoneNumber);
+
+        if (accountExist == null)
+        {
+            ModelState.AddModelError("email", "无此用户或你给予的手机绑定信息不正确");
+            return View(model);
+        }
+        else if (string.IsNullOrEmpty(model.Question))
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.NormalizedEmail == model.Email.ToUpper());
+            model.Question = user.SecurityQuestion;
+            return View(model);
+        }
+        else
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.NormalizedEmail == model.Email.ToUpper());
+            if (user.SecurityAnswer == model.Answer.TrimEnd())
+            {
+                var useIdKey = Guid.NewGuid().ToString("N");
+                TempData[useIdKey] = user.Id;
+                return RedirectToAction("ResetPassword", "Account", new { code = useIdKey, returnUrl = returnUrl });
+            }
+            else
+            {
+                ModelState.AddModelError("answer", "问题回答错误");
+                return View(model);
+            }
+        }
+    }
+
+    [HttpGet]
+    [AllowAnonymous]
+    public async Task<IActionResult> ResetPassword(string code, string returnUrl = null)
+    {
+        var userId = TempData[code];
+        ViewData["UserId"] = userId;
+        ViewData["ReturnUrl"] = returnUrl;
+        return View();
+    }
+
+    [HttpPost]
+    [AllowAnonymous]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model, string returnUrl = null)
+    {
+        ViewData["ReturnUrl"] = returnUrl;
+        var user = await _userManager.FindByIdAsync(model.UserId);
+        if (user == null)
+        {
+            ModelState.AddModelError("userId", "非法用户id");
+            return View(model);
+        }
+
+        var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+        var result = await _userManager.ResetPasswordAsync(user, resetToken, model.Password);
+        if (result.Errors.Any())
+        {
+            AddErrors(result);
+            // If we got this far, something failed, redisplay form
+            return View(model);
+        }
+
+        return RedirectToAction("login", "account", new { returnUrl });
+    }
+
 
 
     /*****************************************/

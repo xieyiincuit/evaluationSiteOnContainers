@@ -3,7 +3,7 @@
 <div>
     <ul class="container">
         <li class="active">账号注册</li>
-        <li><a asp-area="" asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]">已有账号？去登陆</a></li>
+        <li><a class="text-decoration-none" asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]">已有账号？去登陆</a></li>
     </ul>
 </div>
 <div class="container">
@@ -12,19 +12,19 @@
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="row">
             <div class="form-group col-sm-6">
-                <label asp-for="Email"></label>
+                <label asp-for="Email" class="mb-1"></label>
                 <input asp-for="Email" class="form-control" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
         </div>
         <div class="row">
             <div class="form-group col-sm-6">
-                <label asp-for="Password"></label>
+                <label asp-for="Password" class="mb-1"></label>
                 <input asp-for="Password" class="form-control" />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
             <div class="form-group col-sm-6">
-                <label asp-for="ConfirmPassword"></label>
+                <label asp-for="ConfirmPassword" class="mb-1"></label>
                 <input asp-for="ConfirmPassword" class="form-control" />
                 <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
             </div>
@@ -32,20 +32,25 @@
         <br /><br />
         <div class="row">
             <div class="form-group col-sm-6">
-                <label asp-for="User.NickName">昵称</label>
-                <input asp-for="User.NickName" class="form-control" placeholder="你希望别人怎么称呼你？"/>
+                <label asp-for="User.NickName" class="mb-1">昵称</label>
+                <input asp-for="User.NickName" class="form-control" placeholder="你希望别人怎么称呼你" />
                 <span asp-validation-for="User.NickName" class="text-danger"></span>
+            </div>
+            <div class="form-group col-sm-6">
+                <label asp-for="PhoneNumber" class="mb-1">电话</label>
+                <input asp-for="PhoneNumber" class="form-control" placeholder="与你的账号绑定" />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
             </div>
         </div>
         <div class="row">
             <div class="form-group col-sm-6">
-                <label asp-for="User.SecurityQuestion">密保问题</label>
+                <label asp-for="User.SecurityQuestion" class="mb-1">密保问题</label>
                 <input asp-for="User.SecurityQuestion" class="form-control" />
                 <span asp-validation-for="User.SecurityQuestion" class="text-danger"></span>
             </div>
             <div class="form-group col-sm-6">
-                <label asp-for="User.SecurityAnswer">问题答案</label>
-                <input asp-for="User.SecurityAnswer" class="form-control" placeholder="请牢记该答案，这是用于修改密码的途径"/>
+                <label asp-for="User.SecurityAnswer" class="mb-1">问题答案</label>
+                <input asp-for="User.SecurityAnswer" class="form-control" placeholder="请牢记该答案，这是用于修改密码的途径" />
                 <span asp-validation-for="User.SecurityAnswer" class="text-danger"></span>
             </div>
         </div>
