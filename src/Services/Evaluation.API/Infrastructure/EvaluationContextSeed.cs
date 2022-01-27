@@ -76,7 +76,6 @@ public class EvaluationContextSeed
             {
                 Content = "我 5e 2800",
                 UserId = "1",
-                NickName = "Zhousl",
                 CreateTime = DateTime.Now.AddHours(1),
                 ArticleId = 1
             },
@@ -84,7 +83,6 @@ public class EvaluationContextSeed
             {
                 Content = "我 b5 2100",
                 UserId = "2",
-                NickName = "Hanby",
                 CreateTime = DateTime.Now.AddMinutes(26),
                 ArticleId = 1
             },
@@ -92,7 +90,6 @@ public class EvaluationContextSeed
             {
                 Content = "我觉得确实是挺有意思的",
                 UserId = "1",
-                NickName = "Zhousl",
                 CreateTime = DateTime.Now.AddMinutes(44),
                 ArticleId = 2
             },
@@ -100,39 +97,33 @@ public class EvaluationContextSeed
             {
                 Content = "正确的 正确的",
                 UserId = "2",
-                NickName = "Hanby",
                 CreateTime = DateTime.Now.AddHours(1).AddMinutes(20),
                 ArticleId = 2,
                 IsReplay = true,
                 ReplayCommentId = 3,
                 ReplyUserId = "2",
-                ReplyNickName = "Zhousl",
                 RootCommentId = 3
             },
             new()
             {
                 Content = "不是正确的 不是正确的",
                 UserId = "1",
-                NickName = "Zhousl",
                 CreateTime = DateTime.Now.AddHours(2),
                 ArticleId = 2,
                 IsReplay = true,
                 ReplayCommentId = 4,
                 ReplyUserId = "1",
-                ReplyNickName = "Hanby",
                 RootCommentId = 3
             },
             new()
             {
                 Content = "我觉得Zhousl说的对",
                 UserId = "4",
-                NickName = "Wangxb",
                 CreateTime = DateTime.Now.AddHours(3),
                 ArticleId = 2,
                 IsReplay = true,
                 ReplayCommentId = 5,
                 ReplyUserId = "1",
-                ReplyNickName = "Zhousl",
                 RootCommentId = 3
             }
         };

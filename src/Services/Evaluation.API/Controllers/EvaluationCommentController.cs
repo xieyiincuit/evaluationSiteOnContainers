@@ -107,7 +107,6 @@ public class EvaluationCommentController : ControllerBase
 
         var loginUserId = User.FindFirstValue("sub");
         comment.UserId = loginUserId;
-        comment.NickName = User.FindFirstValue("nick_name");
 
         await _commentService.AddCommentArticleAsync(comment);
         return CreatedAtRoute(nameof(GetCommentByIdAsync), new { commentId = comment.CommentId }, null);
@@ -127,9 +126,7 @@ public class EvaluationCommentController : ControllerBase
 
         var loginUserId = User.FindFirstValue("sub");
         comment.UserId = loginUserId;
-        comment.NickName = User.FindFirstValue("nick_name");
         comment.IsReplay = true;
-        comment.ReplyNickName = replyAddDto.RelayUserName;
 
         await _commentService.AddCommentArticleAsync(comment);
         return CreatedAtRoute(nameof(GetCommentByIdAsync), new { commentId = comment.CommentId }, null);

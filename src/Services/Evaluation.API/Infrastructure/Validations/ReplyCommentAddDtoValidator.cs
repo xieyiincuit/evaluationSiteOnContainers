@@ -20,10 +20,6 @@ public class ReplyCommentAddDtoValidator : AbstractValidator<ReplyCommentAddDto>
             .GreaterThan(0).WithMessage("invalid | 非法参数: replyUserId")
             .LessThan(int.MaxValue).WithMessage("invalid | 非法参数: replyUserId");
 
-        RuleFor(r => r.RelayUserName)
-            .MaximumLength(100).WithMessage("length | 非法参数: relayUserName")
-            .NotEmpty().WithMessage("required | 回复评论用户名为空");
-
         RuleFor(r => r.RootCommentId)
             .GreaterThan(0).WithMessage("invalid | 非法参数: rootCommentId")
             .LessThan(int.MaxValue).WithMessage("invalid | 非法参数: rootCommentId");

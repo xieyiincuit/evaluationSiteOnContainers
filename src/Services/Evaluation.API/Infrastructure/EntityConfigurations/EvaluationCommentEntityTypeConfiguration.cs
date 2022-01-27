@@ -35,16 +35,6 @@ public class EvaluationCommentEntityTypeConfiguration : IEntityTypeConfiguration
             .HasComment("用户id")
             .IsRequired();
 
-        builder.Property(e => e.NickName)
-            .HasColumnName("nick_name")
-            .HasComment("用户名")
-            .IsRequired();
-
-        builder.Property(e => e.Avatar)
-            .HasColumnName("avatar")
-            .HasComment("用户头像")
-            .IsRequired(false);
-
         builder.Property(e => e.IsDeleted)
             .HasColumnName("is_deleted")
             .HasComment("逻辑删除")
@@ -69,11 +59,6 @@ public class EvaluationCommentEntityTypeConfiguration : IEntityTypeConfiguration
             .HasMaxLength(450)
             .HasColumnName("replay_userid")
             .HasComment("回复的玩家Id")
-            .IsRequired(false);
-
-        builder.Property(e => e.ReplyNickName)
-            .HasColumnName("replay_nickname")
-            .HasComment("回复的玩家名")
             .IsRequired(false);
 
         builder.Property(e => e.RootCommentId)

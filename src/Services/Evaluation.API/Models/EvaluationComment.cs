@@ -10,10 +10,6 @@ public class EvaluationComment
 
     public string UserId { get; set; }
 
-    public string NickName { get; set; }
-
-    public string? Avatar { get; set; }
-
     public DateTime CreateTime { get; set; }
 
     public bool? IsDeleted { get; set; }
@@ -32,11 +28,6 @@ public class EvaluationComment
     ///     回复的用户Id
     /// </summary>
     public string? ReplyUserId { get; set; }
-
-    /// <summary>
-    ///     回复的用户名
-    /// </summary>
-    public string? ReplyNickName { get; set; }
 
     /// <summary>
     ///     回复评论所属于哪个主评论
