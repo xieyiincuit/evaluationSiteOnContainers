@@ -10,6 +10,7 @@ public class AccountController : Controller
     private readonly IClientStore _clientStore;
     private readonly IAuthenticationSchemeProvider _schemeProvider;
     private readonly IEventService _events;
+    private readonly RoleManager<IdentityRole> _roleManager;
 
     public AccountController(
         UserManager<ApplicationUser> userManager,
@@ -17,7 +18,8 @@ public class AccountController : Controller
         IIdentityServerInteractionService interaction,
         IClientStore clientStore,
         IAuthenticationSchemeProvider schemeProvider,
-        IEventService events)
+        IEventService events,
+        RoleManager<IdentityRole> roleManager)
     {
         _userManager = userManager;
         _signInManager = signInManager;
@@ -25,6 +27,7 @@ public class AccountController : Controller
         _clientStore = clientStore;
         _schemeProvider = schemeProvider;
         _events = events;
+        _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
     }
 
     [HttpGet]
@@ -218,7 +221,6 @@ public class AccountController : Controller
             return View(model);
         }
 
-
         if (ModelState.IsValid)
         {
             var user = new ApplicationUser
@@ -233,12 +235,14 @@ public class AccountController : Controller
                 PhoneNumber = model.PhoneNumber
             };
             var result = await _userManager.CreateAsync(user, model.Password);
-            if (result.Errors.Any())
+            var roleResult = await _userManager.AddToRoleAsync(user, "normaluser");
+            if (result.Errors.Any() || roleResult.Errors.Any())
             {
                 AddErrors(result);
                 // If we got this far, something failed, redisplay form
                 return View(model);
             }
+
         }
 
         if (returnUrl != null)

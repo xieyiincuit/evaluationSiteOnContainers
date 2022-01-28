@@ -35,10 +35,8 @@ public class HttpGlobalExceptionFilter : IExceptionFilter
         {
             var json = new JsonErrorResponse
             {
-                Messages = new[] { "An error occurred." }
+                Messages = new[] { "An error occurred. it's a Unexpected exception, please contact the web developer" }
             };
-
-            if (_env.IsDevelopment()) json.DeveloperMessage = context.Exception;
 
             context.Result = new InternalServerErrorObjectResult(json);
             context.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
