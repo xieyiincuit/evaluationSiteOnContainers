@@ -10,10 +10,18 @@ public class IntegrationEventLogService : IIntegrationEventLogService, IDisposab
     public IntegrationEventLogService(DbConnection dbConnection)
     {
         _dbConnection = dbConnection ?? throw new ArgumentNullException(nameof(dbConnection));
-        _integrationEventLogContext = new IntegrationEventLogContext(
-            new DbContextOptionsBuilder<IntegrationEventLogContext>()
-                .UseMySql(_dbConnection, new MySqlServerVersion(new Version(8, 0, 27)))
-                .Options);
+        try
+        {
+            _integrationEventLogContext = new IntegrationEventLogContext(
+               new DbContextOptionsBuilder<IntegrationEventLogContext>()
+                   .UseMySql(_dbConnection, new MySqlServerVersion(new Version(8, 0, 27))).Options);
+        }
+        catch (Exception)
+        {
+            _integrationEventLogContext = new IntegrationEventLogContext(
+                new DbContextOptionsBuilder<IntegrationEventLogContext>()
+                    .UseSqlServer(_dbConnection).Options);
+        }
 
         //利用反射获取所有的集成事件
         _eventTypes = Assembly.Load(Assembly.GetEntryAssembly().FullName ?? throw new InvalidOperationException())
@@ -86,7 +94,7 @@ public class IntegrationEventLogService : IIntegrationEventLogService, IDisposab
         {
             if (disposing)
             {
-                _integrationEventLogContext?.Dispose();
+                _integrationEventLogContext.Dispose();
             }
 
             _disposedValue = true;

@@ -13,10 +13,14 @@ public class Startup
 
     public IServiceProvider ConfigureServices(IServiceCollection services)
     {
+        services.AddControllers(options =>
+        {
+            options.Filters.Add(typeof(HttpGlobalExceptionFilter));
+        }).AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = true);
         services.AddControllersWithViews();
 
-        services.AddCustomIdentityDbContext(Configuration);
 
+        services.AddCustomIdentityDbContext(Configuration);
         services.AddIdentityServer(options =>
             {
                 options.Events.RaiseErrorEvents = true;
@@ -76,6 +80,16 @@ public class Startup
             });
 
 
+        services.AddHealthChecks()
+            .AddCheck("self", () => HealthCheckResult.Healthy())
+            .AddSqlServer(Configuration.GetConnectionString("DefaultConnection"),
+                name: "IdentityDB-check",
+                tags: new string[] { "IdentityDB" })
+            .AddRabbitMQ(
+                $"amqp://{Configuration["EventBusSettings:Connection"]}",
+                name: "identity-rabbitmqbus-check",
+                tags: new string[] { "rabbitmqbus" });
+
         #region 集成事件相关服务注入
 
         services.AddDbContext<IntegrationEventLogContext>(
@@ -114,7 +128,6 @@ public class Startup
 
             var factory = new ConnectionFactory()
             {
-
                 HostName = settings.Connection,
                 Port = int.Parse(settings.Port),
                 ClientProvidedName = Program.AppName,
@@ -155,12 +168,10 @@ public class Startup
 
         services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();
 
-
         #endregion
 
         var container = new ContainerBuilder();
         container.Populate(services);
-
         return new AutofacServiceProvider(container.Build());
     }
 
@@ -172,6 +183,15 @@ public class Startup
         }
 
         app.UseStaticFiles();
+
+        // Make work identity server redirections in Edge and latest versions of browser.
+        // WARN: Not valid in a production environment.
+        app.Use(async (context, next) =>
+        {
+            context.Response.Headers.Add("Content-Security-Policy", "script-src 'unsafe-inline'");
+            await next();
+        });
+
         app.UseRouting();
 
         app.UseForwardedHeaders();
@@ -186,6 +206,16 @@ public class Startup
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapDefaultControllerRoute();
+            endpoints.MapControllers();
+            endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
+            {
+                Predicate = _ => true,
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            });
+            endpoints.MapHealthChecks("/liveness", new HealthCheckOptions
+            {
+                Predicate = r => r.Name.Contains("self")
+            });
         });
 
         ConfigureEventBus(app);
@@ -198,8 +228,6 @@ public class Startup
         //TODO 以下添加你需要订阅的集成事件和事件处理
     }
 }
-
-
 
 public static class CustomExtensionMethod
 {

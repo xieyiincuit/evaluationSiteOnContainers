@@ -43,7 +43,8 @@ public class AccountController : Controller
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
+    //TODO 完成测试后开启跨站Token
+    //[ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginInputModel model, string button)
     {
         // check if we are in the context of an authorization request

@@ -2,18 +2,18 @@
 
 public class HttpGlobalExceptionFilter : IExceptionFilter
 {
-    private readonly IWebHostEnvironment env;
-    private readonly ILogger<HttpGlobalExceptionFilter> logger;
+    private readonly IWebHostEnvironment _env;
+    private readonly ILogger<HttpGlobalExceptionFilter> _logger;
 
     public HttpGlobalExceptionFilter(IWebHostEnvironment env, ILogger<HttpGlobalExceptionFilter> logger)
     {
-        this.env = env;
-        this.logger = logger;
+       _env = env;
+       _logger = logger;
     }
 
     public void OnException(ExceptionContext context)
     {
-        logger.LogError(new EventId(context.Exception.HResult),
+        _logger.LogError(new EventId(context.Exception.HResult),
             context.Exception,
             context.Exception.Message);
 
@@ -38,7 +38,7 @@ public class HttpGlobalExceptionFilter : IExceptionFilter
                 Messages = new[] { "An error occurred." }
             };
 
-            if (env.IsDevelopment()) json.DeveloperMessage = context.Exception;
+            if (_env.IsDevelopment()) json.DeveloperMessage = context.Exception;
 
             context.Result = new InternalServerErrorObjectResult(json);
             context.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;

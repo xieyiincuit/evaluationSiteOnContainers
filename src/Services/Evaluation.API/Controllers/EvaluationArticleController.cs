@@ -92,9 +92,8 @@ public class EvaluationArticleController : ControllerBase
         var totalArticles = await _articleService.CountArticlesByTypeAsync(categoryId);
         if (ParameterValidateHelper.IsInvalidPageIndex(totalArticles, _pageSize, pageIndex)) pageIndex = 1;
 
-        var articlesToReturn =
+        var articlesToReturn = 
             _mapper.Map<List<ArticleDto>>(await _articleService.GetArticlesAsync(_pageSize, pageIndex, categoryId));
-        articlesToReturn.ForEach(article => article.Author = "default");
 
         var model = new PaginatedItemsDtoModel<ArticleDto>(pageIndex, _pageSize, totalArticles, articlesToReturn);
         return Ok(model);
@@ -113,7 +112,7 @@ public class EvaluationArticleController : ControllerBase
         //mapping        
         var entity = _mapper.Map<EvaluationArticle>(articleAddDto);
         entity.UserId = User.FindFirstValue("sub");
-        entity.NickName = User.FindFirstValue("nick_name");
+        entity.NickName = User.FindFirstValue("nickname");
 
         await _articleService.AddArticleAsync(entity);
         _logger.LogInformation($"---- evaluator:id:{entity.UserId}, name:{User.Identity.Name} create a article -> id:{entity.ArticleId}, title:{articleAddDto.Title}");

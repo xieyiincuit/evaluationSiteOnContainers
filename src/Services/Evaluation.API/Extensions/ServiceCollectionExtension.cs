@@ -204,8 +204,12 @@ public static class ServiceCollectionExtension
                 eventBusSubscriptionManager, subscriptionClientName, retryCount);
         });
 
+        //订阅实现接口
         services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();
+
+        //Handler服务注入，这里切记要注入，不然AutoFac映射不到对应的Handler
         services.AddTransient<GameNameChangedIntegrationEventHandler>();
+        services.AddTransient<NickNameChangedIntegrationEventHandler>();
         return services;
     }
 }

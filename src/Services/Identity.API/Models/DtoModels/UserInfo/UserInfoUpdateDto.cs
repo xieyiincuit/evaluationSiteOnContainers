@@ -10,11 +10,14 @@ public class UserInfoUpdateDto
     public string NickName { get; set; }
 
     [Required(ErrorMessage = "required | 请选择性别")]
+    [Range(0, 1, ErrorMessage = "invalid | 非法参数: sex")]
     public Gender? Sex { get; set; }
 
+    //TODO 复杂一点的出生日期验证
     public int? BirthOfYear { get; set; }
     public int? BirthOfMonth { get; set; }
     public int? BirthOfDay { get; set; }
 
+    [MaxLength(500, ErrorMessage = "length | 自我介绍控制在500个字符以内")]
     public string Introduction { get; set; }
 }

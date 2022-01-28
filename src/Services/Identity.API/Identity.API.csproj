@@ -7,6 +7,9 @@
   <ItemGroup>
     <PackageReference Include="AspNet.Security.OAuth.QQ" Version="6.0.3" />
     <PackageReference Include="AspNet.Security.OAuth.Weixin" Version="6.0.3" />
+    <PackageReference Include="AspNetCore.HealthChecks.Rabbitmq" Version="6.0.1" />
+    <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="6.0.1" />
+    <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="6.0.2" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.2.0" />
     <PackageReference Include="IdentityServer4.AspNetIdentity" Version="4.1.2" />
     <PackageReference Include="IdentityServer4.EntityFramework" Version="4.1.2" />
@@ -31,6 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Extensions\Profiles\" />
     <Folder Include="Migrations\ConfigurationDb\" />
     <Folder Include="Migrations\PersistedGrantDb\" />
   </ItemGroup>
