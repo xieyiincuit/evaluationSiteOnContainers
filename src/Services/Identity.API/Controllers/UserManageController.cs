@@ -150,7 +150,7 @@ public class UserManageController : ControllerBase
         {
             var temp = await _applicationDbContext.Users
                 .Where(x => x.Id == id)
-                .Select(x => new UserRoleDto() { Id = x.Id, NickName = x.NickName, UserName = x.UserName, RegisterTime = x.RegistrationDate, Role = role.Name })
+                .Select(x => new UserRoleDto() { Id = x.Id, NickName = x.NickName, UserName = x.UserName, RegisterTime = x.RegistrationDate, Role = role.Name, Avatar = x.Avatar })
                 .AsNoTracking()
                 .OrderBy(x => x.RegisterTime)
                 .FirstOrDefaultAsync();

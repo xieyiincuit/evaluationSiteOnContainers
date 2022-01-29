@@ -39,7 +39,6 @@
   <ItemGroup>
     <Folder Include="Communication\HttpClients\" />
     <Folder Include="Infrastructure\EvaluationMigrations\" />
-    <Folder Include="logs\" />
   </ItemGroup>
 
   <ItemGroup>
