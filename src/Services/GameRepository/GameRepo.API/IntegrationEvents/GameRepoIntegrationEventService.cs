@@ -21,7 +21,7 @@ public class GameRepoIntegrationEventService : IGameRepoIntegrationEventService
         _repoContext = repoContext ?? throw new ArgumentNullException(nameof(repoContext));
         _integrationEventLogServiceFactory = integrationEventLogServiceFactory
                                              ?? throw new ArgumentNullException(nameof(integrationEventLogServiceFactory));
-        //事件日志持久化应该和事件的发起者保持一致
+        //事件溯源日志持久化和事件的发起者保持统一
         _eventLogService = _integrationEventLogServiceFactory(_repoContext.Database.GetDbConnection());
     }
 
@@ -29,7 +29,7 @@ public class GameRepoIntegrationEventService : IGameRepoIntegrationEventService
     {
         _logger.LogInformation("----- GameRepoIntegrationEventService - Saving changes and integrationEvent: {IntegrationEventId}", @event.Id);
 
-        //Use of an EF Core resiliency strategy when using multiple DbContexts within an explicit BeginTransaction():
+        //Use of an resiliency strategy when using multiple DbContexts within an explicit BeginTransaction():
         await ResilientTransaction.New(_repoContext).ExecuteAsync(async () =>
         {
             // Achieving atomicity between original gamerepo database operation and the IntegrationEventLog use transaction

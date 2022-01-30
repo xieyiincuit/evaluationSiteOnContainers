@@ -4,35 +4,32 @@ public class GameRepoContext : DbContext
 {
     public GameRepoContext(DbContextOptions<GameRepoContext> options) : base(options) { }
 
+    #region GameInfomation
+
     public DbSet<GameInfo> GameInfos { get; set; }
     public DbSet<GamePlaySuggestion> PlaySuggestions { get; set; }
     public DbSet<GameTag> GameTags { get; set; }
     public DbSet<GameCategory> GameCategories { get; set; }
     public DbSet<GameCompany> GameCompanies { get; set; }
 
+    #endregion
+
+    #region GameStore
+
+    public DbSet<GameShopItem> GameShopItems { get; set; }
+    public DbSet<GameItemSDK> GameItemSDKs { get; set; }
+    public DbSet<GameSDKForPlayer> GameSDKForPlayers { get; set; }
+    public DbSet<GameOwner> GameOwners { get; set; }
+
+    #endregion
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        //多对多创建关系表
-        modelBuilder.Entity<GameInfo>()
-             .HasMany(g => g.GameTags)
-             .WithMany(t => t.GameInfos)
-             .UsingEntity<GameInfoTag>(
-                j => j
-                .HasOne(t => t.GameTag)
-                .WithMany(g => g.GameInfoTags)
-                .HasForeignKey(f => f.TagId),
-                j => j
-                .HasOne(t => t.GameInfo)
-                .WithMany(g => g.GameInfoTags)
-                .HasForeignKey(f => f.GameId),
-                j => j.HasKey(t => new { t.GameId, t.TagId })
-                );
-
-        modelBuilder.Entity<GameInfo>()
-            .HasOne(g => g.GamePlaySuggestion)
-            .WithOne(g => g.GameInfo)
-            .HasForeignKey<GamePlaySuggestion>(pl => pl.GameId)
-            .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.ApplyConfiguration(new GameInfoEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new GameShopItemEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new GameSDKEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new GameSDKForPlayerEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new GameOwnerEntityTypeConfiguration());
     }
 }
 
