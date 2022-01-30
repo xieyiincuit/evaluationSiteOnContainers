@@ -27,45 +27,45 @@ namespace IntegrationEventLogEF.Migrations
                     b.Property<Guid>("EventId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("event_id")
+                        .HasColumnName("EventId")
                         .HasComment("事件Id");
 
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
-                        .HasColumnName("content")
+                        .HasColumnName("Content")
                         .HasComment("事件内容");
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2")
-                        .HasColumnName("create_time")
+                        .HasColumnName("CreationTime")
                         .HasComment("记录时间");
 
                     b.Property<string>("EventTypeName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
-                        .HasColumnName("event_type_name")
+                        .HasColumnName("EventTypeName")
                         .HasComment("事件类型名");
 
                     b.Property<int>("State")
                         .HasColumnType("int")
-                        .HasColumnName("state")
+                        .HasColumnName("State")
                         .HasComment("事件状态: 2-发送执行成功 3-发送但执行失败");
 
                     b.Property<int>("TimesSent")
                         .HasColumnType("int")
-                        .HasColumnName("times_sent")
+                        .HasColumnName("TimesSent")
                         .HasComment("发送次数");
 
                     b.Property<string>("TransactionId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
-                        .HasColumnName("transaction_id")
+                        .HasColumnName("TransactionId")
                         .HasComment("事务Id");
 
                     b.HasKey("EventId");
 
-                    b.ToTable("integrationevent_log", (string)null);
+                    b.ToTable("IntegrationEventLog", (string)null);
 
                     b.HasComment("事件日志表");
                 });
