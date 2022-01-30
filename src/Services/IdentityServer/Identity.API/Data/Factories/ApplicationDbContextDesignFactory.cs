@@ -11,7 +11,7 @@ public class ApplicationDbContextDesignFactory : IDesignTimeDbContextFactory<App
             .Build();
 
         var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
-        var connectionString = configuration.GetConnectionString("DefaultConnection");
+        var connectionString = configuration.GetConnectionString("IdentityConnection");
         builder.UseSqlServer(connectionString, sqlServerOptionsAction: o => o.MigrationsAssembly("Identity.API"));
 
         return new ApplicationDbContext(builder.Options);

@@ -81,7 +81,7 @@ public class Startup
 
         services.AddHealthChecks()
             .AddCheck("self", () => HealthCheckResult.Healthy())
-            .AddSqlServer(Configuration.GetConnectionString("DefaultConnection"),
+            .AddSqlServer(Configuration.GetConnectionString("IdentityConnection"),
                 name: "IdentityDB-check",
                 tags: new string[] { "IdentityDB" })
             .AddRabbitMQ(
@@ -94,7 +94,7 @@ public class Startup
         services.AddDbContext<IntegrationEventLogContext>(
             dbContextOptions =>
             {
-                dbContextOptions.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"),
+                dbContextOptions.UseSqlServer(Configuration.GetConnectionString("IntegrationConnection"),
                     sqlOptions =>
                     {
                         sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
@@ -241,7 +241,7 @@ public static class CustomExtensionMethod
     {
         // Add framework services.
         services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
+            options.UseSqlServer(configuration.GetConnectionString("IdentityConnection"),
                 sqlServerOptionsAction: sqlOptions =>
                 {
                     sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
@@ -267,11 +267,11 @@ public static class CustomExtensionMethod
         this IIdentityServerBuilder builder,
         IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString("DefaultConnection");
+        var identityConnectionString = configuration.GetConnectionString("IdentityConnection");
         var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
         builder.AddConfigurationStore(options =>
             {
-                options.ConfigureDbContext = builder => builder.UseSqlServer(connectionString,
+                options.ConfigureDbContext = builder => builder.UseSqlServer(identityConnectionString,
                     sqlServerOptionsAction: sqlOptions =>
                     {
                         sqlOptions.MigrationsAssembly(migrationsAssembly);
@@ -283,7 +283,7 @@ public static class CustomExtensionMethod
             })
             .AddOperationalStore(options =>
             {
-                options.ConfigureDbContext = builder => builder.UseSqlServer(connectionString,
+                options.ConfigureDbContext = builder => builder.UseSqlServer(identityConnectionString,
                     sqlServerOptionsAction: sqlOptions =>
                     {
                         sqlOptions.MigrationsAssembly(migrationsAssembly);

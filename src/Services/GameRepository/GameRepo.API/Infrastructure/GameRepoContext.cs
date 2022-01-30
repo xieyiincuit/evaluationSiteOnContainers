@@ -36,7 +36,7 @@ public class GameRepoContext : DbContext
     }
 }
 
-public class CatalogContextDesignFactory : IDesignTimeDbContextFactory<GameRepoContext>
+public class GameRepoContextDesignFactory : IDesignTimeDbContextFactory<GameRepoContext>
 {
     public GameRepoContext CreateDbContext(string[] args)
     {
@@ -46,7 +46,7 @@ public class CatalogContextDesignFactory : IDesignTimeDbContextFactory<GameRepoC
                 .Build();
 
         var builder = new DbContextOptionsBuilder<GameRepoContext>();
-        var connectionString = configuration.GetConnectionString("DataBaseConnectString");
+        var connectionString = configuration.GetConnectionString("GameRepoDbConnectString");
         var serverVersion = new MySqlServerVersion(new Version(8, 0, 27));
         builder.UseMySql(connectionString, serverVersion);
         return new GameRepoContext(builder.Options);

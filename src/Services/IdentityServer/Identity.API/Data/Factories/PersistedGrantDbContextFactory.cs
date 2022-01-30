@@ -12,7 +12,7 @@ public class PersistedGrantDbContextFactory : IDesignTimeDbContextFactory<Persis
 
         var optionsBuilder = new DbContextOptionsBuilder<PersistedGrantDbContext>();
         var operationOptions = new OperationalStoreOptions();
-        var connectionString = config.GetConnectionString("DefaultConnection");
+        var connectionString = config.GetConnectionString("IdentityConnection");
         optionsBuilder.UseSqlServer(connectionString, sqlServerOptionsAction: o => o.MigrationsAssembly("Identity.API"));
 
         return new PersistedGrantDbContext(optionsBuilder.Options, operationOptions);

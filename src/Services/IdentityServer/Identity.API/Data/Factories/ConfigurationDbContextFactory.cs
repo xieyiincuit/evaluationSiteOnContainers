@@ -12,7 +12,7 @@ public class ConfigurationDbContextFactory : IDesignTimeDbContextFactory<Configu
 
         var optionsBuilder = new DbContextOptionsBuilder<ConfigurationDbContext>();
         var storeOptions = new ConfigurationStoreOptions();
-        var connectionString = config.GetConnectionString("DefaultConnection");
+        var connectionString = config.GetConnectionString("IdentityConnection");
         optionsBuilder.UseSqlServer(connectionString, sqlServerOptionsAction: o => o.MigrationsAssembly("Identity.API"));
 
         return new ConfigurationDbContext(optionsBuilder.Options, storeOptions);

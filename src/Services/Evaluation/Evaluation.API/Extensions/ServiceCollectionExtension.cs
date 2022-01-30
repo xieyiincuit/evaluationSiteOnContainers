@@ -42,7 +42,7 @@ public static class ServiceCollectionExtension
     public static IServiceCollection AddCustomDbContext(this IServiceCollection services, IConfiguration configuration)
     {
         var serverVersion = new MySqlServerVersion(new Version(8, 0, 27));
-        var connectionString = configuration.GetConnectionString("DataBaseConnectString");
+        var connectionString = configuration.GetConnectionString("EvaluationDbConnectString");
         services.AddDbContext<EvaluationContext>(
             dbContextOptions => dbContextOptions
                 .UseMySql(connectionString, serverVersion,
@@ -92,7 +92,7 @@ public static class ServiceCollectionExtension
         services.AddHealthChecks()
             .AddCheck("self", () => HealthCheckResult.Healthy())
             .AddMySql(
-                configuration["ConnectionStrings:DataBaseConnectString"],
+                configuration["ConnectionStrings:EvaluationDbConnectString"],
                 "EvaluationDB-check",
                 HealthStatus.Degraded,
                 new[] { "db", "evaluation", "mysql" })

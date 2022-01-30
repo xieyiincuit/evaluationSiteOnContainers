@@ -9,7 +9,7 @@ public class IntegrationEventLogContextDesignTimeFactory : IDesignTimeDbContextF
             .AddJsonFile("appsettings.json")
             .Build();
 
-        var connectionString = configuration.GetConnectionString("DataBaseConnectString");
+        var connectionString = configuration.GetConnectionString("IntegrationDbConnectString");
         var serverVersion = new MySqlServerVersion(new Version(8, 0, 27));
         var optionsBuilder = new DbContextOptionsBuilder<IntegrationEventLogContext>();
 

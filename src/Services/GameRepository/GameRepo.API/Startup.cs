@@ -65,12 +65,14 @@ public class Startup
 
         {
             var serverVersion = new MySqlServerVersion(new Version(8, 0, 27));
-            var connectionString = Configuration.GetConnectionString("DataBaseConnectString");
+            var gameRepoConnectionString = Configuration.GetConnectionString("GameRepoDbConnectString");
+
+             var integrationConnectionString = Configuration.GetConnectionString("IntegrationDbConnectString");
 
             services.AddDbContext<GameRepoContext>(
                 dbContextOptions =>
                 {
-                    dbContextOptions.UseMySql(connectionString, serverVersion,
+                    dbContextOptions.UseMySql(gameRepoConnectionString, serverVersion,
                         sqlOptions =>
                         {
                             sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
@@ -88,7 +90,7 @@ public class Startup
             services.AddDbContext<IntegrationEventLogContext>(
                 dbContextOptions =>
                 {
-                    dbContextOptions.UseMySql(connectionString, serverVersion,
+                    dbContextOptions.UseMySql(integrationConnectionString, serverVersion,
                         sqlOptions =>
                         {
                             sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
