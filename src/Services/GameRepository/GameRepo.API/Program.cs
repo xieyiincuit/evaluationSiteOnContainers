@@ -8,13 +8,13 @@ try
     var host = BuildWebHost(configuration, args);
 
     Log.Information("Applying migrations ({ApplicationContext})...", Program.AppName);
-    host.MigrateDbContext<GameRepoContext>((context, services) =>
+    host.MigrateMySqlDbContext<GameRepoContext>((context, services) =>
     {
         var env = services.GetService<IWebHostEnvironment>();
         var logger = services.GetRequiredService<ILogger<GameRepoContextSeed>>();
         new GameRepoContextSeed().SeedAsync(context, logger, env).Wait();
     });
-    host.MigrateDbContext<IntegrationEventLogContext>((_, _) => { });
+    host.MigrateMySqlDbContext<IntegrationEventLogContext>((_, _) => { });
     Log.Information("Migrations Applied ({ApplicationContext})...", Program.AppName);
 
     Log.Information("Starting web host ({ApplicationContext})...", Program.AppName);

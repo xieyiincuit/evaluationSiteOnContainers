@@ -10,7 +10,7 @@ try
     var host = BuildWebHost(configuration, args);
 
     Log.Information("Applying migrations ({ApplicationContext})...", AppName);
-    host.MigrateDbContext<EvaluationContext>((context, services) =>
+    host.MigrateMySqlDbContext<EvaluationContext>((context, services) =>
     {
         var env = services.GetService<IWebHostEnvironment>();
         var settings = services.GetService<IOptions<EvaluationSettings>>();

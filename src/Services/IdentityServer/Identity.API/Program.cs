@@ -8,20 +8,20 @@ try
     var host = BuildWebHost(configuration, args);
 
     Log.Information("Applying migrations ({ApplicationContext})...", Program.AppName);
-    host.MigrateDbContext<ApplicationDbContext>((context, services) =>
+    host.MigrateSqlServerDbContext<ApplicationDbContext>((context, services) =>
     {
         var env = services.GetService<IWebHostEnvironment>();
         var logger = services.GetRequiredService<ILogger<ApplicationDbContextSeed>>();
         new ApplicationDbContextSeed().SeedAsync(context, env, logger).Wait();
     });
-    host.MigrateDbContext<PersistedGrantDbContext>((_, _) => { });
-    host.MigrateDbContext<ConfigurationDbContext>((context, services) =>
+    host.MigrateSqlServerDbContext<PersistedGrantDbContext>((_, _) => { });
+    host.MigrateSqlServerDbContext<ConfigurationDbContext>((context, services) =>
     {
         new ConfigurationDbContextSeed()
             .SeedAsync(context, configuration)
             .Wait();
     });
-    host.MigrateDbContext<IntegrationEventLogContext>((_, _) => { });
+    host.MigrateSqlServerDbContext<IntegrationEventLogContext>((_, _) => { });
     Log.Information("Migrations Applied ({ApplicationContext})...", Program.AppName);
 
     Log.Information("Starting web host ({ApplicationContext})...", Program.AppName);

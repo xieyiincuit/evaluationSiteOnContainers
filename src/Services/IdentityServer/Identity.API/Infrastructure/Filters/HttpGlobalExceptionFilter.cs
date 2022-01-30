@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Extensions.Filters;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Infrastructure;
 
 public class HttpGlobalExceptionFilter : IExceptionFilter
 {

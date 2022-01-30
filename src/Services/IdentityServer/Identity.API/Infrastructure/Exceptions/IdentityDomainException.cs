@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Extensions.Exceptions;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Infrastructure;
 
 //该服务特定的错误
 public class IdentityDomainException : Exception

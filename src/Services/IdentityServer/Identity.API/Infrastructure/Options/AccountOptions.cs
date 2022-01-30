@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Extensions.Options;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Infrastructure;
 public class AccountOptions
 {
     public static bool AllowLocalLogin = true;

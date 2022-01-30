@@ -37,10 +37,10 @@ global using Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.EventBusRabbitM
 global using Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.IntegrationEventLogEF;
 global using Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.IntegrationEventLogEF.Services;
 global using Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.IntegrationEventLogEF.Utilities;
+global using Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.WebHost.Customization;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Auth;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.DtoModels;
-global using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Extensions;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Infrastructure;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Infrastructure.ActionResults;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Infrastructure.Exceptions;
