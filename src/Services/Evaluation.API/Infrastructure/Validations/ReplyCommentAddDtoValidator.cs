@@ -17,8 +17,7 @@ public class ReplyCommentAddDtoValidator : AbstractValidator<ReplyCommentAddDto>
             .LessThan(int.MaxValue).WithMessage("invalid | 非法参数: replyCommentId");
 
         RuleFor(r => r.ReplyUserId)
-            .GreaterThan(0).WithMessage("invalid | 非法参数: replyUserId")
-            .LessThan(int.MaxValue).WithMessage("invalid | 非法参数: replyUserId");
+            .NotEmpty().WithMessage("required | 非法参数: replyUserId");
 
         RuleFor(r => r.RootCommentId)
             .GreaterThan(0).WithMessage("invalid | 非法参数: rootCommentId")

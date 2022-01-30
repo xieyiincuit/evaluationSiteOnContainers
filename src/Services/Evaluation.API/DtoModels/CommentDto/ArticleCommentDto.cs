@@ -3,9 +3,7 @@
 public class ArticleCommentDto
 {
     public int CommentId { get; set; }
-    public int UserId { get; set; }
-    public string NickName { get; set; }
-    public string? Avatar { get; set; }
+    public string UserId { get; set; }
     public string Content { get; set; }
     public int SupportCount { get; set; }
     public DateTime CreateTime { get; set; }

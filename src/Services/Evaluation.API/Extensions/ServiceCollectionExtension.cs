@@ -139,6 +139,22 @@ public static class ServiceCollectionExtension
         return services;
     }
 
+    public static IServiceCollection AddCustomHttpClient(this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.AddHttpClient<IdentityCallService>(client =>
+            {
+                client.BaseAddress = new Uri(configuration["IdentityUrl"]);
+                client.DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
+                client.Timeout = TimeSpan.FromMilliseconds(500);
+            })
+            .SetHandlerLifetime(TimeSpan.FromHours(6))
+            .AddTransientHttpErrorPolicy(p => p.WaitAndRetryAsync(1, _ => TimeSpan.FromMilliseconds(100)));
+
+        services.AddHttpContextAccessor();
+        return services;
+    }
+
     public static IServiceCollection AddCustomMapper(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

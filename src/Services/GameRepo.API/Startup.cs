@@ -244,7 +244,7 @@ public class Startup
 
             options.MediaTypeOptions.AddText("application/json");
             options.RequestBodyLogLimit = 1024;
-            options.ResponseBodyLogLimit = 2048;
+            options.ResponseBodyLogLimit = 1024;
         });
 
         // prevent from mapping "sub" claim to nameIdentifier.
@@ -323,7 +323,6 @@ public class Startup
 
     protected virtual void ConfigureEventBus(IApplicationBuilder app)
     {
-        var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
-        //TODO 以下添加你需要订阅的集成事件和事件处理
+        app.ApplicationServices.GetRequiredService<IEventBus>();
     }
 }

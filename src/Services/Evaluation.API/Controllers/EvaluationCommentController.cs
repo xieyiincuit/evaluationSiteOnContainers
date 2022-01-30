@@ -9,17 +9,20 @@ public class EvaluationCommentController : ControllerBase
     private readonly IEvaluationCommentService _commentService;
     private readonly IMapper _mapper;
     private readonly ILogger<EvaluationCommentController> _logger;
+    private readonly IdentityCallService _identityService;
 
     public EvaluationCommentController(
         IEvaluationArticleService articleService,
         IEvaluationCommentService commentService,
         IMapper mapper,
-        ILogger<EvaluationCommentController> logger)
+        ILogger<EvaluationCommentController> logger,
+        IdentityCallService identityService)
     {
         _articleService = articleService ?? throw new ArgumentNullException(nameof(articleService));
         _commentService = commentService ?? throw new ArgumentNullException(nameof(commentService));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _identityService = identityService ?? throw new ArgumentNullException(nameof(identityService));
     }
 
     [AllowAnonymous]
@@ -36,14 +39,20 @@ public class EvaluationCommentController : ControllerBase
         var totalComments = await _commentService.CountArticleRootCommentsAsync(articleId);
         if (ParameterValidateHelper.IsInvalidPageIndex(totalComments, _pageSize, pageIndex)) pageIndex = 1;
 
+        var userIds = new HashSet<string>();
+
         //分页获取文章父级评论
         var parentComments = await _commentService.GetArticleCommentsAsync(pageIndex, _pageSize, articleId);
 
+        //评论回复
         var childrenReplies = new List<EvaluationComment>();
         foreach (var parentComment in parentComments)
-            //分页查询每个父评论的最新五个评论
-            //TODO 评论数量多后的分页查询API提供
+        {
+            //默认查询每个父评论的最新五个评论
             childrenReplies.AddRange(await _commentService.GetCommentReplyAsync(1, 5, parentComment.CommentId));
+            //记录参与评论的用户Id
+            userIds.Add(parentComment.UserId);
+        }
 
         //构建结果返回
         var resultDto = new List<ArticleCommentDto>();
@@ -51,15 +60,59 @@ public class EvaluationCommentController : ControllerBase
         foreach (var item in parentComments)
         {
             var commentsDto = _mapper.Map<ArticleCommentDto>(item);
-            var childrenCommentDto =
-                _mapper.Map<List<ReplyCommentDto>>(childrenReplies.Where(x => x.RootCommentId == item.CommentId)
-                    .ToList());
 
+            var childrenCommentDto = _mapper.Map<List<ReplyCommentDto>>(
+                childrenReplies.Where(x => x.RootCommentId == item.CommentId).ToList());
+
+            //记录参与评论的用户Id
+            childrenCommentDto.ForEach(x => userIds.Add(x.UserId));
             commentsDto.Replies.AddRange(childrenCommentDto);
             resultDto.Add(commentsDto);
         }
 
-        var model = new PaginatedItemsDtoModel<ArticleCommentDto>(pageIndex, _pageSize, totalComments, resultDto);
+        //调用链的最上方释放
+        using var response = await _identityService.GetCommentsUserProfileAsync(userIds.ToList());
+        var userInfoDto = new List<UserAvatarDto>();
+        if (response.IsSuccessStatusCode)
+        {
+            userInfoDto = await response.Content.ReadFromJsonAsync<List<UserAvatarDto>>();
+        }
+        var model = new PaginatedItemsDtoModel<ArticleCommentDto>(pageIndex, _pageSize, totalComments, resultDto, userInfoDto);
+        return Ok(model);
+    }
+
+    [AllowAnonymous]
+    [HttpGet]
+    [Route("article/comments/{rootCommentId:int}")]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(IEnumerable<ReplyCommentDto>), (int)HttpStatusCode.OK)]
+    public async Task<IActionResult> GetRootCommentsReplies([FromRoute] int rootCommentId, [FromQuery] int pageIndex = 1)
+    {
+        if (rootCommentId <= 0 || rootCommentId >= int.MaxValue) return BadRequest(); // id非法
+
+        var parentComment = await _commentService.GetCommentById(rootCommentId);
+
+        if (parentComment == null) return NotFound(); //父评论不存在
+
+        var userIds = new HashSet<string> { parentComment.UserId };
+
+        var totalComments = await _commentService.CountCommentChildrenCommentsAsync(rootCommentId);
+        if (ParameterValidateHelper.IsInvalidPageIndex(totalComments, _pageSize, pageIndex)) pageIndex = 1;
+
+        var childrenReplies = new List<EvaluationComment>();
+        childrenReplies.AddRange(await _commentService.GetCommentReplyAsync(pageIndex, _pageSize, parentComment.CommentId));
+
+        var childrenCommentDto = _mapper.Map<List<ReplyCommentDto>>(childrenReplies);
+        childrenCommentDto.ForEach(x => userIds.Add(x.UserId));
+
+        using var response = await _identityService.GetCommentsUserProfileAsync(userIds.ToList());
+        var userInfoDto = new List<UserAvatarDto>();
+        if (response.IsSuccessStatusCode)
+        {
+            userInfoDto = await response.Content.ReadFromJsonAsync<List<UserAvatarDto>>();
+        }
+        var model = new PaginatedItemsDtoModel<ReplyCommentDto>(pageIndex, _pageSize, totalComments, childrenCommentDto, userInfoDto);
         return Ok(model);
     }
 
@@ -80,6 +133,7 @@ public class EvaluationCommentController : ControllerBase
         return Ok(comments);
     }
 
+    [AllowAnonymous]
     [HttpGet("comments/{commentId:int}", Name = nameof(GetCommentByIdAsync))]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]

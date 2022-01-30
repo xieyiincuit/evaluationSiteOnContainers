@@ -51,7 +51,7 @@ public class EvaluationArticleController : ControllerBase
 
         var articlesToReturn = _mapper.Map<List<ArticleDto>>(await _articleService.GetArticlesAsync(_pageSize, pageIndex));
 
-        var model = new PaginatedItemsDtoModel<ArticleDto>(pageIndex, _pageSize, totalArticles, articlesToReturn);
+        var model = new PaginatedItemsDtoModel<ArticleDto>(pageIndex, _pageSize, totalArticles, articlesToReturn, null);
         return Ok(model);
     }
 
@@ -95,7 +95,7 @@ public class EvaluationArticleController : ControllerBase
         var articlesToReturn = 
             _mapper.Map<List<ArticleDto>>(await _articleService.GetArticlesAsync(_pageSize, pageIndex, categoryId));
 
-        var model = new PaginatedItemsDtoModel<ArticleDto>(pageIndex, _pageSize, totalArticles, articlesToReturn);
+        var model = new PaginatedItemsDtoModel<ArticleDto>(pageIndex, _pageSize, totalArticles, articlesToReturn, null);
         return Ok(model);
     }
 

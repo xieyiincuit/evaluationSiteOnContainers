@@ -19,7 +19,6 @@ public class Startup
         }).AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = true);
         services.AddControllersWithViews();
 
-
         services.AddCustomIdentityDbContext(Configuration);
         services.AddIdentityServer(options =>
             {
@@ -224,8 +223,7 @@ public class Startup
     protected virtual void ConfigureEventBus(IApplicationBuilder app)
     {
         //获取连接接口并订阅channel
-        var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
-        //TODO 以下添加你需要订阅的集成事件和事件处理
+        app.ApplicationServices.GetRequiredService<IEventBus>();
     }
 }
 

@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.HttpLogging;
-using Microsoft.IdentityModel.Tokens;
-
-namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API;
 
 public class Startup
 {
@@ -23,6 +20,7 @@ public class Startup
             .AddCustomServicesInjection(Configuration)
             .AddCustomOptions(Configuration)
             .AddCustomIntegrationEvent(Configuration)
+            .AddCustomHttpClient(Configuration)
             .AddCustomEventBus(Configuration)
             .AddCustomMapper(Configuration)
             .AddCustomValidator(Configuration);
@@ -65,7 +63,7 @@ public class Startup
 
             options.MediaTypeOptions.AddText("application/json");
             options.RequestBodyLogLimit = 1024;
-            options.ResponseBodyLogLimit = 2048;
+            options.ResponseBodyLogLimit = 1024;
         });
 
         //use autofac

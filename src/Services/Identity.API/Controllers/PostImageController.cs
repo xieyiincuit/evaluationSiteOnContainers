@@ -75,9 +75,9 @@ public class PostImageController : ControllerBase
         return NoContent();
     }
 
+    [AllowAnonymous]
     [HttpGet("{uid}")]
-    [Authorize]
-    public async Task<IActionResult> GetAvatarAsync([FromRoute] string uid)
+    public async Task<IActionResult> GetCurrentUserAvatarAsync([FromRoute] string uid)
     {
         if (uid != User.FindFirstValue("sub")) return BadRequest();
         var user = await _appDbContextService.Users
@@ -87,7 +87,38 @@ public class PostImageController : ControllerBase
 
         var uploadsFolderPath = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
         var userAvatarPath = Path.Combine(uploadsFolderPath, user.Avatar);
-        var result = new { Id = user.Id, NickName = user.NickName, Avatar = userAvatarPath };
+
+        var result = new UserAvatarDto { Id = user.Id, NickName = user.NickName, Avatar = userAvatarPath };
+
+        return Ok(result);
+    }
+
+    [HttpPost("batch")]
+    [AllowAnonymous]
+    public async Task<IActionResult> BatchGetAvatarAsync([FromBody] List<string> userIds)
+    {
+        if (userIds == null || userIds.Count == 0 || userIds.Count > 5)
+            return BadRequest("batch get avatar, id count should be 1-5");
+        var result = new List<UserAvatarDto>();
+        var errorList = new List<string>();
+
+        foreach (var id in userIds)
+        {
+            var user = await _appDbContextService.Users
+                .AsNoTracking()
+                .Where(x => x.Id == id)
+                .Select(x => new UserAvatarDto { Id = x.Id, NickName = x.NickName, Avatar = x.Avatar })
+                .FirstOrDefaultAsync();
+            if (user != null)
+                result.Add(user);
+            else
+                errorList.Add(id);
+        }
+
+        if (errorList.Any())
+            _logger.LogWarning("---- GetUserInfo Error userIds:{@ids}", errorList);
+
+        if (!result.Any()) return NotFound();
         return Ok(result);
     }
 }
