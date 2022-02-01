@@ -2,8 +2,8 @@
 
 public interface ISDKForPlayerService
 {
-    Task<List<GameSDKForPlayer>> GetPlayerSDKByUserIdAsync(string userId);
-    Task<List<GameSDKForPlayer>> GetPlayerSDKByUserIdAndStatusAsync(string userId, bool? hasChecked = false);
+    Task<List<PlaySDKDto>> GetPlayerSDKByUserIdAsync(string userId, int pageSize, int pageIndex);
+    Task<List<PlaySDKDto>> GetPlayerSDKByUserIdAndStatusAsync(string userId, int pageSize, int pageIndex, bool? hasChecked = false);
     Task<GameSDKForPlayer> GetPlayerSDKByIdAsync(int id);
     Task<bool> UpdatePlayerSDKStatusCheck(int id);
 }
