@@ -12,6 +12,7 @@ public class GameShopItemService : IGameShopItemService
     public async Task<List<GameShopItem>> GetGameShopItemListAsync(int pageIndex, int pageSize, int orderBy)
     {
         var queryString = _repoDbContext.GameShopItems
+            .Include(x => x.GameInfo)
             .AsNoTracking()
             .Skip((pageIndex - 1) * pageSize)
             .Take(pageSize);
@@ -28,6 +29,7 @@ public class GameShopItemService : IGameShopItemService
     public async Task<GameShopItem> GetGameShopItemByIdAsync(int shopItemId)
     {
         return await _repoDbContext.GameShopItems
+            .Include(x => x.GameInfo)
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == shopItemId);
     }
@@ -35,6 +37,7 @@ public class GameShopItemService : IGameShopItemService
     public async Task<GameShopItem> GetGameShopItemByGameIdAsync(int gameInfoId)
     {
         return await _repoDbContext.GameShopItems
+            .Include(x => x.GameInfo)
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.GameInfoId == gameInfoId);
     }
@@ -63,7 +66,12 @@ public class GameShopItemService : IGameShopItemService
     {
         var shopItemForUpdate = await _repoDbContext.GameShopItems.FindAsync(shopItemId);
         if (shopItemForUpdate == null) return false;
-        shopItemForUpdate.TemporaryStopSell = false;
+
+        if (shopItemForUpdate.TemporaryStopSell == null || shopItemForUpdate.TemporaryStopSell == false)
+            shopItemForUpdate.TemporaryStopSell = true;
+        else
+            shopItemForUpdate.TemporaryStopSell = false;
+
         return await _repoDbContext.SaveChangesAsync() > 0;
     }
 
