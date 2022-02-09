@@ -14,7 +14,7 @@ public interface IGameItemSDKService
 
     Task<long> CountSDKNumberByGameItemOrStatusAsync(int gameItemId, bool? hasSend = false);
 
-    Task<int> GenerateSDKForGameShopItemAsync(int count, int gameItemId);
+    Task GenerateSDKForGameShopItemAsync(int count, int gameItemId);
 
     Task<int> BatchUpdateSDKStatusAsync(List<int> sdkIds);
 

@@ -42,10 +42,9 @@ public class GameShopItemService : IGameShopItemService
             .FirstOrDefaultAsync(x => x.GameInfoId == gameInfoId);
     }
 
-    public async Task<bool> AddGameShopItemAsync(GameShopItem gameShopItem)
+    public async Task AddGameShopItemAsync(GameShopItem gameShopItem)
     {
         await _repoDbContext.GameShopItems.AddAsync(gameShopItem);
-        return await _repoDbContext.SaveChangesAsync() > 0;
     }
 
     public async Task<bool> DeleteGameShopItemByIdAsync(int shopItemId)

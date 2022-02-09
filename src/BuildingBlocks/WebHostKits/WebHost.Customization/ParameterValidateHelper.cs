@@ -9,7 +9,7 @@ public static class ParameterValidateHelper
     /// <param name="pageSize"></param>
     /// <param name="pageIndex"></param>
     /// <returns>非法返回True</returns>
-    public static bool IsInvalidPageIndex(int totalCount, int pageSize, int pageIndex)
+    public static bool IsInvalidPageIndex(long totalCount, int pageSize, int pageIndex)
     {
         if (pageIndex <= 0) return true;
 

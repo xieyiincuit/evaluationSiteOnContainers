@@ -36,7 +36,7 @@ public class GameItemSDKService : IGameItemSDKService
                 .LongCountAsync(x => x.GameItemId == gameItemId && (x.HasSend == true));
     }
 
-    public async Task<int> GenerateSDKForGameShopItemAsync(int count, int gameItemId)
+    public async Task GenerateSDKForGameShopItemAsync(int count, int gameItemId)
     {
         var sdkToInsert = new List<GameItemSDK>();
         for (var i = 0; i < count; i++)
@@ -49,7 +49,6 @@ public class GameItemSDKService : IGameItemSDKService
         }
 
         await _repoDbContext.GameItemSDKs.AddRangeAsync(sdkToInsert);
-        return await _repoDbContext.SaveChangesAsync();
     }
 
     public async Task<int> BatchUpdateSDKStatusAsync(List<int> sdkIds)
@@ -57,6 +56,7 @@ public class GameItemSDKService : IGameItemSDKService
         if (sdkIds.Count == 1)
         {
             var sdkItem = await _repoDbContext.GameItemSDKs.Where(x => x.Id == sdkIds[0]).FirstOrDefaultAsync();
+            if (sdkItem == null) return 0;
             sdkItem.HasSend = true;
             sdkItem.SendTime = DateTime.Now.ToLocalTime();
         }
@@ -66,6 +66,7 @@ public class GameItemSDKService : IGameItemSDKService
             var sdkItems = await _repoDbContext.GameItemSDKs
                 .Where(x => x.Id >= sdkIds[0] && x.Id <= sdkIds[endRange])
                 .ToListAsync();
+            if (!sdkItems.Any()) return 0;
             foreach (var sdkItem in sdkItems)
             {
                 sdkItem.HasSend = true;

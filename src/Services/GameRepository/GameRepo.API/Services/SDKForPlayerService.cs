@@ -65,9 +65,17 @@ public class SDKForPlayerService : ISDKForPlayerService
     public async Task<bool> UpdatePlayerSDKStatusCheck(int id)
     {
         var recordToUpdate = await _repoDbContext.GameSDKForPlayers.FindAsync(id);
+
         if (recordToUpdate == null) return false;
+        if (recordToUpdate.HasChecked == true) return true;
+        
         recordToUpdate.HasChecked = true;
         recordToUpdate.CheckTime = DateTime.Now.ToLocalTime();
         return await _repoDbContext.SaveChangesAsync() > 0;
+    }
+
+    public async Task<int> CountPlayerSDKByUserId(string userId)
+    {
+        return await _repoDbContext.GameSDKForPlayers.CountAsync(x => x.UserId == userId);
     }
 }

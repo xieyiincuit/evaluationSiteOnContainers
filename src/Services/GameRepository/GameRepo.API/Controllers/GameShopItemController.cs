@@ -5,16 +5,22 @@
 public class GameShopItemController : ControllerBase
 {
     private readonly IGameShopItemService _shopItemService;
+    private readonly IGameItemSDKService _sdkService;
+    private readonly IUnitOfWorkService _unitOfWorkService;
     private readonly IMapper _mapper;
     private readonly ILogger<GameShopItemController> _logger;
     private const int _pageSize = 10;
 
     public GameShopItemController(
         IGameShopItemService shopItemService,
+        IGameItemSDKService sdkService,
+        IUnitOfWorkService unitOfWorkService,
         IMapper mapper,
         ILogger<GameShopItemController> logger)
     {
         _shopItemService = shopItemService ?? throw new ArgumentNullException(nameof(shopItemService));
+        _sdkService = sdkService ?? throw new ArgumentNullException(nameof(sdkService));
+        _unitOfWorkService = unitOfWorkService ?? throw new ArgumentNullException(nameof(unitOfWorkService));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
@@ -115,7 +121,12 @@ public class GameShopItemController : ControllerBase
 
         _logger.LogInformation($"administrator: id:{User.FindFirst("sub").Value}, name:{User.Identity.Name} add a shopItem");
         await _shopItemService.AddGameShopItemAsync(entityToAdd);
-        return CreatedAtRoute(nameof(GetShopItemsByIdForAdminAsync), new { itemId = entityToAdd.Id }, null);
+        await _sdkService.GenerateSDKForGameShopItemAsync(entityToAdd.AvailableStock, entityToAdd.GameInfoId);
+        var response = await _unitOfWorkService.SaveChangesAsync();
+        if (response > 1)
+            return CreatedAtRoute(nameof(GetShopItemsByIdForAdminAsync), new { itemId = entityToAdd.Id }, null);
+        else
+            return BadRequest();
     }
 
     [HttpPut]
