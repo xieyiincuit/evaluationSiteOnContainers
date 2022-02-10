@@ -61,8 +61,7 @@ public class GameShopItemController : ControllerBase
         return Ok(model);
     }
 
-    [HttpGet(Name = nameof(GetShopItemsByIdAsync))]
-    [Route("s/shop/{itemId:int}")]
+    [HttpGet("s/shop/{itemId:int}", Name = nameof(GetShopItemsByIdAsync))]
     [AllowAnonymous]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(ShopItemDtoToUser), (int)HttpStatusCode.OK)]
@@ -77,8 +76,7 @@ public class GameShopItemController : ControllerBase
         return Ok(itemToUser);
     }
 
-    [HttpGet(Name = nameof(GetShopItemsByIdForAdminAsync))]
-    [Route("g/shop/{itemId:int}")]
+    [HttpGet("g/shop/{itemId:int}", Name = nameof(GetShopItemsByIdForAdminAsync))]
     [Authorize(Roles = "administrator")]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(ShopItemDtoToAdmin), (int)HttpStatusCode.OK)]
@@ -93,8 +91,7 @@ public class GameShopItemController : ControllerBase
         return Ok(itemDtoToAdmin);
     }
 
-    [HttpGet(Name = nameof(GetShopItemsByGameIdAsync))]
-    [Route("s/shop")]
+    [HttpGet("s/shop", Name = nameof(GetShopItemsByGameIdAsync))]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(ShopItemDtoToUser), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetShopItemsByGameIdAsync([FromQuery] int gameId)

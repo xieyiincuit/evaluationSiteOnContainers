@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Infrastructure;
 
@@ -10,9 +11,10 @@ using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Infrastructure;
 namespace GameRepo.API.Infrastructure.GameRepoMigrations
 {
     [DbContext(typeof(GameRepoContext))]
-    partial class GameRepoContextModelSnapshot : ModelSnapshot
+    [Migration("20220210033130_fixedNavigations")]
+    partial class fixedNavigations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -229,6 +231,8 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
 
                     b.HasKey("UserId", "GameId");
 
+                    b.HasIndex("GameId");
+
                     b.ToTable("game_owner");
 
                     b.HasComment("玩家游戏拥有表");
@@ -441,13 +445,20 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
 
             modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameItemSDK", b =>
                 {
-                    b.HasOne("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameShopItem", "GameShopItem")
+                    b.HasOne("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameShopItem", null)
                         .WithMany("GameSDKList")
                         .HasForeignKey("GameItemId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+                });
 
-                    b.Navigation("GameShopItem");
+            modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameOwner", b =>
+                {
+                    b.HasOne("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameInfo", null)
+                        .WithMany()
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GamePlaySuggestion", b =>
@@ -463,24 +474,20 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
 
             modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameSDKForPlayer", b =>
                 {
-                    b.HasOne("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameItemSDK", "GameItemSDK")
+                    b.HasOne("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameItemSDK", null)
                         .WithOne("GameSDKForPlayer")
                         .HasForeignKey("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameSDKForPlayer", "SDKItemId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("GameItemSDK");
                 });
 
             modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameShopItem", b =>
                 {
-                    b.HasOne("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameInfo", "GameInfo")
+                    b.HasOne("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameInfo", null)
                         .WithOne("GameShopItem")
                         .HasForeignKey("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameShopItem", "GameInfoId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("GameInfo");
                 });
 
             modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models.GameInfo", b =>

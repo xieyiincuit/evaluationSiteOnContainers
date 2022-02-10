@@ -5,11 +5,5 @@ public class GameSDKForPlayerEntityTypeConfiguration : IEntityTypeConfiguration<
     public void Configure(EntityTypeBuilder<GameSDKForPlayer> builder)
     {
         builder.HasIndex(x => x.UserId);
-
-        builder
-            .HasOne<GameItemSDK>()
-            .WithOne()
-            .HasForeignKey<GameSDKForPlayer>(x => x.SDKItemId)
-            .OnDelete(DeleteBehavior.Restrict);
     }
 }

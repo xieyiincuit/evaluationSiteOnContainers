@@ -52,4 +52,7 @@ public class GameInfo
 
     public List<GameTag> GameTags { get; set; }
     public List<GameInfoTag> GameInfoTags { get; set; }
+
+    [NotMapped]
+    public GameShopItem GameShopItem { get; set; }
 }

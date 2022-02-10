@@ -5,9 +5,9 @@ public class GameSDKEntityTypeConfiguration : IEntityTypeConfiguration<GameItemS
     public void Configure(EntityTypeBuilder<GameItemSDK> builder)
     {
         builder
-            .HasOne<GameShopItem>()
-            .WithMany(b => b.GameSDKList)
-            .HasForeignKey(x => x.GameItemId)
+            .HasOne(sdk => sdk.GameSDKForPlayer)
+            .WithOne(x => x.GameItemSDK)
+            .HasForeignKey<GameSDKForPlayer>(x => x.SDKItemId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

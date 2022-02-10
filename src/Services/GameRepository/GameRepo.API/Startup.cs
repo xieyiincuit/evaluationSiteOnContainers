@@ -67,7 +67,7 @@ public class Startup
             var serverVersion = new MySqlServerVersion(new Version(8, 0, 27));
             var gameRepoConnectionString = Configuration.GetConnectionString("GameRepoDbConnectString");
 
-             var integrationConnectionString = Configuration.GetConnectionString("IntegrationDbConnectString");
+            var integrationConnectionString = Configuration.GetConnectionString("IntegrationDbConnectString");
 
             services.AddDbContext<GameRepoContext>(
                 dbContextOptions =>
@@ -203,6 +203,11 @@ public class Startup
         services.AddScoped<IGameCompanyService, GameCompanyService>();
         services.AddScoped<IGameInfoService, GameInfoService>();
         services.AddScoped<IPlaySuggestionService, PlaySuggestionService>();
+        services.AddScoped<IGameShopItemService, GameShopItemService>();
+        services.AddScoped<IGameItemSDKService, GameItemSDKService>();
+        services.AddScoped<ISDKForPlayerService, SDKForPlayerService>();
+        services.AddScoped<IGameOwnerService, GameOwnerService>();
+
         services.AddScoped<IUnitOfWorkService, UnitOfWorkService>();
 
         #endregion

@@ -13,13 +13,13 @@ public class SDKForPlayerService : ISDKForPlayerService
     {
         return await _repoDbContext.GameSDKForPlayers
             .Include(sdk => sdk.GameItemSDK)
-            .ThenInclude(item => item.GameItem)
+            .ThenInclude(item => item.GameShopItem)
             .ThenInclude(info => info.GameInfo)
             .Where(x => x.UserId == userId)
             .Select(x => new PlaySDKDto
             {
                 SDKString = x.GameItemSDK.SDKString,
-                GameItemName = x.GameItemSDK.GameItem.GameInfo.Name,
+                GameItemName = x.GameItemSDK.GameShopItem.GameInfo.Name,
                 SendTime = x.GameItemSDK.SendTime.Value,
             })
             .Skip((pageIndex - 1) * pageSize)
@@ -33,7 +33,7 @@ public class SDKForPlayerService : ISDKForPlayerService
     {
         var queryString = _repoDbContext.GameSDKForPlayers
             .Include(sdk => sdk.GameItemSDK)
-            .ThenInclude(item => item.GameItem)
+            .ThenInclude(item => item.GameShopItem)
             .ThenInclude(info => info.GameInfo)
             .Where(x => x.UserId == userId);
 
@@ -47,7 +47,7 @@ public class SDKForPlayerService : ISDKForPlayerService
             .Select(x => new PlaySDKDto
             {
                 SDKString = x.GameItemSDK.SDKString,
-                GameItemName = x.GameItemSDK.GameItem.GameInfo.Name,
+                GameItemName = x.GameItemSDK.GameShopItem.GameInfo.Name,
                 SendTime = x.GameItemSDK.SendTime.Value
             })
             .Skip((pageIndex - 1) * pageSize)

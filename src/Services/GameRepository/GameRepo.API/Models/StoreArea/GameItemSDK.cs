@@ -23,5 +23,10 @@ public class GameItemSDK
     public int GameItemId { get; set; }
 
     [NotMapped]
-    public GameShopItem GameItem { get; set; }
+    [JsonIgnore]
+    public GameShopItem GameShopItem { get; set; }
+
+    [NotMapped]
+    [JsonIgnore]
+    public GameSDKForPlayer GameSDKForPlayer { get; set; }
 }

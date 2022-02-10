@@ -4,14 +4,20 @@ public class GameShopItemEntityTypeConfiguration : IEntityTypeConfiguration<Game
 {
     public void Configure(EntityTypeBuilder<GameShopItem> builder)
     {
-        //多对多创建关系表
         builder.Property(x => x.HotSellPoint)
             .HasDefaultValue(10);
 
         builder
-            .HasOne<GameInfo>()
-            .WithOne()
-            .HasForeignKey<GameShopItem>(x => x.GameInfoId)
+            .HasMany(g => g.GameSDKList)
+            .WithOne(b => b.GameShopItem)
+            .HasForeignKey(x => x.GameItemId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        //在DriveType GameInfo中定义Navigation
+        //builder
+        //    .HasOne<GameInfo>()
+        //    .WithOne(x => x.GameShopItem)
+        //    .HasForeignKey<GameShopItem>(x => x.GameInfoId)
+        //    .OnDelete(DeleteBehavior.Restrict);
     }
 }

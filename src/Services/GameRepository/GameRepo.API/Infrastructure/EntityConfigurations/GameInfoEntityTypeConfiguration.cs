@@ -25,5 +25,11 @@ public class GameInfoEntityTypeConfiguration : IEntityTypeConfiguration<GameInfo
             .WithOne(g => g.GameInfo)
             .HasForeignKey<GamePlaySuggestion>(pl => pl.GameId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder
+            .HasOne(g => g.GameShopItem)
+            .WithOne(g => g.GameInfo)
+            .HasForeignKey<GameShopItem>(pl => pl.GameInfoId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }
