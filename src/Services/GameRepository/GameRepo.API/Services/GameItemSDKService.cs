@@ -90,7 +90,7 @@ public class GameItemSDKService : IGameItemSDKService
         return await _repoDbContext.SaveChangesAsync();
     }
 
-    public async Task<GameItemSDK> GetOneSDKToSendUserAsync()
+    public async Task<GameItemSDK> GetOneSDKToSendUserAsync(int shopItemId)
     {
         var saved = false;
         var sdk = new GameItemSDK();
@@ -98,7 +98,7 @@ public class GameItemSDKService : IGameItemSDKService
         {
             try
             {
-                sdk = await _repoDbContext.GameItemSDKs.FirstOrDefaultAsync(x => x.HasSend == false);
+                sdk = await _repoDbContext.GameItemSDKs.FirstOrDefaultAsync(x => x.HasSend == false && x.GameItemId == shopItemId);
                 sdk.HasSend = true;
                 sdk.SendTime = DateTime.Now.ToLocalTime();
                 await _repoDbContext.SaveChangesAsync();
@@ -107,7 +107,7 @@ public class GameItemSDKService : IGameItemSDKService
             catch (DbUpdateConcurrencyException)
             {
                 _logger.LogWarning("Maybe get the same sdk for different user");
-            } 
+            }
         }
         return sdk;
     }

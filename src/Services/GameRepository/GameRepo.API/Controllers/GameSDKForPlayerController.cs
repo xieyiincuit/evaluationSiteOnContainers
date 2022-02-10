@@ -84,17 +84,15 @@ public class GameSDKForPlayerController : ControllerBase
     [HttpPost("u/sdk/send")]
     [Authorize]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> SendSdkToBuyerAsync([FromBody] int shopItemId, [FromBody] string userId)
+    public async Task<IActionResult> SendSdkToBuyerAsync([FromBody] SDKPlayerAddDto addDto)
     {
-        if (shopItemId <= 0 || shopItemId >= int.MaxValue && string.IsNullOrEmpty(userId)) return BadRequest();
-
-        var sdk = await _sdkSendService.GetOneSDKToSendUserAsync();
+        var sdk = await _sdkSendService.GetOneSDKToSendUserAsync(addDto.ShopItemId);
         if (sdk == null) return BadRequest();
 
         var ifSend = await _sdkForPlayerService.GetPlayerSDKByIdAsync(sdk.Id);
         if (ifSend != null) throw new GameRepoDomainException("该SDK已被使用，请联系管理员给你重发");
 
-        var response = await _sdkForPlayerService.AddPlayerSDKAsync(sdk.Id, userId);
+        var response = await _sdkForPlayerService.AddPlayerSDKAsync(sdk.Id, addDto.UserId);
         if (response == false) throw new GameRepoDomainException("SDK发放失败，请联系管理员给你重发");
 
         //这时候SDK的状态已经成为Send 并且SDKPlayer表中也已经有记录了, 则已经购买成功。

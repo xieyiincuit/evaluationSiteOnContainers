@@ -20,5 +20,5 @@ public interface IGameItemSDKService
 
     Task<int> BatchDeleteGameItemsSDKAsync(int gameItemId, bool? hasSend = false);
 
-    Task<GameItemSDK> GetOneSDKToSendUserAsync();
+    Task<GameItemSDK> GetOneSDKToSendUserAsync(int shopItemId);
 }
