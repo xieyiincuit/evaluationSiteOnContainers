@@ -56,26 +56,41 @@ public class SDKForPlayerService : ISDKForPlayerService
             .ToListAsync();
     }
 
-    public async Task<GameSDKForPlayer> GetPlayerSDKByIdAsync(int id)
+    public async Task<GameSDKForPlayer> GetPlayerSDKByIdAsync(long id)
     {
         return await _repoDbContext.GameSDKForPlayers
+            .Include(x => x.GameItemSDK)
+            .ThenInclude(x => x.GameShopItem)
+            .ThenInclude(x => x.GameInfo)
             .AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<bool> UpdatePlayerSDKStatusCheck(int id)
+    public async Task<bool> UpdatePlayerSDKStatusCheck(long id)
     {
         var recordToUpdate = await _repoDbContext.GameSDKForPlayers.FindAsync(id);
 
         if (recordToUpdate == null) return false;
         if (recordToUpdate.HasChecked == true) return true;
-        
+
         recordToUpdate.HasChecked = true;
         recordToUpdate.CheckTime = DateTime.Now.ToLocalTime();
-        return await _repoDbContext.SaveChangesAsync() > 0;
+        return true;
     }
 
     public async Task<int> CountPlayerSDKByUserId(string userId)
     {
         return await _repoDbContext.GameSDKForPlayers.CountAsync(x => x.UserId == userId);
+    }
+
+    public async Task<bool> AddPlayerSDKAsync(long sdkItemId, string userId)
+    {
+        var entityToAdd = new GameSDKForPlayer
+        {
+            UserId = userId,
+            SDKItemId = sdkItemId
+        };
+
+        await _repoDbContext.GameSDKForPlayers.AddAsync(entityToAdd);
+        return await _repoDbContext.SaveChangesAsync() > 1;
     }
 }

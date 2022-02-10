@@ -15,9 +15,4 @@ public class ShopItemUpdateDto
     [Required(ErrorMessage = "required | 请填写商品{0}")]
     [Range(1, 100, ErrorMessage = "invalid | 非法{0}")]
     public float Discount { get; set; }
-
-    [Display(Name = "库存量")]
-    [Required(ErrorMessage = "required | 请设置商品{0}")]
-    [Range(1, 10000, ErrorMessage = "invalid | 非法{0}")]
-    public int AvailableStock { get; set; }
 }

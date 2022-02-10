@@ -9,5 +9,11 @@ public class GameSDKEntityTypeConfiguration : IEntityTypeConfiguration<GameItemS
             .WithOne(x => x.GameItemSDK)
             .HasForeignKey<GameSDKForPlayer>(x => x.SDKItemId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        //乐观锁
+        builder.Property<byte[]>("ConcurrencyToken")
+            .IsConcurrencyToken()
+            .ValueGeneratedOnAddOrUpdate()
+            .HasColumnType("rowversion");
     }
 }

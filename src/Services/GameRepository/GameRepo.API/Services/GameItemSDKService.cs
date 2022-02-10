@@ -3,10 +3,12 @@
 public class GameItemSDKService : IGameItemSDKService
 {
     private readonly GameRepoContext _repoDbContext;
+    private readonly ILogger<GameItemSDKService> _logger;
 
-    public GameItemSDKService(GameRepoContext repoDbContext)
+    public GameItemSDKService(GameRepoContext repoDbContext, ILogger<GameItemSDKService> logger)
     {
         _repoDbContext = repoDbContext ?? throw new ArgumentNullException(nameof(repoDbContext));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task<List<GameItemSDK>> GetSDKListByGameItemAsync(int pageIndex, int pageSize, int gameItemId, bool? hasSend)
@@ -36,7 +38,7 @@ public class GameItemSDKService : IGameItemSDKService
                 .LongCountAsync(x => x.GameItemId == gameItemId && (x.HasSend == true));
     }
 
-    public async Task GenerateSDKForGameShopItemAsync(int count, int gameItemId)
+    public async Task<bool> GenerateSDKForGameShopItemAsync(int count, int gameItemId)
     {
         var sdkToInsert = new List<GameItemSDK>();
         for (var i = 0; i < count; i++)
@@ -49,6 +51,7 @@ public class GameItemSDKService : IGameItemSDKService
         }
 
         await _repoDbContext.GameItemSDKs.AddRangeAsync(sdkToInsert);
+        return await _repoDbContext.SaveChangesAsync() == count;
     }
 
     public async Task<int> BatchUpdateSDKStatusAsync(List<int> sdkIds)
@@ -85,5 +88,27 @@ public class GameItemSDKService : IGameItemSDKService
 
         _repoDbContext.GameItemSDKs.RemoveRange(sdkItemsToDelete);
         return await _repoDbContext.SaveChangesAsync();
+    }
+
+    public async Task<GameItemSDK> GetOneSDKToSendUserAsync()
+    {
+        var saved = false;
+        var sdk = new GameItemSDK();
+        while (!saved)
+        {
+            try
+            {
+                sdk = await _repoDbContext.GameItemSDKs.FirstOrDefaultAsync(x => x.HasSend == false);
+                sdk.HasSend = true;
+                sdk.SendTime = DateTime.Now.ToLocalTime();
+                await _repoDbContext.SaveChangesAsync();
+                saved = true;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                _logger.LogWarning("Maybe get the same sdk for different user");
+            } 
+        }
+        return sdk;
     }
 }

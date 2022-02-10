@@ -117,13 +117,13 @@ public class GameShopItemController : ControllerBase
         var entityToAdd = _mapper.Map<GameShopItem>(addDto);
 
         _logger.LogInformation($"administrator: id:{User.FindFirst("sub").Value}, name:{User.Identity.Name} add a shopItem");
-        await _shopItemService.AddGameShopItemAsync(entityToAdd);
-        await _sdkService.GenerateSDKForGameShopItemAsync(entityToAdd.AvailableStock, entityToAdd.GameInfoId);
-        var response = await _unitOfWorkService.SaveChangesAsync();
-        if (response > 1)
+        var firstCreated = await _shopItemService.AddGameShopItemAsync(entityToAdd);
+        if (firstCreated != true) return BadRequest();
+
+        var response = await _sdkService.GenerateSDKForGameShopItemAsync(entityToAdd.AvailableStock, entityToAdd.GameInfoId);
+        if (response == true)
             return CreatedAtRoute(nameof(GetShopItemsByIdForAdminAsync), new { itemId = entityToAdd.Id }, null);
-        else
-            return BadRequest();
+        return BadRequest();
     }
 
     [HttpPut]

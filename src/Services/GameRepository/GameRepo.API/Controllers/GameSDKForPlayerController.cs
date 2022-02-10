@@ -6,12 +6,23 @@ public class GameSDKForPlayerController : ControllerBase
 {
     private readonly ISDKForPlayerService _sdkForPlayerService;
     private readonly ILogger<GameSDKForPlayerController> _logger;
+    private readonly IGameItemSDKService _sdkSendService;
+    private readonly IGameOwnerService _ownerService;
+    private readonly IUnitOfWorkService _unitOfWorkService;
     private const int _pageSize = 10;
 
-    public GameSDKForPlayerController(ISDKForPlayerService sdkForPlayerService, ILogger<GameSDKForPlayerController> logger)
+    public GameSDKForPlayerController(
+        ISDKForPlayerService sdkForPlayerService,
+        ILogger<GameSDKForPlayerController> logger,
+        IGameItemSDKService sdkSendService,
+        IGameOwnerService ownerService,
+        IUnitOfWorkService unitOfWorkService)
     {
         _sdkForPlayerService = sdkForPlayerService ?? throw new ArgumentNullException(nameof(sdkForPlayerService));
-        _logger = logger;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _sdkSendService = sdkSendService ?? throw new ArgumentNullException(nameof(sdkSendService));
+        _ownerService = ownerService ?? throw new ArgumentNullException(nameof(ownerService));
+        _unitOfWorkService = unitOfWorkService ?? throw new ArgumentNullException(nameof(unitOfWorkService));
     }
 
     [HttpGet("u/sdks")]
@@ -19,7 +30,7 @@ public class GameSDKForPlayerController : ControllerBase
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(PaginatedItemsDtoModel<PlaySDKDto>), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> GetUserSDKsByUserIdAsync([FromQuery] int pageIndex, [FromQuery] bool? hasChecked)
+    public async Task<IActionResult> GetUserSDKsByUserIdAsync([FromQuery] bool? hasChecked, [FromQuery] int pageIndex = 1)
     {
         var userId = User.FindFirstValue("sub");
         if (string.IsNullOrEmpty(userId)) return BadRequest();
@@ -61,9 +72,32 @@ public class GameSDKForPlayerController : ControllerBase
         if (sdkId <= 0 || sdkId >= int.MaxValue) return BadRequest();
 
         var sdk = await _sdkForPlayerService.GetPlayerSDKByIdAsync(sdkId);
-        if (sdk.UserId != User.FindFirstValue("sub")) return BadRequest();
+        var userId = User.FindFirstValue("sub");
+        if (sdk.UserId != userId) return BadRequest();
 
-        var response = await _sdkForPlayerService.UpdatePlayerSDKStatusCheck(sdkId);
+        await _sdkForPlayerService.UpdatePlayerSDKStatusCheck(sdkId);
+        await _ownerService.AddGameOwnerRecordAsync(userId, sdk.GameItemSDK.GameShopItem.Id);
+        var response = await _unitOfWorkService.SaveEntitiesAsync();
         return response == true ? NoContent() : BadRequest();
+    }
+
+    [HttpPost("u/sdk/send")]
+    [Authorize]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    public async Task<IActionResult> SendSdkToBuyerAsync([FromBody] int shopItemId, [FromBody] string userId)
+    {
+        if (shopItemId <= 0 || shopItemId >= int.MaxValue && string.IsNullOrEmpty(userId)) return BadRequest();
+
+        var sdk = await _sdkSendService.GetOneSDKToSendUserAsync();
+        if (sdk == null) return BadRequest();
+
+        var ifSend = await _sdkForPlayerService.GetPlayerSDKByIdAsync(sdk.Id);
+        if (ifSend != null) throw new GameRepoDomainException("该SDK已被使用，请联系管理员给你重发");
+
+        var response = await _sdkForPlayerService.AddPlayerSDKAsync(sdk.Id, userId);
+        if (response == false) throw new GameRepoDomainException("SDK发放失败，请联系管理员给你重发");
+
+        //这时候SDK的状态已经成为Send 并且SDKPlayer表中也已经有记录了, 则已经购买成功。
+        return Ok();
     }
 }

@@ -22,6 +22,9 @@ public class GameItemSDK
     [Column("item_id"), Comment("游戏商品外键")]
     public int GameItemId { get; set; }
 
+    [Timestamp]
+    public byte[] ConcurrencyToken { get; set; }
+
     [NotMapped]
     [JsonIgnore]
     public GameShopItem GameShopItem { get; set; }

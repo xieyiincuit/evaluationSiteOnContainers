@@ -1,7 +1,7 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Controllers;
 
 [ApiController]
-[Route("api/v1/g")]
+[Route("api/v1/g/shop/sdks")]
 public class GameSDKController : ControllerBase
 {
     private readonly IGameItemSDKService _sdkService;
@@ -14,13 +14,12 @@ public class GameSDKController : ControllerBase
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    [HttpGet]
-    [Route("shop/sdks/{gameItemId:int}")]
-    [Authorize("administrator")]
+    [HttpGet("{gameItemId:int}")]
+    [Authorize(Roles = "administrator")]
     [ProducesResponseType(typeof(PaginatedItemsDtoModel<GameItemSDK>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<IActionResult> GetGameSDKAsync(
-        [FromQuery] int pageIndex, [FromQuery] bool hasSend, [FromRoute] int gameItemId)
+         [FromQuery] bool hasSend, [FromRoute] int gameItemId, [FromQuery] int pageIndex = 1)
     {
         var sdkCount = await _sdkService.CountSDKNumberByGameItemOrStatusAsync(gameItemId, hasSend);
         if (ParameterValidateHelper.IsInvalidPageIndex(sdkCount, _pageSize, pageIndex)) pageIndex = 1;
@@ -32,15 +31,12 @@ public class GameSDKController : ControllerBase
         return Ok(model);
     }
 
-
     //TODO 考虑用Grpc 考虑这里的权限控制
     [HttpPut]
-    [Route("shop/sdks")]
-    [Authorize("administrator")]
+    [Authorize(Roles = "administrator")]
     public async Task<IActionResult> UpdateSDKStatusAsync(List<int> sdkIds)
     {
         if (sdkIds == null) return BadRequest();
-        sdkIds = (List<int>)sdkIds.Distinct();
 
         var response = await _sdkService.BatchUpdateSDKStatusAsync(sdkIds);
         return response > 1 ? NoContent() : BadRequest();

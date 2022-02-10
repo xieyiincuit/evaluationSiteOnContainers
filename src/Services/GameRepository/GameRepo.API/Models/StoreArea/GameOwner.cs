@@ -7,7 +7,7 @@ public class GameOwner
     [Column("user_id"), Comment("用户id")]
     public string UserId { get; set; }
 
-    [Column("game_id"), Comment("游戏商品id")]
+    [Column("game_id"), Comment("游戏信息id")]
     public int GameId { get; set; }
 
     [NotMapped] 

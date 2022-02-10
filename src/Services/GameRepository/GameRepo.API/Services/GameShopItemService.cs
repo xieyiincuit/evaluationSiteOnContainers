@@ -13,15 +13,22 @@ public class GameShopItemService : IGameShopItemService
     {
         var queryString = _repoDbContext.GameShopItems
             .Include(x => x.GameInfo)
-            .AsNoTracking()
-            .Skip((pageIndex - 1) * pageSize)
-            .Take(pageSize);
+            .AsNoTracking();
 
         var result = orderBy switch
         {
-            1 => await queryString.OrderBy(x => x.Discount).ToListAsync(),
-            2 => await queryString.OrderBy(x => x.HotSellPoint).ToListAsync(),
-            _ => await queryString.OrderBy(x => x.Price).ToListAsync()
+            1 => await queryString.OrderBy(x => x.Discount)
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(),
+            2 => await queryString.OrderBy(x => x.HotSellPoint)
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(),
+            _ => await queryString.OrderBy(x => x.Price)
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync()
         };
         return result;
     }
@@ -42,9 +49,10 @@ public class GameShopItemService : IGameShopItemService
             .FirstOrDefaultAsync(x => x.GameInfoId == gameInfoId);
     }
 
-    public async Task AddGameShopItemAsync(GameShopItem gameShopItem)
+    public async Task<bool> AddGameShopItemAsync(GameShopItem gameShopItem)
     {
         await _repoDbContext.GameShopItems.AddAsync(gameShopItem);
+        return await _repoDbContext.SaveChangesAsync() > 0;
     }
 
     public async Task<bool> DeleteGameShopItemByIdAsync(int shopItemId)

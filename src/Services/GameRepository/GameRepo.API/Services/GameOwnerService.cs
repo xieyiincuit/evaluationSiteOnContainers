@@ -22,4 +22,14 @@ public class GameOwnerService : IGameOwnerService
         _repoDbContext.GameOwners.Remove(ownerRecordToDelete);
         return await _repoDbContext.SaveChangesAsync() > 0;
     }
+
+    public async Task AddGameOwnerRecordAsync(string userId, int gameId)
+    {
+        var gameOwnerRecord = new GameOwner()
+        {
+            GameId = gameId,
+            UserId = userId
+        };
+        await _repoDbContext.AddAsync(gameOwnerRecord);
+    }
 }
