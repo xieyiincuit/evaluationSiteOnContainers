@@ -184,11 +184,6 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
                         .HasColumnName("sdk_id")
                         .HasComment("SDK主键");
 
-                    b.Property<DateTime>("ConcurrencyToken")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion(6)");
-
                     b.Property<int>("GameItemId")
                         .HasColumnType("int")
                         .HasColumnName("item_id")
@@ -198,6 +193,13 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
                         .HasColumnType("tinyint(1)")
                         .HasColumnName("has_send")
                         .HasComment("是否已卖出");
+
+                    b.Property<DateTime>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("row_version")
+                        .HasComment("行版本");
 
                     b.Property<string>("SDKString")
                         .IsRequired()
