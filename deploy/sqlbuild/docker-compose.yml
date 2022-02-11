@@ -38,8 +38,17 @@ services:
     volumes:
       - mssql_identity:/var/opt/mssql
 
+  cache:
+    image: redis:latest
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass zhouredis11..
+    volumes:
+      - redis_master:/data
 volumes:
   mysql_gamerepo:
   mysql_evaluation:
   rabbitmq_evaluation:
   mssql_identity:
+  redis_master:

@@ -14,12 +14,17 @@ public static class Config
         {
             new ApiResource("evaluation", "Evaluation API")
             {
-                Scopes = { "eval-write", "eval-manage"}
+                Scopes = {"eval-write", "eval-manage"}
             },
 
             new ApiResource("gamerepo", "Gamerepo API")
             {
-                Scopes = { "repo-manage" }
+                Scopes = {"repo-manage"}
+            },
+
+            new ApiResource("ordering", "Ordering API")
+            {
+                Scopes = {"ordering-buy", "ordering-manage"}
             }
         };
 
@@ -33,6 +38,12 @@ public static class Config
                 new List<string> {JwtClaimTypes.Role, JwtClaimTypes.Name, JwtClaimTypes.Id}),
 
             new ApiScope("repo-manage", "游戏信息服务管理权限",
+                new List<string> {JwtClaimTypes.Role, JwtClaimTypes.Name, JwtClaimTypes.Id}),
+
+            new ApiScope("ordering-buy", "商品下单服务权限",
+                new List<string> {JwtClaimTypes.Role, JwtClaimTypes.Name, JwtClaimTypes.Id}),
+
+            new ApiScope("ordering-manage", "订单管理权限",
                 new List<string> {JwtClaimTypes.Role, JwtClaimTypes.Name, JwtClaimTypes.Id})
         };
 
@@ -74,6 +85,25 @@ public static class Config
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Profile,
                     "repo-manage"
+                }
+            },
+            new Client
+            {
+                ClientId = "orderingswaggerui",
+                ClientName = "Ordering Swagger UI",
+                AllowedGrantTypes = GrantTypes.Implicit,
+                AllowAccessTokensViaBrowser = true,
+                RedirectUris = {$"{clientsUrl["OrderingApi"]}/swagger/oauth2-redirect.html"},
+                PostLogoutRedirectUris = {$"{clientsUrl["OrderingApi"]}/swagger/"},
+                AccessTokenLifetime = 7200,
+                AlwaysSendClientClaims = true,
+                AlwaysIncludeUserClaimsInIdToken = true,
+                AllowedScopes =
+                {
+                    IdentityServerConstants.StandardScopes.OpenId,
+                    IdentityServerConstants.StandardScopes.Profile,
+                    "ordering-buy",
+                    "ordering-manage",
                 }
             },
         };

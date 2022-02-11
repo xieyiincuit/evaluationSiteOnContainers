@@ -10,7 +10,8 @@ public class ConfigurationDbContextSeed
         var clientUrls = new Dictionary<string, string>
         {
             {"EvaluationApi", configuration.GetValue<string>("EvaluationApiClient")},
-            {"GameRepoApi", configuration.GetValue<string>("GameRepoApiClient")}
+            {"GameRepoApi", configuration.GetValue<string>("GameRepoApiClient")},
+            {"OrderingApi", configuration.GetValue<string>("OrderingApiClient")}
         };
 
         if (!context.Clients.Any())

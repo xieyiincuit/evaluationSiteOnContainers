@@ -1,5 +1,25 @@
-﻿global using Microsoft.AspNetCore;
+﻿global using Autofac;
+global using Autofac.Extensions.DependencyInjection;
+global using HealthChecks.UI.Client;
+global using Microsoft.AspNetCore;
+global using Microsoft.AspNetCore.Authentication.JwtBearer;
+global using Microsoft.AspNetCore.Authorization;
+global using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+global using Microsoft.AspNetCore.HttpLogging;
 global using Microsoft.AspNetCore.Mvc;
+global using Microsoft.AspNetCore.Mvc.Authorization;
+global using Microsoft.AspNetCore.Mvc.Filters;
+global using Microsoft.Extensions.Diagnostics.HealthChecks;
+global using Microsoft.IdentityModel.Tokens;
+global using Microsoft.OpenApi.Models;
 global using Serilog;
 global using Serilog.Events;
+global using Swashbuckle.AspNetCore.SwaggerGen;
+global using System.IdentityModel.Tokens.Jwt;
+global using System.Net;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.Ordering.API;
+global using Zhouxieyi.evaluationSiteOnContainers.Services.Ordering.API.Auth;
+global using Zhouxieyi.evaluationSiteOnContainers.Services.Ordering.API.Infrastructure;
+global using RedLockNet;
+global using StackExchange.Redis.Extensions.Core.Abstractions;
+
