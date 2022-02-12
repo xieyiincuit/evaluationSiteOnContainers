@@ -98,7 +98,7 @@ public class GameItemSDKService : IGameItemSDKService
         {
             try
             {
-                sdk = await _repoDbContext.GameItemSDKs.FirstOrDefaultAsync(x => x.HasSend == false && x.GameItemId == shopItemId);
+                sdk = await _repoDbContext.GameItemSDKs.FirstOrDefaultAsync(x => x.HasSend == null && x.GameItemId == shopItemId);
                 sdk.HasSend = true;
                 sdk.SendTime = DateTime.Now.ToLocalTime();
                 await _repoDbContext.SaveChangesAsync();

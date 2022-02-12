@@ -1,9 +1,4 @@
-﻿using RedLockNet.SERedis;
-using RedLockNet.SERedis.Configuration;
-using StackExchange.Redis.Extensions.Core.Configuration;
-using Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.RedisRepository;
-
-namespace Zhouxieyi.evaluationSiteOnContainers.Services.Ordering.API;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Ordering.API;
 
 public class Startup
 {
@@ -125,6 +120,18 @@ public class Startup
                 Configuration["RedisConnection"],
                 name: "redis-check",
                 tags: new string[] { "db", "redis", "ordering" });
+
+
+        services.AddHttpClient<RepoCallService>(client =>
+            {
+                client.BaseAddress = new Uri(Configuration["GameRepoUrl"]);
+                client.DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
+                client.Timeout = TimeSpan.FromMilliseconds(500);
+            })
+            .SetHandlerLifetime(TimeSpan.FromHours(6))
+            .AddTransientHttpErrorPolicy(p => p.WaitAndRetryAsync(5, _ => TimeSpan.FromMilliseconds(200)));
+        services.AddHttpContextAccessor();
+
 
         var container = new ContainerBuilder();
         container.Populate(services);

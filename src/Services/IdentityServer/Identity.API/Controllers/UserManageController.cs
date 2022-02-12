@@ -56,6 +56,11 @@ public class UserManageController : ControllerBase
         //先判断该姓名是否被其他人员使用
         if (raiseNickNameChangedEvent)
         {
+            if (userEntityForUpdate.LastChangeNameTime != null && userEntityForUpdate.LastChangeNameTime >= DateTime.Now.AddDays(-3))
+            {
+                throw new IdentityDomainException("距离你上一次更换昵称还没有超过三天^ ^");
+            }
+
             var userForCheck = await _userManager.Users.AsNoTracking()
                 .FirstOrDefaultAsync(x => x.NickName == updateDto.NickName);
 
@@ -65,7 +70,7 @@ public class UserManageController : ControllerBase
 
             //更新用户信息
             userEntityForUpdate = UserInfoMapping.UpdateDtoMapToModel(updateDto, userEntityForUpdate);
-            userEntityForUpdate.LastChangeNameTime = DateTime.Now.ToLocalTime(); //TODO 可做时间范围内改名限制
+            userEntityForUpdate.LastChangeNameTime = DateTime.Now.ToLocalTime();
 
             //发出集成事件
             _logger.LogInformation("----- User's NickNameChangedEvent Raised, Will Send a message to Event Bus");

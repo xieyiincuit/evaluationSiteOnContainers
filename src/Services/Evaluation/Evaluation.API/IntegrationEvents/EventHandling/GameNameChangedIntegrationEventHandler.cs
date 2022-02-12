@@ -21,7 +21,6 @@ public class GameNameChangedIntegrationEventHandler :
             _logger.LogInformation("----- Handling integration event Begin: {IntegrationEventId} at {AppName} - {@IntegrationEvent}",
                 @event.Id, Program.AppName, @event);
 
-            //TODO 之后的订单服务也需要修改
             await UpdateArticlesGameNameAsync(@event.GameId, @event.NewName);
 
             _logger.LogInformation("----- Handling integration event End: {IntegrationEventId} at {AppName} - {@IntegrationEvent}",

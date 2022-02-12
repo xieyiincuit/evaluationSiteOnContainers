@@ -91,6 +91,6 @@ public class SDKForPlayerService : ISDKForPlayerService
         };
 
         await _repoDbContext.GameSDKForPlayers.AddAsync(entityToAdd);
-        return await _repoDbContext.SaveChangesAsync() > 1;
+        return await _repoDbContext.SaveChangesAsync() > 0;
     }
 }

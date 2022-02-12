@@ -31,7 +31,6 @@ public class GameSDKController : ControllerBase
         return Ok(model);
     }
 
-    //TODO 考虑用Grpc 考虑这里的权限控制
     [HttpPut]
     [Authorize(Roles = "administrator")]
     public async Task<IActionResult> UpdateSDKStatusAsync(List<int> sdkIds)

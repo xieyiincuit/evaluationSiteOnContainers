@@ -272,8 +272,24 @@ public class Startup
             {
                 NameClaimType = "name",
                 RoleClaimType = "role",
-                ValidIssuer = "http://identity-api"
+                ValidIssuer = "http://identity-api",
+                //用于REST通信时的受众验证失败问题
+                ValidAudiences = new List<string>()
+                {
+                    "ordering"
+                },
             };
+        });
+
+        var redisConfiguration = Configuration.GetSection("Redis").Get<RedisConfiguration>();
+        services.AddStackExchangeRedisExtensions<RedisNewtonsoftSerializer>(redisConfiguration);
+        services.AddSingleton<IDistributedLockFactory>(provider =>
+        {
+            var redisClient = provider.GetRequiredService<IRedisClientFactory>();
+            var redLockFactory = RedLockFactory.Create(
+                new List<RedLockMultiplexer> { new RedLockMultiplexer(redisClient.GetDefaultRedisClient().ConnectionPoolManager.GetConnection()) }
+            );
+            return redLockFactory;
         });
 
         var container = new ContainerBuilder();
@@ -284,6 +300,11 @@ public class Startup
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
+        if (env.IsDevelopment())
+        {
+            IdentityModelEventSource.ShowPII = true;
+        }
+
         var pathBase = Configuration["PATH_BASE"];
         if (!string.IsNullOrEmpty(pathBase))
         {

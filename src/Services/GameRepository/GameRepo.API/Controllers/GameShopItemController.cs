@@ -9,6 +9,7 @@ public class GameShopItemController : ControllerBase
     private readonly IUnitOfWorkService _unitOfWorkService;
     private readonly IMapper _mapper;
     private readonly ILogger<GameShopItemController> _logger;
+    private readonly IRedisDatabase _redisDatabase;
     private const int _pageSize = 10;
 
     public GameShopItemController(
@@ -16,13 +17,15 @@ public class GameShopItemController : ControllerBase
         IGameItemSDKService sdkService,
         IUnitOfWorkService unitOfWorkService,
         IMapper mapper,
-        ILogger<GameShopItemController> logger)
+        ILogger<GameShopItemController> logger,
+        IRedisDatabase redisDatabase)
     {
         _shopItemService = shopItemService ?? throw new ArgumentNullException(nameof(shopItemService));
         _sdkService = sdkService ?? throw new ArgumentNullException(nameof(sdkService));
         _unitOfWorkService = unitOfWorkService ?? throw new ArgumentNullException(nameof(unitOfWorkService));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _redisDatabase = redisDatabase ?? throw new ArgumentNullException(nameof(redisDatabase));
     }
 
     [HttpGet]
@@ -121,6 +124,8 @@ public class GameShopItemController : ControllerBase
         if (firstCreated != true) return BadRequest();
 
         var response = await _sdkService.GenerateSDKForGameShopItemAsync(entityToAdd.AvailableStock, entityToAdd.GameInfoId);
+        await _redisDatabase.Database.StringSetAsync($"ProductStock_{entityToAdd.Id}", entityToAdd.AvailableStock);
+
         if (response == true)
             return CreatedAtRoute(nameof(GetShopItemsByIdForAdminAsync), new { itemId = entityToAdd.Id }, null);
         return BadRequest();
