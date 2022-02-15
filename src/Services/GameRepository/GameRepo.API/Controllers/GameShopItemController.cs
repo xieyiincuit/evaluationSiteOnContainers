@@ -153,6 +153,7 @@ public class GameShopItemController : ControllerBase
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> ChangeShopItemStatusAsync([FromRoute] int itemId)
     {
+        //TODO 下架后才能增加库存，这里需要用分布式锁获取到锁，之后在释放锁并删除key。
         var response = await _shopItemService.ChangeGameShopItemStatusAsync(itemId);
         return response == true ? NoContent() : BadRequest();
     }
