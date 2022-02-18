@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option csharp_namespace = "GrpcGameRepository";
+
+package GameRepoApi;
+
+import "google/protobuf/timestamp.proto";
+
+service GameRepository {
+	rpc ChangeShopSellStatus(shopStatusChangeRequest) returns (shopStatusChangeResponse) {}
+}
+
+message shopStatusChangeRequest {
+	int32 shopItemId = 1;
+	google.protobuf.Timestamp endTime = 2;
+}
+
+message shopStatusChangeResponse {
+	int32 shopItemId = 1;
+	bool stopSell = 2;
+}

@@ -49,6 +49,7 @@ public class PurchaseController : ControllerBase
             var stockKey = GetProductStockKey(shopItemId);
             var currentQuantity = (int)await _redisDatabase.Database.StringGetAsync(stockKey);
 
+            //TODO 通知GameRepo 下架商品
             if (currentQuantity < 1)
                 throw new OrderingDomainException($"shopItem:{shopItemId}, 库存不足");
 
@@ -59,7 +60,11 @@ public class PurchaseController : ControllerBase
             _logger.LogInformation("user:{name} buy a shopItem:{id}", User.FindFirstValue("nickname"), shopItemId);
         }
         else
-            throw new OrderingDomainException("获取分布式锁失败");
+        {
+            _logger.LogWarning("when user wanna buy a item:{itemId}, but get lock fail", shopItemId);
+            throw new OrderingDomainException("but get lock fail");
+        }
+            
 
         return Ok();
     }

@@ -38,7 +38,7 @@ public class GameShopItemController : ControllerBase
         var shopItemsCount = await _shopItemService.CountGameShopItemAsync();
         if (ParameterValidateHelper.IsInvalidPageIndex(shopItemsCount, _pageSize, pageIndex)) pageIndex = 1;
 
-        var shopItems = await _shopItemService.GetGameShopItemListAsync(pageIndex, _pageSize, 1);
+        var shopItems = await _shopItemService.GetGameShopItemListAsync(pageIndex, _pageSize, 1, true);
         if (!shopItems.Any()) return NotFound();
 
         var shopItemsDto = _mapper.Map<List<ShopItemDtoToAdmin>>(shopItems);
@@ -56,7 +56,7 @@ public class GameShopItemController : ControllerBase
         var shopItemsCount = await _shopItemService.CountGameShopItemAsync();
         if (ParameterValidateHelper.IsInvalidPageIndex(shopItemsCount, _pageSize, pageIndex)) pageIndex = 1;
 
-        var shopItems = await _shopItemService.GetGameShopItemListAsync(pageIndex, _pageSize, 1);
+        var shopItems = await _shopItemService.GetGameShopItemListAsync(pageIndex, _pageSize, 1, false);
         if (!shopItems.Any()) return NotFound();
 
         var shopItemsDto = _mapper.Map<List<ShopItemDtoToUser>>(shopItems);
@@ -153,10 +153,37 @@ public class GameShopItemController : ControllerBase
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> ChangeShopItemStatusAsync([FromRoute] int itemId)
     {
-        //TODO 下架后才能增加库存，这里需要用分布式锁获取到锁，之后在释放锁并删除key。
-        var response = await _shopItemService.ChangeGameShopItemStatusAsync(itemId);
+        var response = await _shopItemService.UpdateShopItemStockAsync(itemId);
+        if (response == true)
+            await _shopItemService.ChangeGameShopItemStatusAsync(itemId);
+
         return response == true ? NoContent() : BadRequest();
     }
+
+    [HttpPut]
+    [Route("g/shop/stock/{itemId:int}")]
+    [Authorize(Roles = "administrator")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    public async Task<IActionResult> ChangeShopItemStockAsync([FromBody] ShopItemStockUpdateDto stockUpdateDto)
+    {
+        var shopItem = await _shopItemService.GetGameShopItemByIdAsync(stockUpdateDto.Id);
+        if (shopItem == null) return BadRequest();
+
+        if (shopItem.AvailableStock < stockUpdateDto.AvailableStock)
+        {
+            var generateCount = stockUpdateDto.AvailableStock - shopItem.AvailableStock;
+            await _sdkService.GenerateSDKForGameShopItemAsync(generateCount, stockUpdateDto.Id);
+        }
+        else if (shopItem.AvailableStock > stockUpdateDto.AvailableStock)
+        {
+            var deleteCount = shopItem.AvailableStock - shopItem.AvailableStock;
+            await _sdkService.BatchDeleteGameItemsSDKAsync(deleteCount, null);
+        }
+
+        return NoContent();
+    }
+
 
     [HttpDelete]
     [Route("g/shop/{itemId:int}")]
@@ -167,4 +194,5 @@ public class GameShopItemController : ControllerBase
     {
         throw new NotImplementedException();
     }
+
 }

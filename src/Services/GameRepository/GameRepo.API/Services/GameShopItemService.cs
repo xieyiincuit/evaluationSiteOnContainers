@@ -3,17 +3,22 @@
 public class GameShopItemService : IGameShopItemService
 {
     private readonly GameRepoContext _repoDbContext;
+    private readonly IRedisDatabase _redisDatabase;
 
-    public GameShopItemService(GameRepoContext repoDbContext)
+    public GameShopItemService(GameRepoContext repoDbContext, IRedisDatabase redisDatabase)
     {
         _repoDbContext = repoDbContext ?? throw new ArgumentNullException(nameof(repoDbContext));
+        _redisDatabase = redisDatabase ?? throw new ArgumentNullException(nameof(redisDatabase));
     }
 
-    public async Task<List<GameShopItem>> GetGameShopItemListAsync(int pageIndex, int pageSize, int orderBy)
+    public async Task<List<GameShopItem>> GetGameShopItemListAsync(int pageIndex, int pageSize, int orderBy, bool isAdmin)
     {
         var queryString = _repoDbContext.GameShopItems
             .Include(x => x.GameInfo)
             .AsNoTracking();
+
+        if (!isAdmin)
+            queryString.Where(x => x.TemporaryStopSell == null || x.TemporaryStopSell == false);
 
         var result = orderBy switch
         {
@@ -79,6 +84,7 @@ public class GameShopItemService : IGameShopItemService
         else
             shopItemForUpdate.TemporaryStopSell = false;
 
+        await _redisDatabase.RemoveAsync(GetProductStockKey(shopItemId));
         return await _repoDbContext.SaveChangesAsync() > 0;
     }
 
@@ -86,4 +92,18 @@ public class GameShopItemService : IGameShopItemService
     {
         return await _repoDbContext.GameShopItems.CountAsync();
     }
+
+    public async Task<bool> UpdateShopItemStockAsync(int shopItemId)
+    {
+        if (await _redisDatabase.ExistsAsync(GetProductStockKey(shopItemId)) == false) return false;
+        var itemStock = await _redisDatabase.GetAsync<int>(GetProductStockKey(shopItemId));
+
+        var shopItem = await _repoDbContext.GameShopItems.FindAsync(shopItemId);
+        if (shopItem == null) return false;
+        if (shopItem.AvailableStock <= itemStock) return false;
+        shopItem.AvailableStock = itemStock;
+        return await _repoDbContext.SaveChangesAsync() > 0;
+    }
+
+    private string GetProductStockKey(int productId) => $"ProductStock_{productId}";
 }

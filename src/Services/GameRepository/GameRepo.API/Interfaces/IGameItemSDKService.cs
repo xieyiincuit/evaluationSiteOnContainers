@@ -12,13 +12,13 @@ public interface IGameItemSDKService
     /// <returns></returns>
     Task<List<GameItemSDK>> GetSDKListByGameItemAsync(int pageIndex, int pageSize, int gameItemId, bool? hasSend = false);
 
-    Task<long> CountSDKNumberByGameItemOrStatusAsync(int gameItemId, bool? hasSend = false);
+    Task<long> CountSDKNumberByGameItemOrStatusAsync(int gameItemId, bool? hasSend);
 
     Task<bool> GenerateSDKForGameShopItemAsync(int count, int gameItemId);
 
     Task<int> BatchUpdateSDKStatusAsync(List<int> sdkIds);
 
-    Task<int> BatchDeleteGameItemsSDKAsync(int gameItemId, bool? hasSend = false);
+    Task<int> BatchDeleteGameItemsSDKAsync(int gameItemId, bool? hasSend);
 
     Task<GameItemSDK> GetOneSDKToSendUserAsync(int shopItemId);
 }

@@ -11,6 +11,8 @@ public class Startup
     // This method gets called by the runtime. Use this method to add services to the container.
     public virtual IServiceProvider ConfigureServices(IServiceCollection services)
     {
+        services.AddGrpc();
+
         #region MvcSettings
 
         services.AddControllers(options =>
@@ -332,6 +334,7 @@ public class Startup
 
         app.UseEndpoints(endpoints =>
         {
+            endpoints.MapGrpcService<GameRepositoryService>();
             endpoints.MapDefaultControllerRoute();
             endpoints.MapControllers();
 

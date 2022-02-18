@@ -11,6 +11,8 @@ public class Startup
 
     public virtual IServiceProvider ConfigureServices(IServiceCollection services)
     {
+        services.AddGrpc();
+
         services.AddControllers(options =>
             {
                 options.Filters.Add(typeof(HttpGlobalExceptionFilter));
@@ -35,7 +37,6 @@ public class Startup
             options.RequestBodyLogLimit = 1024;
             options.ResponseBodyLogLimit = 1024;
         });
-
 
         services.AddSwaggerGen(options =>
         {
@@ -130,8 +131,8 @@ public class Startup
             })
             .SetHandlerLifetime(TimeSpan.FromHours(6))
             .AddTransientHttpErrorPolicy(p => p.WaitAndRetryAsync(5, _ => TimeSpan.FromMilliseconds(200)));
-        services.AddHttpContextAccessor();
 
+        services.AddHttpContextAccessor();
 
         var container = new ContainerBuilder();
         container.Populate(services);
@@ -168,7 +169,7 @@ public class Startup
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapDefaultControllerRoute();
-            endpoints.MapControllers();
+            endpoints.MapGrpcService<OrderingService>();
 
             endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
             {

@@ -48,9 +48,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHost.Customization", "Bu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RedisRepository", "BuildingBlocks\DistributedCache\RedisRepository\RedisRepository.csproj", "{22E28978-885B-42AE-A62B-110707BFD89D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ordering.API", "Services\Ordering\Ordering.API\Ordering.API.csproj", "{2B235059-A3E7-4225-A3E9-229A220D7D79}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ordering.API", "Services\Ordering\Ordering.API\Ordering.API.csproj", "{2B235059-A3E7-4225-A3E9-229A220D7D79}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackManage.API", "Services\BackManager\BackManage.API\BackManage.API.csproj", "{6E877BC4-62C4-4A1C-B2EE-E5351CDB7F24}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BackManage.API", "Services\BackManager\BackManage.API\BackManage.API.csproj", "{6E877BC4-62C4-4A1C-B2EE-E5351CDB7F24}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

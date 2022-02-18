@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+option csharp_namespace = "GrpcOrdering";
+
+package OrderingApi;
+
+service OrderingGrpc {
+	rpc SetShopItemStock(CreateOrderRequest) returns (ShopItemResponse){}
+}
+
+message CreateOrderRequest {
+	string buyerId = 1;
+	repeated ShopItem items = 2;
+}
+
+message ShopItem {
+	int32 shopItemId = 1;
+	string shopItemName = 2;
+	int32 totalPrice = 3;
+	int32 quantity = 4;
+}
+
+message ShopItemResponse {
+	string buyerId = 1;
+	int32 shopItemId = 2;
+}

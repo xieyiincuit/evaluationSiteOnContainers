@@ -1,6 +1,8 @@
 ﻿global using Autofac;
 global using Autofac.Extensions.DependencyInjection;
 global using AutoMapper;
+global using Grpc.Core;
+global using GrpcGameRepository;
 global using HealthChecks.UI.Client;
 global using Microsoft.AspNetCore;
 global using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -10,6 +12,7 @@ global using Microsoft.AspNetCore.HttpLogging;
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.AspNetCore.Mvc.Authorization;
 global using Microsoft.AspNetCore.Mvc.Filters;
+global using Microsoft.AspNetCore.Server.Kestrel.Core;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.Design;
 global using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -50,6 +53,7 @@ global using Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.WebHost.Customi
 global using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Auth;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.DtoModels;
+global using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Grpc;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Infrastructure;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Infrastructure.ActionResults;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Infrastructure.Exceptions;

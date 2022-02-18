@@ -2,7 +2,7 @@
 
 public interface IGameShopItemService
 {
-    Task<List<GameShopItem>> GetGameShopItemListAsync(int pageIndex, int pageSize, int orderBy);
+    Task<List<GameShopItem>> GetGameShopItemListAsync(int pageIndex, int pageSize, int orderBy, bool isAdmin);
     Task<GameShopItem> GetGameShopItemByIdAsync(int shopItemId);
     Task<GameShopItem> GetGameShopItemByGameIdAsync(int gameInfoId);
     Task<bool> AddGameShopItemAsync(GameShopItem gameShopItem);
@@ -10,4 +10,5 @@ public interface IGameShopItemService
     Task<bool> UpdateGameShopItemInfoAsync(GameShopItem gameShopItem);
     Task<bool> ChangeGameShopItemStatusAsync(int shopItemId);
     Task<int> CountGameShopItemAsync();
+    Task<bool> UpdateShopItemStockAsync(int shopItemId);
 }
