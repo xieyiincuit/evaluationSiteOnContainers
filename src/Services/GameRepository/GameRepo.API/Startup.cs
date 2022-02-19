@@ -61,6 +61,27 @@ public class Startup
                     .AllowCredentials());
         });
 
+        services.AddHttpLogging(options =>
+        {
+            options.LoggingFields =
+                HttpLoggingFields.RequestPath | HttpLoggingFields.RequestMethod |
+                HttpLoggingFields.RequestQuery | HttpLoggingFields.RequestHeaders |
+                HttpLoggingFields.RequestBody | HttpLoggingFields.ResponseStatusCode |
+                HttpLoggingFields.ResponseHeaders | HttpLoggingFields.ResponseBody;
+            options.RequestHeaders.Add("Authorization");
+
+            options.RequestHeaders.Remove("Connection");
+            options.RequestHeaders.Remove("User-Agent");
+            options.RequestHeaders.Remove("Accept-Encoding");
+            options.RequestHeaders.Remove("Accept-Language");
+
+            options.MediaTypeOptions.AddText("application/json");
+            options.RequestBodyLogLimit = 1024;
+            options.ResponseBodyLogLimit = 1024;
+        });
+
+        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
         #endregion
 
         #region DbSettings
@@ -235,26 +256,7 @@ public class Startup
 
         #endregion
 
-        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
-        services.AddHttpLogging(options =>
-        {
-            options.LoggingFields =
-                HttpLoggingFields.RequestPath | HttpLoggingFields.RequestMethod |
-                HttpLoggingFields.RequestQuery | HttpLoggingFields.RequestHeaders |
-                HttpLoggingFields.RequestBody | HttpLoggingFields.ResponseStatusCode |
-                HttpLoggingFields.ResponseHeaders | HttpLoggingFields.ResponseBody;
-            options.RequestHeaders.Add("Authorization");
-
-            options.RequestHeaders.Remove("Connection");
-            options.RequestHeaders.Remove("User-Agent");
-            options.RequestHeaders.Remove("Accept-Encoding");
-            options.RequestHeaders.Remove("Accept-Language");
-
-            options.MediaTypeOptions.AddText("application/json");
-            options.RequestBodyLogLimit = 1024;
-            options.ResponseBodyLogLimit = 1024;
-        });
+        #region Authentication
 
         // prevent from mapping "sub" claim to nameIdentifier.
         JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
@@ -283,6 +285,10 @@ public class Startup
             };
         });
 
+        #endregion
+
+        #region RedisSettings
+
         var redisConfiguration = Configuration.GetSection("Redis").Get<RedisConfiguration>();
         services.AddStackExchangeRedisExtensions<RedisNewtonsoftSerializer>(redisConfiguration);
         services.AddSingleton<IDistributedLockFactory>(provider =>
@@ -293,6 +299,8 @@ public class Startup
             );
             return redLockFactory;
         });
+
+        #endregion
 
         var container = new ContainerBuilder();
         container.Populate(services);
@@ -321,7 +329,7 @@ public class Startup
                    "GameRepo.API V1");
                setup.OAuthClientId("gamereposwaggerui");
                setup.OAuthAppName("GameRepo Swagger UI");
-               setup.OAuth2RedirectUrl("http://localhost:55001/swagger/oauth2-redirect.html");
+               setup.OAuth2RedirectUrl("http://localhost:50001/swagger/oauth2-redirect.html");
            });
 
         app.UseHttpLogging();
@@ -334,9 +342,9 @@ public class Startup
 
         app.UseEndpoints(endpoints =>
         {
-            endpoints.MapGrpcService<GameRepositoryService>();
             endpoints.MapDefaultControllerRoute();
             endpoints.MapControllers();
+            endpoints.MapGrpcService<GameRepositoryService>();
 
             endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
             {

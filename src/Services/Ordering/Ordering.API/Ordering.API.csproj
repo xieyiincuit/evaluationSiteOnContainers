@@ -29,7 +29,7 @@
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.2.0" />
     <PackageReference Include="Google.Protobuf" Version="3.19.4" />
     <PackageReference Include="Grpc.AspNetCore.Server" Version="2.42.0" />
-    <PackageReference Include="Grpc.Net.Client" Version="2.42.0" />
+    <PackageReference Include="Grpc.AspNetCore.Server.ClientFactory" Version="2.42.0" />
     <PackageReference Include="Grpc.Net.ClientFactory" Version="2.42.0" />
     <PackageReference Include="Grpc.Tools" Version="2.44.0">
       <PrivateAssets>all</PrivateAssets>
@@ -39,15 +39,19 @@
     <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="6.0.2" />
     <PackageReference Include="Serilog.AspNetCore" Version="5.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.15.1" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.16.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\DistributedCache\RedisRepository\RedisRepository.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\WebHostKits\WebHost.Customization\WebHost.Customization.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="Proto\ordering.proto" GrpcServices="Both" />
+    <Protobuf Include="..\..\GameRepository\GameRepo.API\Proto\gameRepository.proto" GrpcServices="Client">
+      <Link>Protos\gameRepository.proto</Link>
+    </Protobuf>
+    <Protobuf Include="Proto\ordering.proto" GrpcServices="Server" />
   </ItemGroup>
 
 </Project>

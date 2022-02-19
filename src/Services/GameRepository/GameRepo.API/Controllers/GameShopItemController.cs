@@ -153,15 +153,22 @@ public class GameShopItemController : ControllerBase
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> ChangeShopItemStatusAsync([FromRoute] int itemId)
     {
-        var response = await _shopItemService.UpdateShopItemStockAsync(itemId);
+        _logger.LogInformation("admin:{name} take down shopItem:{id}, will sync stock in next step",
+            User.FindFirstValue("nickname"), itemId);
+
+        //先更新库存在更换状态
+        var response = await _shopItemService.UpdateShopItemStockWhenTakeDownAsync(itemId);
         if (response == true)
+        {
             await _shopItemService.ChangeGameShopItemStatusAsync(itemId);
+            _logger.LogInformation("admin:{name} take down shopItem:{id} successfully", User.FindFirstValue("nickname"), itemId);
+        }
 
         return response == true ? NoContent() : BadRequest();
     }
 
     [HttpPut]
-    [Route("g/shop/stock/{itemId:int}")]
+    [Route("g/shop/stock")]
     [Authorize(Roles = "administrator")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -170,20 +177,27 @@ public class GameShopItemController : ControllerBase
         var shopItem = await _shopItemService.GetGameShopItemByIdAsync(stockUpdateDto.Id);
         if (shopItem == null) return BadRequest();
 
+        _logger.LogInformation("admin:{name} wanna change shopItem:{id} stock", User.FindFirstValue("nickname"), stockUpdateDto.Id);
+
         if (shopItem.AvailableStock < stockUpdateDto.AvailableStock)
         {
+            _logger.LogInformation("now shopItem:{id} stock is {now}, add to {new}", stockUpdateDto.Id,
+                shopItem.AvailableStock, stockUpdateDto.AvailableStock);
             var generateCount = stockUpdateDto.AvailableStock - shopItem.AvailableStock;
+            await _shopItemService.UpdateShopItemStockWhenChangeNumberAsync(stockUpdateDto.Id, stockUpdateDto.AvailableStock);
             await _sdkService.GenerateSDKForGameShopItemAsync(generateCount, stockUpdateDto.Id);
         }
         else if (shopItem.AvailableStock > stockUpdateDto.AvailableStock)
         {
+            _logger.LogInformation("now shopItem:{id} stock is {now}, reduce to {new}", stockUpdateDto.Id,
+                shopItem.AvailableStock, stockUpdateDto.AvailableStock);
             var deleteCount = shopItem.AvailableStock - shopItem.AvailableStock;
-            await _sdkService.BatchDeleteGameItemsSDKAsync(deleteCount, null);
+            await _shopItemService.UpdateShopItemStockWhenChangeNumberAsync(stockUpdateDto.Id, stockUpdateDto.AvailableStock);
+            await _sdkService.BatchDeleteGameItemsSDKAsync(stockUpdateDto.Id, null, deleteCount);
         }
 
         return NoContent();
     }
-
 
     [HttpDelete]
     [Route("g/shop/{itemId:int}")]

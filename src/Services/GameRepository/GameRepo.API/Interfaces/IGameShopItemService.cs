@@ -10,5 +10,6 @@ public interface IGameShopItemService
     Task<bool> UpdateGameShopItemInfoAsync(GameShopItem gameShopItem);
     Task<bool> ChangeGameShopItemStatusAsync(int shopItemId);
     Task<int> CountGameShopItemAsync();
-    Task<bool> UpdateShopItemStockAsync(int shopItemId);
+    Task<bool> UpdateShopItemStockWhenTakeDownAsync(int shopItemId);
+    Task<bool> UpdateShopItemStockWhenChangeNumberAsync(int shopItemId, int newStock);
 }

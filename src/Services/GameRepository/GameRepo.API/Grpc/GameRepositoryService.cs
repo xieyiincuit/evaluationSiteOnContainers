@@ -15,25 +15,30 @@ public class GameRepositoryService : GameRepository.GameRepositoryBase
     {
         _logger.LogInformation("Begin grpc call from method {Method} for shopItem id {Id}", context.Method, request.ShopItemId);
 
-        await _shopItemService.UpdateShopItemStockAsync(request.ShopItemId);
+        await _shopItemService.UpdateShopItemStockWhenTakeDownAsync(request.ShopItemId);
         var response = await _shopItemService.ChangeGameShopItemStatusAsync(request.ShopItemId);
-        if (response != false)
+        if (response == true)
         {
             context.Status = new Status(StatusCode.OK, $"shopItem with id {request.ShopItemId} has been stop sell");
-            return new shopStatusChangeResponse()
+            _logger.LogInformation("call via grpc: status:{status}", context.Status);
+
+            var result = new shopStatusChangeResponse
             {
                 ShopItemId = request.ShopItemId,
                 StopSell = true
             };
+            return result;
         }
         else
         {
             context.Status = new Status(StatusCode.Internal, $"shopItem with id {request.ShopItemId} has stop sell fail");
-            return new shopStatusChangeResponse()
+            _logger.LogInformation("call via grpc: status:{status}", context.Status);
+            var result = new shopStatusChangeResponse
             {
                 ShopItemId = request.ShopItemId,
                 StopSell = false
             };
+            return result;
         }
     }
 }

@@ -80,10 +80,12 @@ public class GameItemSDKService : IGameItemSDKService
         return await _repoDbContext.SaveChangesAsync();
     }
 
-    public async Task<int> BatchDeleteGameItemsSDKAsync(int gameItemId, bool? hasSend)
+    public async Task<int> BatchDeleteGameItemsSDKAsync(int gameItemId, bool? hasSend, int deleteCount)
     {
         var sdkItemsToDelete = await _repoDbContext.GameItemSDKs
             .Where(x => x.GameItemId == gameItemId && x.HasSend == hasSend)
+            .OrderBy(x => x.Id)
+            .Take(deleteCount)
             .ToListAsync();
 
         _repoDbContext.GameItemSDKs.RemoveRange(sdkItemsToDelete);

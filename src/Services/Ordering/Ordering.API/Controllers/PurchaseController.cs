@@ -5,23 +5,24 @@
 public class PurchaseController : ControllerBase
 {
     private readonly ILogger<PurchaseController> _logger;
-    private readonly IRedisClient _redisClient;
     private readonly IRedisDatabase _redisDatabase;
     private readonly IDistributedLockFactory _distributedLockFactory;
     private readonly RepoCallService _repoCallService;
+    private readonly GrpcRepoCallService _grpcRepoCallService;
 
     public PurchaseController(
         ILogger<PurchaseController> logger,
         IRedisClient redisClient,
         IRedisDatabase redisDatabase,
         IDistributedLockFactory distributedLockFactory,
-        RepoCallService repoCallService)
+        RepoCallService repoCallService,
+        GrpcRepoCallService grpcRepoCallService)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _redisClient = redisClient ?? throw new ArgumentNullException(nameof(redisClient));
         _redisDatabase = redisDatabase ?? throw new ArgumentNullException(nameof(redisDatabase));
         _distributedLockFactory = distributedLockFactory ?? throw new ArgumentNullException(nameof(distributedLockFactory));
         _repoCallService = repoCallService ?? throw new ArgumentNullException(nameof(repoCallService));
+        _grpcRepoCallService = grpcRepoCallService ?? throw new ArgumentNullException(nameof(grpcRepoCallService));
     }
 
     [HttpPost("item/{shopItemId:int}")]
@@ -49,12 +50,16 @@ public class PurchaseController : ControllerBase
             var stockKey = GetProductStockKey(shopItemId);
             var currentQuantity = (int)await _redisDatabase.Database.StringGetAsync(stockKey);
 
-            //TODO 通知GameRepo 下架商品
             if (currentQuantity < 1)
-                throw new OrderingDomainException($"shopItem:{shopItemId}, 库存不足");
+            {
+                _logger.LogInformation("shopItem:{id} all sell, begin grpc call gameRepo to stop this", shopItemId);
+                var response = await _grpcRepoCallService.StopShopSellAsync(shopItemId);
+                if (response == false)
+                    _logger.LogError("shopItem:{id} all sell, begin grpc call gameRepo to stop this but fail", shopItemId);
+                return BadRequest();
+            }
 
             await _redisDatabase.Database.StringDecrementAsync(stockKey, 1);
-
             //通信服务 发送SDK保存拥有记录
             await _repoCallService.SaveBuyerRecordAsync(User.FindFirstValue("sub"), shopItemId);
             _logger.LogInformation("user:{name} buy a shopItem:{id}", User.FindFirstValue("nickname"), shopItemId);
@@ -62,9 +67,8 @@ public class PurchaseController : ControllerBase
         else
         {
             _logger.LogWarning("when user wanna buy a item:{itemId}, but get lock fail", shopItemId);
-            throw new OrderingDomainException("but get lock fail");
+            throw new OrderingDomainException("user wanna buy a item but get lock fail");
         }
-            
 
         return Ok();
     }

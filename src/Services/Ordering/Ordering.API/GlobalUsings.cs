@@ -1,6 +1,7 @@
 ﻿global using Autofac;
 global using Autofac.Extensions.DependencyInjection;
 global using Grpc.Core;
+global using GrpcGameRepository;
 global using GrpcOrdering;
 global using HealthChecks.UI.Client;
 global using Microsoft.AspNetCore;
@@ -29,7 +30,9 @@ global using System.Net;
 global using System.Net.Http.Headers;
 global using System.Security.Claims;
 global using Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.RedisRepository;
+global using Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.WebHost.Customization;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.Ordering.API;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.Ordering.API.Auth;
+global using Zhouxieyi.evaluationSiteOnContainers.Services.Ordering.API.GrpcClients;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.Ordering.API.HttpClients;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.Ordering.API.Infrastructure;

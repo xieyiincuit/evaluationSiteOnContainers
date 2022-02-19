@@ -17,8 +17,14 @@ public class GameShopItemService : IGameShopItemService
             .Include(x => x.GameInfo)
             .AsNoTracking();
 
+        //非管理员不显示暂停售卖的Item
         if (!isAdmin)
-            queryString.Where(x => x.TemporaryStopSell == null || x.TemporaryStopSell == false);
+        {
+            queryString = _repoDbContext.GameShopItems
+                .Include(x => x.GameInfo)
+                .Where(x => x.TemporaryStopSell == null || x.TemporaryStopSell == false)
+                .AsNoTracking();
+        }
 
         var result = orderBy switch
         {
@@ -80,11 +86,17 @@ public class GameShopItemService : IGameShopItemService
         if (shopItemForUpdate == null) return false;
 
         if (shopItemForUpdate.TemporaryStopSell == null || shopItemForUpdate.TemporaryStopSell == false)
+        {
             shopItemForUpdate.TemporaryStopSell = true;
+            await _redisDatabase.RemoveAsync(GetProductStockKey(shopItemId));
+        }
         else
-            shopItemForUpdate.TemporaryStopSell = false;
+        {
+            //恢复售卖状态
+            shopItemForUpdate.TemporaryStopSell = null;
+            await _redisDatabase.Database.StringSetAsync(GetProductStockKey(shopItemId), shopItemForUpdate.AvailableStock);
+        }
 
-        await _redisDatabase.RemoveAsync(GetProductStockKey(shopItemId));
         return await _repoDbContext.SaveChangesAsync() > 0;
     }
 
@@ -93,7 +105,7 @@ public class GameShopItemService : IGameShopItemService
         return await _repoDbContext.GameShopItems.CountAsync();
     }
 
-    public async Task<bool> UpdateShopItemStockAsync(int shopItemId)
+    public async Task<bool> UpdateShopItemStockWhenTakeDownAsync(int shopItemId)
     {
         if (await _redisDatabase.ExistsAsync(GetProductStockKey(shopItemId)) == false) return false;
         var itemStock = await _redisDatabase.GetAsync<int>(GetProductStockKey(shopItemId));
@@ -102,6 +114,14 @@ public class GameShopItemService : IGameShopItemService
         if (shopItem == null) return false;
         if (shopItem.AvailableStock <= itemStock) return false;
         shopItem.AvailableStock = itemStock;
+        return await _repoDbContext.SaveChangesAsync() > 0;
+    }
+
+    public async Task<bool> UpdateShopItemStockWhenChangeNumberAsync(int shopItemId, int newStock)
+    {
+        var shopItem = await _repoDbContext.GameShopItems.FindAsync(shopItemId);
+        if (shopItem == null) return false;
+        shopItem.AvailableStock = newStock;
         return await _repoDbContext.SaveChangesAsync() > 0;
     }
 

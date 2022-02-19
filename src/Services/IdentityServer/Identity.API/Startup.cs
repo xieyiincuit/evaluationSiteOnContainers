@@ -184,15 +184,13 @@ public class Startup
         app.UseStaticFiles();
 
         // Make work identity server redirections in Edge and latest versions of browser.
-        // WARN: Not valid in a production environment.
-        app.Use(async (context, next) =>
-        {
-            context.Response.Headers.Add("Content-Security-Policy", "script-src 'unsafe-inline'");
-            await next();
-        });
+        //app.Use(async (context, next) =>
+        //{
+        //    context.Response.Headers.Add("Content-Security-Policy", "script-src 'unsafe-inline'");
+        //    await next();
+        //});
 
         app.UseRouting();
-
         app.UseForwardedHeaders();
         app.UseIdentityServer();
 

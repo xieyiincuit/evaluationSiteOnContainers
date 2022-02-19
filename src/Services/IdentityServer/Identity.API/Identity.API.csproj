@@ -46,6 +46,7 @@
     <Folder Include="Extensions\Profiles\" />
     <Folder Include="Migrations\ConfigurationDb\" />
     <Folder Include="Migrations\PersistedGrantDb\" />
+    <Folder Include="wwwroot\uploads\" />
   </ItemGroup>
 
   <ItemGroup>

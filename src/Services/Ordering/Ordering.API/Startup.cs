@@ -11,13 +11,27 @@ public class Startup
 
     public virtual IServiceProvider ConfigureServices(IServiceCollection services)
     {
+        #region GrpcClient
+      
         services.AddGrpc();
+        services.AddGrpcClient<GameRepository.GameRepositoryClient>(options =>
+        {
+            var grpcGameRepoUrl = Configuration.GetValue("GrpcGameRepoUrl", "http://127.0.0.1:55001");
+            options.Address = new Uri(grpcGameRepoUrl);
+        }).AddInterceptor<GrpcExceptionInterceptor>();
+        services.AddScoped(typeof(GrpcRepoCallService));
+        services.AddScoped(typeof(GrpcBaseCallService));
+        services.AddTransient<GrpcExceptionInterceptor>();
+
+        #endregion
+
+        #region MvcSettings
 
         services.AddControllers(options =>
-            {
-                options.Filters.Add(typeof(HttpGlobalExceptionFilter));
-            })
-            .AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = true);
+           {
+               options.Filters.Add(typeof(HttpGlobalExceptionFilter));
+           })
+           .AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = true);
 
         services.AddHttpLogging(options =>
         {
@@ -80,6 +94,9 @@ public class Startup
                     .AllowCredentials());
         });
 
+        #endregion
+
+        #region Authentication
         // prevent from mapping "sub" claim to nameIdentifier.
         JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
         var identityUrl = Configuration.GetValue<string>("IdentityUrl");
@@ -101,6 +118,9 @@ public class Startup
                 ValidIssuer = "http://identity-api"
             };
         });
+        #endregion
+
+        #region RedisOptions
 
         var redisConfiguration = Configuration.GetSection("Redis").Get<RedisConfiguration>();
         services.AddStackExchangeRedisExtensions<RedisNewtonsoftSerializer>(redisConfiguration);
@@ -113,6 +133,10 @@ public class Startup
             return redLockFactory;
         });
 
+        #endregion
+
+        #region HealthChecks
+
         var hcBuilder = services.AddHealthChecks();
 
         hcBuilder
@@ -122,6 +146,9 @@ public class Startup
                 name: "redis-check",
                 tags: new string[] { "db", "redis", "ordering" });
 
+        #endregion
+
+        #region HttpClients
 
         services.AddHttpClient<RepoCallService>(client =>
             {
@@ -133,6 +160,8 @@ public class Startup
             .AddTransientHttpErrorPolicy(p => p.WaitAndRetryAsync(5, _ => TimeSpan.FromMilliseconds(200)));
 
         services.AddHttpContextAccessor();
+
+        #endregion
 
         var container = new ContainerBuilder();
         container.Populate(services);
@@ -155,7 +184,7 @@ public class Startup
                     "Ordering.API V1");
                 setup.OAuthClientId("orderingswaggerui");
                 setup.OAuthAppName("Ordering Swagger UI");
-                setup.OAuth2RedirectUrl("http://localhost:55003/swagger/oauth2-redirect.html");
+                setup.OAuth2RedirectUrl("http://localhost:50002/swagger/oauth2-redirect.html");
             });
 
         app.UseHttpLogging();
@@ -169,6 +198,7 @@ public class Startup
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapDefaultControllerRoute();
+            endpoints.MapControllers();
             endpoints.MapGrpcService<OrderingService>();
 
             endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
