@@ -8,5 +8,6 @@ public class ArticleProfile : Profile
         CreateMap<ArticleUpdateDto, EvaluationArticle>();
         CreateMap<EvaluationArticle, ArticleUpdateDto>();
         CreateMap<EvaluationArticle, ArticleDto>().ForMember(dest => dest.Author, opt => opt.MapFrom(src => src.NickName));
+        CreateMap<EvaluationArticle, ArticleSmallDto>().ForMember(dest => dest.Author, opt => opt.MapFrom(src => src.NickName));
     }
 }

@@ -29,7 +29,7 @@ public class EvaluationArticleController : ControllerBase
     [HttpGet]
     [Route("articles")]
     [ProducesResponseType(typeof(PaginatedItemsDtoModel<EvaluationArticle>), (int)HttpStatusCode.OK)]
-    [ProducesResponseType(typeof(IEnumerable<ArticleDto>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<ArticleSmallDto>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> GetArticlesAsync([FromQuery] int pageIndex = 1, string? ids = null)
     {
@@ -49,9 +49,9 @@ public class EvaluationArticleController : ControllerBase
         if (ParameterValidateHelper.IsInvalidPageIndex(totalArticles, _pageSize, pageIndex))
             pageIndex = 1; // pageIndex不合法重设
 
-        var articlesToReturn = _mapper.Map<List<ArticleDto>>(await _articleService.GetArticlesAsync(_pageSize, pageIndex));
+        var articlesToReturn = _mapper.Map<List<ArticleSmallDto>>(await _articleService.GetArticlesAsync(_pageSize, pageIndex));
 
-        var model = new PaginatedItemsDtoModel<ArticleDto>(pageIndex, _pageSize, totalArticles, articlesToReturn, null);
+        var model = new PaginatedItemsDtoModel<ArticleSmallDto>(pageIndex, _pageSize, totalArticles, articlesToReturn, null);
         return Ok(model);
     }
 
@@ -78,7 +78,7 @@ public class EvaluationArticleController : ControllerBase
     [AllowAnonymous]
     [HttpGet]
     [Route("type/articles")]
-    [ProducesResponseType(typeof(PaginatedItemsDtoModel<ArticleDto>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(PaginatedItemsDtoModel<ArticleSmallDto>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> GetArticleByTypeAsync(int categoryId, [FromQuery] int pageIndex = 1)
     {
@@ -93,9 +93,9 @@ public class EvaluationArticleController : ControllerBase
         if (ParameterValidateHelper.IsInvalidPageIndex(totalArticles, _pageSize, pageIndex)) pageIndex = 1;
 
         var articlesToReturn = 
-            _mapper.Map<List<ArticleDto>>(await _articleService.GetArticlesAsync(_pageSize, pageIndex, categoryId));
+            _mapper.Map<List<ArticleSmallDto>>(await _articleService.GetArticlesAsync(_pageSize, pageIndex, categoryId));
 
-        var model = new PaginatedItemsDtoModel<ArticleDto>(pageIndex, _pageSize, totalArticles, articlesToReturn, null);
+        var model = new PaginatedItemsDtoModel<ArticleSmallDto>(pageIndex, _pageSize, totalArticles, articlesToReturn, null);
         return Ok(model);
     }
 
