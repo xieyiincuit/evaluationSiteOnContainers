@@ -11,7 +11,8 @@ public class ConfigurationDbContextSeed
         {
             {"EvaluationApi", configuration.GetValue<string>("EvaluationApiClient")},
             {"GameRepoApi", configuration.GetValue<string>("GameRepoApiClient")},
-            {"OrderingApi", configuration.GetValue<string>("OrderingApiClient")}
+            {"OrderingApi", configuration.GetValue<string>("OrderingApiClient")},
+            {"BackManageApi", configuration.GetValue<string>("BackManageApiClient")},
         };
 
         if (!context.Clients.Any())

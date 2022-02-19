@@ -25,6 +25,11 @@ public static class Config
             new ApiResource("ordering", "Ordering API")
             {
                 Scopes = {"ordering-buy", "ordering-manage"}
+            },
+
+            new ApiResource("backmanage", "BackManage API")
+            {
+                Scopes = {"back-manage"}
             }
         };
 
@@ -44,7 +49,10 @@ public static class Config
                 new List<string> {JwtClaimTypes.Role, JwtClaimTypes.Name, JwtClaimTypes.Id}),
 
             new ApiScope("ordering-manage", "订单管理权限",
-                new List<string> {JwtClaimTypes.Role, JwtClaimTypes.Name, JwtClaimTypes.Id})
+                new List<string> {JwtClaimTypes.Role, JwtClaimTypes.Name, JwtClaimTypes.Id}),
+
+            new ApiScope("back-manage", "网站后台管理权限",
+            new List<string> {JwtClaimTypes.Role, JwtClaimTypes.Name, JwtClaimTypes.Id})
         };
 
     public static IEnumerable<Client> Clients(Dictionary<string, string> clientsUrl) =>
@@ -106,5 +114,23 @@ public static class Config
                     "ordering-manage",
                 }
             },
+            new Client
+            {
+                ClientId = "backmanageswaggerui",
+                ClientName = "BackManage Swagger UI",
+                AllowedGrantTypes = GrantTypes.Implicit,
+                AllowAccessTokensViaBrowser = true,
+                RedirectUris = {$"{clientsUrl["BackManageApi"]}/swagger/oauth2-redirect.html"},
+                PostLogoutRedirectUris = {$"{clientsUrl["BackManageApi"]}/swagger/"},
+                AccessTokenLifetime = 7200,
+                AlwaysSendClientClaims = true,
+                AlwaysIncludeUserClaimsInIdToken = true,
+                AllowedScopes =
+                {
+                    IdentityServerConstants.StandardScopes.OpenId,
+                    IdentityServerConstants.StandardScopes.Profile,
+                    "back-manage",
+                }
+            }
         };
 }
