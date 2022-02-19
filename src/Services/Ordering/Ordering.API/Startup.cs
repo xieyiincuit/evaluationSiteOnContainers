@@ -97,6 +97,7 @@ public class Startup
         #endregion
 
         #region Authentication
+
         // prevent from mapping "sub" claim to nameIdentifier.
         JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
         var identityUrl = Configuration.GetValue<string>("IdentityUrl");
@@ -118,6 +119,7 @@ public class Startup
                 ValidIssuer = "http://identity-api"
             };
         });
+
         #endregion
 
         #region RedisOptions
