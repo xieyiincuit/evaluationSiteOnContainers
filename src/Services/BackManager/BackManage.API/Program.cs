@@ -9,9 +9,16 @@ try
     Log.Information("Configuring web host ({ApplicationContext})...", AppName);
     var host = BuildWebHost(configuration, args);
 
+    using (var scope = host.Services.CreateScope())
+    {
+        Log.Information("Applying migrations ({ApplicationContext})...", AppName);
+        var db = scope.ServiceProvider.GetRequiredService<BackManageContext>();
+        await db.Database.MigrateAsync();
+        Log.Information("Migrations Applied ({ApplicationContext})...", AppName);
+    }
+
     Log.Information("Starting web host ({ApplicationContext})...", AppName);
     host.Run();
-
     return 0;
 }
 catch (Exception ex)

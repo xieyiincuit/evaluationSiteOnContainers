@@ -83,6 +83,25 @@ public static class ServiceCollectionExtension
                     .AllowCredentials());
         });
 
+        services.AddHttpLogging(options =>
+        {
+            options.LoggingFields =
+                HttpLoggingFields.RequestPath | HttpLoggingFields.RequestMethod |
+                HttpLoggingFields.RequestQuery | HttpLoggingFields.RequestHeaders |
+                HttpLoggingFields.RequestBody | HttpLoggingFields.ResponseStatusCode |
+                HttpLoggingFields.ResponseHeaders | HttpLoggingFields.ResponseBody;
+            options.RequestHeaders.Add("Authorization");
+
+            options.RequestHeaders.Remove("Connection");
+            options.RequestHeaders.Remove("User-Agent");
+            options.RequestHeaders.Remove("Accept-Encoding");
+            options.RequestHeaders.Remove("Accept-Language");
+
+            options.MediaTypeOptions.AddText("application/json");
+            options.RequestBodyLogLimit = 1024;
+            options.ResponseBodyLogLimit = 1024;
+        });
+
         return services;
     }
 
@@ -226,6 +245,33 @@ public static class ServiceCollectionExtension
         //Handler服务注入，这里切记要注入，不然AutoFac映射不到对应的Handler
         services.AddTransient<GameNameChangedIntegrationEventHandler>();
         services.AddTransient<NickNameChangedIntegrationEventHandler>();
+        return services;
+    }
+
+    public static IServiceCollection AddCustomAuth(this IServiceCollection services, IConfiguration configuration)
+    {
+        // prevent from mapping "sub" claim to nameIdentifier.
+        JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+        var identityUrl = configuration.GetValue<string>("IdentityUrl");
+
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+        }).AddJwtBearer(options =>
+        {
+            options.Authority = identityUrl;
+            options.RequireHttpsMetadata = false;
+            options.Audience = "evaluation";
+            options.TokenValidationParameters = new TokenValidationParameters()
+            {
+                NameClaimType = "name",
+                RoleClaimType = "role",
+                ValidIssuer = "http://identity-api"
+            };
+        });
+
         return services;
     }
 }

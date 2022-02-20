@@ -9,7 +9,7 @@ public class Startup
 
     public IConfiguration Configuration { get; }
 
-    public virtual IServiceCollection ConfigureServices(IServiceCollection services)
+    public virtual IServiceProvider ConfigureServices(IServiceCollection services)
     {
         #region MvcSettings
 
@@ -147,7 +147,9 @@ public class Startup
 
         #endregion
 
-        return services;
+        var container = new ContainerBuilder();
+        container.Populate(services);
+        return new AutofacServiceProvider(container.Build());
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

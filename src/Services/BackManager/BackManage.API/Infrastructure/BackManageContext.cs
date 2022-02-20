@@ -4,8 +4,32 @@ public class BackManageContext : DbContext
 {
     public BackManageContext(DbContextOptions<BackManageContext> options) : base(options) { }
 
-}
+    public DbSet<ApproveRecord> ApproveRecords { get; set; }
 
+    public DbSet<BannedRecord> BannedRecords { get; set; }
+    public DbSet<BannedInfo> BannedInfos { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<ApproveRecord>()
+            .Property(x => x.ApplyTime)
+            .HasDefaultValue(DateTime.Now.ToLocalTime());
+
+        modelBuilder.Entity<ApproveRecord>()
+            .Property(x => x.Status)
+            .HasDefaultValue(ApproveStatus.Progressing);
+
+        modelBuilder.Entity<BannedRecord>()
+            .Property(x => x.ReportCount)
+            .HasDefaultValue(0);
+
+        modelBuilder.Entity<BannedInfo>()
+            .HasOne<BannedRecord>()
+            .WithMany(x => x.BannedInfos)
+            .HasForeignKey(x => x.BannedRecordId)
+            .HasConstraintName("fk_info_record");
+    }
+}
 
 public class BackManageContextDesignFactory : IDesignTimeDbContextFactory<BackManageContext>
 {

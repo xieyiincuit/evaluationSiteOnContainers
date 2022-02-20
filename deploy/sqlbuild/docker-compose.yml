@@ -18,16 +18,6 @@ services:
     ports:
       - "3307:3306"
 
-  mq_evaluation:
-    image: rabbitmq:3.9.13-management
-    volumes:
-      - rabbitmq_evaluation:/var/lib/rabbitmq
-    environment:
-      - RABBITMQ_DEFAULT_USER=zhoushanlin
-      - RABBITMQ_DEFAULT_PASS=rabbitmq!!..
-    ports:
-      - "15672:15672"
-      - "5672:5672"
   db_indentity:
     image: mcr.microsoft.com/mssql/server:2019-latest
     environment:
@@ -38,6 +28,26 @@ services:
     volumes:
       - mssql_identity:/var/opt/mssql
 
+  db_backmanage:
+    image: mysql:latest
+    volumes:
+      - mysql_backmanage:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=ZhouBack!1n
+    ports:
+      - "3308:3306"
+
+  mq_evaluation:
+    image: rabbitmq:3.9.13-management
+    volumes:
+      - rabbitmq_evaluation:/var/lib/rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=zhoushanlin
+      - RABBITMQ_DEFAULT_PASS=rabbitmq!!..
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+
   cache:
     image: redis:latest
     restart: always
@@ -46,9 +56,12 @@ services:
     command: redis-server --save 20 1 --loglevel warning --requirepass zhouredis11..
     volumes:
       - redis_master:/data
+
 volumes:
   mysql_gamerepo:
   mysql_evaluation:
-  rabbitmq_evaluation:
+  mysql_backmanage:
   mssql_identity:
+  rabbitmq_evaluation:
   redis_master:
+

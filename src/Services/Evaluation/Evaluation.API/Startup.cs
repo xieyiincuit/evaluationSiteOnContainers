@@ -18,53 +18,13 @@ public class Startup
             .AddCustomDbContext(Configuration)
             .AddCustomHealthCheck(Configuration)
             .AddCustomServicesInjection(Configuration)
+            .AddCustomAuth(Configuration)
             .AddCustomOptions(Configuration)
             .AddCustomIntegrationEvent(Configuration)
             .AddCustomHttpClient(Configuration)
             .AddCustomEventBus(Configuration)
             .AddCustomMapper(Configuration)
             .AddCustomValidator(Configuration);
-
-        // prevent from mapping "sub" claim to nameIdentifier.
-        JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-        var identityUrl = Configuration.GetValue<string>("IdentityUrl");
-
-        services.AddAuthentication(options =>
-        {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-
-        }).AddJwtBearer(options =>
-        {
-            options.Authority = identityUrl;
-            options.RequireHttpsMetadata = false;
-            options.Audience = "evaluation";
-            options.TokenValidationParameters = new TokenValidationParameters()
-            {
-                NameClaimType = "name",
-                RoleClaimType = "role",
-                ValidIssuer = "http://identity-api"
-            };
-        });
-
-        services.AddHttpLogging(options =>
-        {
-            options.LoggingFields =
-                HttpLoggingFields.RequestPath | HttpLoggingFields.RequestMethod |
-                HttpLoggingFields.RequestQuery | HttpLoggingFields.RequestHeaders |
-                HttpLoggingFields.RequestBody | HttpLoggingFields.ResponseStatusCode |
-                HttpLoggingFields.ResponseHeaders | HttpLoggingFields.ResponseBody;
-            options.RequestHeaders.Add("Authorization");
-
-            options.RequestHeaders.Remove("Connection");
-            options.RequestHeaders.Remove("User-Agent");
-            options.RequestHeaders.Remove("Accept-Encoding");
-            options.RequestHeaders.Remove("Accept-Language");
-
-            options.MediaTypeOptions.AddText("application/json");
-            options.RequestBodyLogLimit = 1024;
-            options.ResponseBodyLogLimit = 1024;
-        });
 
         //use autofac
         var container = new ContainerBuilder();
