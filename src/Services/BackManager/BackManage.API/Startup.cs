@@ -36,7 +36,7 @@ public class Startup
             options.MediaTypeOptions.AddText("application/json");
             options.RequestBodyLogLimit = 1024;
             options.ResponseBodyLogLimit = 1024;
-        }); 
+        });
 
         services.AddSwaggerGen(options =>
         {
@@ -104,7 +104,7 @@ public class Startup
                     dbContextOptions.EnableSensitiveDataLogging();
                     dbContextOptions.EnableDetailedErrors();
                 });
-        } 
+        }
 
         #endregion
 
@@ -144,6 +144,35 @@ public class Startup
                 Configuration["RedisConnectionString"],
                 name: "redis-check",
                 tags: new string[] { "db", "redis", "backmanage" });
+
+        #endregion
+
+        #region ServicesInjection
+
+        services.AddScoped<IApprovalService, ApproveService>();
+        services.AddScoped<IBannedService, BannedService>();
+        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+        #endregion
+
+        #region HttpClients
+
+        var retryPolicy = Policy.Handle<HttpRequestException>()
+            .OrResult<HttpResponseMessage>(response =>
+                response.StatusCode == HttpStatusCode.InternalServerError ||
+                response.StatusCode == HttpStatusCode.RequestTimeout)
+            .WaitAndRetryAsync(3, _ => TimeSpan.FromMilliseconds(300));
+
+        services.AddHttpClient<IdentityClientService>(client =>
+            {
+                client.BaseAddress = new Uri(Configuration["IdentityUrl"]);
+                client.DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
+                client.Timeout = TimeSpan.FromMilliseconds(500);
+            })
+            .SetHandlerLifetime(TimeSpan.FromHours(6))
+            .AddPolicyHandler(retryPolicy);
+
+        services.AddHttpContextAccessor();
 
         #endregion
 

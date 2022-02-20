@@ -23,12 +23,11 @@ namespace BackManage.API.Infrastructure.BackManageMigrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     approve_body = table.Column<string>(type: "varchar(1000)", maxLength: 1000, nullable: false, comment: "测评审批信息正文")
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    apply_time = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValue: new DateTime(2022, 2, 20, 12, 24, 20, 842, DateTimeKind.Local).AddTicks(2862), comment: "申请时间"),
+                    apply_time = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValue: new DateTime(2022, 2, 20, 22, 28, 44, 453, DateTimeKind.Local).AddTicks(7211), comment: "申请时间"),
                     approve_status = table.Column<int>(type: "int", nullable: false, defaultValue: 0, comment: "审批状态"),
                     approve_time = table.Column<DateTime>(type: "datetime(6)", nullable: true, comment: "审批时间"),
                     approve_user = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: true, comment: "审批人")
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    a_info_id = table.Column<int>(type: "int", nullable: false, comment: "审批信息id")
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
@@ -43,12 +42,13 @@ namespace BackManage.API.Infrastructure.BackManageMigrations
                 {
                     banned_id = table.Column<int>(type: "int", nullable: false, comment: "主键")
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    user_id = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false, comment: "被举报用户id")
+                    banned_user_id = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false, comment: "被举报用户id")
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     report_count = table.Column<int>(type: "int", nullable: false, defaultValue: 0, comment: "被举报次数"),
                     banned_time = table.Column<DateTime>(type: "datetime(6)", nullable: true, comment: "冻结时间"),
                     approve_user = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: true, comment: "审批人")
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    banned_status = table.Column<int>(type: "int", nullable: false, defaultValue: 0, comment: "封禁状态")
                 },
                 constraints: table =>
                 {
@@ -58,32 +58,20 @@ namespace BackManage.API.Infrastructure.BackManageMigrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "banned_info",
+                name: "banned_user_link",
                 columns: table => new
                 {
-                    b_info_id = table.Column<int>(type: "int", nullable: false, comment: "主键")
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    banned_body = table.Column<string>(type: "varchar(1000)", maxLength: 1000, nullable: false, comment: "举报信息正文")
+                    banned_user_id = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false, comment: "被举报用户id")
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    banned_id = table.Column<int>(type: "int", nullable: false, comment: "举报审核外键")
+                    check_user_id = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false, comment: "发起举报用户id")
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_banned_info", x => x.b_info_id);
-                    table.ForeignKey(
-                        name: "fk_info_record",
-                        column: x => x.banned_id,
-                        principalTable: "banned_record",
-                        principalColumn: "banned_id",
-                        onDelete: ReferentialAction.Cascade);
+                    table.PrimaryKey("PK_banned_user_link", x => new { x.banned_user_id, x.check_user_id });
                 },
-                comment: "用户举报内容信息表")
+                comment: "用户举报链接表")
                 .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_banned_info_banned_id",
-                table: "banned_info",
-                column: "banned_id");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -92,10 +80,10 @@ namespace BackManage.API.Infrastructure.BackManageMigrations
                 name: "approve_record");
 
             migrationBuilder.DropTable(
-                name: "banned_info");
+                name: "banned_record");
 
             migrationBuilder.DropTable(
-                name: "banned_record");
+                name: "banned_user_link");
         }
     }
 }

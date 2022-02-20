@@ -168,7 +168,7 @@ public static class ServiceCollectionExtension
                 client.Timeout = TimeSpan.FromMilliseconds(500);
             })
             .SetHandlerLifetime(TimeSpan.FromHours(6))
-            .AddTransientHttpErrorPolicy(p => p.WaitAndRetryAsync(1, _ => TimeSpan.FromMilliseconds(100)));
+            .AddTransientHttpErrorPolicy(p => p.WaitAndRetryAsync(3, _ => TimeSpan.FromMilliseconds(200)));
 
         services.AddHttpContextAccessor();
         return services;

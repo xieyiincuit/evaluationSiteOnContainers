@@ -5,10 +5,7 @@ public class IdentityCallService
     private readonly HttpClient _client;
     private readonly ILogger<IdentityCallService> _logger;
 
-    public IdentityCallService(
-        HttpClient client,
-        ILogger<IdentityCallService> logger,
-        IHttpContextAccessor httpContextAccessor)
+    public IdentityCallService(HttpClient client, ILogger<IdentityCallService> logger)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -16,7 +13,7 @@ public class IdentityCallService
 
     public async Task<HttpResponseMessage> GetCommentsUserProfileAsync(List<string> userIds)
     {
-        _logger.LogDebug("---- client call identity services: baseUrl:{url}", _client.BaseAddress);
+        _logger.LogDebug("---- Evaluation client call identity services: baseUrl:{url}", _client.BaseAddress);
         var callUrl = _client.BaseAddress + "api/v1/u/avatar/batch";
 
         try
@@ -32,7 +29,7 @@ public class IdentityCallService
 
             if (response is null)
             {
-                _logger.LogError("http response return null when callTo:{callUrl}, bodyInfo:{ids}", callUrl, userIds);
+                _logger.LogError("http response return null when callTo:{callUrl}, bodyInfo:{@ids}", callUrl, userIds);
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
 

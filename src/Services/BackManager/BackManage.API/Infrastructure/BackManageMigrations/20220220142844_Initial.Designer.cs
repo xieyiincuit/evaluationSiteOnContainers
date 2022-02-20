@@ -11,7 +11,7 @@ using Zhouxieyi.evaluationSiteOnContainers.Services.BackManage.API.Infrastructur
 namespace BackManage.API.Infrastructure.BackManageMigrations
 {
     [DbContext(typeof(BackManageContext))]
-    [Migration("20220220042420_Initial")]
+    [Migration("20220220142844_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,14 +32,9 @@ namespace BackManage.API.Infrastructure.BackManageMigrations
                     b.Property<DateTime>("ApplyTime")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime(6)")
-                        .HasDefaultValue(new DateTime(2022, 2, 20, 12, 24, 20, 842, DateTimeKind.Local).AddTicks(2862))
+                        .HasDefaultValue(new DateTime(2022, 2, 20, 22, 28, 44, 453, DateTimeKind.Local).AddTicks(7211))
                         .HasColumnName("apply_time")
                         .HasComment("申请时间");
-
-                    b.Property<int>("ApproveInfoId")
-                        .HasColumnType("int")
-                        .HasColumnName("a_info_id")
-                        .HasComment("审批信息id");
 
                     b.Property<DateTime?>("ApproveTime")
                         .HasColumnType("datetime(6)")
@@ -80,35 +75,6 @@ namespace BackManage.API.Infrastructure.BackManageMigrations
                     b.HasComment("测评资格申请表");
                 });
 
-            modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.BackManage.API.Models.BannedInfo", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("b_info_id")
-                        .HasComment("主键");
-
-                    b.Property<int>("BannedRecordId")
-                        .HasColumnType("int")
-                        .HasColumnName("banned_id")
-                        .HasComment("举报审核外键");
-
-                    b.Property<string>("Body")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("varchar(1000)")
-                        .HasColumnName("banned_body")
-                        .HasComment("举报信息正文");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BannedRecordId");
-
-                    b.ToTable("banned_info");
-
-                    b.HasComment("用户举报内容信息表");
-                });
-
             modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.BackManage.API.Models.BannedRecord", b =>
                 {
                     b.Property<int>("Id")
@@ -135,11 +101,18 @@ namespace BackManage.API.Infrastructure.BackManageMigrations
                         .HasColumnName("report_count")
                         .HasComment("被举报次数");
 
+                    b.Property<int>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("banned_status")
+                        .HasComment("封禁状态");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("varchar(200)")
-                        .HasColumnName("user_id")
+                        .HasColumnName("banned_user_id")
                         .HasComment("被举报用户id");
 
                     b.HasKey("Id");
@@ -149,19 +122,25 @@ namespace BackManage.API.Infrastructure.BackManageMigrations
                     b.HasComment("用户举报记录表");
                 });
 
-            modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.BackManage.API.Models.BannedInfo", b =>
+            modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.BackManage.API.Models.BannedUserLink", b =>
                 {
-                    b.HasOne("Zhouxieyi.evaluationSiteOnContainers.Services.BackManage.API.Models.BannedRecord", null)
-                        .WithMany("BannedInfos")
-                        .HasForeignKey("BannedRecordId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_info_record");
-                });
+                    b.Property<string>("BannedUserId")
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)")
+                        .HasColumnName("banned_user_id")
+                        .HasComment("被举报用户id");
 
-            modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.BackManage.API.Models.BannedRecord", b =>
-                {
-                    b.Navigation("BannedInfos");
+                    b.Property<string>("CheckUserId")
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)")
+                        .HasColumnName("check_user_id")
+                        .HasComment("发起举报用户id");
+
+                    b.HasKey("BannedUserId", "CheckUserId");
+
+                    b.ToTable("banned_user_link");
+
+                    b.HasComment("用户举报链接表");
                 });
 #pragma warning restore 612, 618
         }

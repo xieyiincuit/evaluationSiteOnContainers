@@ -29,9 +29,6 @@ public class ApproveRecord
     [MaxLength(200)]
     [Column("approve_user"), Comment("审批人")]
     public string? ApproveUser { get; set; }
-
-    [Column("a_info_id"), Comment("审批信息id")]
-    public int ApproveInfoId { get; set; }
 }
 
 public enum ApproveStatus

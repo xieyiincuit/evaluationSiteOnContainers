@@ -192,6 +192,32 @@ public class UserManageController : ControllerBase
         return NoContent();
     }
 
+    [HttpPost("recover/{uid}")]
+    [Authorize(Roles = "administrator")]
+    public async Task<IActionResult> RecoverUserAsync([FromRoute] string uid)
+    {
+        var user = await _userManager.FindByIdAsync(uid);
+        if (user == null) return BadRequest();
+
+        var banRole = await _roleManager.FindByNameAsync("forbiddenuser");
+        var normalRole = await _roleManager.FindByNameAsync("normaluser");
+        var userRole = await _applicationDbContext.UserRoles.FindAsync(user.Id, banRole.Id);
+
+        //在RoleUser Table中 两个属性都是主键，所以需要先删除在重新建立联系
+        if (userRole != null)
+        {
+            _applicationDbContext.Remove(userRole);
+            await _applicationDbContext.SaveChangesAsync();
+        }
+
+        var newRoleLink = new IdentityUserRole<string> { RoleId = normalRole.Id, UserId = user.Id };
+        await _applicationDbContext.UserRoles.AddAsync(newRoleLink);
+
+        var result = await _applicationDbContext.SaveChangesAsync();
+        if (result <= 0) throw new IdentityDomainException($"recover user failed -> userName: {user.UserName}");
+        return NoContent();
+    }
+
     [HttpPost("approve/{uid}")]
     [Authorize(Roles = "administrator")]
     public async Task<IActionResult> ApproveUserAsync([FromRoute] string uid)
@@ -215,6 +241,32 @@ public class UserManageController : ControllerBase
 
         var result = await _applicationDbContext.SaveChangesAsync();
         if (result <= 0) throw new IdentityDomainException($"approve user failed -> userName: {user.UserName}");
+        return NoContent();
+    }
+
+    [HttpPost("redraw/{uid}")]
+    [Authorize(Roles = "administrator")]
+    public async Task<IActionResult> RedrawUserAsync([FromRoute] string uid)
+    {
+        var user = await _userManager.FindByIdAsync(uid);
+        if (user == null) return BadRequest();
+
+        var evaluatorRole = await _roleManager.FindByNameAsync("evaluator");
+        var normalRole = await _roleManager.FindByNameAsync("normaluser");
+        var userRole = await _applicationDbContext.UserRoles.FindAsync(user.Id, evaluatorRole.Id);
+
+        //在RoleUser Table中 两个属性都是主键，所以需要先删除在重新建立联系
+        if (userRole != null)
+        {
+            _applicationDbContext.Remove(userRole);
+            await _applicationDbContext.SaveChangesAsync();
+        }
+
+        var newRoleLink = new IdentityUserRole<string> { RoleId = normalRole.Id, UserId = user.Id };
+        await _applicationDbContext.UserRoles.AddAsync(newRoleLink);
+
+        var result = await _applicationDbContext.SaveChangesAsync();
+        if (result <= 0) throw new IdentityDomainException($"redraw user failed -> userName: {user.UserName}");
         return NoContent();
     }
 }
