@@ -57,9 +57,22 @@ public class ApproveController : ControllerBase
         return Ok(approveToReturn);
     }
 
+    [HttpGet]
+    [Authorize]
+    public async Task<IActionResult> GetSelfApproveAsync()
+    {
+        var currentUser = User.FindFirstValue("sub");
+
+        var approve = await _approvalService.GetApproveRecordByUserIdAsync(currentUser);
+        if (approve == null) return NotFound();
+
+        var approveToReturn = _mapper.Map<ApproveRecordBodyDto>(approve);
+        return Ok(approveToReturn);
+    }
+
     [HttpPost]
     [Authorize(Roles = "normaluser")]
-    public async Task<IActionResult> AddApproveApplyAsync([FromBody] BannedRecordAddDto addDto)
+    public async Task<IActionResult> AddApproveApplyAsync([FromBody] ApproveRecordAddDto addDto)
     {
         if (addDto == null) return BadRequest();
         var userId = User.FindFirstValue("sub");
@@ -85,11 +98,13 @@ public class ApproveController : ControllerBase
     {
         if (updateDto == null) return BadRequest();
 
-        var approve = await _approvalService.GetApproveRecordByIdAsync(updateDto.Id);
+        var currentUserId = User.FindFirstValue("sub");
+
+        var approve = await _approvalService.GetApproveRecordByUserIdAsync(currentUserId);
         if (approve == null) return NotFound();
         if (approve.UserId != User.FindFirstValue("sub")) return BadRequest();
 
-        var response = await _approvalService.UpdateApproveInfoAsync(updateDto.Id, updateDto.Body);
+        var response = await _approvalService.UpdateApproveInfoAsync(approve.Id, updateDto.Body);
         if (response == true) return NoContent();
         throw new BackManageDomainException($"user {User.FindFirstValue("nickname")} edit approve body fail");
     }
@@ -102,7 +117,7 @@ public class ApproveController : ControllerBase
         var approve = await _approvalService.GetApproveRecordByUserIdAsync(userId);
 
         if (approve == null) return NotFound();
-        if (approve.Status != ApproveStatus.Approved) return BadRequest("你的申请已被批准，不可撤销。");
+        if (approve.Status == ApproveStatus.Approved) return BadRequest("你的申请已被批准，不可撤销。");
 
         var response = await _approvalService.DeleteApproveRecordAsync(approve);
         if (response == true)
@@ -113,11 +128,11 @@ public class ApproveController : ControllerBase
         throw new BackManageDomainException($"user {User.FindFirstValue("nickname")} delete approve fail");
     }
 
-    [HttpPut("reject/{userId:alpha}")]
+    [HttpPut("reject/{userId}")]
     [Authorize(Roles = "administrator")]
     public async Task<IActionResult> RejectUserToEvaluatorAsync([FromRoute] string userId)
     {
-        var approve = _approvalService.GetApproveRecordByUserIdAsync(userId);
+        var approve = await _approvalService.GetApproveRecordByUserIdAsync(userId);
         if (approve == null) return BadRequest();
 
         var applyUser = User.FindFirstValue("nickname");
@@ -130,11 +145,11 @@ public class ApproveController : ControllerBase
         throw new BackManageDomainException("reject user occurred error, please check logging and fix it");
     }
 
-    [HttpPost("check/{userId:alpha}")]
+    [HttpPost("check/{userId}")]
     [Authorize(Roles = "administrator")]
     public async Task<IActionResult> ApprovedUserToEvaluatorAsync([FromRoute] string userId)
     {
-        var approve = _approvalService.GetApproveRecordByUserIdAsync(userId);
+        var approve = await _approvalService.GetApproveRecordByUserIdAsync(userId);
         if (approve == null) return BadRequest();
 
         using var response = await _identityClient.ApproveUserToEvaluatorAsync(userId);
@@ -155,6 +170,40 @@ public class ApproveController : ControllerBase
                 _logger.LogInformation("----- progress error, now start to redraw approve user:{id} -----", userId);
                 var redrawResult = await _identityClient.RedrawUserToNormalUserAsync(userId);
                 if (!redrawResult.IsSuccessStatusCode)
+                {
+                    throw new BackManageDomainException("approve user occurred error, please check logging and fix it");
+                }
+            }
+        }
+
+        throw new BackManageDomainException("approve user occurred error, because can't call identity microservice");
+    }
+
+    [HttpPost("redraw/{userId}")]
+    [Authorize(Roles = "administrator")]
+    public async Task<IActionResult> RedrawUserToNormalUserAsync([FromRoute] string userId)
+    {
+        var approve = await _approvalService.GetApproveRecordByUserIdAsync(userId);
+        if (approve == null) return BadRequest();
+
+        using var response = await _identityClient.RedrawUserToNormalUserAsync(userId);
+        if (response.IsSuccessStatusCode)
+        {
+            _logger.LogInformation("----- backmanage call identity successfully, redraw user:{id} to a normaluser -----", userId);
+            _logger.LogInformation("----- now change status in approve tables -----");
+
+            var applyUser = User.FindFirstValue("nickname");
+            var statusUpdateResult = await _approvalService.UpdateApproveStatusAsync(approve.Id, ApproveStatus.Rejected, applyUser);
+            if (statusUpdateResult == true)
+            {
+                _logger.LogInformation("----- user:{id} has been a normaluser now -----", userId);
+                return Ok();
+            }
+            else
+            {
+                _logger.LogInformation("----- progress error, now start to rollback approve user:{id} -----", userId);
+                var approveResult = await _identityClient.ApproveUserToEvaluatorAsync(userId);
+                if (!approveResult.IsSuccessStatusCode)
                 {
                     throw new BackManageDomainException("approve user occurred error, please check logging and fix it");
                 }

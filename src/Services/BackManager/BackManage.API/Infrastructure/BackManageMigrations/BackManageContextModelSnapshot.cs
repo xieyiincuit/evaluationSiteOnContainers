@@ -30,7 +30,7 @@ namespace BackManage.API.Infrastructure.BackManageMigrations
                     b.Property<DateTime>("ApplyTime")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime(6)")
-                        .HasDefaultValue(new DateTime(2022, 2, 20, 22, 28, 44, 453, DateTimeKind.Local).AddTicks(7211))
+                        .HasDefaultValue(new DateTime(2022, 2, 21, 13, 28, 19, 564, DateTimeKind.Local).AddTicks(1728))
                         .HasColumnName("apply_time")
                         .HasComment("申请时间");
 
@@ -68,6 +68,9 @@ namespace BackManage.API.Infrastructure.BackManageMigrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
                     b.ToTable("approve_record");
 
                     b.HasComment("测评资格申请表");
@@ -95,7 +98,7 @@ namespace BackManage.API.Infrastructure.BackManageMigrations
                     b.Property<int>("ReportCount")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasDefaultValue(0)
+                        .HasDefaultValue(1)
                         .HasColumnName("report_count")
                         .HasComment("被举报次数");
 
@@ -114,6 +117,9 @@ namespace BackManage.API.Infrastructure.BackManageMigrations
                         .HasComment("被举报用户id");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("banned_record");
 

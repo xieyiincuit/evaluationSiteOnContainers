@@ -70,21 +70,21 @@ public class BannedController : ControllerBase
         if (bannedRecord == null)
         {
             var entityToAdd = new BannedRecord() { UserId = addDto.UserId };
-            var addResponse = await _bannedService.AddBannedRecordAsync(entityToAdd);
+            var addResponse = await _bannedService.AddBannedRecordAsync(entityToAdd, checkUserId);
             return addResponse == true
                 ? Ok()
                 : throw new BackManageDomainException($"user:{checkUserId} wanna ban {addDto.UserId} but add record fail");
         }
         else
         {
-            var updateResponse = await _bannedService.UpdateBannedRecordAsync(bannedRecord.Id);
+            var updateResponse = await _bannedService.UpdateBannedRecordAsync(bannedRecord.Id, checkUserId);
             return updateResponse == true
-                ? Ok()
+                ? NoContent()
                 : throw new BackManageDomainException($"user:{checkUserId} wanna ban {addDto.UserId} but update record fail");
         }
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:int}")]
     [Authorize(Roles = "administrator")]
     public async Task<IActionResult> DeleteBannedInfoAsync([FromRoute] int id)
     {
@@ -101,7 +101,7 @@ public class BannedController : ControllerBase
             if (deleteResult == true)
             {
                 _logger.LogInformation("----- user:{id} banned has been cancel now -----", bannedRecord.UserId);
-                return Ok();
+                return NoContent();
             }
             else
             {
@@ -116,7 +116,7 @@ public class BannedController : ControllerBase
         throw new BackManageDomainException("recover user occurred error, because can't call identity microservice");
     }
 
-    [HttpPost("ban/{userId:alpha}")]
+    [HttpPost("ban/{userId}")]
     [Authorize(Roles = "administrator")]
     public async Task<IActionResult> BandUserAsync([FromRoute] string userId)
     {

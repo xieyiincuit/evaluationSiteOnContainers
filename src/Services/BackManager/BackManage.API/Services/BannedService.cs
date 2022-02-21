@@ -36,16 +36,22 @@ public class BannedService : IBannedService
         return await _dbContext.BannedRecords.AsNoTracking().FirstOrDefaultAsync(x => x.UserId == userId);
     }
 
-    public async Task<bool> AddBannedRecordAsync(BannedRecord bannedRecord)
+    public async Task<bool> AddBannedRecordAsync(BannedRecord bannedRecord, string checkUserId)
     {
         await _dbContext.BannedRecords.AddAsync(bannedRecord);
+        await _dbContext.BannedUserLinks.AddAsync(new BannedUserLink
+        { BannedUserId = bannedRecord.UserId, CheckUserId = checkUserId });
+
         return await _dbContext.SaveChangesAsync() > 0;
     }
 
-    public async Task<bool> UpdateBannedRecordAsync(int id)
+    public async Task<bool> UpdateBannedRecordAsync(int id, string checkUserId)
     {
         var updateEntity = await _dbContext.BannedRecords.FindAsync(id);
         updateEntity.ReportCount += 1;
+
+        var userBanLink = new BannedUserLink { BannedUserId = updateEntity.UserId, CheckUserId = checkUserId };
+        await _dbContext.BannedUserLinks.AddAsync(userBanLink);
         return await _dbContext.SaveChangesAsync() > 0;
     }
 
@@ -60,7 +66,11 @@ public class BannedService : IBannedService
 
     public async Task<bool> DeleteBannedRecordAsync(BannedRecord bannedRecord)
     {
+        var linkRecord = await _dbContext.BannedUserLinks.AsNoTracking()
+            .Where(x => x.BannedUserId == bannedRecord.UserId).ToListAsync();
+
         _dbContext.BannedRecords.Remove(bannedRecord);
+        _dbContext.BannedUserLinks.RemoveRange(linkRecord);
         return await _dbContext.SaveChangesAsync() > 0;
     }
 

@@ -202,21 +202,21 @@ public class AccountController : Controller
         var emailExist = await _userManager.Users.FirstOrDefaultAsync(x => x.NormalizedEmail == model.Email.ToUpperInvariant());
         if (emailExist != null)
         {
-            ModelState.AddModelError("email", "此邮箱已被注册");
+            ModelState.AddModelError("NormalizedEmail", "此邮箱已被注册");
             return View(model);
         }
 
         var nickNameExist = await _userManager.Users.FirstOrDefaultAsync(x => x.NickName == model.User.NickName);
         if (nickNameExist != null)
         {
-            ModelState.AddModelError("nickName", "此昵称已被使用");
+            ModelState.AddModelError("NickName", "此昵称已被使用");
             return View(model);
         }
 
         var phoneExist = await _userManager.Users.FirstOrDefaultAsync(x => x.PhoneNumber == model.PhoneNumber);
         if (phoneExist != null)
         {
-            ModelState.AddModelError("phone", "此电话已被绑定");
+            ModelState.AddModelError("PhoneNumber", "此电话已被绑定");
             return View(model);
         }
 
@@ -276,7 +276,7 @@ public class AccountController : Controller
 
         if (accountExist == null)
         {
-            ModelState.AddModelError("email", "无此用户或你给予的手机绑定信息不正确");
+            ModelState.AddModelError("Email", "无此用户或你给予的手机绑定信息不正确");
             return View(model);
         }
         else if (string.IsNullOrEmpty(model.Question))
@@ -296,7 +296,7 @@ public class AccountController : Controller
             }
             else
             {
-                ModelState.AddModelError("answer", "问题回答错误");
+                ModelState.AddModelError("SecurityAnswer", "问题回答错误");
                 return View(model);
             }
         }
@@ -321,7 +321,7 @@ public class AccountController : Controller
         var user = await _userManager.FindByIdAsync(model.UserId);
         if (user == null)
         {
-            ModelState.AddModelError("userId", "非法用户id");
+            ModelState.AddModelError("UserId", "非法用户id");
             return View(model);
         }
 

@@ -11,6 +11,10 @@ public class BackManageContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<ApproveRecord>()
+            .HasIndex(x => x.UserId)
+            .IsUnique();
+
+        modelBuilder.Entity<ApproveRecord>()
             .Property(x => x.ApplyTime)
             .HasDefaultValue(DateTime.Now.ToLocalTime());
 
@@ -19,15 +23,19 @@ public class BackManageContext : DbContext
             .HasDefaultValue(ApproveStatus.Progressing);
 
         modelBuilder.Entity<BannedRecord>()
+            .HasIndex(x => x.UserId)
+            .IsUnique();
+
+        modelBuilder.Entity<BannedRecord>()
             .Property(x => x.ReportCount)
-            .HasDefaultValue(0);
+            .HasDefaultValue(1);
 
         modelBuilder.Entity<BannedRecord>()
             .Property(x => x.Status)
             .HasDefaultValue(BannedStatus.Checking);
 
         modelBuilder.Entity<BannedUserLink>()
-            .HasKey(x => new {x.BannedUserId, x.CheckUserId});
+            .HasKey(x => new { x.BannedUserId, x.CheckUserId });
     }
 }
 

@@ -5,7 +5,8 @@ public class ApproveRecordProfile : Profile
     public ApproveRecordProfile()
     {
         CreateMap<ApproveRecord, ApproveRecordDto>();
-        CreateMap<BannedRecordAddDto, ApproveRecord>();
+        CreateMap<ApproveRecord, ApproveRecordBodyDto>();
+        CreateMap<ApproveRecordAddDto, ApproveRecord>();
         CreateMap<ApproveRecordUpdateDto, ApproveRecord>();
     }
 }

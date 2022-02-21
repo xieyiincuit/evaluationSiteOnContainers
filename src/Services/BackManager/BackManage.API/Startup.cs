@@ -60,7 +60,7 @@ public class Startup
                         TokenUrl = new Uri($"{Configuration.GetValue<string>("IdentityUrlExternal")}/connect/token"),
                         Scopes = new Dictionary<string, string>()
                         {
-                            {"backend-manage", "网站后台管理权限"}
+                            {"back-manage", "网站后台管理权限"}
                         }
                     }
                 }
@@ -167,7 +167,7 @@ public class Startup
             {
                 client.BaseAddress = new Uri(Configuration["IdentityUrl"]);
                 client.DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
-                client.Timeout = TimeSpan.FromMilliseconds(500);
+                client.Timeout = TimeSpan.FromSeconds(2);
             })
             .SetHandlerLifetime(TimeSpan.FromHours(6))
             .AddPolicyHandler(retryPolicy);

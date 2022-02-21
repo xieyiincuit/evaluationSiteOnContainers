@@ -13,11 +13,17 @@ public class Startup
 
     public IServiceProvider ConfigureServices(IServiceCollection services)
     {
+        #region MvcSettings
+
         services.AddControllers(options =>
         {
             options.Filters.Add(typeof(HttpGlobalExceptionFilter));
         }).AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = true);
         services.AddControllersWithViews();
+
+        #endregion
+
+        #region IdentityServer
 
         services.AddCustomIdentityDbContext(Configuration);
         services.AddIdentityServer(options =>
@@ -51,6 +57,36 @@ public class Startup
             options.Lockout.AllowedForNewUsers = true;
         });
 
+        #endregion
+
+        #region SelfJwtAuth
+
+        JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+        var identityUrl = Configuration.GetValue<string>("IdentityUrl");
+        services.AddAuthentication()
+            .AddJwtBearer(options =>
+            {
+                options.Authority = identityUrl;
+                options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    NameClaimType = "name",
+                    RoleClaimType = "role",
+                    ValidIssuer = "http://identity-api",
+                    ValidAudiences = new List<string>()
+                    {
+                        "ordering",
+                        "evaluation",
+                        "backmanage",
+                        "gamerepo"
+                    },
+                };
+            });
+
+        #endregion
+
+        #region ExternalProvider
+
         services.AddAuthentication()
             .AddGoogle("Google", options =>
             {
@@ -76,8 +112,11 @@ public class Startup
 
                 options.ClientId = "<insert here>";
                 options.ClientSecret = "<insert here>";
-            });
+            }); 
 
+        #endregion
+
+        #region HealthChecks
 
         services.AddHealthChecks()
             .AddCheck("self", () => HealthCheckResult.Healthy())
@@ -89,7 +128,9 @@ public class Startup
                 name: "identity-rabbitmqbus-check",
                 tags: new string[] { "rabbitmqbus" });
 
-        #region 集成事件相关服务注入
+        #endregion
+
+        #region Events
 
         services.AddDbContext<IntegrationEventLogContext>(
             dbContextOptions =>

@@ -165,7 +165,7 @@ public static class ServiceCollectionExtension
             {
                 client.BaseAddress = new Uri(configuration["IdentityUrl"]);
                 client.DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
-                client.Timeout = TimeSpan.FromMilliseconds(500);
+                client.Timeout = TimeSpan.FromSeconds(2);
             })
             .SetHandlerLifetime(TimeSpan.FromHours(6))
             .AddTransientHttpErrorPolicy(p => p.WaitAndRetryAsync(3, _ => TimeSpan.FromMilliseconds(200)));

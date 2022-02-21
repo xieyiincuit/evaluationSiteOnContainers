@@ -6,8 +6,8 @@ public interface IBannedService
     Task<List<BannedRecord>> GetBannedRecordsAsync(int pageIndex, int pageSize, BannedStatus status);
     Task<BannedRecord> GetBannedRecordByIdAsync(int id);
     Task<BannedRecord> GetBannedRecordByUserIdAsync(string userId);
-    Task<bool> AddBannedRecordAsync(BannedRecord bannedRecord);
-    Task<bool> UpdateBannedRecordAsync(int id);
+    Task<bool> AddBannedRecordAsync(BannedRecord bannedRecord, string checkUserId);
+    Task<bool> UpdateBannedRecordAsync(int id, string checkUserId);
     Task<bool> UpdateBannedStatusRecordAsync(int id, string applyUser);
     Task<bool> DeleteBannedRecordAsync(BannedRecord bannedRecord);
 
