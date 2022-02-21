@@ -144,7 +144,7 @@ public class Startup
         hcBuilder
             .AddCheck("self", () => HealthCheckResult.Healthy())
             .AddRedis(
-                Configuration["RedisConnection"],
+                Configuration["RedisHCCheckConnection"],
                 name: "redis-check",
                 tags: new string[] { "db", "redis", "ordering" });
 

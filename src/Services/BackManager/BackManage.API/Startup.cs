@@ -140,10 +140,10 @@ public class Startup
 
         hcBuilder
             .AddCheck("self", () => HealthCheckResult.Healthy())
-            .AddRedis(
-                Configuration["RedisConnectionString"],
-                name: "redis-check",
-                tags: new string[] { "db", "redis", "backmanage" });
+            .AddMySql(
+                Configuration["BackDbConnectString"],
+                name: "mysql-check",
+                tags: new string[] { "db", "mysql", "backmanage" });
 
         #endregion
 

@@ -118,15 +118,22 @@ public class Startup
 
         #region HealthChecks
 
-        services.AddHealthChecks()
-            .AddCheck("self", () => HealthCheckResult.Healthy())
-            .AddSqlServer(Configuration.GetConnectionString("IdentityConnection"),
-                name: "IdentityDB-check",
-                tags: new string[] { "IdentityDB" })
-            .AddRabbitMQ(
-                $"amqp://{Configuration["EventBusSettings:Connection"]}",
-                name: "identity-rabbitmqbus-check",
-                tags: new string[] { "rabbitmqbus" });
+        {
+            var mqName = Configuration["EventBusSettings:UserName"];
+            var mqPassword = Configuration["EventBusSettings:PassWord"];
+            var mqHost = $"{Configuration["EventBusSettings:Connection"]}:{Configuration["EventBusSettings:Port"]}";
+
+            services.AddHealthChecks()
+                .AddCheck("self", () => HealthCheckResult.Healthy())
+                .AddSqlServer(Configuration.GetConnectionString("IdentityConnection"),
+                    name: "IdentityDB-check",
+                    tags: new string[] { "IdentityDB" })
+                .AddRabbitMQ(
+                    $"amqp://{mqName}:{mqPassword}@{mqHost}/",
+                    name: "identity-rabbitmqbus-check",
+                    tags: new string[] { "rabbitmqbus" });
+        }
+      
 
         #endregion
 

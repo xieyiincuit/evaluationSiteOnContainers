@@ -240,16 +240,26 @@ public class Startup
         {
             var hcBuilder = services.AddHealthChecks();
 
+            var mqName = Configuration["EventBusSettings:UserName"];
+            var mqPassword = Configuration["EventBusSettings:PassWord"];
+            var mqHost = $"{Configuration["EventBusSettings:Connection"]}:{Configuration["EventBusSettings:Port"]}";
+
             hcBuilder
                 .AddCheck("self", () => HealthCheckResult.Healthy())
                 .AddMySql(
-                    Configuration["ConnectionString"],
+                    Configuration["ConnectionStrings:GameRepoDbConnectString"],
                     name: "GameRepoDB-check",
                     tags: new string[] { "db", "mysql", "gamerepo" });
 
             hcBuilder
+                .AddRedis(
+                    Configuration["RedisHCCheckConnection"],
+                    name: "redis-check",
+                    tags: new string[] { "db", "redis", "gamerepo" });
+
+            hcBuilder
                 .AddRabbitMQ(
-                    $"amqp://{Configuration["EventBusSettings:Connection"]}",
+                    $"amqp://{mqName}:{mqPassword}@{mqHost}/",
                     name: "gamerepo-rabbitmqbus-check",
                     tags: new string[] { "rabbitmqbus" });
         }

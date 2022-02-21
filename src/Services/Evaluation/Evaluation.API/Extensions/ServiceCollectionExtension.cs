@@ -108,6 +108,10 @@ public static class ServiceCollectionExtension
     public static IServiceCollection AddCustomHealthCheck(this IServiceCollection services,
         IConfiguration configuration)
     {
+        var mqName = configuration["EventBusSettings:UserName"];
+        var mqPassword = configuration["EventBusSettings:PassWord"];
+        var mqHost = $"{configuration["EventBusSettings:Connection"]}:{configuration["EventBusSettings:Port"]}";
+
         services.AddHealthChecks()
             .AddCheck("self", () => HealthCheckResult.Healthy())
             .AddMySql(
@@ -116,7 +120,7 @@ public static class ServiceCollectionExtension
                 HealthStatus.Degraded,
                 new[] { "db", "evaluation", "mysql" })
             .AddRabbitMQ(
-                $"amqp://{configuration["EventBusSettings:Connection"]}",
+                $"amqp://{mqName}:{mqPassword}@{mqHost}/",
                 name: "evaluation-rabbitmqbus-check",
                 tags: new[] { "rabbitmqbus" });
 
