@@ -1,7 +1,7 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Controllers;
 
 [ApiController]
-[Route("api/v1/g")]
+[Route("api/v1/game")]
 public class PlaySuggestionController : ControllerBase
 {
     private readonly IPlaySuggestionService _suggestionService;

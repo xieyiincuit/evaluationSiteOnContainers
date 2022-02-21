@@ -1,7 +1,7 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Controllers;
 
 [ApiController]
-[Route("api/v1/g")]
+[Route("api/v1/game")]
 public class GameInfoController : ControllerBase
 {
     private readonly IGameInfoService _gameInfoService;

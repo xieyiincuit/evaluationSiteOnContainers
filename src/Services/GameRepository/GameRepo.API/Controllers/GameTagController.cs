@@ -1,7 +1,7 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Controllers;
 
 [ApiController]
-[Route("api/v1/g")]
+[Route("api/v1/game")]
 public class GameTagController : ControllerBase
 {
     private readonly IGameTagService _tagService;

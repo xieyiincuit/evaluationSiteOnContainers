@@ -1,7 +1,7 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Controllers;
 
 [ApiController]
-[Route("api/v1/e")]
+[Route("api/v1/evaluation")]
 [Authorize(Roles = _adminRole)]
 public class EvaluationCategoryController : ControllerBase
 {

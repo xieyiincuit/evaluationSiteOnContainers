@@ -29,7 +29,7 @@ public class GameShopItemController : ControllerBase
     }
 
     [HttpGet]
-    [Route("g/shops")]
+    [Route("game/shops")]
     [Authorize(Roles = "administrator")]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(PaginatedItemsDtoModel<ShopItemDtoToAdmin>), (int)HttpStatusCode.OK)]
@@ -47,7 +47,7 @@ public class GameShopItemController : ControllerBase
     }
 
     [HttpGet]
-    [Route("s/shops")]
+    [Route("shop/items")]
     [AllowAnonymous]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(PaginatedItemsDtoModel<ShopItemDtoToUser>), (int)HttpStatusCode.OK)]
@@ -64,7 +64,7 @@ public class GameShopItemController : ControllerBase
         return Ok(model);
     }
 
-    [HttpGet("s/shop/{itemId:int}", Name = nameof(GetShopItemsByIdAsync))]
+    [HttpGet("shop/{itemId:int}", Name = nameof(GetShopItemsByIdAsync))]
     [AllowAnonymous]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(ShopItemDtoToUser), (int)HttpStatusCode.OK)]
@@ -79,7 +79,7 @@ public class GameShopItemController : ControllerBase
         return Ok(itemToUser);
     }
 
-    [HttpGet("g/shop/{itemId:int}", Name = nameof(GetShopItemsByIdForAdminAsync))]
+    [HttpGet("game/shop/{itemId:int}", Name = nameof(GetShopItemsByIdForAdminAsync))]
     [Authorize(Roles = "administrator")]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(ShopItemDtoToAdmin), (int)HttpStatusCode.OK)]
@@ -94,7 +94,7 @@ public class GameShopItemController : ControllerBase
         return Ok(itemDtoToAdmin);
     }
 
-    [HttpGet("s/shop", Name = nameof(GetShopItemsByGameIdAsync))]
+    [HttpGet("shop", Name = nameof(GetShopItemsByGameIdAsync))]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(ShopItemDtoToUser), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetShopItemsByGameIdAsync([FromQuery] int gameId)
@@ -109,7 +109,7 @@ public class GameShopItemController : ControllerBase
     }
 
     [HttpPost]
-    [Route("g/shop")]
+    [Route("game/shop")]
     [Authorize(Roles = "administrator")]
     [ProducesResponseType((int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -132,7 +132,7 @@ public class GameShopItemController : ControllerBase
     }
 
     [HttpPut]
-    [Route("g/shop/")]
+    [Route("game/shop")]
     [Authorize(Roles = "administrator")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -147,7 +147,7 @@ public class GameShopItemController : ControllerBase
     }
 
     [HttpPut]
-    [Route("g/shop/status/{itemId:int}")]
+    [Route("game/shop/status/{itemId:int}")]
     [Authorize(Roles = "administrator")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -168,7 +168,7 @@ public class GameShopItemController : ControllerBase
     }
 
     [HttpPut]
-    [Route("g/shop/stock")]
+    [Route("game/shop/stock")]
     [Authorize(Roles = "administrator")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -200,7 +200,7 @@ public class GameShopItemController : ControllerBase
     }
 
     [HttpDelete]
-    [Route("g/shop/{itemId:int}")]
+    [Route("game/shop/{itemId:int}")]
     [Authorize(Roles = "administrator")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]

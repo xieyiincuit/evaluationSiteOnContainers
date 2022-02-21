@@ -14,7 +14,7 @@ public class IdentityCallService
     public async Task<HttpResponseMessage> GetCommentsUserProfileAsync(List<string> userIds)
     {
         _logger.LogDebug("---- Evaluation client call identity services: baseUrl:{url}", _client.BaseAddress);
-        var callUrl = _client.BaseAddress + "api/v1/u/avatar/batch";
+        var callUrl = _client.BaseAddress + "api/v1/user/avatar/batch";
 
         try
         {

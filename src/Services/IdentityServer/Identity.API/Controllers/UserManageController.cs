@@ -1,7 +1,7 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Controllers;
 
 [ApiController]
-[Route("api/v1/u/")]
+[Route("api/v1/user")]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class UserManageController : ControllerBase
 {

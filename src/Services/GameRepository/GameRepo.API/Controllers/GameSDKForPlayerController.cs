@@ -25,7 +25,7 @@ public class GameSDKForPlayerController : ControllerBase
         _unitOfWorkService = unitOfWorkService ?? throw new ArgumentNullException(nameof(unitOfWorkService));
     }
 
-    [HttpGet("u/sdks")]
+    [HttpGet("user/sdks")]
     [Authorize]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -50,7 +50,7 @@ public class GameSDKForPlayerController : ControllerBase
         return Ok(paginatedModel);
     }
 
-    [HttpGet("g/sdk/{sdkId:int}")]
+    [HttpGet("game/sdk/{sdkId:int}")]
     [Authorize(Roles = "administrator")]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -63,7 +63,7 @@ public class GameSDKForPlayerController : ControllerBase
         return sdk == null ? NotFound() : Ok(sdk);
     }
 
-    [HttpPut("u/sdk/{sdkId:int}")]
+    [HttpPut("user/sdk/{sdkId:int}")]
     [Authorize]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -81,7 +81,7 @@ public class GameSDKForPlayerController : ControllerBase
         return response == true ? NoContent() : BadRequest();
     }
 
-    [HttpPost("u/sdk/send")]
+    [HttpPost("user/sdk/send")]
     [Authorize]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> SendSdkToBuyerAsync([FromBody] SDKPlayerAddDto addDto)

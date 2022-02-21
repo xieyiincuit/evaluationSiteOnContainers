@@ -1,7 +1,7 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Controllers;
 
 [ApiController]
-[Route("api/v1/g/shop/sdks")]
+[Route("api/v1/game/shop/sdks")]
 public class GameSDKController : ControllerBase
 {
     private readonly IGameItemSDKService _sdkService;

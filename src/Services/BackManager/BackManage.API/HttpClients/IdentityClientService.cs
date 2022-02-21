@@ -44,7 +44,7 @@ public class IdentityClientService
     public async Task<HttpResponseMessage> ApproveUserToEvaluatorAsync(string userId)
     {
         _logger.LogDebug("---- BackManage client call identity services: baseUrl:{url}", _client.BaseAddress);
-        var callUrl = _client.BaseAddress + $"api/v1/u/approve/{userId}";
+        var callUrl = _client.BaseAddress + $"api/v1/user/approve/{userId}";
 
         try
         {
@@ -72,7 +72,7 @@ public class IdentityClientService
     public async Task<HttpResponseMessage> RedrawUserToNormalUserAsync(string userId)
     {
         _logger.LogDebug("---- BackManage client call identity services: baseUrl:{url}", _client.BaseAddress);
-        var callUrl = _client.BaseAddress + $"api/v1/u/redraw/{userId}";
+        var callUrl = _client.BaseAddress + $"api/v1/user/redraw/{userId}";
 
         try
         {
@@ -100,7 +100,7 @@ public class IdentityClientService
     public async Task<HttpResponseMessage> BannedUserAsync(string userId)
     {
         _logger.LogDebug("---- BackManage client call identity services: baseUrl:{url}", _client.BaseAddress);
-        var callUrl = _client.BaseAddress + $"api/v1/u/ban/{userId}";
+        var callUrl = _client.BaseAddress + $"api/v1/user/ban/{userId}";
 
         try
         {
@@ -128,7 +128,7 @@ public class IdentityClientService
     public async Task<HttpResponseMessage> RecoverUserToNormalUserAsync(string userId)
     {
         _logger.LogDebug("---- BackManage client call identity services: baseUrl:{url}", _client.BaseAddress);
-        var callUrl = _client.BaseAddress + $"api/v1/u/recover/{userId}";
+        var callUrl = _client.BaseAddress + $"api/v1/user/recover/{userId}";
 
         try
         {

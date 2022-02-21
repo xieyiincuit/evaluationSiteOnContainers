@@ -16,7 +16,7 @@ public class RepoCallService
     public async Task<HttpResponseMessage> SaveBuyerRecordAsync(string userId, int shopItemId)
     {
         _logger.LogDebug("---- client call gamerepo services: baseUrl:{url}", _httpClient.BaseAddress);
-        var callUrl = _httpClient.BaseAddress + "api/v1/u/sdk/send";
+        var callUrl = _httpClient.BaseAddress + "api/v1/user/sdk/send";
 
         try
         {

@@ -1,7 +1,7 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.BackManage.API.Controllers;
 
 [ApiController]
-[Route("api/v1/b/approve")]
+[Route("api/v1/back/approve")]
 public class ApproveController : ControllerBase
 {
     private readonly ILogger<ApproveController> _logger;

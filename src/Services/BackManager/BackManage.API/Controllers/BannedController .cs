@@ -1,7 +1,7 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.BackManage.API.Controllers;
 
 [ApiController]
-[Route("api/v1/b/banned")]
+[Route("api/v1/back/banned")]
 public class BannedController : ControllerBase
 {
     private readonly ILogger<BannedController> _logger;

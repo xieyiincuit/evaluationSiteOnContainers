@@ -1,7 +1,7 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Controllers;
 
 [ApiController]
-[Route("api/v1/u/avatar")]
+[Route("api/v1/user/avatar")]
 public class PostImageController : ControllerBase
 {
     private readonly ILogger<PostImageController> _logger;

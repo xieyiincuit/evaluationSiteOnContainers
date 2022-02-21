@@ -1,7 +1,7 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Ordering.API.Controllers;
 
 [ApiController]
-[Route("api/v1/o")]
+[Route("api/v1/order")]
 public class PurchaseController : ControllerBase
 {
     private readonly ILogger<PurchaseController> _logger;
