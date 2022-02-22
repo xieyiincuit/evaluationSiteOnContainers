@@ -1,0 +1,153 @@
+admin:
+  access_log_path: "/dev/admin_access.log"
+  address:
+    #Tell Envoy to listen on 0.0.0.0:9901 access admin
+    socket_address:
+      address: 0.0.0.0
+      port_value: 9901
+static_resources:
+  listeners:
+  - address:
+      socket_address:
+        address: 0.0.0.0
+        port_value: 10000
+    filter_chains:
+    #任何通过监听端口的请求将会通过以下过滤链
+    - filters:
+      - name: envoy.filters.network.http_connection_manager
+        typed_config:
+          "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+          codec_type: AUTO
+          stat_prefix: ingress_http
+          #Http请求会通过HttpFilter到route_config
+          route_config:
+            name: site_backend_route
+            virtual_hosts:
+            - name: evaluation_backend
+              domains:
+              - "*"
+              routes:
+              - name: "e-short"
+                match:
+                  prefix: "/e"
+                route:
+                  auto_host_rewrite: true
+                  prefix_rewrite: "/evaluation-api"
+                  cluster: evaluation
+              - name: "e-long"
+                match:
+                  prefix: "/evaluation-api"
+                route:
+                  auto_host_rewrite: true
+                  cluster: evaluation
+              - name: "o-short"
+                match:
+                  prefix: "/o"
+                route:
+                  auto_host_rewrite: true
+                  prefix_rewrite: "/ordering-api"
+                  cluster: ordering
+              - name: "o-long"
+                match:
+                  prefix: "/ordering-api"
+                route:
+                  auto_host_rewrite: true
+                  cluster: ordering
+              - name: "g-short"
+                match:
+                  prefix: "/g"
+                route:
+                  auto_host_rewrite: true
+                  prefix_rewrite: "/gamerepo-api"
+                  cluster: gamerepo
+              - name: "g-long"
+                match:
+                  prefix: "/gamerepo-api"
+                route:
+                  auto_host_rewrite: true
+                  cluster: gamerepo
+              - name: "b-short"
+                match:
+                  prefix: "/b"
+                route:
+                  auto_host_rewrite: true
+                  prefix_rewrite: "/backmanage-api"
+                  cluster: backmanage
+              - name: "b-long"
+                match:
+                  prefix: "/backmanage-api"
+                route:
+                  auto_host_rewrite: true
+                  cluster: backmanage        
+          http_filters:
+          - name: envoy.filters.http.router
+          access_log:
+          - name: envoy.access_loggers.file          
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.access_loggers.file.v3.FileAccessLog
+              path: "/dev/stdout"
+              typed_json_format:
+                time: "%START_TIME%"
+                protocol: "%PROTOCOL%"
+                duration: "%DURATION%"
+                request_method: "%REQ(:METHOD)%"
+                request_host: "%REQ(HOST)%"
+                path: "%REQ(X-ENVOY-ORIGINAL-PATH?:PATH)%"
+                response_flags: "%RESPONSE_FLAGS%"
+                route_name: "%ROUTE_NAME%"
+                upstream_host: "%UPSTREAM_HOST%"
+                upstream_cluster: "%UPSTREAM_CLUSTER%"
+                upstream_local_address: "%UPSTREAM_LOCAL_ADDRESS%"
+  clusters:
+  - name: evaluation
+    connect_timeout: 0.25s
+    type: STATIC
+    lb_policy: ROUND_ROBIN
+    load_assignment:
+      cluster_name: evaluation
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: 127.0.0.1
+                port_value: 50000
+  - name: gamerepo
+    connect_timeout: 0.25s
+    type: STATIC
+    lb_policy: ROUND_ROBIN
+    load_assignment:
+      cluster_name: gamerepo
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: 127.0.0.1
+                port_value: 50001
+  - name: ordering
+    connect_timeout: 0.25s
+    type: STATIC
+    lb_policy: ROUND_ROBIN
+    load_assignment:
+      cluster_name: ordering
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: 127.0.0.1
+                port_value: 50002
+  - name: backmanage
+    connect_timeout: 0.25s
+    type: STATIC
+    lb_policy: ROUND_ROBIN
+    load_assignment:
+      cluster_name: backmanage
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: 127.0.0.1
+                port_value: 50004

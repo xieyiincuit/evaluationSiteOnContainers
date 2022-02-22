@@ -48,7 +48,7 @@ services:
       - "15672:15672"
       - "5672:5672"
 
-  cache:
+  cache_master:
     image: redis:latest
     restart: always
     ports:
@@ -57,6 +57,17 @@ services:
     volumes:
       - redis_master:/data
 
+  gateway_web:
+    image: envoyproxy/envoy-dev:35f8d59b1172a85f02dd119791a9ef42c728cfa8
+    volumes:
+      - ./ApiGateways/Envoy/config/envoy.yaml:/etc/envoy/envoy.yaml
+      - ./ApiGateways/Envoy/logs:/var/log
+    ports:
+      - 9901:9901
+      - 10000:10000
+    environment:
+      - "ENVOY_UID=0"
+
 volumes:
   mysql_gamerepo:
   mysql_evaluation:
@@ -64,4 +75,3 @@ volumes:
   mssql_identity:
   rabbitmq_evaluation:
   redis_master:
-
