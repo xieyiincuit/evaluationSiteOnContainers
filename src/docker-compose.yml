@@ -1,77 +1,77 @@
 version: '3.9'
+
 services:
   db_evaluation:
     image: mysql:latest
-    volumes:
-      - mysql_evaluation:/var/lib/mysql
-    environment:
-      - MYSQL_ROOT_PASSWORD=Zhoushan!1n
-    ports:
-      - "3306:3306"
 
   db_gamerepo:
     image: mysql:latest
-    volumes:
-      - mysql_gamerepo:/var/lib/mysql
-    environment:
-      - MYSQL_ROOT_PASSWORD=Gam2Rep0!!
-    ports:
-      - "3307:3306"
 
   db_indentity:
     image: mcr.microsoft.com/mssql/server:2019-latest
-    environment:
-      - SA_PASSWORD=Zh0u!1,,
-      - ACCEPT_EULA=Y
-    ports:
-      - "1433:1433"
-    volumes:
-      - mssql_identity:/var/opt/mssql
 
   db_backmanage:
     image: mysql:latest
-    volumes:
-      - mysql_backmanage:/var/lib/mysql
-    environment:
-      - MYSQL_ROOT_PASSWORD=ZhouBack!1n
-    ports:
-      - "3308:3306"
 
   mq_evaluation:
     image: rabbitmq:3.9.13-management
-    volumes:
-      - rabbitmq_evaluation:/var/lib/rabbitmq
-    environment:
-      - RABBITMQ_DEFAULT_USER=zhoushanlin
-      - RABBITMQ_DEFAULT_PASS=rabbitmq!!..
-    ports:
-      - "15672:15672"
-      - "5672:5672"
 
   cache_master:
     image: redis:latest
-    restart: always
-    ports:
-      - '6379:6379'
-    command: redis-server --save 20 1 --loglevel warning --requirepass zhouredis11..
-    volumes:
-      - redis_master:/data
 
   gateway_web:
     image: envoyproxy/envoy-dev:35f8d59b1172a85f02dd119791a9ef42c728cfa8
-    volumes:
-      - ./ApiGateways/Envoy/config/envoy.yaml:/etc/envoy/envoy.yaml
-      - ./ApiGateways/Envoy/logs:/var/log
-    ports:
-      - 9901:9901
-      - 10000:10000
-    environment:
-      - "ENVOY_UID=0"
 
-volumes:
-  mysql_gamerepo:
-  mysql_evaluation:
-  mysql_backmanage:
-  mssql_identity:
-  rabbitmq_evaluation:
-  redis_master:
+  identity-api:
+    image: ${REGISTRY:-eshop}/identity.api:${PLATFORM:-linux}-${TAG:-latest}
+    build:
+      context: .
+      dockerfile: Services/IdentityServer/Identity.API/Dockerfile
+    depends_on:
+      - db_indentity
+      - mq_evaluation
+
+  evaluation-api:
+    image: ${REGISTRY:-esite}/evaluation.api:${PLATFORM:-linux}-${TAG:-latest}
+    build:
+      context: .
+      dockerfile: Services/Evaluation/Evaluation.API/Dockerfile
+    depends_on:
+      - db_evaluation
+      - mq_evaluation
+      - identity-api
+
+  gamerepo-api:
+    image: ${REGISTRY:-esite}/gamerepo.api:${PLATFORM:-linux}-${TAG:-latest}
+    build:
+      context: .
+      dockerfile: Services/GameRepository/GameRepo.API/Dockerfile
+    depends_on:
+      - cache_master
+      - db_gamerepo
+      - mq_evaluation
+      - identity-api
+
+  ordering-api:
+    image: ${REGISTRY:-esite}/ordering.api:${PLATFORM:-linux}-${TAG:-latest}
+    build:
+      context: .
+      dockerfile: Services/Ordering/Ordering.API/Dockerfile
+    depends_on:
+      - cache_master
+      - identity-api
+
+  backmanage-api:
+    image: ${REGISTRY:-esite}/backmanage.api:${PLATFORM:-linux}-${TAG:-latest}
+    build:
+      context: .
+      dockerfile: Services/BackManager/BackManage.API/Dockerfile
+    depends_on:
+      - db_backmanage
+      - identity-api
+
+  webstatus:
+    image: ${REGISTRY:-esite}/webstatus:${PLATFORM:-linux}-${TAG:-latest}
+    build:
+      context: .
+      dockerfile: Web/WebStatus/Dockerfile
