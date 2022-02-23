@@ -77,10 +77,6 @@ IConfiguration GetConfiguration()
 
 (int httpPort, int grpcPort) GetDefinedPorts(IConfiguration config)
 {
-    //Docker容器化后建议这样配置
-    //var grpcPort = config.GetValue("GRPC_PORT", 5001);
-    //var port = config.GetValue("PORT", 80);
-
     var grpcPort = config.GetValue("GRPC_PORT", 55002);
     var port = config.GetValue("PORT", 50002);
     return (port, grpcPort);

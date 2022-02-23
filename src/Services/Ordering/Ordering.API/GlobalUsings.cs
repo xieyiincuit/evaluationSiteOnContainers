@@ -14,6 +14,8 @@ global using Microsoft.AspNetCore.Mvc.Authorization;
 global using Microsoft.AspNetCore.Mvc.Filters;
 global using Microsoft.AspNetCore.Server.Kestrel.Core;
 global using Microsoft.Extensions.Diagnostics.HealthChecks;
+global using Microsoft.IdentityModel.Logging;
+global using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 global using Microsoft.IdentityModel.Tokens;
 global using Microsoft.OpenApi.Models;
 global using Polly;

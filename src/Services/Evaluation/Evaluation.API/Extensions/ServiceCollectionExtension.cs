@@ -1,4 +1,7 @@
-﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Extensions;
+﻿using System.Text;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+
+namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Extensions;
 
 public static class ServiceCollectionExtension
 {
@@ -268,11 +271,18 @@ public static class ServiceCollectionExtension
             options.Authority = identityUrl;
             options.RequireHttpsMetadata = false;
             options.Audience = "evaluation";
+
             options.TokenValidationParameters = new TokenValidationParameters()
             {
                 NameClaimType = "name",
                 RoleClaimType = "role",
-                ValidIssuer = "http://identity-api"
+
+                ValidateIssuer = true,
+                ValidIssuer = "http://identity-api",
+
+                RequireExpirationTime = true,
+                ValidateLifetime = true,
+                RequireSignedTokens = true,
             };
         });
 

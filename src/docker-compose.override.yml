@@ -66,6 +66,11 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
+      - ConnectionStrings__IdentityConnection=Server=db_indentity;Database=IdentityDb;User Id=sa;Password=Zh0u!1,,;
+      - ConnectionStrings__IntegrationConnection=Server=db_indentity;Database=IntegrationDb;User Id=sa;Password=Zh0u!1,,;
+      - EventBusSettings__Connection=mq_evaluation
+      - EventBusSettings__UserName=zhoushanlin
+      - EventBusSettings__PassWord=rabbitmq!!..
       - EvaluationApiClient=http://localhost:5100
       - GameRepoApiClient=http://localhost:5101
       - OrderingApiClient=http://localhost:5102
@@ -78,22 +83,38 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
-      - IdentityUrlExternal=http://identity-api
-      - IdentityUrl=http://identity-api
+      - ConnectionStrings__EvaluationDbConnectString=server=db_evaluation;port=3306;database=game_evaluation;user=root;password=Zhoushan!1n;IgnoreCommandTransaction=true
+      - EventBusSettings__Connection=mq_evaluation
+      - EventBusSettings__UserName=zhoushanlin
+      - EventBusSettings__PassWord=rabbitmq!!..
+      - IdentityUrlExternal=http://localhost:5105
+      - IdentityUrl=http://localhost:5105
       - PATH_BASE=/evaluation-api
       - UseCustomizationData=True
+      - SwaggerRedirectUrlPort=5100
     ports:
       - "5100:80"
 
+  #容器内通讯使用容器开放的端口 而不是映射到主机的端口
   gamerepo-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
-      - IdentityUrlExternal=http://identity-api
-      - IdentityUrl=http://identity-api
+      - ConnectionStrings__GameRepoDbConnectString=server=db_gamerepo;port=3306;database=game_information;user=root;password=Gam2Rep0!!;IgnoreCommandTransaction=true
+      - ConnectionStrings__GameStoreDbConnectString=server=db_gamerepo;port=3306;database=game_store;user=root;password=Gam2Rep0!!;IgnoreCommandTransaction=true
+      - ConnectionStrings__IntegrationDbConnectString=server=db_gamerepo;port=3306;database=game_integration;user=root;password=Gam2Rep0!!;IgnoreCommandTransaction=true
+      - EventBusSettings__Connection=mq_evaluation
+      - EventBusSettings__UserName=zhoushanlin
+      - EventBusSettings__PassWord=rabbitmq!!..
+      - Redis__Hosts__0__Host=cache_master
+      - Redis__Hosts__0__Port=6379
+      - RedisHCCheckConnection=cache_master,DefaultDatabase=0,password=zhouredis11..
+      - IdentityUrlExternal=http://localhost:5105
+      - IdentityUrl=http://localhost:5105
       - PATH_BASE=/gamerepo-api
       - GRPC_PORT=81
       - PORT=80
+      - SwaggerRedirectUrlPort=5101
     ports:
       - "5101:80"
       - "9101:81"
@@ -102,13 +123,17 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
-      - IdentityUrlExternal=http://identity-api
-      - IdentityUrl=http://identity-api
+      - Redis__Hosts__0__Host=cache_master
+      - Redis__Hosts__0__Port=6379
+      - RedisHCCheckConnection=cache_master,DefaultDatabase=0,password=zhouredis11..
+      - IdentityUrlExternal=http://localhost:5105
+      - IdentityUrl=http://localhost:5105
       - GameRepoUrl=http://gamerepo-api
       - GrpcGameRepoUrl=http://gamerepo-api:81
       - PATH_BASE=/ordering-api
       - GRPC_PORT=81
       - PORT=80
+      - SwaggerRedirectUrlPort=5102
     ports:
       - "5102:80"
       - "9102:81"
@@ -117,9 +142,11 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
-      - IdentityUrlExternal=http://identity-api
-      - IdentityUrl=http://identity-api
+      - BackDbConnectString=server=db_backmanage;port=3306;database=evaluation_back;user=root;password=ZhouBack!1n;IgnoreCommandTransaction=true
+      - IdentityUrlExternal=http://localhost:5105
+      - IdentityUrl=http://localhost:5105
       - PATH_BASE=/backmanage-api
+      - SwaggerRedirectUrlPort=5104
     ports:
       - "5104:80"
 

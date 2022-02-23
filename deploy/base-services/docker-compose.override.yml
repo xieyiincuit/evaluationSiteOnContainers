@@ -1,0 +1,61 @@
+version: '3.9'
+
+services:
+  db_evaluation:
+    volumes:
+      - mysql_evaluation:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=Zhoushan!1n
+    ports:
+      - "3306:3306"
+
+  db_gamerepo:
+    volumes:
+      - mysql_gamerepo:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=Gam2Rep0!!
+    ports:
+      - "3307:3306"
+
+  db_indentity:
+    environment:
+      - SA_PASSWORD=Zh0u!1,,
+      - ACCEPT_EULA=Y
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql_identity:/var/opt/mssql
+
+  db_backmanage:
+    volumes:
+      - mysql_backmanage:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=ZhouBack!1n
+    ports:
+      - "3308:3306"
+
+  mq_evaluation:
+    volumes:
+      - rabbitmq_evaluation:/var/lib/rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=zhoushanlin
+      - RABBITMQ_DEFAULT_PASS=rabbitmq!!..
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+
+  cache_master:
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass zhouredis11..
+    volumes:
+      - redis_master:/data
+
+volumes:
+  mysql_gamerepo:
+  mysql_evaluation:
+  mysql_backmanage:
+  mssql_identity:
+  rabbitmq_evaluation:
+  redis_master:

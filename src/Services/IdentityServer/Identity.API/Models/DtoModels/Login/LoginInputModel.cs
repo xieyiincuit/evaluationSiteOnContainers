@@ -1,12 +1,12 @@
-namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.DtoModels.Login;
+ï»¿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.DtoModels.Login;
 public class LoginInputModel
 {
-    [Display(Name = "ÓÃ»§Ãû/ÓÊÏä")]
-    [Required(ErrorMessage = "ÇëÊäÈëÓÃ»§Ãû/ÓÊÏä")]
+    [Display(Name = "ç”¨æˆ·å/é‚®ç®±")]
+    [Required(ErrorMessage = "è¯·è¾“å…¥ç”¨æˆ·å/é‚®ç®±")]
     public string Username { get; set; }
 
-    [Display(Name = "ÃÜÂë")]
-    [Required(ErrorMessage = "ÇëÊäÈëÃÜÂë")]
+    [Display(Name = "å¯†ç ")]
+    [Required(ErrorMessage = "è¯·è¾“å…¥å¯†ç ")]
     public string Password { get; set; }
     public bool RememberLogin { get; set; }
     public string ReturnUrl { get; set; }

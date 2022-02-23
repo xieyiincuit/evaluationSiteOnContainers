@@ -1,8 +1,12 @@
-#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
 EXPOSE 80
+
+#设置字符集为UTF-8
+ENV LANG en_US.UTF-8
+#设置时间为中国上海
+ENV TZ=Asia/Shanghai
+ENV DEBIAN_FRONTEND noninteractive
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src

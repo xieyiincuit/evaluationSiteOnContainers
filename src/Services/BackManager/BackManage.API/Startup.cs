@@ -124,6 +124,7 @@ public class Startup
             options.Authority = identityUrl;
             options.RequireHttpsMetadata = false;
             options.Audience = "backmanage";
+          
             options.TokenValidationParameters = new TokenValidationParameters()
             {
                 NameClaimType = "name",
@@ -183,6 +184,11 @@ public class Startup
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
+        if (env.IsDevelopment())
+        {
+            IdentityModelEventSource.ShowPII = true;
+        }
+
         var pathBase = Configuration["PATH_BASE"];
         if (!string.IsNullOrEmpty(pathBase))
         {
@@ -197,8 +203,8 @@ public class Startup
                     "BackManage.API V1");
                 setup.OAuthClientId("backmanageswaggerui");
                 setup.OAuthAppName("BackManage Swagger UI");
-                setup.OAuth2RedirectUrl("http://localhost:50004/swagger/oauth2-redirect.html");
-            });
+                setup.OAuth2RedirectUrl($"http://localhost:{Configuration.GetValue<string>("SwaggerRedirectUrlPort","50004")}/swagger/oauth2-redirect.html");
+            }); 
 
         app.UseHttpLogging();
 

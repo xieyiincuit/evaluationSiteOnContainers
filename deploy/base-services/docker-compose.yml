@@ -1,0 +1,21 @@
+version: '3.9'
+
+services:
+  db_evaluation:
+    image: mysql:latest
+
+  db_gamerepo:
+    image: mysql:latest
+
+  db_indentity:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+
+  db_backmanage:
+    image: mysql:latest
+
+  mq_evaluation:
+    image: rabbitmq:3.9.13-management
+
+  cache_master:
+    image: redis:latest
+

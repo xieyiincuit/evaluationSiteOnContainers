@@ -281,7 +281,7 @@ public class Startup
         {
             options.Authority = identityUrl;
             options.RequireHttpsMetadata = false;
-            options.Audience = "gamerepo";
+           
             options.TokenValidationParameters = new TokenValidationParameters()
             {
                 NameClaimType = "name",
@@ -339,7 +339,7 @@ public class Startup
                    "GameRepo.API V1");
                setup.OAuthClientId("gamereposwaggerui");
                setup.OAuthAppName("GameRepo Swagger UI");
-               setup.OAuth2RedirectUrl("http://localhost:50001/swagger/oauth2-redirect.html");
+               setup.OAuth2RedirectUrl($"http://localhost:{Configuration.GetValue<string>("SwaggerRedirectUrlPort","50001")}/swagger/oauth2-redirect.html");
            });
 
         app.UseHttpLogging();

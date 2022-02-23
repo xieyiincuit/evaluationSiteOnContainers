@@ -68,6 +68,7 @@ public class Startup
             {
                 options.Authority = identityUrl;
                 options.RequireHttpsMetadata = false;
+
                 options.TokenValidationParameters = new TokenValidationParameters()
                 {
                     NameClaimType = "name",
