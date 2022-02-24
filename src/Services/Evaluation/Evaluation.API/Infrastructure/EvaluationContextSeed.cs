@@ -134,7 +134,11 @@ public class EvaluationContextSeed
     {
         var csvFileEvaluationCategories = Path.Combine(contentRootPath, "Setup", "EvaluationCategories.csv");
 
-        if (!File.Exists(csvFileEvaluationCategories)) return GetPreConfigurationEvaluationCategory();
+        if (!File.Exists(csvFileEvaluationCategories))
+        {           
+            logger.LogWarning("file path:{path} can't find csv file, EvaluationCategories initialize may wrong", csvFileEvaluationCategories);
+            return GetPreConfigurationEvaluationCategory();
+        }
 
         string[] csvheaders;
         try

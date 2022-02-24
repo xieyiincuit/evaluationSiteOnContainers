@@ -140,7 +140,7 @@ public class Startup
         services.AddDbContext<IntegrationEventLogContext>(
             dbContextOptions =>
             {
-                dbContextOptions.UseSqlServer(Configuration.GetConnectionString("IntegrationConnection"),
+                dbContextOptions.UseSqlServer(Configuration.GetConnectionString("IdentityConnection"),
                     sqlOptions =>
                     {
                         sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);

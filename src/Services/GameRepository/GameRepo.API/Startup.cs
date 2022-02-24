@@ -89,8 +89,6 @@ public class Startup
             var serverVersion = new MySqlServerVersion(new Version(8, 0, 27));
             var gameRepoConnectionString = Configuration.GetConnectionString("GameRepoDbConnectString");
 
-            var integrationConnectionString = Configuration.GetConnectionString("IntegrationDbConnectString");
-
             services.AddDbContext<GameRepoContext>(
                 dbContextOptions =>
                 {
@@ -111,7 +109,7 @@ public class Startup
             services.AddDbContext<IntegrationEventLogContext>(
                 dbContextOptions =>
                 {
-                    dbContextOptions.UseMySql(integrationConnectionString, serverVersion,
+                    dbContextOptions.UseMySql(gameRepoConnectionString, serverVersion,
                         sqlOptions =>
                         {
                             sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
@@ -277,12 +275,14 @@ public class Startup
         {
             options.Authority = identityUrl;
             options.RequireHttpsMetadata = false;
+            options.Audience = "gamerepo";
 
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 NameClaimType = "name",
                 RoleClaimType = "role",
                 ValidIssuer = "http://identity-api",
+
                 //用于REST通信时的受众验证失败问题
                 ValidAudiences = new List<string>
                 {

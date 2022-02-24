@@ -67,7 +67,6 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
       - ConnectionStrings__IdentityConnection=Server=db_indentity;Database=IdentityDb;User Id=sa;Password=Zh0u!1,,;
-      - ConnectionStrings__IntegrationConnection=Server=db_indentity;Database=IntegrationDb;User Id=sa;Password=Zh0u!1,,;
       - EventBusSettings__Connection=mq_evaluation
       - EventBusSettings__UserName=zhoushanlin
       - EventBusSettings__PassWord=rabbitmq!!..
@@ -80,6 +79,8 @@ services:
       - "5105:80"
 
   evaluation-api:
+    volumes:
+      - ./Services/Evaluation/Evaluation.API/Setup:/app/Setup
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
@@ -97,12 +98,13 @@ services:
 
   #容器内通讯使用容器开放的端口 而不是映射到主机的端口
   gamerepo-api:
+    volumes:
+      - ./Services/GameRepository/GameRepo.API/Setup:/app/Setup
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
       - ConnectionStrings__GameRepoDbConnectString=server=db_gamerepo;port=3306;database=game_information;user=root;password=Gam2Rep0!!;IgnoreCommandTransaction=true
       - ConnectionStrings__GameStoreDbConnectString=server=db_gamerepo;port=3306;database=game_store;user=root;password=Gam2Rep0!!;IgnoreCommandTransaction=true
-      - ConnectionStrings__IntegrationDbConnectString=server=db_gamerepo;port=3306;database=game_integration;user=root;password=Gam2Rep0!!;IgnoreCommandTransaction=true
       - EventBusSettings__Connection=mq_evaluation
       - EventBusSettings__UserName=zhoushanlin
       - EventBusSettings__PassWord=rabbitmq!!..

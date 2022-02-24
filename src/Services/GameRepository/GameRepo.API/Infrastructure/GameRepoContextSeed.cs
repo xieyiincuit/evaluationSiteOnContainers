@@ -1,6 +1,4 @@
-﻿using MySqlConnector;
-
-namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Infrastructure;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Infrastructure;
 
 public class GameRepoContextSeed
 {
@@ -52,7 +50,11 @@ public class GameRepoContextSeed
     {
         var csvFilePlaySuggestions = Path.Combine(contentRootPath, "Setup", "GameInfo.csv");
 
-        if (!File.Exists(csvFilePlaySuggestions)) return GetPreconfiguredGameInfos();
+        if (!File.Exists(csvFilePlaySuggestions))
+        {
+            logger.LogWarning("file path:{path} can't find csv file, PlaySuggestions initialize may wrong", csvFilePlaySuggestions);
+            return GetPreconfiguredGameInfos();
+        }
 
         string[] csvheaders;
         try
@@ -112,12 +114,16 @@ public class GameRepoContextSeed
     {
         var csvFileCatalogTypes = Path.Combine(contentRootPath, "Setup", "GameCategories.csv");
 
-        if (!File.Exists(csvFileCatalogTypes)) return GetPreconfiguredCatalogTypes();
+        if (!File.Exists(csvFileCatalogTypes))
+        {
+            logger.LogWarning("file path:{path} can't find csv file, CatalogTypes initialize may wrong", csvFileCatalogTypes);
+            return GetPreconfiguredCatalogTypes();
+        }
 
         string[] csvheaders;
         try
         {
-            string[] requiredHeaders = {"gamecategories"};
+            string[] requiredHeaders = { "gamecategories" };
             csvheaders = GetHeaders(csvFileCatalogTypes, requiredHeaders);
         }
         catch (Exception ex)
@@ -152,7 +158,7 @@ public class GameRepoContextSeed
 
         if (string.IsNullOrEmpty(type))
             throw new Exception("game catalog Type Name is empty");
-        return new GameCategory {CategoryName = type};
+        return new GameCategory { CategoryName = type };
     }
 
     #endregion
@@ -161,15 +167,19 @@ public class GameRepoContextSeed
 
     private IEnumerable<GameTag> GetGameTagsFromFile(string contentRootPath, ILogger<GameRepoContextSeed> logger)
     {
-        var csvFileCatalogTypes = Path.Combine(contentRootPath, "Setup", "GameTags.csv");
+        var csvFileGameTags = Path.Combine(contentRootPath, "Setup", "GameTags.csv");
 
-        if (!File.Exists(csvFileCatalogTypes)) return GetPreconfiguredGameTags();
+        if (!File.Exists(csvFileGameTags))
+        {
+            logger.LogWarning("file path:{path} can't find csv file, GameTags initialize may wrong", csvFileGameTags);
+            return GetPreconfiguredGameTags();
+        }
 
         string[] csvheaders;
         try
         {
-            string[] requiredHeaders = {"gametags"};
-            csvheaders = GetHeaders(csvFileCatalogTypes, requiredHeaders);
+            string[] requiredHeaders = { "gametags" };
+            csvheaders = GetHeaders(csvFileGameTags, requiredHeaders);
         }
         catch (Exception ex)
         {
@@ -177,7 +187,7 @@ public class GameRepoContextSeed
             return GetPreconfiguredGameTags();
         }
 
-        return File.ReadAllLines(csvFileCatalogTypes)
+        return File.ReadAllLines(csvFileGameTags)
             .Skip(1) // skip header row
             .SelectTry(CreateGameTag)
             .OnCaughtException(ex =>
@@ -203,7 +213,7 @@ public class GameRepoContextSeed
 
         if (string.IsNullOrEmpty(tag))
             throw new Exception("game tag Name is empty");
-        return new GameTag {TagName = tag};
+        return new GameTag { TagName = tag };
     }
 
     #endregion
@@ -214,12 +224,16 @@ public class GameRepoContextSeed
     {
         var csvFileCatalogTypes = Path.Combine(contentRootPath, "Setup", "GameCompanies.csv");
 
-        if (!File.Exists(csvFileCatalogTypes)) return GetPreconfiguredGameCompanies();
+        if (!File.Exists(csvFileCatalogTypes))
+        {
+            logger.LogWarning("file path:{path} can't find csv file, CatalogTypes initialize may wrong", csvFileCatalogTypes);
+            return GetPreconfiguredGameCompanies();
+        }
 
         string[] csvheaders;
         try
         {
-            string[] requiredHeaders = {"gamecompanies"};
+            string[] requiredHeaders = { "gamecompanies" };
             csvheaders = GetHeaders(csvFileCatalogTypes, requiredHeaders);
         }
         catch (Exception ex)
@@ -254,7 +268,7 @@ public class GameRepoContextSeed
 
         if (string.IsNullOrEmpty(company))
             throw new Exception("game company Name is empty");
-        return new GameCompany {CompanyName = company};
+        return new GameCompany { CompanyName = company };
     }
 
     #endregion
@@ -266,7 +280,11 @@ public class GameRepoContextSeed
     {
         var csvFilePlaySuggestions = Path.Combine(contentRootPath, "Setup", "GamePlaySuggestion.csv");
 
-        if (!File.Exists(csvFilePlaySuggestions)) return GetPreconfiguredSuggestions();
+        if (!File.Exists(csvFilePlaySuggestions))
+        {
+            logger.LogWarning("file path:{path} can't find csv file, PlaySuggestions initialize may wrong", csvFilePlaySuggestions);
+            return GetPreconfiguredSuggestions();
+        }
 
         string[] csvheaders;
         try
