@@ -2,12 +2,11 @@
 
 public class ResetPasswordViewModel
 {
-    [Required]
-    public string UserId { get; set; }
+    [Required] public string UserId { get; set; }
 
     [Required(ErrorMessage = "请填写密码")]
     [RegularExpression(@"^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,30}$"
-        ,ErrorMessage = "至少8个字符，至少1个字母，1个数字和1个特殊字符(@$!%*#?&)")]
+        , ErrorMessage = "至少8个字符，至少1个字母，1个数字和1个特殊字符(@$!%*#?&)")]
     [StringLength(50, ErrorMessage = " {0}的长度在{2}到{1}之间.", MinimumLength = 6)]
     [DataType(DataType.Password)]
     [Display(Name = "密码")]

@@ -1,7 +1,7 @@
-﻿@model Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.ViewModels.Login.LoginViewModel
+﻿@model LoginViewModel
 
 <div>
-    <partial name="_ValidationSummary" />
+    <partial name="_ValidationSummary"/>
     <div class="row">
         @if (Model.EnableLocalLogin)
         {
@@ -13,7 +13,7 @@
 
                     <div class="card-body">
                         <form asp-route="Login">
-                            <input type="hidden" asp-for="ReturnUrl" />
+                            <input type="hidden" asp-for="ReturnUrl"/>
                             <div class="form-group mb-3">
                                 <label asp-for="Username" class="mb-1"></label>
                                 <input class="form-control" placeholder="Username" asp-for="Username" autofocus>
@@ -65,10 +65,10 @@
                             {
                                 <li class="list-inline-item">
                                     <a class="btn btn-secondary"
-                               asp-controller="External"
-                               asp-action="Challenge"
-                               asp-route-scheme="@provider.AuthenticationScheme"
-                               asp-route-returnUrl="@Model.ReturnUrl">
+                                       asp-controller="External"
+                                       asp-action="Challenge"
+                                       asp-route-scheme="@provider.AuthenticationScheme"
+                                       asp-route-returnUrl="@Model.ReturnUrl">
                                         @provider.DisplayName
                                     </a>
                                 </li>

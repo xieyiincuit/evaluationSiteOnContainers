@@ -2,7 +2,6 @@
 
 public class IdentitySettings
 {
-    
 }
 
 public class EventBusSettings

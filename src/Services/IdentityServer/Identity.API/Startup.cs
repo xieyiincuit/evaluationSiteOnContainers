@@ -2,23 +2,21 @@
 
 public class Startup
 {
-    public IWebHostEnvironment Environment { get; }
-    public IConfiguration Configuration { get; }
-
     public Startup(IWebHostEnvironment environment, IConfiguration configuration)
     {
         Environment = environment;
         Configuration = configuration;
     }
 
+    public IWebHostEnvironment Environment { get; }
+    public IConfiguration Configuration { get; }
+
     public IServiceProvider ConfigureServices(IServiceCollection services)
     {
         #region MvcSettings
 
-        services.AddControllers(options =>
-        {
-            options.Filters.Add(typeof(HttpGlobalExceptionFilter));
-        }).AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = true);
+        services.AddControllers(options => { options.Filters.Add(typeof(HttpGlobalExceptionFilter)); })
+            .AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = true);
         services.AddControllersWithViews();
 
         #endregion
@@ -69,18 +67,18 @@ public class Startup
                 options.Authority = identityUrl;
                 options.RequireHttpsMetadata = false;
 
-                options.TokenValidationParameters = new TokenValidationParameters()
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
                     NameClaimType = "name",
                     RoleClaimType = "role",
                     ValidIssuer = "http://identity-api",
-                    ValidAudiences = new List<string>()
+                    ValidAudiences = new List<string>
                     {
                         "ordering",
                         "evaluation",
                         "backmanage",
                         "gamerepo"
-                    },
+                    }
                 };
             });
 
@@ -113,7 +111,7 @@ public class Startup
 
                 options.ClientId = "<insert here>";
                 options.ClientSecret = "<insert here>";
-            }); 
+            });
 
         #endregion
 
@@ -128,13 +126,12 @@ public class Startup
                 .AddCheck("self", () => HealthCheckResult.Healthy())
                 .AddSqlServer(Configuration.GetConnectionString("IdentityConnection"),
                     name: "IdentityDB-check",
-                    tags: new string[] { "IdentityDB" })
+                    tags: new string[] {"IdentityDB"})
                 .AddRabbitMQ(
                     $"amqp://{mqName}:{mqPassword}@{mqHost}/",
                     name: "identity-rabbitmqbus-check",
-                    tags: new string[] { "rabbitmqbus" });
+                    tags: new string[] {"rabbitmqbus"});
         }
-      
 
         #endregion
 
@@ -148,9 +145,9 @@ public class Startup
                     {
                         sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
                         sqlOptions.EnableRetryOnFailure(
-                            maxRetryCount: 15,
-                            maxRetryDelay: TimeSpan.FromSeconds(30),
-                            errorNumbersToAdd: null);
+                            15,
+                            TimeSpan.FromSeconds(30),
+                            null);
                     });
 
                 dbContextOptions.LogTo(Console.WriteLine, LogLevel.Information);
@@ -174,7 +171,7 @@ public class Startup
             var settings = sp.GetRequiredService<IOptions<EventBusSettings>>().Value;
             var logger = sp.GetRequiredService<ILogger<DefaultRabbitMQPersistentConnection>>();
 
-            var factory = new ConnectionFactory()
+            var factory = new ConnectionFactory
             {
                 HostName = settings.Connection,
                 Port = int.Parse(settings.Port),
@@ -225,10 +222,7 @@ public class Startup
 
     public void Configure(IApplicationBuilder app)
     {
-        if (Environment.IsDevelopment())
-        {
-            app.UseDeveloperExceptionPage();
-        }
+        if (Environment.IsDevelopment()) app.UseDeveloperExceptionPage();
 
         app.UseStaticFiles();
 
@@ -246,14 +240,14 @@ public class Startup
         // Fix a problem with chrome. Chrome enabled a new feature "Cookies without SameSite must be secure", 
         // the cookies should be expired from https, but in this app, the internal communication in aks and docker compose is http.
         // To avoid this problem, the policy of cookies should be in Lax mode.
-        app.UseCookiePolicy(new CookiePolicyOptions { MinimumSameSitePolicy = SameSiteMode.Lax });
+        app.UseCookiePolicy(new CookiePolicyOptions {MinimumSameSitePolicy = SameSiteMode.Lax});
 
         app.UseAuthorization();
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapDefaultControllerRoute();
             endpoints.MapControllers();
-            endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
+            endpoints.MapHealthChecks("/hc", new HealthCheckOptions
             {
                 Predicate = _ => true,
                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
@@ -277,7 +271,7 @@ public class Startup
 public static class CustomExtensionMethod
 {
     /// <summary>
-    /// 初始化ApplicationUserContext
+    ///     初始化ApplicationUserContext
     /// </summary>
     /// <param name="services"></param>
     /// <param name="configuration"></param>
@@ -289,13 +283,13 @@ public static class CustomExtensionMethod
         // Add framework services.
         services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("IdentityConnection"),
-                sqlServerOptionsAction: sqlOptions =>
+                sqlOptions =>
                 {
                     sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
                     sqlOptions.EnableRetryOnFailure(
-                        maxRetryCount: 15,
-                        maxRetryDelay: TimeSpan.FromSeconds(30),
-                        errorNumbersToAdd: null);
+                        15,
+                        TimeSpan.FromSeconds(30),
+                        null);
                 }));
 
         services.AddIdentity<ApplicationUser, IdentityRole>()
@@ -305,7 +299,7 @@ public static class CustomExtensionMethod
     }
 
     /// <summary>
-    /// 整合初始化Store
+    ///     整合初始化Store
     /// </summary>
     /// <param name="builder"></param>
     /// <param name="configuration"></param>
@@ -319,25 +313,25 @@ public static class CustomExtensionMethod
         builder.AddConfigurationStore(options =>
             {
                 options.ConfigureDbContext = builder => builder.UseSqlServer(identityConnectionString,
-                    sqlServerOptionsAction: sqlOptions =>
+                    sqlOptions =>
                     {
                         sqlOptions.MigrationsAssembly(migrationsAssembly);
                         sqlOptions.EnableRetryOnFailure(
-                            maxRetryCount: 15,
-                            maxRetryDelay: TimeSpan.FromSeconds(30),
-                            errorNumbersToAdd: null);
+                            15,
+                            TimeSpan.FromSeconds(30),
+                            null);
                     });
             })
             .AddOperationalStore(options =>
             {
                 options.ConfigureDbContext = builder => builder.UseSqlServer(identityConnectionString,
-                    sqlServerOptionsAction: sqlOptions =>
+                    sqlOptions =>
                     {
                         sqlOptions.MigrationsAssembly(migrationsAssembly);
                         sqlOptions.EnableRetryOnFailure(
-                            maxRetryCount: 15,
-                            maxRetryDelay: TimeSpan.FromSeconds(30),
-                            errorNumbersToAdd: null);
+                            15,
+                            TimeSpan.FromSeconds(30),
+                            null);
                     });
                 // this enables automatic token cleanup. this is optional.
                 options.EnableTokenCleanup = true;

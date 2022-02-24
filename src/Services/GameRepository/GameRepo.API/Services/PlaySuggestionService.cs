@@ -31,7 +31,8 @@ public class PlaySuggestionService : IPlaySuggestionService
 
     public async Task<GamePlaySuggestion> GetPlaySuggestionAsync(int suggestionId)
     {
-        var suggestion = await _repoContext.PlaySuggestions.AsNoTracking().FirstOrDefaultAsync(x => x.Id == suggestionId);
+        var suggestion =
+            await _repoContext.PlaySuggestions.AsNoTracking().FirstOrDefaultAsync(x => x.Id == suggestionId);
         return suggestion;
     }
 

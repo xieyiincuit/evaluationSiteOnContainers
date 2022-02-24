@@ -1,7 +1,7 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.IntegrationEventLogEF;
 
 /// <summary>
-/// 事件状态
+///     事件状态
 /// </summary>
 public enum EventStateEnum
 {

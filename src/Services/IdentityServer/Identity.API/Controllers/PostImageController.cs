@@ -4,9 +4,9 @@
 [Route("api/v1/user/avatar")]
 public class PostImageController : ControllerBase
 {
+    private readonly ApplicationDbContext _appDbContextService;
     private readonly ILogger<PostImageController> _logger;
     private readonly IWebHostEnvironment _webHostEnvironment;
-    private readonly ApplicationDbContext _appDbContextService;
 
     public PostImageController(
         ILogger<PostImageController> logger,
@@ -25,14 +25,11 @@ public class PostImageController : ControllerBase
         if (avatar.File == null || avatar.File.Length == 0 || string.IsNullOrEmpty(avatar.UserId))
             return BadRequest("avatar file or userId is empty");
 
-        var acceptTypes = new[] { ".jpg", ".jpeg", ".png" };
+        var acceptTypes = new[] {".jpg", ".jpeg", ".png"};
         if (acceptTypes.All(t => t != Path.GetExtension(avatar.File.FileName)?.ToLower()))
             return BadRequest("File type not valid, only jpg and png are acceptable.");
 
-        if (avatar.File.Length > 10 * 1024 * 3 * 1000)
-        {
-            return BadRequest("File size cannot exceed 3M");
-        }
+        if (avatar.File.Length > 10 * 1024 * 3 * 1000) return BadRequest("File size cannot exceed 3M");
 
         if (string.IsNullOrWhiteSpace(_webHostEnvironment.WebRootPath))
             _webHostEnvironment.WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
@@ -46,11 +43,13 @@ public class PostImageController : ControllerBase
         if (!Directory.Exists(uploadsFolderPath))
             Directory.CreateDirectory(uploadsFolderPath);
 
-        _logger.LogDebug("---- user:{userName} wanna post a file: upLoadDirectory:{path}", user.NickName, uploadsFolderPath);
+        _logger.LogDebug("---- user:{userName} wanna post a file: upLoadDirectory:{path}", user.NickName,
+            uploadsFolderPath);
 
         var fileName = avatar.UserId + DateTime.Now.Millisecond + Path.GetFileName(avatar.File.FileName);
         var fileSavePath = Path.Combine(uploadsFolderPath, fileName);
-        _logger.LogDebug("---- user:{userName} save a avatar: savePath:{path}, fileName:{name}", user.NickName, fileSavePath, fileName);
+        _logger.LogDebug("---- user:{userName} save a avatar: savePath:{path}, fileName:{name}", user.NickName,
+            fileSavePath, fileName);
 
         //保存文件到文件资源库
         await using var stream = new FileStream(fileSavePath, FileMode.Create);
@@ -60,10 +59,7 @@ public class PostImageController : ControllerBase
         //删除旧头像文件
         var oldUserAvatar = user.Avatar;
         var fileDeletePath = Path.Combine(uploadsFolderPath, oldUserAvatar);
-        if (System.IO.File.Exists(fileDeletePath))
-        {
-            System.IO.File.Delete(fileDeletePath);
-        }
+        if (System.IO.File.Exists(fileDeletePath)) System.IO.File.Delete(fileDeletePath);
         _logger.LogDebug("---- delete user:{userName} old avatar:{oldPath}", user.NickName, fileDeletePath);
 
         //更新用户头像引用地址
@@ -88,7 +84,7 @@ public class PostImageController : ControllerBase
         var uploadsFolderPath = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
         var userAvatarPath = Path.Combine(uploadsFolderPath, user.Avatar);
 
-        var result = new UserAvatarDto { Id = user.Id, NickName = user.NickName, Avatar = userAvatarPath };
+        var result = new UserAvatarDto {Id = user.Id, NickName = user.NickName, Avatar = userAvatarPath};
 
         return Ok(result);
     }
@@ -107,7 +103,7 @@ public class PostImageController : ControllerBase
             var user = await _appDbContextService.Users
                 .AsNoTracking()
                 .Where(x => x.Id == id)
-                .Select(x => new UserAvatarDto { Id = x.Id, NickName = x.NickName, Avatar = x.Avatar })
+                .Select(x => new UserAvatarDto {Id = x.Id, NickName = x.NickName, Avatar = x.Avatar})
                 .FirstOrDefaultAsync();
             if (user != null)
                 result.Add(user);

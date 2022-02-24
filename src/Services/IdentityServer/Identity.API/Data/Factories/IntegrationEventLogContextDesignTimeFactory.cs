@@ -13,7 +13,8 @@ public class IntegrationEventLogContextDesignTimeFactory : IDesignTimeDbContextF
         var optionsBuilder = new DbContextOptionsBuilder<IntegrationEventLogContext>();
 
         optionsBuilder.UseSqlServer(connectionString,
-            options => options.MigrationsAssembly(typeof(IntegrationEventLogContext).GetTypeInfo().Assembly.GetName().Name));
+            options => options.MigrationsAssembly(typeof(IntegrationEventLogContext).GetTypeInfo().Assembly.GetName()
+                .Name));
 
         return new IntegrationEventLogContext(optionsBuilder.Options);
     }

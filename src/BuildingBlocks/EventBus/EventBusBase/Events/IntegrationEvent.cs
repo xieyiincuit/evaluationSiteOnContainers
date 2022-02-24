@@ -1,7 +1,7 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.EventBusBase.Events;
 
 /// <summary>
-/// 事件源基类
+///     事件源基类
 /// </summary>
 public record IntegrationEvent
 {
@@ -22,9 +22,7 @@ public record IntegrationEvent
         CreationDate = createDate;
     }
 
-    [JsonInclude]
-    public Guid Id { get; private init; }
+    [JsonInclude] public Guid Id { get; private init; }
 
-    [JsonInclude]
-    public DateTime CreationDate { get; private init; }
+    [JsonInclude] public DateTime CreationDate { get; private init; }
 }

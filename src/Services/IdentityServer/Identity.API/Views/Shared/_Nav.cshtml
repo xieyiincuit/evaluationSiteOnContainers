@@ -1,6 +1,4 @@
-﻿@using IdentityServer4.Extensions
-
-@{
+﻿@{
     string name = null;
     if (!true.Equals(ViewData["signed-out"]))
     {
@@ -21,9 +19,13 @@
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle text-light" data-bs-toggle="dropdown" id="navbarDropdown"
-                       aria-expanded="False">@name<b class="caret"></b></a>
+                           aria-expanded="False">
+                            @name<b class="caret"></b>
+                        </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" asp-action="Logout" asp-controller="Account">Logout</a></li>
+                            <li>
+                                <a class="dropdown-item" asp-action="Logout" asp-controller="Account">Logout</a>
+                            </li>
                         </ul>
                     </li>
                 </ul>

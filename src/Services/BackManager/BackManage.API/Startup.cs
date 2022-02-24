@@ -13,10 +13,7 @@ public class Startup
     {
         #region MvcSettings
 
-        services.AddControllers(options =>
-            {
-                options.Filters.Add(typeof(HttpGlobalExceptionFilter));
-            })
+        services.AddControllers(options => { options.Filters.Add(typeof(HttpGlobalExceptionFilter)); })
             .AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = true);
 
         services.AddHttpLogging(options =>
@@ -51,14 +48,14 @@ public class Startup
             options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
             {
                 Type = SecuritySchemeType.OAuth2,
-                Flows = new OpenApiOAuthFlows()
+                Flows = new OpenApiOAuthFlows
                 {
-                    Implicit = new OpenApiOAuthFlow()
+                    Implicit = new OpenApiOAuthFlow
                     {
                         AuthorizationUrl =
                             new Uri($"{Configuration.GetValue<string>("IdentityUrlExternal")}/connect/authorize"),
                         TokenUrl = new Uri($"{Configuration.GetValue<string>("IdentityUrlExternal")}/connect/token"),
-                        Scopes = new Dictionary<string, string>()
+                        Scopes = new Dictionary<string, string>
                         {
                             {"back-manage", "网站后台管理权限"}
                         }
@@ -95,10 +92,9 @@ public class Startup
                         {
                             sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
                             sqlOptions.EnableRetryOnFailure(
-                                maxRetryCount: 15,
-                                maxRetryDelay: TimeSpan.FromSeconds(30),
-                                errorNumbersToAdd: null);
-
+                                15,
+                                TimeSpan.FromSeconds(30),
+                                null);
                         });
                     dbContextOptions.LogTo(Console.WriteLine, LogLevel.Information);
                     dbContextOptions.EnableSensitiveDataLogging();
@@ -112,20 +108,22 @@ public class Startup
 
         // prevent from mapping "sub" claim to nameIdentifier.
         JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
+        //在Docker容器内 需配置Docker DNS
+        //这里与回调地址IdentityUrlExternal区分
         var identityUrl = Configuration.GetValue<string>("IdentityUrl");
 
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-
         }).AddJwtBearer(options =>
         {
             options.Authority = identityUrl;
             options.RequireHttpsMetadata = false;
             options.Audience = "backmanage";
-          
-            options.TokenValidationParameters = new TokenValidationParameters()
+
+            options.TokenValidationParameters = new TokenValidationParameters
             {
                 NameClaimType = "name",
                 RoleClaimType = "role",
@@ -143,8 +141,8 @@ public class Startup
             .AddCheck("self", () => HealthCheckResult.Healthy())
             .AddMySql(
                 Configuration["BackDbConnectString"],
-                name: "mysql-check",
-                tags: new string[] { "db", "mysql", "backmanage" });
+                "mysql-check",
+                tags: new string[] {"db", "mysql", "backmanage"});
 
         #endregion
 
@@ -184,16 +182,10 @@ public class Startup
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
-        if (env.IsDevelopment())
-        {
-            IdentityModelEventSource.ShowPII = true;
-        }
+        if (env.IsDevelopment()) IdentityModelEventSource.ShowPII = true;
 
         var pathBase = Configuration["PATH_BASE"];
-        if (!string.IsNullOrEmpty(pathBase))
-        {
-            app.UsePathBase(pathBase);
-        }
+        if (!string.IsNullOrEmpty(pathBase)) app.UsePathBase(pathBase);
 
         app.UseSwagger()
             .UseSwaggerUI(setup =>
@@ -203,8 +195,9 @@ public class Startup
                     "BackManage.API V1");
                 setup.OAuthClientId("backmanageswaggerui");
                 setup.OAuthAppName("BackManage Swagger UI");
-                setup.OAuth2RedirectUrl($"http://localhost:{Configuration.GetValue<string>("SwaggerRedirectUrlPort","50004")}/swagger/oauth2-redirect.html");
-            }); 
+                setup.OAuth2RedirectUrl(
+                    $"http://localhost:{Configuration.GetValue<string>("SwaggerRedirectUrlPort", "50004")}/swagger/oauth2-redirect.html");
+            });
 
         app.UseHttpLogging();
 
@@ -219,7 +212,7 @@ public class Startup
             endpoints.MapDefaultControllerRoute();
             endpoints.MapControllers();
 
-            endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
+            endpoints.MapHealthChecks("/hc", new HealthCheckOptions
             {
                 Predicate = _ => true,
                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse

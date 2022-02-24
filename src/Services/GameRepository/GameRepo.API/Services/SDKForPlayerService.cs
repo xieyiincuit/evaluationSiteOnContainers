@@ -20,16 +20,16 @@ public class SDKForPlayerService : ISDKForPlayerService
             {
                 SDKString = x.GameItemSDK.SDKString,
                 GameItemName = x.GameItemSDK.GameShopItem.GameInfo.Name,
-                SendTime = x.GameItemSDK.SendTime.Value,
+                SendTime = x.GameItemSDK.SendTime.Value
             })
             .Skip((pageIndex - 1) * pageSize)
             .Take(pageSize)
             .OrderBy(x => x.SendTime)
             .ToListAsync();
-
     }
 
-    public async Task<List<PlaySDKDto>> GetPlayerSDKByUserIdAndStatusAsync(string userId, int pageSize, int pageIndex, bool? hasChecked)
+    public async Task<List<PlaySDKDto>> GetPlayerSDKByUserIdAndStatusAsync(string userId, int pageSize, int pageIndex,
+        bool? hasChecked)
     {
         var queryString = _repoDbContext.GameSDKForPlayers
             .Include(sdk => sdk.GameItemSDK)

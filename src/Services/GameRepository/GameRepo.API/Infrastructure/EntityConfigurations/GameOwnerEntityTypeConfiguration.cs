@@ -4,7 +4,6 @@ public class GameOwnerEntityTypeConfiguration : IEntityTypeConfiguration<GameOwn
 {
     public void Configure(EntityTypeBuilder<GameOwner> builder)
     {
-
-        builder.HasKey(g => new { g.UserId, g.GameId });
+        builder.HasKey(g => new {g.UserId, g.GameId});
     }
 }

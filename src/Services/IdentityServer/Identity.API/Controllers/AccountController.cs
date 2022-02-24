@@ -4,13 +4,13 @@ namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Controllers
 [AllowAnonymous]
 public class AccountController : Controller
 {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly SignInManager<ApplicationUser> _signInManager;
-    private readonly IIdentityServerInteractionService _interaction;
     private readonly IClientStore _clientStore;
-    private readonly IAuthenticationSchemeProvider _schemeProvider;
     private readonly IEventService _events;
+    private readonly IIdentityServerInteractionService _interaction;
     private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly IAuthenticationSchemeProvider _schemeProvider;
+    private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly UserManager<ApplicationUser> _userManager;
 
     public AccountController(
         UserManager<ApplicationUser> userManager,
@@ -37,10 +37,8 @@ public class AccountController : Controller
         var vm = await BuildLoginViewModelAsync(returnUrl);
 
         if (vm.IsExternalLoginOnly)
-        {
             // we only have one option for logging in and it's an external provider
-            return RedirectToAction("Challenge", "External", new { scheme = vm.ExternalLoginScheme, returnUrl });
-        }
+            return RedirectToAction("Challenge", "External", new {scheme = vm.ExternalLoginScheme, returnUrl});
 
         return View(vm);
     }
@@ -64,25 +62,21 @@ public class AccountController : Controller
 
                 // we can trust model.ReturnUrl since GetAuthorizationContextAsync returned non-null
                 if (context.IsNativeClient())
-                {
                     // The client is native, so this change in how to
                     // return the response is for better UX for the end user.
                     return this.LoadingPage("Redirect", model.ReturnUrl);
-                }
 
                 return Redirect(model.ReturnUrl);
             }
-            else
-            {
-                // since we don't have a valid context, then we just go back to the home page
-                return Redirect("~/");
-            }
+
+            // since we don't have a valid context, then we just go back to the home page
+            return Redirect("~/");
         }
 
         if (ModelState.IsValid)
         {
             var result = await _signInManager.PasswordSignInAsync(
-                model.Username, model.Password, model.RememberLogin, lockoutOnFailure: true);
+                model.Username, model.Password, model.RememberLogin, true);
 
             if (result.Succeeded)
             {
@@ -94,11 +88,9 @@ public class AccountController : Controller
                 if (context != null)
                 {
                     if (context.IsNativeClient())
-                    {
                         // The client is native, so this change in how to
                         // return the response is for better UX for the end user.
                         return this.LoadingPage("Redirect", model.ReturnUrl);
-                    }
 
                     // we can trust model.ReturnUrl since GetAuthorizationContextAsync returned non-null
                     return Redirect(model.ReturnUrl);
@@ -106,21 +98,14 @@ public class AccountController : Controller
 
                 // request for a local page
                 if (Url.IsLocalUrl(model.ReturnUrl))
-                {
                     return Redirect(model.ReturnUrl);
-                }
-                else if (string.IsNullOrEmpty(model.ReturnUrl))
-                {
+                if (string.IsNullOrEmpty(model.ReturnUrl))
                     return Redirect("~/");
-                }
-                else
-                {
-                    // user might have clicked on a malicious link - should be logged
-                    throw new Exception("invalid return URL");
-                }
+                throw new Exception("invalid return URL");
             }
 
-            await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid credentials", clientId: context?.Client.ClientId));
+            await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid credentials",
+                clientId: context?.Client.ClientId));
             ModelState.AddModelError(string.Empty, AccountOptions.InvalidCredentialsErrorMessage);
         }
 
@@ -137,11 +122,9 @@ public class AccountController : Controller
         var vm = await BuildLogoutViewModelAsync(logoutId);
 
         if (vm.ShowLogoutPrompt == false)
-        {
             // if the request for logout was properly authenticated from IdentityServer, then
             // we don't need to show the prompt and can just log the user out directly.
             return await Logout(vm);
-        }
 
         return View(vm);
     }
@@ -168,10 +151,10 @@ public class AccountController : Controller
             // build a return URL so the upstream provider will redirect back
             // to us after the user has logged out. this allows us to then
             // complete our single sign-out processing.
-            string url = Url.Action("Logout", new { logoutId = vm.LogoutId });
+            var url = Url.Action("Logout", new {logoutId = vm.LogoutId});
 
             // this triggers a redirect to the external provider for sign-out
-            return SignOut(new AuthenticationProperties { RedirectUri = url }, vm.ExternalAuthenticationScheme);
+            return SignOut(new AuthenticationProperties {RedirectUri = url}, vm.ExternalAuthenticationScheme);
         }
 
         return View("LoggedOut", vm);
@@ -199,7 +182,8 @@ public class AccountController : Controller
     {
         ViewData["ReturnUrl"] = returnUrl;
 
-        var emailExist = await _userManager.Users.FirstOrDefaultAsync(x => x.NormalizedEmail == model.Email.ToUpperInvariant());
+        var emailExist =
+            await _userManager.Users.FirstOrDefaultAsync(x => x.NormalizedEmail == model.Email.ToUpperInvariant());
         if (emailExist != null)
         {
             ModelState.AddModelError("NormalizedEmail", "此邮箱已被注册");
@@ -241,17 +225,15 @@ public class AccountController : Controller
                 // If we got this far, something failed, redisplay form
                 return View(model);
             }
-
         }
 
         if (returnUrl != null)
         {
             if (HttpContext.User.Identity.IsAuthenticated)
                 return Redirect(returnUrl);
-            else if (ModelState.IsValid)
-                return RedirectToAction("login", "account", new { returnUrl = returnUrl });
-            else
-                return View(model);
+            if (ModelState.IsValid)
+                return RedirectToAction("login", "account", new {returnUrl});
+            return View(model);
         }
 
         return RedirectToAction("login", "account");
@@ -272,14 +254,17 @@ public class AccountController : Controller
     public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model, string returnUrl = null)
     {
         ViewData["ReturnUrl"] = returnUrl;
-        var accountExist = await _userManager.Users.FirstOrDefaultAsync(x => x.Email == model.Email && x.PhoneNumber == model.PhoneNumber);
+        var accountExist =
+            await _userManager.Users.FirstOrDefaultAsync(x =>
+                x.Email == model.Email && x.PhoneNumber == model.PhoneNumber);
 
         if (accountExist == null)
         {
             ModelState.AddModelError("Email", "无此用户或你给予的手机绑定信息不正确");
             return View(model);
         }
-        else if (string.IsNullOrEmpty(model.Question))
+
+        if (string.IsNullOrEmpty(model.Question))
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(x => x.NormalizedEmail == model.Email.ToUpper());
             model.Question = user.SecurityQuestion;
@@ -292,13 +277,11 @@ public class AccountController : Controller
             {
                 var useIdKey = Guid.NewGuid().ToString("N");
                 TempData[useIdKey] = user.Id;
-                return RedirectToAction("ResetPassword", "Account", new { code = useIdKey, returnUrl = returnUrl });
+                return RedirectToAction("ResetPassword", "Account", new {code = useIdKey, returnUrl});
             }
-            else
-            {
-                ModelState.AddModelError("SecurityAnswer", "问题回答错误");
-                return View(model);
-            }
+
+            ModelState.AddModelError("SecurityAnswer", "问题回答错误");
+            return View(model);
         }
     }
 
@@ -334,9 +317,8 @@ public class AccountController : Controller
             return View(model);
         }
 
-        return RedirectToAction("login", "account", new { returnUrl });
+        return RedirectToAction("login", "account", new {returnUrl});
     }
-
 
 
     /*****************************************/
@@ -354,13 +336,10 @@ public class AccountController : Controller
             {
                 EnableLocalLogin = local,
                 ReturnUrl = returnUrl,
-                Username = context.LoginHint,
+                Username = context.LoginHint
             };
 
-            if (!local)
-            {
-                vm.ExternalProviders = new[] { new ExternalProvider { AuthenticationScheme = context.IdP } };
-            }
+            if (!local) vm.ExternalProviders = new[] {new ExternalProvider {AuthenticationScheme = context.IdP}};
 
             return vm;
         }
@@ -384,9 +363,8 @@ public class AccountController : Controller
                 allowLocal = client.EnableLocalLogin;
 
                 if (client.IdentityProviderRestrictions != null && client.IdentityProviderRestrictions.Any())
-                {
-                    providers = providers.Where(provider => client.IdentityProviderRestrictions.Contains(provider.AuthenticationScheme)).ToList();
-                }
+                    providers = providers.Where(provider =>
+                        client.IdentityProviderRestrictions.Contains(provider.AuthenticationScheme)).ToList();
             }
         }
 
@@ -410,7 +388,7 @@ public class AccountController : Controller
 
     private async Task<LogoutViewModel> BuildLogoutViewModelAsync(string logoutId)
     {
-        var vm = new LogoutViewModel { LogoutId = logoutId, ShowLogoutPrompt = AccountOptions.ShowLogoutPrompt };
+        var vm = new LogoutViewModel {LogoutId = logoutId, ShowLogoutPrompt = AccountOptions.ShowLogoutPrompt};
 
         if (User.Identity.IsAuthenticated != true)
         {
@@ -455,12 +433,10 @@ public class AccountController : Controller
                 if (providerSupportsSignout)
                 {
                     if (vm.LogoutId == null)
-                    {
                         // if there's no current logout context, we need to create one
                         // this captures necessary info from the current logged in user
                         // before we signout and redirect away to the external IdP for signout
                         vm.LogoutId = await _interaction.CreateLogoutContextAsync();
-                    }
 
                     vm.ExternalAuthenticationScheme = idp;
                 }
@@ -472,9 +448,6 @@ public class AccountController : Controller
 
     private void AddErrors(IdentityResult result)
     {
-        foreach (var error in result.Errors)
-        {
-            ModelState.AddModelError(string.Empty, error.Description);
-        }
+        foreach (var error in result.Errors) ModelState.AddModelError(string.Empty, error.Description);
     }
 }

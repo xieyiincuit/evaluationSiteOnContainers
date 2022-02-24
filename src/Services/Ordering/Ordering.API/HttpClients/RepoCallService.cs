@@ -3,10 +3,11 @@
 public class RepoCallService
 {
     private readonly HttpClient _httpClient;
-    private readonly ILogger<RepoCallService> _logger;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly ILogger<RepoCallService> _logger;
 
-    public RepoCallService(HttpClient httpClient, ILogger<RepoCallService> logger, IHttpContextAccessor httpContextAccessor)
+    public RepoCallService(HttpClient httpClient, ILogger<RepoCallService> logger,
+        IHttpContextAccessor httpContextAccessor)
     {
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -22,7 +23,7 @@ public class RepoCallService
         {
             var header = _httpContextAccessor.HttpContext.Request.Headers;
             _httpClient.DefaultRequestHeaders.Add("Authorization", header["Authorization"].ToString());
-            var postBody = JsonContent.Create(new { ShopItemId = shopItemId, UserId = userId },
+            var postBody = JsonContent.Create(new {ShopItemId = shopItemId, UserId = userId},
                 MediaTypeHeaderValue.Parse("application/json"));
 
             var response = await _httpClient.PostAsync(callUrl, postBody);
@@ -33,7 +34,8 @@ public class RepoCallService
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
 
-            _logger.LogInformation($"received callback response -> callUrl:{callUrl}, statusCode:{response.StatusCode}");
+            _logger.LogInformation(
+                $"received callback response -> callUrl:{callUrl}, statusCode:{response.StatusCode}");
             return response;
         }
         catch (Exception e)

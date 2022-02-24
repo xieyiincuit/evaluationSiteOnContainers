@@ -6,28 +6,28 @@ public static class Config
         new IdentityResource[]
         {
             new IdentityResources.OpenId(),
-            new IdentityResources.Profile(),
+            new IdentityResources.Profile()
         };
 
     public static IEnumerable<ApiResource> ApiResources =>
         new ApiResource[]
         {
-            new ApiResource("evaluation", "Evaluation API")
+            new("evaluation", "Evaluation API")
             {
                 Scopes = {"eval-write", "eval-manage"}
             },
 
-            new ApiResource("gamerepo", "Gamerepo API")
+            new("gamerepo", "Gamerepo API")
             {
                 Scopes = {"repo-manage"}
             },
 
-            new ApiResource("ordering", "Ordering API")
+            new("ordering", "Ordering API")
             {
                 Scopes = {"ordering-buy", "ordering-manage"}
             },
 
-            new ApiResource("backmanage", "BackManage API")
+            new("backmanage", "BackManage API")
             {
                 Scopes = {"back-manage"}
             }
@@ -36,29 +36,30 @@ public static class Config
     public static IEnumerable<ApiScope> ApiScopes =>
         new ApiScope[]
         {
-            new ApiScope("eval-write", "评测服务写权限",
+            new("eval-write", "评测服务写权限",
                 new List<string> {JwtClaimTypes.Role, JwtClaimTypes.Name, JwtClaimTypes.Id}),
 
-            new ApiScope("eval-manage", "评测服务管理权限",
+            new("eval-manage", "评测服务管理权限",
                 new List<string> {JwtClaimTypes.Role, JwtClaimTypes.Name, JwtClaimTypes.Id}),
 
-            new ApiScope("repo-manage", "游戏信息服务管理权限",
+            new("repo-manage", "游戏信息服务管理权限",
                 new List<string> {JwtClaimTypes.Role, JwtClaimTypes.Name, JwtClaimTypes.Id}),
 
-            new ApiScope("ordering-buy", "商品下单服务权限",
+            new("ordering-buy", "商品下单服务权限",
                 new List<string> {JwtClaimTypes.Role, JwtClaimTypes.Name, JwtClaimTypes.Id}),
 
-            new ApiScope("ordering-manage", "订单管理权限",
+            new("ordering-manage", "订单管理权限",
                 new List<string> {JwtClaimTypes.Role, JwtClaimTypes.Name, JwtClaimTypes.Id}),
 
-            new ApiScope("back-manage", "网站后台管理权限",
-            new List<string> {JwtClaimTypes.Role, JwtClaimTypes.Name, JwtClaimTypes.Id})
+            new("back-manage", "网站后台管理权限",
+                new List<string> {JwtClaimTypes.Role, JwtClaimTypes.Name, JwtClaimTypes.Id})
         };
 
-    public static IEnumerable<Client> Clients(Dictionary<string, string> clientsUrl) =>
-        new Client[]
+    public static IEnumerable<Client> Clients(Dictionary<string, string> clientsUrl)
+    {
+        return new Client[]
         {
-            new Client
+            new()
             {
                 ClientId = "evaluationswaggerui",
                 ClientName = "Evaluation Swagger UI",
@@ -77,7 +78,7 @@ public static class Config
                     "eval-manage"
                 }
             },
-            new Client
+            new()
             {
                 ClientId = "gamereposwaggerui",
                 ClientName = "GameRepo Swagger UI",
@@ -95,7 +96,7 @@ public static class Config
                     "repo-manage"
                 }
             },
-            new Client
+            new()
             {
                 ClientId = "orderingswaggerui",
                 ClientName = "Ordering Swagger UI",
@@ -111,10 +112,10 @@ public static class Config
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Profile,
                     "ordering-buy",
-                    "ordering-manage",
+                    "ordering-manage"
                 }
             },
-            new Client
+            new()
             {
                 ClientId = "backmanageswaggerui",
                 ClientName = "BackManage Swagger UI",
@@ -129,8 +130,9 @@ public static class Config
                 {
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Profile,
-                    "back-manage",
+                    "back-manage"
                 }
             }
         };
+    }
 }

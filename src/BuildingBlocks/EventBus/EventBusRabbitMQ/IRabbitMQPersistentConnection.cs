@@ -1,7 +1,7 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.EventBusRabbitMQ;
 
 /// <summary>
-/// Broke Connecter
+///     Broke Connecter
 /// </summary>
 public interface IRabbitMQPersistentConnection : IDisposable
 {

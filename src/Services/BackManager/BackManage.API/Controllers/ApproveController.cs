@@ -4,11 +4,11 @@
 [Route("api/v1/back/approve")]
 public class ApproveController : ControllerBase
 {
-    private readonly ILogger<ApproveController> _logger;
+    private const int _pageSize = 10;
     private readonly IApprovalService _approvalService;
     private readonly IdentityClientService _identityClient;
+    private readonly ILogger<ApproveController> _logger;
     private readonly IMapper _mapper;
-    private const int _pageSize = 10;
 
     public ApproveController(
         ILogger<ApproveController> logger, IApprovalService approvalService,
@@ -36,13 +36,11 @@ public class ApproveController : ControllerBase
         var userIds = approves.Select(x => x.UserId).ToList();
         using var response = await _identityClient.GetCommentsUserProfileAsync(userIds);
         var userInfoDto = new List<UserAvatarDto>();
-        if (response.IsSuccessStatusCode)
-        {
-            userInfoDto = await response.Content.ReadFromJsonAsync<List<UserAvatarDto>>();
-        }
+        if (response.IsSuccessStatusCode) userInfoDto = await response.Content.ReadFromJsonAsync<List<UserAvatarDto>>();
 
         var approveToReturn = _mapper.Map<List<ApproveRecordDto>>(approves);
-        var model = new PaginatedItemsDtoModel<ApproveRecordDto>(pageIndex, _pageSize, approveCount, approveToReturn, userInfoDto);
+        var model = new PaginatedItemsDtoModel<ApproveRecordDto>(pageIndex, _pageSize, approveCount, approveToReturn,
+            userInfoDto);
         return Ok(model);
     }
 
@@ -86,9 +84,11 @@ public class ApproveController : ControllerBase
         var response = await _approvalService.AddApproveRecordAsync(entity);
         if (response == true)
         {
-            _logger.LogInformation("user:{name} add a approve:{id} to be a evaluator", User.FindFirstValue("nickname"), entity.Id);
+            _logger.LogInformation("user:{name} add a approve:{id} to be a evaluator", User.FindFirstValue("nickname"),
+                entity.Id);
             return Ok();
         }
+
         throw new BackManageDomainException($"user {User.FindFirstValue("nickname")} add approve apply fail");
     }
 
@@ -122,9 +122,11 @@ public class ApproveController : ControllerBase
         var response = await _approvalService.DeleteApproveRecordAsync(approve);
         if (response == true)
         {
-            _logger.LogInformation("user:{name} redraw a approve:{id} to be a evaluator", User.FindFirstValue("nickname"), approve.Id);
+            _logger.LogInformation("user:{name} redraw a approve:{id} to be a evaluator",
+                User.FindFirstValue("nickname"), approve.Id);
             return NoContent();
         }
+
         throw new BackManageDomainException($"user {User.FindFirstValue("nickname")} delete approve fail");
     }
 
@@ -136,12 +138,14 @@ public class ApproveController : ControllerBase
         if (approve == null) return BadRequest();
 
         var applyUser = User.FindFirstValue("nickname");
-        var statusUpdateResult = await _approvalService.UpdateApproveStatusAsync(approve.Id, ApproveStatus.Rejected, applyUser);
+        var statusUpdateResult =
+            await _approvalService.UpdateApproveStatusAsync(approve.Id, ApproveStatus.Rejected, applyUser);
         if (statusUpdateResult == true)
         {
             _logger.LogInformation("----- user:{id} has been reject to a evaluator -----", userId);
             return NoContent();
         }
+
         throw new BackManageDomainException("reject user occurred error, please check logging and fix it");
     }
 
@@ -155,25 +159,23 @@ public class ApproveController : ControllerBase
         using var response = await _identityClient.ApproveUserToEvaluatorAsync(userId);
         if (response.IsSuccessStatusCode)
         {
-            _logger.LogInformation("----- backmanage call identity successfully, make user:{id} be a evaluator -----", userId);
+            _logger.LogInformation("----- backmanage call identity successfully, make user:{id} be a evaluator -----",
+                userId);
             _logger.LogInformation("----- now change status in approve tables -----");
 
             var applyUser = User.FindFirstValue("nickname");
-            var statusUpdateResult = await _approvalService.UpdateApproveStatusAsync(approve.Id, ApproveStatus.Approved, applyUser);
+            var statusUpdateResult =
+                await _approvalService.UpdateApproveStatusAsync(approve.Id, ApproveStatus.Approved, applyUser);
             if (statusUpdateResult == true)
             {
                 _logger.LogInformation("----- user:{id} has been a evaluator now -----", userId);
                 return Ok();
             }
-            else
-            {
-                _logger.LogInformation("----- progress error, now start to redraw approve user:{id} -----", userId);
-                var redrawResult = await _identityClient.RedrawUserToNormalUserAsync(userId);
-                if (!redrawResult.IsSuccessStatusCode)
-                {
-                    throw new BackManageDomainException("approve user occurred error, please check logging and fix it");
-                }
-            }
+
+            _logger.LogInformation("----- progress error, now start to redraw approve user:{id} -----", userId);
+            var redrawResult = await _identityClient.RedrawUserToNormalUserAsync(userId);
+            if (!redrawResult.IsSuccessStatusCode)
+                throw new BackManageDomainException("approve user occurred error, please check logging and fix it");
         }
 
         throw new BackManageDomainException("approve user occurred error, because can't call identity microservice");
@@ -189,25 +191,23 @@ public class ApproveController : ControllerBase
         using var response = await _identityClient.RedrawUserToNormalUserAsync(userId);
         if (response.IsSuccessStatusCode)
         {
-            _logger.LogInformation("----- backmanage call identity successfully, redraw user:{id} to a normaluser -----", userId);
+            _logger.LogInformation(
+                "----- backmanage call identity successfully, redraw user:{id} to a normaluser -----", userId);
             _logger.LogInformation("----- now change status in approve tables -----");
 
             var applyUser = User.FindFirstValue("nickname");
-            var statusUpdateResult = await _approvalService.UpdateApproveStatusAsync(approve.Id, ApproveStatus.Rejected, applyUser);
+            var statusUpdateResult =
+                await _approvalService.UpdateApproveStatusAsync(approve.Id, ApproveStatus.Rejected, applyUser);
             if (statusUpdateResult == true)
             {
                 _logger.LogInformation("----- user:{id} has been a normaluser now -----", userId);
                 return Ok();
             }
-            else
-            {
-                _logger.LogInformation("----- progress error, now start to rollback approve user:{id} -----", userId);
-                var approveResult = await _identityClient.ApproveUserToEvaluatorAsync(userId);
-                if (!approveResult.IsSuccessStatusCode)
-                {
-                    throw new BackManageDomainException("approve user occurred error, please check logging and fix it");
-                }
-            }
+
+            _logger.LogInformation("----- progress error, now start to rollback approve user:{id} -----", userId);
+            var approveResult = await _identityClient.ApproveUserToEvaluatorAsync(userId);
+            if (!approveResult.IsSuccessStatusCode)
+                throw new BackManageDomainException("approve user occurred error, please check logging and fix it");
         }
 
         throw new BackManageDomainException("approve user occurred error, because can't call identity microservice");

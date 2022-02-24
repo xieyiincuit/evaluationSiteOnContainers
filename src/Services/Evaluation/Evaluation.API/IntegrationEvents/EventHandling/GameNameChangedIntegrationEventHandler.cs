@@ -3,8 +3,8 @@
 public class GameNameChangedIntegrationEventHandler :
     IIntegrationEventHandler<GameNameChangedIntegrationEvent>
 {
-    private readonly ILogger<GameNameChangedIntegrationEventHandler> _logger;
     private readonly IEvaluationArticleService _articleService;
+    private readonly ILogger<GameNameChangedIntegrationEventHandler> _logger;
 
     public GameNameChangedIntegrationEventHandler(
         ILogger<GameNameChangedIntegrationEventHandler> logger,
@@ -18,12 +18,14 @@ public class GameNameChangedIntegrationEventHandler :
     {
         using (LogContext.PushProperty("IntegrationEventContext", $"{@event.Id}-{Program.AppName}"))
         {
-            _logger.LogInformation("----- Handling integration event Begin: {IntegrationEventId} at {AppName} - {@IntegrationEvent}",
+            _logger.LogInformation(
+                "----- Handling integration event Begin: {IntegrationEventId} at {AppName} - {@IntegrationEvent}",
                 @event.Id, Program.AppName, @event);
 
             await UpdateArticlesGameNameAsync(@event.GameId, @event.NewName);
 
-            _logger.LogInformation("----- Handling integration event End: {IntegrationEventId} at {AppName} - {@IntegrationEvent}",
+            _logger.LogInformation(
+                "----- Handling integration event End: {IntegrationEventId} at {AppName} - {@IntegrationEvent}",
                 @event.Id, Program.AppName, @event);
         }
     }
@@ -38,7 +40,8 @@ public class GameNameChangedIntegrationEventHandler :
 
             foreach (var article in articlesToUpdate)
             {
-                _logger.LogInformation("----- Updating article's game name from {oldName} to {newName} => articleId: {articleId}",
+                _logger.LogInformation(
+                    "----- Updating article's game name from {oldName} to {newName} => articleId: {articleId}",
                     article.GameName, newName, article.ArticleId);
 
                 if (article.GameName != newName)
@@ -47,7 +50,7 @@ public class GameNameChangedIntegrationEventHandler :
 
             await _articleService.BatchUpdateArticlesAsync();
         }
-        _logger.LogInformation("----- GameNameChangedIntegrationEventHandler End");
 
+        _logger.LogInformation("----- GameNameChangedIntegrationEventHandler End");
     }
 }

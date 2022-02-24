@@ -5,33 +5,41 @@
 public class GamePlaySuggestion
 {
     [Key]
-    [Column("suggestion_id"), Comment("主键")]
+    [Column("suggestion_id")]
+    [Comment("主键")]
     public int Id { get; set; }
 
-    [Required, MaxLength(50)]
-    [Column("operation_system"), Comment("操作系统建议")]
+    [Required]
+    [MaxLength(50)]
+    [Column("operation_system")]
+    [Comment("操作系统建议")]
     public string OperationSystem { get; set; }
 
-    [Required, MaxLength(50)]
-    [Column("cpu_name"), Comment("CPU型号建议")]
+    [Required]
+    [MaxLength(50)]
+    [Column("cpu_name")]
+    [Comment("CPU型号建议")]
     public string CPUName { get; set; }
 
     [Required]
-    [Column("memory_size"), Comment("内存大小建议")]
+    [Column("memory_size")]
+    [Comment("内存大小建议")]
     public double MemorySize { get; set; }
 
     [Required]
-    [Column("disk_size"), Comment("磁盘大小建议")]
+    [Column("disk_size")]
+    [Comment("磁盘大小建议")]
     public double DiskSize { get; set; }
 
     [Required]
-    [Column("graphics_card"), Comment("显卡型号建议")]
+    [Column("graphics_card")]
+    [Comment("显卡型号建议")]
     public string GraphicsCard { get; set; }
 
     //一对一关系建立
-    [Column("game_id"), Comment("游戏外键id")]
+    [Column("game_id")]
+    [Comment("游戏外键id")]
     public int GameId { get; set; }
 
-    [JsonIgnore]
-    public GameInfo GameInfo { get; set; }
+    [JsonIgnore] public GameInfo GameInfo { get; set; }
 }

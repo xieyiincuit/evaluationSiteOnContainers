@@ -3,8 +3,8 @@
 public class IdentityClientService
 {
     private readonly HttpClient _client;
-    private readonly ILogger<IdentityClientService> _logger;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly ILogger<IdentityClientService> _logger;
 
     public IdentityClientService(HttpClient client, ILogger<IdentityClientService> logger,
         IHttpContextAccessor httpContextAccessor)
@@ -31,7 +31,8 @@ public class IdentityClientService
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
 
-            _logger.LogInformation($"received callback response -> callUrl:{callUrl}, statusCode:{response.StatusCode}");
+            _logger.LogInformation(
+                $"received callback response -> callUrl:{callUrl}, statusCode:{response.StatusCode}");
             return response;
         }
         catch (Exception e)
@@ -59,7 +60,8 @@ public class IdentityClientService
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
 
-            _logger.LogInformation($"received callback response -> callUrl:{callUrl}, statusCode:{response.StatusCode}");
+            _logger.LogInformation(
+                $"received callback response -> callUrl:{callUrl}, statusCode:{response.StatusCode}");
             return response;
         }
         catch (Exception e)
@@ -87,7 +89,8 @@ public class IdentityClientService
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
 
-            _logger.LogInformation($"received callback response -> callUrl:{callUrl}, statusCode:{response.StatusCode}");
+            _logger.LogInformation(
+                $"received callback response -> callUrl:{callUrl}, statusCode:{response.StatusCode}");
             return response;
         }
         catch (Exception e)
@@ -115,7 +118,8 @@ public class IdentityClientService
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
 
-            _logger.LogInformation($"received callback response -> callUrl:{callUrl}, statusCode:{response.StatusCode}");
+            _logger.LogInformation(
+                $"received callback response -> callUrl:{callUrl}, statusCode:{response.StatusCode}");
             return response;
         }
         catch (Exception e)
@@ -143,7 +147,8 @@ public class IdentityClientService
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
 
-            _logger.LogInformation($"received callback response -> callUrl:{callUrl}, statusCode:{response.StatusCode}");
+            _logger.LogInformation(
+                $"received callback response -> callUrl:{callUrl}, statusCode:{response.StatusCode}");
             return response;
         }
         catch (Exception e)

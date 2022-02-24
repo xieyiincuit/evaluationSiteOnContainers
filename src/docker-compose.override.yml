@@ -75,7 +75,7 @@ services:
       - GameRepoApiClient=http://localhost:5101
       - OrderingApiClient=http://localhost:5102
       - BackManageApiClient=http://localhost:5104
-      - IdentityUrl=http://localhost:5105
+      - IdentityUrl=http://identity-api
     ports:
       - "5105:80"
 
@@ -88,7 +88,7 @@ services:
       - EventBusSettings__UserName=zhoushanlin
       - EventBusSettings__PassWord=rabbitmq!!..
       - IdentityUrlExternal=http://localhost:5105
-      - IdentityUrl=http://localhost:5105
+      - IdentityUrl=http://identity-api
       - PATH_BASE=/evaluation-api
       - UseCustomizationData=True
       - SwaggerRedirectUrlPort=5100
@@ -110,7 +110,7 @@ services:
       - Redis__Hosts__0__Port=6379
       - RedisHCCheckConnection=cache_master,DefaultDatabase=0,password=zhouredis11..
       - IdentityUrlExternal=http://localhost:5105
-      - IdentityUrl=http://localhost:5105
+      - IdentityUrl=http://identity-api
       - PATH_BASE=/gamerepo-api
       - GRPC_PORT=81
       - PORT=80
@@ -127,7 +127,7 @@ services:
       - Redis__Hosts__0__Port=6379
       - RedisHCCheckConnection=cache_master,DefaultDatabase=0,password=zhouredis11..
       - IdentityUrlExternal=http://localhost:5105
-      - IdentityUrl=http://localhost:5105
+      - IdentityUrl=http://identity-api
       - GameRepoUrl=http://gamerepo-api
       - GrpcGameRepoUrl=http://gamerepo-api:81
       - PATH_BASE=/ordering-api
@@ -144,7 +144,7 @@ services:
       - ASPNETCORE_URLS=http://0.0.0.0:80
       - BackDbConnectString=server=db_backmanage;port=3306;database=evaluation_back;user=root;password=ZhouBack!1n;IgnoreCommandTransaction=true
       - IdentityUrlExternal=http://localhost:5105
-      - IdentityUrl=http://localhost:5105
+      - IdentityUrl=http://identity-api
       - PATH_BASE=/backmanage-api
       - SwaggerRedirectUrlPort=5104
     ports:

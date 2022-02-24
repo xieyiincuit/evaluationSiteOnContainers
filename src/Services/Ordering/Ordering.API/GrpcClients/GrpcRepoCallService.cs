@@ -13,7 +13,7 @@ public class GrpcRepoCallService
 
     public async Task<bool> StopShopSellAsync(int shopItemId)
     {
-        var request = new shopStatusChangeRequest()
+        var request = new shopStatusChangeRequest
         {
             ShopItemId = shopItemId
         };

@@ -22,8 +22,8 @@ public class HomeController : Controller
             .GetChildren()
             .SelectMany(cs => cs.GetChildren())
             .Union(_configuration.GetSection("HealthChecks-UI:HealthChecks")
-            .GetChildren()
-            .SelectMany(cs => cs.GetChildren()))
+                .GetChildren()
+                .SelectMany(cs => cs.GetChildren()))
             .ToDictionary(v => v.Path, v => v.Value);
 
         return View(configurationValues);

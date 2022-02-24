@@ -2,12 +2,12 @@
 
 public class IdentityIntegrationEventService : IIdentityIntegrationEventService
 {
-    private readonly ILogger<IdentityIntegrationEventService> _logger;
-    private readonly IEventBus _eventBus;
     private readonly ApplicationDbContext _appContext;
-    private readonly Func<DbConnection, IIntegrationEventLogService> _integrationEventLogServiceFactory;
+    private readonly IEventBus _eventBus;
 
     private readonly IIntegrationEventLogService _eventLogService;
+    private readonly Func<DbConnection, IIntegrationEventLogService> _integrationEventLogServiceFactory;
+    private readonly ILogger<IdentityIntegrationEventService> _logger;
     private volatile bool _disposedValue;
 
     public IdentityIntegrationEventService(
@@ -20,7 +20,8 @@ public class IdentityIntegrationEventService : IIdentityIntegrationEventService
         _eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
         _appContext = appContext ?? throw new ArgumentNullException(nameof(appContext));
         _integrationEventLogServiceFactory = integrationEventLogServiceFactory
-                                             ?? throw new ArgumentNullException(nameof(integrationEventLogServiceFactory));
+                                             ?? throw new ArgumentNullException(
+                                                 nameof(integrationEventLogServiceFactory));
         //事件日志持久化应该和事件的发起者保持一致
         _eventLogService = _integrationEventLogServiceFactory(_appContext.Database.GetDbConnection());
     }
@@ -28,7 +29,8 @@ public class IdentityIntegrationEventService : IIdentityIntegrationEventService
     public async Task SaveEventAndApplicationUserContextChangeAsync(IntegrationEvent @event)
     {
         _logger.LogInformation(
-            "----- ApplicationUserIntegrationEventService - Saving changes and integrationEvent: {IntegrationEventId}", @event.Id);
+            "----- ApplicationUserIntegrationEventService - Saving changes and integrationEvent: {IntegrationEventId}",
+            @event.Id);
 
         //Use of an EF Core resiliency strategy when using multiple DbContexts within an explicit BeginTransaction():
         await ResilientTransaction.New(_appContext).ExecuteAsync(async () =>
@@ -54,7 +56,7 @@ public class IdentityIntegrationEventService : IIdentityIntegrationEventService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, 
+            _logger.LogError(ex,
                 "ERROR Publishing integration event: {IntegrationEventId} from {AppName} - ({@IntegrationEvent})",
                 @event.Id, Program.AppName, @event);
             await _eventLogService.MarkEventAsFailedAsync(@event.Id);
@@ -66,10 +68,7 @@ public class IdentityIntegrationEventService : IIdentityIntegrationEventService
         //此变量线程共享
         if (!_disposedValue)
         {
-            if (disposing)
-            {
-                (_eventLogService as IDisposable)?.Dispose();
-            }
+            if (disposing) (_eventLogService as IDisposable)?.Dispose();
 
             _disposedValue = true;
         }
@@ -77,7 +76,7 @@ public class IdentityIntegrationEventService : IIdentityIntegrationEventService
 
     public void Dispose()
     {
-        Dispose(disposing: true);
+        Dispose(true);
         GC.SuppressFinalize(this);
     }
 }

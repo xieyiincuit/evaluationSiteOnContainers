@@ -9,8 +9,8 @@ public class EvaluationArticleController : ControllerBase
     private const int _pageSize = 10;
     private readonly IEvaluationArticleService _articleService;
     private readonly IEvaluationCategoryService _categoryService;
-    private readonly IMapper _mapper;
     private readonly ILogger<EvaluationArticleController> _logger;
+    private readonly IMapper _mapper;
 
     public EvaluationArticleController(
         IEvaluationArticleService articleService,
@@ -28,9 +28,9 @@ public class EvaluationArticleController : ControllerBase
     [AllowAnonymous]
     [HttpGet]
     [Route("articles")]
-    [ProducesResponseType(typeof(PaginatedItemsDtoModel<EvaluationArticle>), (int)HttpStatusCode.OK)]
-    [ProducesResponseType(typeof(IEnumerable<ArticleSmallDto>), (int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(PaginatedItemsDtoModel<EvaluationArticle>), (int) HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<ArticleSmallDto>), (int) HttpStatusCode.OK)]
+    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
     public async Task<IActionResult> GetArticlesAsync([FromQuery] int pageIndex = 1, string? ids = null)
     {
         if (!string.IsNullOrEmpty(ids))
@@ -49,18 +49,20 @@ public class EvaluationArticleController : ControllerBase
         if (ParameterValidateHelper.IsInvalidPageIndex(totalArticles, _pageSize, pageIndex))
             pageIndex = 1; // pageIndex不合法重设
 
-        var articlesToReturn = _mapper.Map<List<ArticleSmallDto>>(await _articleService.GetArticlesAsync(_pageSize, pageIndex));
+        var articlesToReturn =
+            _mapper.Map<List<ArticleSmallDto>>(await _articleService.GetArticlesAsync(_pageSize, pageIndex));
 
-        var model = new PaginatedItemsDtoModel<ArticleSmallDto>(pageIndex, _pageSize, totalArticles, articlesToReturn, null);
+        var model = new PaginatedItemsDtoModel<ArticleSmallDto>(pageIndex, _pageSize, totalArticles, articlesToReturn,
+            null);
         return Ok(model);
     }
 
     // GET api/v1/evaluation/articles/1
     [AllowAnonymous]
     [HttpGet("article/{id:int}", Name = nameof(GetArticleByIdAsync))]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(ArticleDto), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int) HttpStatusCode.NotFound)]
+    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(ArticleDto), (int) HttpStatusCode.OK)]
     public async Task<ActionResult<ArticleDto>> GetArticleByIdAsync(int id)
     {
         if (id <= 0 || id >= int.MaxValue) return BadRequest();
@@ -70,7 +72,7 @@ public class EvaluationArticleController : ControllerBase
         if (article == null) return NotFound();
 
         var articleToReturn = _mapper.Map<ArticleDto>(article);
-        
+
         return Ok(articleToReturn);
     }
 
@@ -78,8 +80,8 @@ public class EvaluationArticleController : ControllerBase
     [AllowAnonymous]
     [HttpGet]
     [Route("type/articles")]
-    [ProducesResponseType(typeof(PaginatedItemsDtoModel<ArticleSmallDto>), (int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(PaginatedItemsDtoModel<ArticleSmallDto>), (int) HttpStatusCode.OK)]
+    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
     public async Task<IActionResult> GetArticleByTypeAsync(int categoryId, [FromQuery] int pageIndex = 1)
     {
         var categories = await _categoryService.GetEvaluationCategoriesAsync();
@@ -92,10 +94,12 @@ public class EvaluationArticleController : ControllerBase
         var totalArticles = await _articleService.CountArticlesByTypeAsync(categoryId);
         if (ParameterValidateHelper.IsInvalidPageIndex(totalArticles, _pageSize, pageIndex)) pageIndex = 1;
 
-        var articlesToReturn = 
-            _mapper.Map<List<ArticleSmallDto>>(await _articleService.GetArticlesAsync(_pageSize, pageIndex, categoryId));
+        var articlesToReturn =
+            _mapper.Map<List<ArticleSmallDto>>(
+                await _articleService.GetArticlesAsync(_pageSize, pageIndex, categoryId));
 
-        var model = new PaginatedItemsDtoModel<ArticleSmallDto>(pageIndex, _pageSize, totalArticles, articlesToReturn, null);
+        var model = new PaginatedItemsDtoModel<ArticleSmallDto>(pageIndex, _pageSize, totalArticles, articlesToReturn,
+            null);
         return Ok(model);
     }
 
@@ -103,8 +107,8 @@ public class EvaluationArticleController : ControllerBase
     [Authorize(Roles = _evaluatorRole)]
     [HttpPost]
     [Route("article")]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(EvaluationArticle), (int)HttpStatusCode.Created)]
+    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(EvaluationArticle), (int) HttpStatusCode.Created)]
     public async Task<IActionResult> CreateArticleAsync([FromBody] ArticleAddDto articleAddDto)
     {
         if (articleAddDto == null) return BadRequest();
@@ -115,17 +119,18 @@ public class EvaluationArticleController : ControllerBase
         entity.NickName = User.FindFirstValue("nickname");
 
         await _articleService.AddArticleAsync(entity);
-        _logger.LogInformation($"---- evaluator:id:{entity.UserId}, name:{User.Identity.Name} create a article -> id:{entity.ArticleId}, title:{articleAddDto.Title}");
-        return CreatedAtRoute(nameof(GetArticleByIdAsync), new { id = entity.ArticleId }, null);
+        _logger.LogInformation(
+            $"---- evaluator:id:{entity.UserId}, name:{User.Identity.Name} create a article -> id:{entity.ArticleId}, title:{articleAddDto.Title}");
+        return CreatedAtRoute(nameof(GetArticleByIdAsync), new {id = entity.ArticleId}, null);
     }
 
     // Delete api/v1/evaluation/articles/{id}
     [Authorize(Roles = _adminRole)]
     [HttpDelete]
     [Route("article/{id:int}")]
-    [ProducesResponseType((int)HttpStatusCode.NoContent)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int) HttpStatusCode.NoContent)]
+    [ProducesResponseType((int) HttpStatusCode.NotFound)]
+    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
     public async Task<IActionResult> DeleteArticleByIdAsync([FromRoute] int id)
     {
         if (id <= 0 || id >= int.MaxValue) return BadRequest();
@@ -135,7 +140,8 @@ public class EvaluationArticleController : ControllerBase
         await _articleService.DeleteArticleAsync(id);
 
         var userId = User.FindFirst("sub").Value;
-        _logger.LogInformation($"---- administrator:id:{userId}, name:{User.Identity.Name} delete a article -> id:{id}");
+        _logger.LogInformation(
+            $"---- administrator:id:{userId}, name:{User.Identity.Name} delete a article -> id:{id}");
         return NoContent();
     }
 
@@ -143,9 +149,9 @@ public class EvaluationArticleController : ControllerBase
     [Authorize(Roles = _evaluatorRole)]
     [HttpPut]
     [Route("article/{id:int}")]
-    [ProducesResponseType((int)HttpStatusCode.NoContent)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int) HttpStatusCode.NoContent)]
+    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int) HttpStatusCode.NotFound)]
     public async Task<IActionResult> UpdateArticleAsync([FromRoute] int id,
         [FromBody] ArticleUpdateDto articleUpdateDto)
     {

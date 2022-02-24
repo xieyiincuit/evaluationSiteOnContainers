@@ -2,7 +2,18 @@
 
 public class GameRepoContext : DbContext
 {
-    public GameRepoContext(DbContextOptions<GameRepoContext> options) : base(options) { }
+    public GameRepoContext(DbContextOptions<GameRepoContext> options) : base(options)
+    {
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.ApplyConfiguration(new GameInfoEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new GameShopItemEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new GameSDKEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new GameSDKForPlayerEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new GameOwnerEntityTypeConfiguration());
+    }
 
     #region GameInfomation
 
@@ -22,25 +33,16 @@ public class GameRepoContext : DbContext
     public DbSet<GameOwner> GameOwners { get; set; }
 
     #endregion
-
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder.ApplyConfiguration(new GameInfoEntityTypeConfiguration());
-        modelBuilder.ApplyConfiguration(new GameShopItemEntityTypeConfiguration());
-        modelBuilder.ApplyConfiguration(new GameSDKEntityTypeConfiguration());
-        modelBuilder.ApplyConfiguration(new GameSDKForPlayerEntityTypeConfiguration());
-        modelBuilder.ApplyConfiguration(new GameOwnerEntityTypeConfiguration());
-    }
 }
 
 public class GameRepoContextDesignFactory : IDesignTimeDbContextFactory<GameRepoContext>
 {
     public GameRepoContext CreateDbContext(string[] args)
     {
-        IConfigurationRoot configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
-                .Build();
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json")
+            .Build();
 
         var builder = new DbContextOptionsBuilder<GameRepoContext>();
         var connectionString = configuration.GetConnectionString("GameRepoDbConnectString");
@@ -52,4 +54,3 @@ public class GameRepoContextDesignFactory : IDesignTimeDbContextFactory<GameRepo
     //.NET ClI
     //dotnet ef migrations add Initial -o ./Infrastructure/GameRepoMigrations -c GameRepoContext -v
 }
-

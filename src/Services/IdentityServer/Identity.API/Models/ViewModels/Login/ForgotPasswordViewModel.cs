@@ -13,9 +13,7 @@ public class ForgotPasswordViewModel
     [Display(Name = "该账号绑定手机")]
     public string PhoneNumber { get; set; }
 
-    [Display(Name = "安全问题")]
-    public string Question { get; set; }
+    [Display(Name = "安全问题")] public string Question { get; set; }
 
-    [Display(Name = "密保答案")]
-    public string Answer { get; set; }
+    [Display(Name = "密保答案")] public string Answer { get; set; }
 }

@@ -3,23 +3,25 @@
 public class RedisNewtonsoftSerializer : ISerializer
 {
     /// <summary>
-    /// Encoding to use to convert string to byte[] and the other way around.
+    ///     Encoding to use to convert string to byte[] and the other way around.
     /// </summary>
     /// <remarks>
-    /// StackExchange.Redis uses Encoding.UTF8 to convert strings to bytes,
-    /// hence we do same here.
+    ///     StackExchange.Redis uses Encoding.UTF8 to convert strings to bytes,
+    ///     hence we do same here.
     /// </remarks>
     private static readonly Encoding Encoding = Encoding.UTF8;
 
     private readonly JsonSerializerSettings _settings;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="RedisNewtonsoftSerializer"/> class.
+    ///     Initializes a new instance of the <see cref="RedisNewtonsoftSerializer" /> class.
     /// </summary>
-    public RedisNewtonsoftSerializer() : this(null) { }
+    public RedisNewtonsoftSerializer() : this(null)
+    {
+    }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="RedisNewtonsoftSerializer"/> class.
+    ///     Initializes a new instance of the <see cref="RedisNewtonsoftSerializer" /> class.
     /// </summary>
     /// <param name="settings">The settings.</param>
     public RedisNewtonsoftSerializer(JsonSerializerSettings settings)
@@ -36,15 +38,13 @@ public class RedisNewtonsoftSerializer : ISerializer
         {
             return Encoding.GetBytes(itemString);
         }
-        else
-        {
-            var type = item?.GetType();
-            var jsonString = JsonConvert.SerializeObject(item, type, _settings);
-            return Encoding.GetBytes(jsonString);
-        }
+
+        var type = item?.GetType();
+        var jsonString = JsonConvert.SerializeObject(item, type, _settings);
+        return Encoding.GetBytes(jsonString);
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public T Deserialize<T>(byte[] serializedObject)
     {
         var jsonString = Encoding.GetString(serializedObject);

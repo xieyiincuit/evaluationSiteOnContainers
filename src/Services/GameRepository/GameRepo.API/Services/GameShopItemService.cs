@@ -2,8 +2,8 @@
 
 public class GameShopItemService : IGameShopItemService
 {
-    private readonly GameRepoContext _repoDbContext;
     private readonly IRedisDatabase _redisDatabase;
+    private readonly GameRepoContext _repoDbContext;
 
     public GameShopItemService(GameRepoContext repoDbContext, IRedisDatabase redisDatabase)
     {
@@ -11,7 +11,8 @@ public class GameShopItemService : IGameShopItemService
         _redisDatabase = redisDatabase ?? throw new ArgumentNullException(nameof(redisDatabase));
     }
 
-    public async Task<List<GameShopItem>> GetGameShopItemListAsync(int pageIndex, int pageSize, int orderBy, bool isAdmin)
+    public async Task<List<GameShopItem>> GetGameShopItemListAsync(int pageIndex, int pageSize, int orderBy,
+        bool isAdmin)
     {
         var queryString = _repoDbContext.GameShopItems
             .Include(x => x.GameInfo)
@@ -19,12 +20,10 @@ public class GameShopItemService : IGameShopItemService
 
         //非管理员不显示暂停售卖的Item
         if (!isAdmin)
-        {
             queryString = _repoDbContext.GameShopItems
                 .Include(x => x.GameInfo)
                 .Where(x => x.TemporaryStopSell == null || x.TemporaryStopSell == false)
                 .AsNoTracking();
-        }
 
         var result = orderBy switch
         {
@@ -94,7 +93,8 @@ public class GameShopItemService : IGameShopItemService
         {
             //恢复售卖状态
             shopItemForUpdate.TemporaryStopSell = null;
-            await _redisDatabase.Database.StringSetAsync(GetProductStockKey(shopItemId), shopItemForUpdate.AvailableStock);
+            await _redisDatabase.Database.StringSetAsync(GetProductStockKey(shopItemId),
+                shopItemForUpdate.AvailableStock);
         }
 
         return await _repoDbContext.SaveChangesAsync() > 0;
@@ -125,5 +125,8 @@ public class GameShopItemService : IGameShopItemService
         return await _repoDbContext.SaveChangesAsync() > 0;
     }
 
-    private string GetProductStockKey(int productId) => $"ProductStock_{productId}";
+    private string GetProductStockKey(int productId)
+    {
+        return $"ProductStock_{productId}";
+    }
 }

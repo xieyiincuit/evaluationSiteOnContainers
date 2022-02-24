@@ -36,7 +36,8 @@ public class ProfileService : IProfileService
         {
             if (_userManager.SupportsUserSecurityStamp)
             {
-                var securityStamp = subject.Claims.Where(c => c.Type == "security_stamp").Select(c => c.Value).SingleOrDefault();
+                var securityStamp = subject.Claims.Where(c => c.Type == "security_stamp").Select(c => c.Value)
+                    .SingleOrDefault();
                 if (securityStamp != null)
                 {
                     var dbSecurityStamp = await _userManager.GetSecurityStampAsync(user);
@@ -61,9 +62,9 @@ public class ProfileService : IProfileService
 
         var claims = new List<Claim>
         {
-            new Claim(JwtClaimTypes.Subject, user.Id),
-            new Claim(JwtClaimTypes.Name, user.UserName),
-            new Claim(JwtClaimTypes.Role, roles.FirstOrDefault() ?? string.Empty),
+            new(JwtClaimTypes.Subject, user.Id),
+            new(JwtClaimTypes.Name, user.UserName),
+            new(JwtClaimTypes.Role, roles.FirstOrDefault() ?? string.Empty)
         };
 
         if (!string.IsNullOrWhiteSpace(user.NickName))
@@ -73,25 +74,20 @@ public class ProfileService : IProfileService
             claims.Add(new Claim("avatar", user.Avatar));
 
         if (_userManager.SupportsUserEmail)
-        {
             claims.AddRange(new[]
             {
                 new Claim(JwtClaimTypes.Email, user.Email),
                 new Claim(JwtClaimTypes.EmailVerified, user.EmailConfirmed ? "true" : "false", ClaimValueTypes.Boolean)
             });
-        }
 
         if (_userManager.SupportsUserPhoneNumber && !string.IsNullOrWhiteSpace(user.PhoneNumber))
-        {
             claims.AddRange(new[]
             {
                 new Claim(JwtClaimTypes.PhoneNumber, user.PhoneNumber),
                 new Claim(JwtClaimTypes.PhoneNumberVerified, user.PhoneNumberConfirmed ? "true" : "false",
                     ClaimValueTypes.Boolean)
             });
-        }
 
         return claims;
     }
 }
-

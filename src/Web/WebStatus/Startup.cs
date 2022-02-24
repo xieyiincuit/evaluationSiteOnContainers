@@ -25,19 +25,12 @@ public class Startup
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
         if (env.IsDevelopment())
-        {
             app.UseDeveloperExceptionPage();
-        }
         else
-        {
             app.UseExceptionHandler("/Home/Error");
-        }
 
         var pathBase = Configuration["PATH_BASE"];
-        if (!string.IsNullOrEmpty(pathBase))
-        {
-            app.UsePathBase(pathBase);
-        }
+        if (!string.IsNullOrEmpty(pathBase)) app.UsePathBase(pathBase);
 
         app.UseHealthChecksUI(config =>
         {

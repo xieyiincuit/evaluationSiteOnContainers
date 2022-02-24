@@ -2,12 +2,13 @@
 
 public class PaginatedItemsDtoModel<TEntity> where TEntity : class
 {
-    public PaginatedItemsDtoModel(int pageIndex, int pageSize, int count, IEnumerable<TEntity> data, List<UserAvatarDto> other)
+    public PaginatedItemsDtoModel(int pageIndex, int pageSize, int count, IEnumerable<TEntity> data,
+        List<UserAvatarDto> other)
     {
         CurrentPage = pageIndex;
         PageSize = pageSize;
         TotalCount = count;
-        TotalPages = (int)Math.Ceiling(count / (double)pageSize);
+        TotalPages = (int) Math.Ceiling(count / (double) pageSize);
         Data = data;
         UserInfo = other;
     }

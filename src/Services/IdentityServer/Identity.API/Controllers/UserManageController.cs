@@ -5,11 +5,11 @@
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class UserManageController : ControllerBase
 {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly ILogger<UserManageController> _logger;
-    private readonly IIdentityIntegrationEventService _identityIntegrationService;
     private readonly ApplicationDbContext _applicationDbContext;
+    private readonly IIdentityIntegrationEventService _identityIntegrationService;
+    private readonly ILogger<UserManageController> _logger;
     private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly UserManager<ApplicationUser> _userManager;
 
     public UserManageController(
         UserManager<ApplicationUser> userManager,
@@ -20,7 +20,8 @@ public class UserManageController : ControllerBase
     {
         _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         _logger = logger;
-        _identityIntegrationService = identityIntegrationService ?? throw new ArgumentNullException(nameof(identityIntegrationService));
+        _identityIntegrationService = identityIntegrationService ??
+                                      throw new ArgumentNullException(nameof(identityIntegrationService));
         _applicationDbContext = applicationDbContext ?? throw new ArgumentNullException(nameof(applicationDbContext));
         _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
     }
@@ -32,8 +33,9 @@ public class UserManageController : ControllerBase
         var currentUserId = User.FindFirstValue("sub");
 
         //非法访问他人Id或无效Id
-        if (string.IsNullOrEmpty(currentUserId)) return BadRequest(
-            new { Message = "can't find sub claim in current context" });
+        if (string.IsNullOrEmpty(currentUserId))
+            return BadRequest(
+                new {Message = "can't find sub claim in current context"});
 
         var user = await _userManager.FindByIdAsync(currentUserId);
         if (user == null) return NotFound();
@@ -57,10 +59,9 @@ public class UserManageController : ControllerBase
         //先判断该姓名是否被其他人员使用
         if (raiseNickNameChangedEvent)
         {
-            if (userEntityForUpdate.LastChangeNameTime != null && userEntityForUpdate.LastChangeNameTime >= DateTime.Now.AddDays(-3))
-            {
+            if (userEntityForUpdate.LastChangeNameTime != null &&
+                userEntityForUpdate.LastChangeNameTime >= DateTime.Now.AddDays(-3))
                 throw new IdentityDomainException("距离你上一次更换昵称还没有超过三天^ ^");
-            }
 
             var userForCheck = await _userManager.Users.AsNoTracking()
                 .FirstOrDefaultAsync(x => x.NickName == updateDto.NickName);
@@ -77,7 +78,7 @@ public class UserManageController : ControllerBase
             _logger.LogInformation("----- User's NickNameChangedEvent Raised, Will Send a message to Event Bus");
             //1. 初始化集成事件，待事件总线发布。
             var nameChangedEvent = new NickNameChangedIntegrationEvent(
-                userEntityForUpdate.Id, oldName: oldNickName, newName: updateDto.NickName);
+                userEntityForUpdate.Id, oldNickName, updateDto.NickName);
             //2. 使用事务保证原子性的同时，在发布事件时同时记录事件日志。
             await _identityIntegrationService.SaveEventAndApplicationUserContextChangeAsync(nameChangedEvent);
             //3. 将该事件发布并修改该事件发布状态为已发布
@@ -126,7 +127,8 @@ public class UserManageController : ControllerBase
 
     [HttpGet("role")]
     [Authorize(Roles = "administrator")]
-    public async Task<IActionResult> GetNormalUserListAsync([FromQuery] int pageIndex = 1, [FromQuery] string roleSelect = "normaluser")
+    public async Task<IActionResult> GetNormalUserListAsync([FromQuery] int pageIndex = 1,
+        [FromQuery] string roleSelect = "normaluser")
     {
         const int pageSize = 10;
 
@@ -156,7 +158,11 @@ public class UserManageController : ControllerBase
         {
             var temp = await _applicationDbContext.Users
                 .Where(x => x.Id == id)
-                .Select(x => new UserRoleDto() { Id = x.Id, NickName = x.NickName, UserName = x.UserName, RegisterTime = x.RegistrationDate, Role = role.Name, Avatar = x.Avatar })
+                .Select(x => new UserRoleDto
+                {
+                    Id = x.Id, NickName = x.NickName, UserName = x.UserName, RegisterTime = x.RegistrationDate,
+                    Role = role.Name, Avatar = x.Avatar
+                })
                 .AsNoTracking()
                 .OrderBy(x => x.RegisterTime)
                 .FirstOrDefaultAsync();
@@ -174,7 +180,8 @@ public class UserManageController : ControllerBase
         var user = await _userManager.FindByIdAsync(uid);
         if (user == null) return BadRequest();
 
-        _logger.LogInformation("user:{id}-{name} will change role from 'normaluser' to 'forbiddenuser'", user.Id, user.NickName);
+        _logger.LogInformation("user:{id}-{name} will change role from 'normaluser' to 'forbiddenuser'", user.Id,
+            user.NickName);
         var banRole = await _roleManager.FindByNameAsync("forbiddenuser");
         var normalRole = await _roleManager.FindByNameAsync("normaluser");
         var userRole = await _applicationDbContext.UserRoles.FindAsync(user.Id, normalRole.Id);
@@ -187,7 +194,7 @@ public class UserManageController : ControllerBase
             await _applicationDbContext.SaveChangesAsync();
         }
 
-        var newRoleLink = new IdentityUserRole<string> { RoleId = banRole.Id, UserId = user.Id };
+        var newRoleLink = new IdentityUserRole<string> {RoleId = banRole.Id, UserId = user.Id};
         await _applicationDbContext.UserRoles.AddAsync(newRoleLink);
         var result = await _applicationDbContext.SaveChangesAsync();
 
@@ -196,6 +203,7 @@ public class UserManageController : ControllerBase
             _logger.LogInformation("add user:{id}-{name} new role 'forbiddenuser'", user.Id, user.NickName);
             return NoContent();
         }
+
         throw new IdentityDomainException($"ban user failed -> userName: {user.UserName}");
     }
 
@@ -206,7 +214,8 @@ public class UserManageController : ControllerBase
         var user = await _userManager.FindByIdAsync(uid);
         if (user == null) return BadRequest();
 
-        _logger.LogInformation("user:{id}-{name} will change role from 'forbiddenuser' to 'normaluser'", user.Id, user.NickName);
+        _logger.LogInformation("user:{id}-{name} will change role from 'forbiddenuser' to 'normaluser'", user.Id,
+            user.NickName);
         var banRole = await _roleManager.FindByNameAsync("forbiddenuser");
         var normalRole = await _roleManager.FindByNameAsync("normaluser");
         var userRole = await _applicationDbContext.UserRoles.FindAsync(user.Id, banRole.Id);
@@ -219,7 +228,7 @@ public class UserManageController : ControllerBase
             await _applicationDbContext.SaveChangesAsync();
         }
 
-        var newRoleLink = new IdentityUserRole<string> { RoleId = normalRole.Id, UserId = user.Id };
+        var newRoleLink = new IdentityUserRole<string> {RoleId = normalRole.Id, UserId = user.Id};
         await _applicationDbContext.UserRoles.AddAsync(newRoleLink);
         var result = await _applicationDbContext.SaveChangesAsync();
 
@@ -228,6 +237,7 @@ public class UserManageController : ControllerBase
             _logger.LogInformation("add user:{id}-{name} new role 'normaluser'", user.Id, user.NickName);
             return NoContent();
         }
+
         throw new IdentityDomainException($"recover user failed -> userName: {user.UserName}");
     }
 
@@ -238,7 +248,8 @@ public class UserManageController : ControllerBase
         var user = await _userManager.FindByIdAsync(uid);
         if (user == null) return BadRequest();
 
-        _logger.LogInformation("user:{id}-{name} will change role from 'normaluser' to 'evaluator'", user.Id, user.NickName);
+        _logger.LogInformation("user:{id}-{name} will change role from 'normaluser' to 'evaluator'", user.Id,
+            user.NickName);
         var evaluatorRole = await _roleManager.FindByNameAsync("evaluator");
         var normalRole = await _roleManager.FindByNameAsync("normaluser");
         var userRole = await _applicationDbContext.UserRoles.FindAsync(user.Id, normalRole.Id);
@@ -251,7 +262,7 @@ public class UserManageController : ControllerBase
             await _applicationDbContext.SaveChangesAsync();
         }
 
-        var newRoleLink = new IdentityUserRole<string> { RoleId = evaluatorRole.Id, UserId = user.Id };
+        var newRoleLink = new IdentityUserRole<string> {RoleId = evaluatorRole.Id, UserId = user.Id};
         await _applicationDbContext.UserRoles.AddAsync(newRoleLink);
         var result = await _applicationDbContext.SaveChangesAsync();
         if (result > 0)
@@ -259,6 +270,7 @@ public class UserManageController : ControllerBase
             _logger.LogInformation("add user:{id}-{name} new role 'evaluator'", user.Id, user.NickName);
             return NoContent();
         }
+
         throw new IdentityDomainException($"approve user failed -> userName: {user.UserName}");
     }
 
@@ -269,7 +281,8 @@ public class UserManageController : ControllerBase
         var user = await _userManager.FindByIdAsync(uid);
         if (user == null) return BadRequest();
 
-        _logger.LogInformation("user:{id}-{name} will change role from 'evaluator' to 'normaluser'", user.Id, user.NickName);
+        _logger.LogInformation("user:{id}-{name} will change role from 'evaluator' to 'normaluser'", user.Id,
+            user.NickName);
         var evaluatorRole = await _roleManager.FindByNameAsync("evaluator");
         var normalRole = await _roleManager.FindByNameAsync("normaluser");
         var userRole = await _applicationDbContext.UserRoles.FindAsync(user.Id, evaluatorRole.Id);
@@ -282,7 +295,7 @@ public class UserManageController : ControllerBase
             await _applicationDbContext.SaveChangesAsync();
         }
 
-        var newRoleLink = new IdentityUserRole<string> { RoleId = normalRole.Id, UserId = user.Id };
+        var newRoleLink = new IdentityUserRole<string> {RoleId = normalRole.Id, UserId = user.Id};
         await _applicationDbContext.UserRoles.AddAsync(newRoleLink);
         var result = await _applicationDbContext.SaveChangesAsync();
         if (result > 0)
@@ -290,6 +303,7 @@ public class UserManageController : ControllerBase
             _logger.LogInformation("add user:{id}-{name} new role 'normaluser'", user.Id, user.NickName);
             return NoContent();
         }
+
         throw new IdentityDomainException($"redraw user failed -> userName: {user.UserName}");
     }
 }

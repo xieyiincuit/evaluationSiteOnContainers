@@ -33,7 +33,8 @@ public class IdentityCallService
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
 
-            _logger.LogInformation($"received callback response -> callUrl:{callUrl}, statusCode:{response.StatusCode}");
+            _logger.LogInformation(
+                $"received callback response -> callUrl:{callUrl}, statusCode:{response.StatusCode}");
             return response;
         }
         catch (Exception e)

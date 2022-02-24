@@ -2,7 +2,9 @@
 
 public class IntegrationEventLogContext : DbContext
 {
-    public IntegrationEventLogContext(DbContextOptions<IntegrationEventLogContext> options) : base(options) { }
+    public IntegrationEventLogContext(DbContextOptions<IntegrationEventLogContext> options) : base(options)
+    {
+    }
 
     public DbSet<IntegrationEventLogEntry> IntegrationEventLogs { get; set; }
 
@@ -11,7 +13,7 @@ public class IntegrationEventLogContext : DbContext
         builder.Entity<IntegrationEventLogEntry>(ConfigureIntegrationEventLogEntry);
     }
 
-    void ConfigureIntegrationEventLogEntry(EntityTypeBuilder<IntegrationEventLogEntry> builder)
+    private void ConfigureIntegrationEventLogEntry(EntityTypeBuilder<IntegrationEventLogEntry> builder)
     {
         builder.ToTable("integrationevent_log")
             .HasComment("事件日志表");

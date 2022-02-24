@@ -4,10 +4,10 @@
 [Route("api/v1/game")]
 public class GameCompanyController : ControllerBase
 {
-    private readonly IGameCompanyService _companyService;
-    private readonly IMapper _mapper;
-    private readonly ILogger<GameCompany> _logger;
     private const int _pageSize = 10;
+    private readonly IGameCompanyService _companyService;
+    private readonly ILogger<GameCompany> _logger;
+    private readonly IMapper _mapper;
 
     public GameCompanyController(
         IGameCompanyService companyService,
@@ -21,8 +21,8 @@ public class GameCompanyController : ControllerBase
 
     [HttpGet]
     [Route("companies")]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType(typeof(PaginatedItemsDtoModel<GameCompany>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int) HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(PaginatedItemsDtoModel<GameCompany>), (int) HttpStatusCode.OK)]
     public async Task<IActionResult> GetCompaniesAsync([FromQuery] int pageIndex = 1)
     {
         var totalCompanies = await _companyService.CountCompanyAsync();
@@ -36,9 +36,9 @@ public class GameCompanyController : ControllerBase
     }
 
     [HttpGet("company/{companyId:int}", Name = nameof(GetCompanyByIdAsync))]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType(typeof(GameCompany), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int) HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(GameCompany), (int) HttpStatusCode.OK)]
     public async Task<IActionResult> GetCompanyByIdAsync([FromRoute] int companyId)
     {
         if (companyId <= 0 || companyId >= int.MaxValue) return BadRequest();
@@ -52,8 +52,8 @@ public class GameCompanyController : ControllerBase
     [HttpPost]
     [Route("company")]
     [Authorize(Roles = "administrator")]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.Created)]
+    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int) HttpStatusCode.Created)]
     public async Task<IActionResult> CreateCompanyAsync([FromBody] GameCompanyAddDto companyAddDto)
     {
         if (companyAddDto == null) return BadRequest();
@@ -61,21 +61,23 @@ public class GameCompanyController : ControllerBase
         var entityToAdd = _mapper.Map<GameCompany>(companyAddDto);
         await _companyService.AddGameCompanyAsync(entityToAdd);
 
-        _logger.LogInformation($"administrator: id:{User.FindFirst("sub").Value}, name:{User.Identity.Name} add a company -> companyName:{companyAddDto.CompanyName}");
+        _logger.LogInformation(
+            $"administrator: id:{User.FindFirst("sub").Value}, name:{User.Identity.Name} add a company -> companyName:{companyAddDto.CompanyName}");
 
-        return CreatedAtRoute(nameof(GetCompanyByIdAsync), new { companyId = entityToAdd.Id }, null);
+        return CreatedAtRoute(nameof(GetCompanyByIdAsync), new {companyId = entityToAdd.Id}, null);
     }
 
     [HttpDelete]
     [Route("company/{id:int}")]
     [Authorize(Roles = "administrator")]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int) HttpStatusCode.NoContent)]
     public async Task<IActionResult> DeleteCategoryAsync([FromRoute] int id)
     {
         if (id <= 0 || id >= int.MaxValue) return BadRequest();
 
-        _logger.LogInformation($"administrator: id:{User.FindFirst("sub").Value}, name:{User.Identity.Name} delete a company -> companyId:{id}");
+        _logger.LogInformation(
+            $"administrator: id:{User.FindFirst("sub").Value}, name:{User.Identity.Name} delete a company -> companyId:{id}");
 
         var response = await _companyService.DeleteGameCompanyAsync(id);
         return response == true ? NoContent() : NotFound();
@@ -84,19 +86,17 @@ public class GameCompanyController : ControllerBase
     [HttpPut]
     [Route("company")]
     [Authorize(Roles = "administrator")]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int) HttpStatusCode.NoContent)]
     public async Task<IActionResult> UpdateCategoryAsync([FromBody] GameCompanyUpdateDto companyUpdateDto)
     {
         if (companyUpdateDto == null) return BadRequest();
 
         var entityToUpdate = await _companyService.GetGameCompanyAsync(companyUpdateDto.Id);
-        if (entityToUpdate == null)
-        {
-            return NotFound();
-        }
+        if (entityToUpdate == null) return NotFound();
 
-        _logger.LogInformation($"administrator: id:{User.FindFirst("sub").Value}, name:{User.Identity.Name} update a company -> old:{entityToUpdate.CompanyName}, new:{companyUpdateDto.CompanyName}");
+        _logger.LogInformation(
+            $"administrator: id:{User.FindFirst("sub").Value}, name:{User.Identity.Name} update a company -> old:{entityToUpdate.CompanyName}, new:{companyUpdateDto.CompanyName}");
 
         _mapper.Map(companyUpdateDto, entityToUpdate);
         await _companyService.UpdateGameCompanyAsync(entityToUpdate);

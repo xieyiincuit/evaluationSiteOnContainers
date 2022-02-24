@@ -4,9 +4,9 @@
 [Route("api/v1/game/shop/sdks")]
 public class GameSDKController : ControllerBase
 {
-    private readonly IGameItemSDKService _sdkService;
-    private readonly ILogger<GameSDKController> _logger;
     private const int _pageSize = 15;
+    private readonly ILogger<GameSDKController> _logger;
+    private readonly IGameItemSDKService _sdkService;
 
     public GameSDKController(IGameItemSDKService sdkService, ILogger<GameSDKController> logger)
     {
@@ -16,10 +16,10 @@ public class GameSDKController : ControllerBase
 
     [HttpGet("{gameItemId:int}")]
     [Authorize(Roles = "administrator")]
-    [ProducesResponseType(typeof(PaginatedItemsDtoModel<GameItemSDK>), (int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(PaginatedItemsDtoModel<GameItemSDK>), (int) HttpStatusCode.OK)]
+    [ProducesResponseType((int) HttpStatusCode.NotFound)]
     public async Task<IActionResult> GetGameSDKAsync(
-         [FromQuery] bool hasSend, [FromRoute] int gameItemId, [FromQuery] int pageIndex = 1)
+        [FromQuery] bool hasSend, [FromRoute] int gameItemId, [FromQuery] int pageIndex = 1)
     {
         var sdkCount = await _sdkService.CountSDKNumberByGameItemOrStatusAsync(gameItemId, hasSend);
         if (ParameterValidateHelper.IsInvalidPageIndex(sdkCount, _pageSize, pageIndex)) pageIndex = 1;

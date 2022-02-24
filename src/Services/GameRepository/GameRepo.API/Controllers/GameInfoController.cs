@@ -4,12 +4,12 @@
 [Route("api/v1/game")]
 public class GameInfoController : ControllerBase
 {
+    private const int _pageSize = 20;
     private readonly IGameInfoService _gameInfoService;
-    private readonly IMapper _mapper;
     private readonly ILogger<GameInfoController> _logger;
+    private readonly IMapper _mapper;
     private readonly IGameRepoIntegrationEventService _repoIntegrationEventService;
     private readonly IUnitOfWorkService _unitOfWorkService;
-    private const int _pageSize = 20;
 
     public GameInfoController(
         IGameInfoService gameInfoService,
@@ -21,14 +21,15 @@ public class GameInfoController : ControllerBase
         _gameInfoService = gameInfoService ?? throw new ArgumentNullException(nameof(gameInfoService));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _repoIntegrationEventService = repoIntegrationEventService ?? throw new ArgumentNullException(nameof(repoIntegrationEventService));
+        _repoIntegrationEventService = repoIntegrationEventService ??
+                                       throw new ArgumentNullException(nameof(repoIntegrationEventService));
         _unitOfWorkService = unitOfWorkService ?? throw new ArgumentNullException(nameof(unitOfWorkService));
     }
 
     [HttpGet]
     [Route("infos")]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType(typeof(PaginatedItemsDtoModel<GameInfoDto>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int) HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(PaginatedItemsDtoModel<GameInfoDto>), (int) HttpStatusCode.OK)]
     public async Task<IActionResult> GetGameInfosAsync([FromQuery] int pageIndex = 1)
     {
         var totalGames = await _gameInfoService.CountGameInfoAsync();
@@ -44,9 +45,9 @@ public class GameInfoController : ControllerBase
     }
 
     [HttpGet("info/{gameId:int}", Name = nameof(GetGameInfoByIdAsync))]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(GameInfoDto), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int) HttpStatusCode.NotFound)]
+    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(GameInfoDto), (int) HttpStatusCode.OK)]
     public async Task<IActionResult> GetGameInfoByIdAsync([FromRoute] int gameId)
     {
         if (gameId <= 0 || gameId >= int.MaxValue) return BadRequest();
@@ -61,35 +62,33 @@ public class GameInfoController : ControllerBase
     [HttpPost]
     [Route("info")]
     [Authorize(Roles = "administrator")]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.Created)]
+    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int) HttpStatusCode.Created)]
     public async Task<IActionResult> CreateGameInfoAsync([FromBody] GameInfoAddDto gameInfoAddDto)
     {
         if (gameInfoAddDto == null) return BadRequest();
 
         var entityToAdd = _mapper.Map<GameInfo>(gameInfoAddDto);
 
-        _logger.LogInformation($"administrator: id:{User.FindFirst("sub").Value}, name:{User.Identity.Name} add a gameInfo -> GameName:{gameInfoAddDto.Name}");
+        _logger.LogInformation(
+            $"administrator: id:{User.FindFirst("sub").Value}, name:{User.Identity.Name} add a gameInfo -> GameName:{gameInfoAddDto.Name}");
 
         await _gameInfoService.AddGameInfoAsync(entityToAdd);
         await _unitOfWorkService.SaveChangesAsync();
-        return CreatedAtRoute(nameof(GetGameInfoByIdAsync), new { gameId = entityToAdd.Id }, null);
+        return CreatedAtRoute(nameof(GetGameInfoByIdAsync), new {gameId = entityToAdd.Id}, null);
     }
 
     [HttpPut]
     [Route("info")]
     [Authorize(Roles = "administrator")]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int) HttpStatusCode.NoContent)]
     public async Task<IActionResult> UpdateGameInfoAsync([FromBody] GameInfoUpdateDto gameInfoUpdateDto)
     {
         if (gameInfoUpdateDto == null) return BadRequest();
 
         var gameItem = await _gameInfoService.GetGameInfoAsync(gameInfoUpdateDto.Id);
-        if (gameItem == null)
-        {
-            return NotFound(new { Message = $"game with id {gameInfoUpdateDto.Id} not fount." });
-        }
+        if (gameItem == null) return NotFound(new {Message = $"game with id {gameInfoUpdateDto.Id} not fount."});
 
         //检查是否更新了游戏名，若更新需要发布集成事件通知其他相关服务
         var oldName = gameItem.Name;
@@ -103,7 +102,7 @@ public class GameInfoController : ControllerBase
         {
             _logger.LogInformation("----- GameNameChangedEvent Raised, Will Send a message to Event Bus");
             //1. 初始化集成事件，待事件总线发布。
-            var nameChangedEvent = new GameNameChangedIntegrationEvent(gameItem.Id, oldName: oldName, newName: gameInfoUpdateDto.Name);
+            var nameChangedEvent = new GameNameChangedIntegrationEvent(gameItem.Id, oldName, gameInfoUpdateDto.Name);
             //2. 使用事务保证原子性的同时，在发布事件时同时记录事件日志。
             await _repoIntegrationEventService.SaveEventAndGameRepoContextChangeAsync(nameChangedEvent);
             //3. 将该事件发布并修改该事件发布状态为已发布
@@ -121,16 +120,17 @@ public class GameInfoController : ControllerBase
     [HttpDelete]
     [Route("info/{id:int}")]
     [Authorize(Roles = "administrator")]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int) HttpStatusCode.NotFound)]
+    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int) HttpStatusCode.NoContent)]
     public async Task<IActionResult> DeleteGameInfoAsync([FromRoute] int id)
     {
         if (id <= 0 || id >= int.MaxValue) return BadRequest();
 
         await _gameInfoService.RemoveGameInfoAsync(id);
         var response = await _unitOfWorkService.SaveEntitiesAsync();
-        _logger.LogInformation($"administrator: id:{User.FindFirst("sub").Value}, name:{User.Identity.Name} delete a gameInfo -> Id:{id}");
+        _logger.LogInformation(
+            $"administrator: id:{User.FindFirst("sub").Value}, name:{User.Identity.Name} delete a gameInfo -> Id:{id}");
         return response == true ? NoContent() : NotFound();
     }
 }

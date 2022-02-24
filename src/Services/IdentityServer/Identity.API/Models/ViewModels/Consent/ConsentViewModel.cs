@@ -1,4 +1,5 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.ViewModels.Consent;
+
 public class ConsentViewModel : ConsentInputModel
 {
     public string ClientName { get; set; }

@@ -4,12 +4,12 @@ public class EventBusRabbitMQ : IEventBus, IDisposable
 {
     private const string BROKER_NAME = "evaluation_event_bus";
     private const string AUTOFAC_SCOPE_NAME = "evaluation_event_bus";
+    private readonly ILifetimeScope _autofac;
+    private readonly ILogger<EventBusRabbitMQ> _logger;
 
     private readonly IRabbitMQPersistentConnection _persistentConnection;
-    private readonly ILogger<EventBusRabbitMQ> _logger;
-    private readonly IEventBusSubscriptionsManager _subsManager;
-    private readonly ILifetimeScope _autofac;
     private readonly int _retryCount;
+    private readonly IEventBusSubscriptionsManager _subsManager;
 
     private IModel _consumerChannel;
     private string _queueName;
@@ -27,42 +27,20 @@ public class EventBusRabbitMQ : IEventBus, IDisposable
         _subsManager.OnEventRemoved += SubsManager_OnEventRemoved;
     }
 
-    /// <summary>
-    /// 当集成事件都被取消时，同时关闭RabbitMQ链接
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="eventName">事件源类型</param>
-    private void SubsManager_OnEventRemoved(object sender, string eventName)
+    public void Dispose()
     {
-        if (!_persistentConnection.IsConnected)
-        {
-            _persistentConnection.TryConnect();
-        }
+        if (_consumerChannel != null) _consumerChannel.Dispose();
 
-        using var channel = _persistentConnection.CreateModel();
-        //解绑对应的queue
-        channel.QueueUnbind(
-            queue: _queueName,
-            exchange: BROKER_NAME,
-            routingKey: eventName);
-
-        if (_subsManager.IsEmpty)
-        {
-            _queueName = string.Empty;
-            _consumerChannel.Close();
-        }
+        _subsManager.Clear();
     }
 
     /// <summary>
-    /// 事件发布
+    ///     事件发布
     /// </summary>
     /// <param name="event"></param>
     public void Publish(IntegrationEvent @event)
     {
-        if (!_persistentConnection.IsConnected)
-        {
-            _persistentConnection.TryConnect();
-        }
+        if (!_persistentConnection.IsConnected) _persistentConnection.TryConnect();
 
         var policy = RetryPolicy.Handle<BrokerUnreachableException>()
             .Or<SocketException>()
@@ -80,7 +58,7 @@ public class EventBusRabbitMQ : IEventBus, IDisposable
         using var channel = _persistentConnection.CreateModel();
         _logger.LogDebug("Declaring RabbitMQ exchange to publish event: {EventId}", @event.Id);
 
-        channel.ExchangeDeclare(exchange: BROKER_NAME, type: "direct");
+        channel.ExchangeDeclare(BROKER_NAME, "direct");
 
         var body = JsonSerializer.SerializeToUtf8Bytes(@event, @event.GetType(), new JsonSerializerOptions
         {
@@ -99,18 +77,19 @@ public class EventBusRabbitMQ : IEventBus, IDisposable
             //When a published message cannot be routed to any queue, and the publisher set the mandatory message property to true,
             //the message will be returned to it. The publisher must have a returned message handler set up in order to handle the return 
             channel.BasicPublish(
-                exchange: BROKER_NAME,
-                routingKey: eventName,
-                mandatory: true,
-                basicProperties: properties,
-                body: body);
+                BROKER_NAME,
+                eventName,
+                true,
+                properties,
+                body);
         });
     }
 
     public void SubscribeDynamic<TH>(string eventName)
         where TH : IDynamicIntegrationEventHandler
     {
-        _logger.LogInformation("Subscribing to dynamic event {EventName} with {EventHandler}", eventName, typeof(TH).GetGenericTypeName());
+        _logger.LogInformation("Subscribing to dynamic event {EventName} with {EventHandler}", eventName,
+            typeof(TH).GetGenericTypeName());
 
         DoInternalSubscription(eventName);
         _subsManager.AddDynamicSubscription<TH>(eventName);
@@ -131,27 +110,6 @@ public class EventBusRabbitMQ : IEventBus, IDisposable
         StartBasicConsume();
     }
 
-    /// <summary>
-    /// 事件订阅
-    /// </summary>
-    /// <param name="eventName"></param>
-    private void DoInternalSubscription(string eventName)
-    {
-        var containsKey = _subsManager.HasSubscriptionsForEvent(eventName);
-        if (!containsKey)
-        {
-            if (!_persistentConnection.IsConnected)
-            {
-                _persistentConnection.TryConnect();
-            }
-
-            _consumerChannel.QueueBind(
-                queue: _queueName,
-                exchange: BROKER_NAME,
-                routingKey: eventName);
-        }
-    }
-
     public void Unsubscribe<T, TH>()
         where T : IntegrationEvent
         where TH : IIntegrationEventHandler<T>
@@ -169,18 +127,49 @@ public class EventBusRabbitMQ : IEventBus, IDisposable
         _subsManager.RemoveDynamicSubscription<TH>(eventName);
     }
 
-    public void Dispose()
+    /// <summary>
+    ///     当集成事件都被取消时，同时关闭RabbitMQ链接
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="eventName">事件源类型</param>
+    private void SubsManager_OnEventRemoved(object sender, string eventName)
     {
-        if (_consumerChannel != null)
-        {
-            _consumerChannel.Dispose();
-        }
+        if (!_persistentConnection.IsConnected) _persistentConnection.TryConnect();
 
-        _subsManager.Clear();
+        using var channel = _persistentConnection.CreateModel();
+        //解绑对应的queue
+        channel.QueueUnbind(
+            _queueName,
+            BROKER_NAME,
+            eventName);
+
+        if (_subsManager.IsEmpty)
+        {
+            _queueName = string.Empty;
+            _consumerChannel.Close();
+        }
     }
 
     /// <summary>
-    /// 开始事件消费监听
+    ///     事件订阅
+    /// </summary>
+    /// <param name="eventName"></param>
+    private void DoInternalSubscription(string eventName)
+    {
+        var containsKey = _subsManager.HasSubscriptionsForEvent(eventName);
+        if (!containsKey)
+        {
+            if (!_persistentConnection.IsConnected) _persistentConnection.TryConnect();
+
+            _consumerChannel.QueueBind(
+                _queueName,
+                BROKER_NAME,
+                eventName);
+        }
+    }
+
+    /// <summary>
+    ///     开始事件消费监听
     /// </summary>
     private void StartBasicConsume()
     {
@@ -193,9 +182,9 @@ public class EventBusRabbitMQ : IEventBus, IDisposable
             consumer.Received += Consumer_Received;
 
             _consumerChannel.BasicConsume(
-                queue: _queueName,
-                autoAck: false,
-                consumer: consumer);
+                _queueName,
+                false,
+                consumer);
         }
         else
         {
@@ -204,7 +193,7 @@ public class EventBusRabbitMQ : IEventBus, IDisposable
     }
 
     /// <summary>
-    /// 消息接受事件
+    ///     消息接受事件
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="eventArgs"></param>
@@ -218,9 +207,7 @@ public class EventBusRabbitMQ : IEventBus, IDisposable
         try
         {
             if (message.ToLowerInvariant().Contains("throw-fake-exception"))
-            {
                 throw new InvalidOperationException($"Fake exception requested: \"{message}\"");
-            }
             //处理事件
             await ProcessEvent(eventName, message);
         }
@@ -231,33 +218,30 @@ public class EventBusRabbitMQ : IEventBus, IDisposable
 
         // 该消费出现异常也确认消费成功
         // 在某些重要业务中需要处理死信队列
-        _consumerChannel.BasicAck(eventArgs.DeliveryTag, multiple: false);
+        _consumerChannel.BasicAck(eventArgs.DeliveryTag, false);
     }
 
     /// <summary>
-    /// 开启事件监听
+    ///     开启事件监听
     /// </summary>
     /// <returns></returns>
     private IModel CreateConsumerChannel()
     {
-        if (!_persistentConnection.IsConnected)
-        {
-            _persistentConnection.TryConnect();
-        }
+        if (!_persistentConnection.IsConnected) _persistentConnection.TryConnect();
 
         _logger.LogDebug("Creating RabbitMQ consumer channel");
 
         var channel = _persistentConnection.CreateModel();
 
-        channel.ExchangeDeclare(exchange: BROKER_NAME,
-                                type: "direct");
+        channel.ExchangeDeclare(BROKER_NAME,
+            "direct");
 
         channel.QueueDeclare(
-            queue: _queueName,
-            durable: true,
-            exclusive: false,
-            autoDelete: false,
-            arguments: null);
+            _queueName,
+            true,
+            false,
+            false,
+            null);
 
         channel.CallbackException += (_, ea) =>
         {
@@ -280,7 +264,6 @@ public class EventBusRabbitMQ : IEventBus, IDisposable
             await using var scope = _autofac.BeginLifetimeScope(AUTOFAC_SCOPE_NAME);
             var subscriptions = _subsManager.GetHandlersForEvent(eventName);
             foreach (var subscription in subscriptions)
-            {
                 if (subscription.IsDynamic)
                 {
                     var handler = scope.ResolveOptional(subscription.HandlerType) as IDynamicIntegrationEventHandler;
@@ -297,14 +280,13 @@ public class EventBusRabbitMQ : IEventBus, IDisposable
 
                     var eventType = _subsManager.GetEventTypeByName(eventName);
                     var integrationEvent = JsonSerializer.Deserialize(message, eventType,
-                        new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+                        new JsonSerializerOptions {PropertyNameCaseInsensitive = true});
                     var concreteType = typeof(IIntegrationEventHandler<>).MakeGenericType(eventType);
 
                     await Task.Yield();
                     //反射调用具体integrationEvent类型的Handle方法
-                    await (Task)concreteType.GetMethod("Handle").Invoke(handler, new[] { integrationEvent });
+                    await (Task) concreteType.GetMethod("Handle").Invoke(handler, new[] {integrationEvent});
                 }
-            }
         }
         else
         {

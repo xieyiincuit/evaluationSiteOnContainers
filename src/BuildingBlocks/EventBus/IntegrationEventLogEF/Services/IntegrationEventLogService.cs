@@ -2,9 +2,9 @@
 
 public class IntegrationEventLogService : IIntegrationEventLogService, IDisposable
 {
-    private readonly IntegrationEventLogContext _integrationEventLogContext;
     private readonly DbConnection _dbConnection;
     private readonly List<Type> _eventTypes;
+    private readonly IntegrationEventLogContext _integrationEventLogContext;
     private volatile bool _disposedValue;
 
     public IntegrationEventLogService(DbConnection dbConnection)
@@ -13,8 +13,8 @@ public class IntegrationEventLogService : IIntegrationEventLogService, IDisposab
         try
         {
             _integrationEventLogContext = new IntegrationEventLogContext(
-               new DbContextOptionsBuilder<IntegrationEventLogContext>()
-                   .UseMySql(_dbConnection, new MySqlServerVersion(new Version(8, 0, 27))).Options);
+                new DbContextOptionsBuilder<IntegrationEventLogContext>()
+                    .UseMySql(_dbConnection, new MySqlServerVersion(new Version(8, 0, 27))).Options);
         }
         catch (Exception)
         {
@@ -30,6 +30,12 @@ public class IntegrationEventLogService : IIntegrationEventLogService, IDisposab
             .ToList();
     }
 
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
     public async Task<IEnumerable<IntegrationEventLogEntry>> RetrieveEventLogsPendingToPublishAsync(Guid transactionId)
     {
         var tid = transactionId.ToString();
@@ -39,11 +45,9 @@ public class IntegrationEventLogService : IIntegrationEventLogService, IDisposab
             .Where(e => e.TransactionId == tid && e.State == EventStateEnum.NotPublished).ToListAsync();
 
         if (result != null && result.Any())
-        {
             return result
                 .OrderBy(o => o.CreationTime)
                 .Select(e => e.DeserializeJsonContent(_eventTypes.Find(t => t.Name == e.EventTypeShortName)));
-        }
 
         return new List<IntegrationEventLogEntry>();
     }
@@ -92,18 +96,9 @@ public class IntegrationEventLogService : IIntegrationEventLogService, IDisposab
     {
         if (!_disposedValue)
         {
-            if (disposing)
-            {
-                _integrationEventLogContext.Dispose();
-            }
+            if (disposing) _integrationEventLogContext.Dispose();
 
             _disposedValue = true;
         }
-    }
-
-    public void Dispose()
-    {
-        Dispose(disposing: true);
-        GC.SuppressFinalize(this);
     }
 }

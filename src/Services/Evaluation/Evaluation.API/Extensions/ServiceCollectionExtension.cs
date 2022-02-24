@@ -1,7 +1,4 @@
-﻿using System.Text;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-
-namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Extensions;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Extensions;
 
 public static class ServiceCollectionExtension
 {
@@ -20,13 +17,14 @@ public static class ServiceCollectionExtension
             options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
             {
                 Type = SecuritySchemeType.OAuth2,
-                Flows = new OpenApiOAuthFlows()
+                Flows = new OpenApiOAuthFlows
                 {
-                    Implicit = new OpenApiOAuthFlow()
+                    Implicit = new OpenApiOAuthFlow
                     {
-                        AuthorizationUrl = new Uri($"{configuration.GetValue<string>("IdentityUrlExternal")}/connect/authorize"),
+                        AuthorizationUrl =
+                            new Uri($"{configuration.GetValue<string>("IdentityUrlExternal")}/connect/authorize"),
                         TokenUrl = new Uri($"{configuration.GetValue<string>("IdentityUrlExternal")}/connect/token"),
-                        Scopes = new Dictionary<string, string>()
+                        Scopes = new Dictionary<string, string>
                         {
                             {"eval-write", "评测服务写权限"},
                             {"eval-manage", "评测服务管理权限"}
@@ -36,7 +34,6 @@ public static class ServiceCollectionExtension
             });
 
             options.OperationFilter<AuthorizeCheckOperationFilter>();
-
         });
 
         return services;
@@ -49,10 +46,7 @@ public static class ServiceCollectionExtension
         services.AddDbContext<EvaluationContext>(
             dbContextOptions => dbContextOptions
                 .UseMySql(connectionString, serverVersion,
-                    mySqlOptionsAction: sqlOptions =>
-                    {
-                        sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
-                    })
+                    sqlOptions => { sqlOptions.EnableRetryOnFailure(15, TimeSpan.FromSeconds(30), null); })
                 // The following three options help with debugging, but should
                 // be changed or removed for production.
                 .LogTo(Console.WriteLine, LogLevel.Information)
@@ -121,11 +115,11 @@ public static class ServiceCollectionExtension
                 configuration["ConnectionStrings:EvaluationDbConnectString"],
                 "EvaluationDB-check",
                 HealthStatus.Degraded,
-                new[] { "db", "evaluation", "mysql" })
+                new[] {"db", "evaluation", "mysql"})
             .AddRabbitMQ(
                 $"amqp://{mqName}:{mqPassword}@{mqHost}/",
                 name: "evaluation-rabbitmqbus-check",
-                tags: new[] { "rabbitmqbus" });
+                tags: new[] {"rabbitmqbus"});
 
         return services;
     }
@@ -148,7 +142,7 @@ public static class ServiceCollectionExtension
 
                 return new BadRequestObjectResult(problemDetails)
                 {
-                    ContentTypes = { "application/problem+json", "application/problem+xml" }
+                    ContentTypes = {"application/problem+json", "application/problem+xml"}
                 };
             };
         });
@@ -165,8 +159,7 @@ public static class ServiceCollectionExtension
         return services;
     }
 
-    public static IServiceCollection AddCustomHttpClient(this IServiceCollection services,
-        IConfiguration configuration)
+    public static IServiceCollection AddCustomHttpClient(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddHttpClient<IdentityCallService>(client =>
             {
@@ -194,7 +187,8 @@ public static class ServiceCollectionExtension
         return services;
     }
 
-    public static IServiceCollection AddCustomIntegrationEvent(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddCustomIntegrationEvent(this IServiceCollection services,
+        IConfiguration configuration)
     {
         //注册IRabbitMQPersistentConnection服务用于设置RabbitMQ连接
         services.AddSingleton<IRabbitMQPersistentConnection>(sp =>
@@ -202,7 +196,7 @@ public static class ServiceCollectionExtension
             var settings = sp.GetRequiredService<IOptions<EventBusSettings>>().Value;
             var logger = sp.GetRequiredService<ILogger<DefaultRabbitMQPersistentConnection>>();
 
-            var factory = new ConnectionFactory()
+            var factory = new ConnectionFactory
             {
                 HostName = settings.Connection,
                 Port = int.Parse(settings.Port),
@@ -224,7 +218,6 @@ public static class ServiceCollectionExtension
         });
         return services;
     }
-
 
     public static IServiceCollection AddCustomEventBus(this IServiceCollection services, IConfiguration configuration)
     {
@@ -265,24 +258,19 @@ public static class ServiceCollectionExtension
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-
         }).AddJwtBearer(options =>
         {
             options.Authority = identityUrl;
             options.RequireHttpsMetadata = false;
             options.Audience = "evaluation";
 
-            options.TokenValidationParameters = new TokenValidationParameters()
+            options.TokenValidationParameters = new TokenValidationParameters
             {
                 NameClaimType = "name",
                 RoleClaimType = "role",
 
                 ValidateIssuer = true,
-                ValidIssuer = "http://identity-api",
-
-                RequireExpirationTime = true,
-                ValidateLifetime = true,
-                RequireSignedTokens = true,
+                ValidIssuer = "http://identity-api"
             };
         });
 

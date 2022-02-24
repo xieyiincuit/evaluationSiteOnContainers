@@ -1,7 +1,7 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.IntegrationEvents.Events;
 
 /// <summary>
-/// 用户名昵称改变
+///     用户名昵称改变
 /// </summary>
 public record NickNameChangedIntegrationEvent : IntegrationEvent
 {

@@ -2,8 +2,8 @@
 
 public class GameItemSDKService : IGameItemSDKService
 {
-    private readonly GameRepoContext _repoDbContext;
     private readonly ILogger<GameItemSDKService> _logger;
+    private readonly GameRepoContext _repoDbContext;
 
     public GameItemSDKService(GameRepoContext repoDbContext, ILogger<GameItemSDKService> logger)
     {
@@ -11,7 +11,8 @@ public class GameItemSDKService : IGameItemSDKService
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<List<GameItemSDK>> GetSDKListByGameItemAsync(int pageIndex, int pageSize, int gameItemId, bool? hasSend)
+    public async Task<List<GameItemSDK>> GetSDKListByGameItemAsync(int pageIndex, int pageSize, int gameItemId,
+        bool? hasSend)
     {
         var queryString = _repoDbContext.GameItemSDKs
             .AsNoTracking()
@@ -33,22 +34,19 @@ public class GameItemSDKService : IGameItemSDKService
             return await _repoDbContext.GameItemSDKs
                 .LongCountAsync(x =>
                     x.GameItemId == gameItemId && (x.HasSend == null || x.HasSend == false));
-        else
-            return await _repoDbContext.GameItemSDKs
-                .LongCountAsync(x => x.GameItemId == gameItemId && (x.HasSend == true));
+        return await _repoDbContext.GameItemSDKs
+            .LongCountAsync(x => x.GameItemId == gameItemId && x.HasSend == true);
     }
 
     public async Task<bool> GenerateSDKForGameShopItemAsync(int count, int gameItemId)
     {
         var sdkToInsert = new List<GameItemSDK>();
         for (var i = 0; i < count; i++)
-        {
             sdkToInsert.Add(new GameItemSDK
             {
                 GameItemId = gameItemId,
                 SDKString = gameItemId + Guid.NewGuid().ToString("D")
             });
-        }
 
         await _repoDbContext.GameItemSDKs.AddRangeAsync(sdkToInsert);
         return await _repoDbContext.SaveChangesAsync() == count;
@@ -97,10 +95,10 @@ public class GameItemSDKService : IGameItemSDKService
         var saved = false;
         var sdk = new GameItemSDK();
         while (!saved)
-        {
             try
             {
-                sdk = await _repoDbContext.GameItemSDKs.FirstOrDefaultAsync(x => x.HasSend == null && x.GameItemId == shopItemId);
+                sdk = await _repoDbContext.GameItemSDKs.FirstOrDefaultAsync(x =>
+                    x.HasSend == null && x.GameItemId == shopItemId);
                 sdk.HasSend = true;
                 sdk.SendTime = DateTime.Now.ToLocalTime();
                 await _repoDbContext.SaveChangesAsync();
@@ -110,7 +108,7 @@ public class GameItemSDKService : IGameItemSDKService
             {
                 _logger.LogWarning("Maybe get the same sdk for different user");
             }
-        }
+
         return sdk;
     }
 }

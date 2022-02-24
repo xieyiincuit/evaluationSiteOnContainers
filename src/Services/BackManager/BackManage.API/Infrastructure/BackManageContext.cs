@@ -2,7 +2,9 @@
 
 public class BackManageContext : DbContext
 {
-    public BackManageContext(DbContextOptions<BackManageContext> options) : base(options) { }
+    public BackManageContext(DbContextOptions<BackManageContext> options) : base(options)
+    {
+    }
 
     public DbSet<ApproveRecord> ApproveRecords { get; set; }
     public DbSet<BannedRecord> BannedRecords { get; set; }
@@ -35,7 +37,7 @@ public class BackManageContext : DbContext
             .HasDefaultValue(BannedStatus.Checking);
 
         modelBuilder.Entity<BannedUserLink>()
-            .HasKey(x => new { x.BannedUserId, x.CheckUserId });
+            .HasKey(x => new {x.BannedUserId, x.CheckUserId});
     }
 }
 
@@ -43,7 +45,7 @@ public class BackManageContextDesignFactory : IDesignTimeDbContextFactory<BackMa
 {
     public BackManageContext CreateDbContext(string[] args)
     {
-        IConfigurationRoot configuration = new ConfigurationBuilder()
+        var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json")
             .Build();

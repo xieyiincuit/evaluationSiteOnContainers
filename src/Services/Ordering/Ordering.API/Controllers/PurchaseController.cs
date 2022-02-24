@@ -4,11 +4,11 @@
 [Route("api/v1/order")]
 public class PurchaseController : ControllerBase
 {
+    private readonly IDistributedLockFactory _distributedLockFactory;
+    private readonly GrpcRepoCallService _grpcRepoCallService;
     private readonly ILogger<PurchaseController> _logger;
     private readonly IRedisDatabase _redisDatabase;
-    private readonly IDistributedLockFactory _distributedLockFactory;
     private readonly RepoCallService _repoCallService;
-    private readonly GrpcRepoCallService _grpcRepoCallService;
 
     public PurchaseController(
         ILogger<PurchaseController> logger,
@@ -20,7 +20,8 @@ public class PurchaseController : ControllerBase
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _redisDatabase = redisDatabase ?? throw new ArgumentNullException(nameof(redisDatabase));
-        _distributedLockFactory = distributedLockFactory ?? throw new ArgumentNullException(nameof(distributedLockFactory));
+        _distributedLockFactory =
+            distributedLockFactory ?? throw new ArgumentNullException(nameof(distributedLockFactory));
         _repoCallService = repoCallService ?? throw new ArgumentNullException(nameof(repoCallService));
         _grpcRepoCallService = grpcRepoCallService ?? throw new ArgumentNullException(nameof(grpcRepoCallService));
     }
@@ -37,10 +38,10 @@ public class PurchaseController : ControllerBase
         //有此商品 上锁进行库存扣除
         //锁的过期时间为30s，等待获取锁的时间为20s，如果没有获取到锁，则等待1秒钟后再次尝试获取
         await using var redLock = await _distributedLockFactory.CreateLockAsync(
-            resource: shopItemId.ToString(),
-            expiryTime: TimeSpan.FromSeconds(30),
-            waitTime: TimeSpan.FromSeconds(20),
-            retryTime: TimeSpan.FromSeconds(1)
+            shopItemId.ToString(),
+            TimeSpan.FromSeconds(30),
+            TimeSpan.FromSeconds(20),
+            TimeSpan.FromSeconds(1)
         );
 
         // 确认是否已获取到锁
@@ -48,14 +49,15 @@ public class PurchaseController : ControllerBase
         {
             _logger.LogInformation("shopItemId:{id} get the distribute locked", shopItemId);
             var stockKey = GetProductStockKey(shopItemId);
-            var currentQuantity = (int)await _redisDatabase.Database.StringGetAsync(stockKey);
+            var currentQuantity = (int) await _redisDatabase.Database.StringGetAsync(stockKey);
 
             if (currentQuantity < 1)
             {
                 _logger.LogInformation("shopItem:{id} all sell, begin grpc call gameRepo to stop this", shopItemId);
                 var response = await _grpcRepoCallService.StopShopSellAsync(shopItemId);
                 if (response == false)
-                    _logger.LogError("shopItem:{id} all sell, begin grpc call gameRepo to stop this but fail", shopItemId);
+                    _logger.LogError("shopItem:{id} all sell, begin grpc call gameRepo to stop this but fail",
+                        shopItemId);
                 return BadRequest();
             }
 
@@ -75,5 +77,8 @@ public class PurchaseController : ControllerBase
 
 
     [NonAction]
-    private static string GetProductStockKey(int productId) => $"ProductStock_{productId}";
+    private static string GetProductStockKey(int productId)
+    {
+        return $"ProductStock_{productId}";
+    }
 }

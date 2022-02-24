@@ -2,12 +2,12 @@
 
 public class GameRepoIntegrationEventService : IGameRepoIntegrationEventService
 {
-    private readonly ILogger<GameRepoIntegrationEventService> _logger;
     private readonly IEventBus _eventBus;
-    private readonly GameRepoContext _repoContext;
-    private readonly Func<DbConnection, IIntegrationEventLogService> _integrationEventLogServiceFactory;
 
     private readonly IIntegrationEventLogService _eventLogService;
+    private readonly Func<DbConnection, IIntegrationEventLogService> _integrationEventLogServiceFactory;
+    private readonly ILogger<GameRepoIntegrationEventService> _logger;
+    private readonly GameRepoContext _repoContext;
     private volatile bool _disposedValue;
 
     public GameRepoIntegrationEventService(
@@ -20,14 +20,17 @@ public class GameRepoIntegrationEventService : IGameRepoIntegrationEventService
         _eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
         _repoContext = repoContext ?? throw new ArgumentNullException(nameof(repoContext));
         _integrationEventLogServiceFactory = integrationEventLogServiceFactory
-                                             ?? throw new ArgumentNullException(nameof(integrationEventLogServiceFactory));
+                                             ?? throw new ArgumentNullException(
+                                                 nameof(integrationEventLogServiceFactory));
         //事件溯源日志持久化和事件的发起者保持统一
         _eventLogService = _integrationEventLogServiceFactory(_repoContext.Database.GetDbConnection());
     }
 
     public async Task SaveEventAndGameRepoContextChangeAsync(IntegrationEvent @event)
     {
-        _logger.LogInformation("----- GameRepoIntegrationEventService - Saving changes and integrationEvent: {IntegrationEventId}", @event.Id);
+        _logger.LogInformation(
+            "----- GameRepoIntegrationEventService - Saving changes and integrationEvent: {IntegrationEventId}",
+            @event.Id);
 
         //Use of an resiliency strategy when using multiple DbContexts within an explicit BeginTransaction():
         await ResilientTransaction.New(_repoContext).ExecuteAsync(async () =>
@@ -42,7 +45,8 @@ public class GameRepoIntegrationEventService : IGameRepoIntegrationEventService
     {
         try
         {
-            _logger.LogInformation("----- Publishing integration event: {IntegrationEventId_published} from {AppName} - ({@IntegrationEvent})",
+            _logger.LogInformation(
+                "----- Publishing integration event: {IntegrationEventId_published} from {AppName} - ({@IntegrationEvent})",
                 @event.Id, Program.AppName, @event);
 
             await _eventLogService.MarkEventAsInProgressAsync(@event.Id);
@@ -51,7 +55,8 @@ public class GameRepoIntegrationEventService : IGameRepoIntegrationEventService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "ERROR Publishing integration event: {IntegrationEventId} from {AppName} - ({@IntegrationEvent})",
+            _logger.LogError(ex,
+                "ERROR Publishing integration event: {IntegrationEventId} from {AppName} - ({@IntegrationEvent})",
                 @event.Id, Program.AppName, @event);
             await _eventLogService.MarkEventAsFailedAsync(@event.Id);
         }
@@ -62,10 +67,7 @@ public class GameRepoIntegrationEventService : IGameRepoIntegrationEventService
         //此变量线程共享
         if (!_disposedValue)
         {
-            if (disposing)
-            {
-                (_eventLogService as IDisposable)?.Dispose();
-            }
+            if (disposing) (_eventLogService as IDisposable)?.Dispose();
 
             _disposedValue = true;
         }
@@ -73,7 +75,7 @@ public class GameRepoIntegrationEventService : IGameRepoIntegrationEventService
 
     public void Dispose()
     {
-        Dispose(disposing: true);
+        Dispose(true);
         GC.SuppressFinalize(this);
     }
 }

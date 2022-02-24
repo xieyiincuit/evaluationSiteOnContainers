@@ -1,4 +1,6 @@
-﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.DtoModels;
+﻿using DataType = System.ComponentModel.DataAnnotations.DataType;
+
+namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.DtoModels;
 
 public class GameInfoAddDto
 {
@@ -21,7 +23,7 @@ public class GameInfoAddDto
     [MaxLength(200, ErrorMessage = "length | {0}的uri过长, 控制在200字符以内")]
     public string? RoughPicture { get; set; }
 
-    [DataType(System.ComponentModel.DataAnnotations.DataType.Date)]
+    [DataType(DataType.Date)]
     [Display(Name = "发售时间")]
     public DateTime? SellTime { get; set; }
 

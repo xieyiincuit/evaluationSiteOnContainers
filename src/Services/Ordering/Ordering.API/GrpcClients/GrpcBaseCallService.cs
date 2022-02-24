@@ -8,7 +8,7 @@ public class GrpcBaseCallService
     {
         var channel = GrpcChannel.ForAddress("http://127.0.0.1:55001");
         var client = new GameRepository.GameRepositoryClient(channel);
-        var request = new shopStatusChangeRequest()
+        var request = new shopStatusChangeRequest
         {
             ShopItemId = shopItemId
         };

@@ -6,6 +6,7 @@ public class Startup
     {
         Configuration = configuration;
     }
+
     public IConfiguration Configuration { get; }
 
     // This method gets called by the runtime. Use this method to add services to the container.
@@ -15,10 +16,7 @@ public class Startup
 
         #region MvcSettings
 
-        services.AddControllers(options =>
-            {
-                options.Filters.Add(typeof(HttpGlobalExceptionFilter));
-            })
+        services.AddControllers(options => { options.Filters.Add(typeof(HttpGlobalExceptionFilter)); })
             .AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = true);
 
         services.AddSwaggerGen(options =>
@@ -34,13 +32,14 @@ public class Startup
             options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
             {
                 Type = SecuritySchemeType.OAuth2,
-                Flows = new OpenApiOAuthFlows()
+                Flows = new OpenApiOAuthFlows
                 {
-                    Implicit = new OpenApiOAuthFlow()
+                    Implicit = new OpenApiOAuthFlow
                     {
-                        AuthorizationUrl = new Uri($"{Configuration.GetValue<string>("IdentityUrlExternal")}/connect/authorize"),
+                        AuthorizationUrl =
+                            new Uri($"{Configuration.GetValue<string>("IdentityUrlExternal")}/connect/authorize"),
                         TokenUrl = new Uri($"{Configuration.GetValue<string>("IdentityUrlExternal")}/connect/token"),
-                        Scopes = new Dictionary<string, string>()
+                        Scopes = new Dictionary<string, string>
                         {
                             {"repo-manage", "游戏信息服务管理权限"}
                         }
@@ -100,10 +99,9 @@ public class Startup
                         {
                             sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
                             sqlOptions.EnableRetryOnFailure(
-                                maxRetryCount: 15,
-                                maxRetryDelay: TimeSpan.FromSeconds(30),
-                                errorNumbersToAdd: null);
-
+                                15,
+                                TimeSpan.FromSeconds(30),
+                                null);
                         });
                     dbContextOptions.LogTo(Console.WriteLine, LogLevel.Information);
                     dbContextOptions.EnableSensitiveDataLogging();
@@ -118,9 +116,9 @@ public class Startup
                         {
                             sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
                             sqlOptions.EnableRetryOnFailure(
-                                maxRetryCount: 15,
-                                maxRetryDelay: TimeSpan.FromSeconds(30),
-                                errorNumbersToAdd: null);
+                                15,
+                                TimeSpan.FromSeconds(30),
+                                null);
                         });
 
                     dbContextOptions.LogTo(Console.WriteLine, LogLevel.Information);
@@ -149,7 +147,7 @@ public class Startup
 
                 return new BadRequestObjectResult(problemDetails)
                 {
-                    ContentTypes = { "application/problem+json", "application/problem+xml" }
+                    ContentTypes = {"application/problem+json", "application/problem+xml"}
                 };
             };
         });
@@ -171,9 +169,8 @@ public class Startup
             var settings = sp.GetRequiredService<IOptions<EventBusSettings>>().Value;
             var logger = sp.GetRequiredService<ILogger<DefaultRabbitMQPersistentConnection>>();
 
-            var factory = new ConnectionFactory()
+            var factory = new ConnectionFactory
             {
-
                 HostName = settings.Connection,
                 Port = int.Parse(settings.Port),
                 ClientProvidedName = Program.AppName,
@@ -248,20 +245,20 @@ public class Startup
                 .AddCheck("self", () => HealthCheckResult.Healthy())
                 .AddMySql(
                     Configuration["ConnectionStrings:GameRepoDbConnectString"],
-                    name: "GameRepoDB-check",
-                    tags: new string[] { "db", "mysql", "gamerepo" });
+                    "GameRepoDB-check",
+                    tags: new string[] {"db", "mysql", "gamerepo"});
 
             hcBuilder
                 .AddRedis(
                     Configuration["RedisHCCheckConnection"],
-                    name: "redis-check",
-                    tags: new string[] { "db", "redis", "gamerepo" });
+                    "redis-check",
+                    tags: new string[] {"db", "redis", "gamerepo"});
 
             hcBuilder
                 .AddRabbitMQ(
                     $"amqp://{mqName}:{mqPassword}@{mqHost}/",
                     name: "gamerepo-rabbitmqbus-check",
-                    tags: new string[] { "rabbitmqbus" });
+                    tags: new string[] {"rabbitmqbus"});
         }
 
         #endregion
@@ -276,22 +273,21 @@ public class Startup
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-
         }).AddJwtBearer(options =>
         {
             options.Authority = identityUrl;
             options.RequireHttpsMetadata = false;
-           
-            options.TokenValidationParameters = new TokenValidationParameters()
+
+            options.TokenValidationParameters = new TokenValidationParameters
             {
                 NameClaimType = "name",
                 RoleClaimType = "role",
                 ValidIssuer = "http://identity-api",
                 //用于REST通信时的受众验证失败问题
-                ValidAudiences = new List<string>()
+                ValidAudiences = new List<string>
                 {
                     "ordering"
-                },
+                }
             };
         });
 
@@ -305,7 +301,8 @@ public class Startup
         {
             var redisClient = provider.GetRequiredService<IRedisClientFactory>();
             var redLockFactory = RedLockFactory.Create(
-                new List<RedLockMultiplexer> { new RedLockMultiplexer(redisClient.GetDefaultRedisClient().ConnectionPoolManager.GetConnection()) }
+                new List<RedLockMultiplexer>
+                    {new(redisClient.GetDefaultRedisClient().ConnectionPoolManager.GetConnection())}
             );
             return redLockFactory;
         });
@@ -320,27 +317,22 @@ public class Startup
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
-        if (env.IsDevelopment())
-        {
-            IdentityModelEventSource.ShowPII = true;
-        }
+        if (env.IsDevelopment()) IdentityModelEventSource.ShowPII = true;
 
         var pathBase = Configuration["PATH_BASE"];
-        if (!string.IsNullOrEmpty(pathBase))
-        {
-            app.UsePathBase(pathBase);
-        }
+        if (!string.IsNullOrEmpty(pathBase)) app.UsePathBase(pathBase);
 
         app.UseSwagger()
-           .UseSwaggerUI(setup =>
-           {
-               setup.SwaggerEndpoint(
-                   $"{(!string.IsNullOrEmpty(pathBase) ? pathBase : string.Empty)}/swagger/v1/swagger.json",
-                   "GameRepo.API V1");
-               setup.OAuthClientId("gamereposwaggerui");
-               setup.OAuthAppName("GameRepo Swagger UI");
-               setup.OAuth2RedirectUrl($"http://localhost:{Configuration.GetValue<string>("SwaggerRedirectUrlPort","50001")}/swagger/oauth2-redirect.html");
-           });
+            .UseSwaggerUI(setup =>
+            {
+                setup.SwaggerEndpoint(
+                    $"{(!string.IsNullOrEmpty(pathBase) ? pathBase : string.Empty)}/swagger/v1/swagger.json",
+                    "GameRepo.API V1");
+                setup.OAuthClientId("gamereposwaggerui");
+                setup.OAuthAppName("GameRepo Swagger UI");
+                setup.OAuth2RedirectUrl(
+                    $"http://localhost:{Configuration.GetValue<string>("SwaggerRedirectUrlPort", "50001")}/swagger/oauth2-redirect.html");
+            });
 
         app.UseHttpLogging();
 
@@ -356,7 +348,7 @@ public class Startup
             endpoints.MapControllers();
             endpoints.MapGrpcService<GameRepositoryService>();
 
-            endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
+            endpoints.MapHealthChecks("/hc", new HealthCheckOptions
             {
                 Predicate = _ => true,
                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse

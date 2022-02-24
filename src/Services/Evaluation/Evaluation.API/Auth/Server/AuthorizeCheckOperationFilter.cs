@@ -6,25 +6,26 @@ public class AuthorizeCheckOperationFilter : IOperationFilter
     {
         //configured the authentication for controllers and action methods
         // Check for authorize attribute
-        var hasAuthorize = context.MethodInfo.DeclaringType.GetCustomAttributes(true).OfType<AuthorizeAttribute>().Any() ||
-                            context.MethodInfo.GetCustomAttributes(true).OfType<AuthorizeAttribute>().Any();
+        var hasAuthorize =
+            context.MethodInfo.DeclaringType.GetCustomAttributes(true).OfType<AuthorizeAttribute>().Any() ||
+            context.MethodInfo.GetCustomAttributes(true).OfType<AuthorizeAttribute>().Any();
 
         if (!hasAuthorize) return;
 
-        operation.Responses.TryAdd("401", new OpenApiResponse { Description = "Unauthorized" });
-        operation.Responses.TryAdd("403", new OpenApiResponse { Description = "Forbidden" });
+        operation.Responses.TryAdd("401", new OpenApiResponse {Description = "Unauthorized"});
+        operation.Responses.TryAdd("403", new OpenApiResponse {Description = "Forbidden"});
 
         var oAuthScheme = new OpenApiSecurityScheme
         {
-            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "oauth2" }
+            Reference = new OpenApiReference {Type = ReferenceType.SecurityScheme, Id = "oauth2"}
         };
 
         operation.Security = new List<OpenApiSecurityRequirement>
+        {
+            new()
             {
-                new OpenApiSecurityRequirement
-                {
-                    [ oAuthScheme ] = new [] { "evaluation api" }
-                }
-            };
+                [oAuthScheme] = new[] {"evaluation api"}
+            }
+        };
     }
 }

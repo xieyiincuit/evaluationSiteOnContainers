@@ -3,7 +3,7 @@
 public static class ParameterValidateHelper
 {
     /// <summary>
-    /// 非法分页判断函数
+    ///     非法分页判断函数
     /// </summary>
     /// <param name="totalCount"></param>
     /// <param name="pageSize"></param>
@@ -13,7 +13,7 @@ public static class ParameterValidateHelper
     {
         if (pageIndex <= 0) return true;
 
-        var maxPageIndex = (int)Math.Ceiling(totalCount / (double)pageSize);
+        var maxPageIndex = (int) Math.Ceiling(totalCount / (double) pageSize);
         return pageIndex > maxPageIndex;
     }
 }

@@ -5,15 +5,15 @@ public class ConfigurationDbContextFactory : IDesignTimeDbContextFactory<Configu
     public ConfigurationDbContext CreateDbContext(string[] args)
     {
         var config = new ConfigurationBuilder()
-           .SetBasePath(Path.Combine(Directory.GetCurrentDirectory()))
-           .AddJsonFile("appsettings.json")
-           .AddEnvironmentVariables()
-           .Build();
+            .SetBasePath(Path.Combine(Directory.GetCurrentDirectory()))
+            .AddJsonFile("appsettings.json")
+            .AddEnvironmentVariables()
+            .Build();
 
         var optionsBuilder = new DbContextOptionsBuilder<ConfigurationDbContext>();
         var storeOptions = new ConfigurationStoreOptions();
         var connectionString = config.GetConnectionString("IdentityConnection");
-        optionsBuilder.UseSqlServer(connectionString, sqlServerOptionsAction: o => o.MigrationsAssembly("Identity.API"));
+        optionsBuilder.UseSqlServer(connectionString, o => o.MigrationsAssembly("Identity.API"));
 
         return new ConfigurationDbContext(optionsBuilder.Options, storeOptions);
     }

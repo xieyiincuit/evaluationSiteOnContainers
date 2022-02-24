@@ -23,7 +23,7 @@ services:
     image: envoyproxy/envoy-dev:35f8d59b1172a85f02dd119791a9ef42c728cfa8
 
   identity-api:
-    image: ${REGISTRY:-eshop}/identity.api:${PLATFORM:-linux}-${TAG:-latest}
+    image: ${REGISTRY:-esite}/identity.api:${PLATFORM:-linux}-${TAG:-latest}
     build:
       context: .
       dockerfile: Services/IdentityServer/Identity.API/Dockerfile

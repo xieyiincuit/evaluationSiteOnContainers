@@ -1,4 +1,7 @@
+using Newtonsoft.Json;
+
 namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.ViewModels.Diagnostics;
+
 public class DiagnosticsViewModel
 {
     public DiagnosticsViewModel(AuthenticateResult result)
@@ -11,7 +14,7 @@ public class DiagnosticsViewModel
             var bytes = Base64Url.Decode(encoded);
             var value = Encoding.UTF8.GetString(bytes);
 
-            Clients = Newtonsoft.Json.JsonConvert.DeserializeObject<string[]>(value);
+            Clients = JsonConvert.DeserializeObject<string[]>(value);
         }
     }
 

@@ -23,8 +23,8 @@ public class EvaluationCategoryController : ControllerBase
     [AllowAnonymous]
     [HttpGet]
     [Route("categories")]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType(typeof(List<EvaluationCategory>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int) HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(List<EvaluationCategory>), (int) HttpStatusCode.OK)]
     public async Task<IActionResult> GetEvaluateCategoriesAsync()
     {
         var categories = await _categoryService.GetEvaluationCategoriesAsync();
@@ -34,8 +34,8 @@ public class EvaluationCategoryController : ControllerBase
 
     [AllowAnonymous]
     [HttpGet("category/{id:int}", Name = nameof(GetEvaluateCategoryAsync))]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType(typeof(EvaluationCategory), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int) HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(EvaluationCategory), (int) HttpStatusCode.OK)]
     public async Task<IActionResult> GetEvaluateCategoryAsync([FromRoute] int id)
     {
         var category = await _categoryService.GetEvaluationCategoryAsync(id);
@@ -45,9 +45,9 @@ public class EvaluationCategoryController : ControllerBase
 
     [HttpPut]
     [Route("category")]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int) HttpStatusCode.NotFound)]
+    [ProducesResponseType((int) HttpStatusCode.NoContent)]
     public async Task<IActionResult> ChangeEvaluateCategoryAsync([FromBody] CategoryUpdateDto categoryUpdateDto)
     {
         if (categoryUpdateDto == null) return BadRequest();
@@ -65,8 +65,8 @@ public class EvaluationCategoryController : ControllerBase
 
     [HttpPost]
     [Route("category")]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(EvaluationCategory), (int)HttpStatusCode.Created)]
+    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(EvaluationCategory), (int) HttpStatusCode.Created)]
     public async Task<IActionResult> AddEvaluateCategoryAsync([FromBody] CategoryAddDto categoryAddDto)
     {
         if (categoryAddDto == null) return BadRequest();
@@ -76,14 +76,14 @@ public class EvaluationCategoryController : ControllerBase
         var userId = User.FindFirst("sub").Value;
         _logger.LogInformation("---- administrator:id:{UserId}, name:{Name} add a category -> old:{@old} new:{@new}",
             userId, User.Identity.Name, entity, categoryAddDto);
-        return CreatedAtRoute(nameof(GetEvaluateCategoryAsync), new { id = entity.CategoryId }, null);
+        return CreatedAtRoute(nameof(GetEvaluateCategoryAsync), new {id = entity.CategoryId}, null);
     }
 
     [HttpDelete]
     [Route("category/{id:int}")]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int) HttpStatusCode.NotFound)]
+    [ProducesResponseType((int) HttpStatusCode.NoContent)]
     public async Task<IActionResult> RemoveEvaluateCategoryAsync(int id)
     {
         if (id <= 0 || id >= int.MaxValue) return BadRequest();

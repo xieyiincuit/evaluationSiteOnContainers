@@ -3,10 +3,16 @@
 public class ResilientTransaction
 {
     private readonly DbContext _context;
-    private ResilientTransaction(DbContext context) =>
-        _context = context ?? throw new ArgumentNullException(nameof(context));
 
-    public static ResilientTransaction New(DbContext context) => new(context);
+    private ResilientTransaction(DbContext context)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+    }
+
+    public static ResilientTransaction New(DbContext context)
+    {
+        return new(context);
+    }
 
     public async Task ExecuteAsync(Func<Task> action)
     {

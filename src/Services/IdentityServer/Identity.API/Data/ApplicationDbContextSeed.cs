@@ -24,7 +24,6 @@ public class ApplicationDbContextSeed
                 await context.Roles.AddRangeAsync(GetDefaultRoles());
                 await context.SaveChangesAsync();
                 logger.LogInformation("---- Ending Initialize Roles");
-
             }
 
             if (!context.UserRoles.Any())
@@ -52,7 +51,7 @@ public class ApplicationDbContextSeed
 
     private IEnumerable<ApplicationUser> GetDefaultUser()
     {
-        var admin = new ApplicationUser()
+        var admin = new ApplicationUser
         {
             NickName = "Simple",
             Avatar = "default",
@@ -74,7 +73,7 @@ public class ApplicationDbContextSeed
         };
         admin.PasswordHash = _passwordHasher.HashPassword(admin, "zhou11..");
 
-        var user = new ApplicationUser()
+        var user = new ApplicationUser
         {
             NickName = "Zywoo",
             Avatar = "default",
@@ -96,7 +95,7 @@ public class ApplicationDbContextSeed
         };
         user.PasswordHash = _passwordHasher.HashPassword(user, "zhou11..");
 
-        var evaluator = new ApplicationUser()
+        var evaluator = new ApplicationUser
         {
             NickName = "Niko",
             Avatar = "default",
@@ -118,7 +117,7 @@ public class ApplicationDbContextSeed
         };
         evaluator.PasswordHash = _passwordHasher.HashPassword(evaluator, "zhou11..");
 
-        return new List<ApplicationUser>()
+        return new List<ApplicationUser>
         {
             admin,
             evaluator,
@@ -128,37 +127,37 @@ public class ApplicationDbContextSeed
 
     private IEnumerable<IdentityRole> GetDefaultRoles()
     {
-        var roles = new List<IdentityRole>()
+        var roles = new List<IdentityRole>
+        {
+            new()
             {
-                new IdentityRole()
-                {
-                    Id = Guid.NewGuid().ToString("N"),
-                    ConcurrencyStamp = Guid.NewGuid().ToString("D"),
-                    Name = "administrator",
-                    NormalizedName = "ADMINISTRATOR"
-                },
-                new IdentityRole()
-                {
-                    Id = Guid.NewGuid().ToString("N"),
-                    ConcurrencyStamp = Guid.NewGuid().ToString("D"),
-                    Name = "evaluator",
-                    NormalizedName = "EVALUATOR"
-                },
-                new IdentityRole()
-                {
-                    Id = Guid.NewGuid().ToString("N"),
-                    ConcurrencyStamp = Guid.NewGuid().ToString("D"),
-                    Name = "normaluser",
-                    NormalizedName = "NORMALUSER"
-                },
-                new IdentityRole()
-                {
-                    Id = Guid.NewGuid().ToString("N"),
-                    ConcurrencyStamp = Guid.NewGuid().ToString("D"),
-                    Name = "forbiddenuser",
-                    NormalizedName = "FORBIDDENUSER"
-                }
-            };
+                Id = Guid.NewGuid().ToString("N"),
+                ConcurrencyStamp = Guid.NewGuid().ToString("D"),
+                Name = "administrator",
+                NormalizedName = "ADMINISTRATOR"
+            },
+            new()
+            {
+                Id = Guid.NewGuid().ToString("N"),
+                ConcurrencyStamp = Guid.NewGuid().ToString("D"),
+                Name = "evaluator",
+                NormalizedName = "EVALUATOR"
+            },
+            new()
+            {
+                Id = Guid.NewGuid().ToString("N"),
+                ConcurrencyStamp = Guid.NewGuid().ToString("D"),
+                Name = "normaluser",
+                NormalizedName = "NORMALUSER"
+            },
+            new()
+            {
+                Id = Guid.NewGuid().ToString("N"),
+                ConcurrencyStamp = Guid.NewGuid().ToString("D"),
+                Name = "forbiddenuser",
+                NormalizedName = "FORBIDDENUSER"
+            }
+        };
 
         return roles;
     }
@@ -174,24 +173,24 @@ public class ApplicationDbContextSeed
         var evaluator = await context.Users.FirstOrDefaultAsync(x => x.UserName == "NIKOTHERE".ToLower());
         var evaluatorRole = await context.Roles.FirstOrDefaultAsync(x => x.Name == "EVALUATOR".ToLower());
 
-        var linkRoles = new List<IdentityUserRole<string>>()
+        var linkRoles = new List<IdentityUserRole<string>>
+        {
+            new()
             {
-                new IdentityUserRole<string>()
-                {
-                    UserId = admin.Id,
-                    RoleId = adminRole.Id
-                },
-                new IdentityUserRole<string>()
-                {
-                    UserId = user.Id,
-                    RoleId = userRole.Id
-                },
-                new IdentityUserRole<string>()
-                {
-                    UserId = evaluator.Id,
-                    RoleId = evaluatorRole.Id
-                },
-            };
+                UserId = admin.Id,
+                RoleId = adminRole.Id
+            },
+            new()
+            {
+                UserId = user.Id,
+                RoleId = userRole.Id
+            },
+            new()
+            {
+                UserId = evaluator.Id,
+                RoleId = evaluatorRole.Id
+            }
+        };
         return linkRoles;
     }
 }

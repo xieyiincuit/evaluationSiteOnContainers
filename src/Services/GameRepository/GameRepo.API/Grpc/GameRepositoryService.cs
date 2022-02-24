@@ -2,8 +2,8 @@
 
 public class GameRepositoryService : GameRepository.GameRepositoryBase
 {
-    private readonly IGameShopItemService _shopItemService;
     private readonly ILogger<GameRepositoryService> _logger;
+    private readonly IGameShopItemService _shopItemService;
 
     public GameRepositoryService(IGameShopItemService shopItemService, ILogger<GameRepositoryService> logger)
     {
@@ -11,9 +11,11 @@ public class GameRepositoryService : GameRepository.GameRepositoryBase
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public override async Task<shopStatusChangeResponse> ChangeShopSellStatus(shopStatusChangeRequest request, ServerCallContext context)
+    public override async Task<shopStatusChangeResponse> ChangeShopSellStatus(shopStatusChangeRequest request,
+        ServerCallContext context)
     {
-        _logger.LogInformation("Begin grpc call from method {Method} for shopItem id {Id}", context.Method, request.ShopItemId);
+        _logger.LogInformation("Begin grpc call from method {Method} for shopItem id {Id}", context.Method,
+            request.ShopItemId);
 
         await _shopItemService.UpdateShopItemStockWhenTakeDownAsync(request.ShopItemId);
         var response = await _shopItemService.ChangeGameShopItemStatusAsync(request.ShopItemId);
@@ -31,7 +33,8 @@ public class GameRepositoryService : GameRepository.GameRepositoryBase
         }
         else
         {
-            context.Status = new Status(StatusCode.Internal, $"shopItem with id {request.ShopItemId} has stop sell fail");
+            context.Status = new Status(StatusCode.Internal,
+                $"shopItem with id {request.ShopItemId} has stop sell fail");
             _logger.LogInformation("call via grpc: status:{status}", context.Status);
             var result = new shopStatusChangeResponse
             {

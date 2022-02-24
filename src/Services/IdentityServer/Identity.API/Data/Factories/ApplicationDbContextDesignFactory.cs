@@ -12,7 +12,7 @@ public class ApplicationDbContextDesignFactory : IDesignTimeDbContextFactory<App
 
         var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
         var connectionString = configuration.GetConnectionString("IdentityConnection");
-        builder.UseSqlServer(connectionString, sqlServerOptionsAction: o => o.MigrationsAssembly("Identity.API"));
+        builder.UseSqlServer(connectionString, o => o.MigrationsAssembly("Identity.API"));
 
         return new ApplicationDbContext(builder.Options);
     }

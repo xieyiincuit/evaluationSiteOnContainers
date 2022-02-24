@@ -8,6 +8,7 @@ public class GameOwnerService : IGameOwnerService
     {
         _repoDbContext = repoDbContext ?? throw new ArgumentNullException(nameof(repoDbContext));
     }
+
     public async Task<GameOwner> GetGameOwnerRecordAsync(string userId, int gameId)
     {
         return await _repoDbContext.GameOwners
@@ -25,7 +26,7 @@ public class GameOwnerService : IGameOwnerService
 
     public async Task AddGameOwnerRecordAsync(string userId, int gameId)
     {
-        var gameOwnerRecord = new GameOwner()
+        var gameOwnerRecord = new GameOwner
         {
             GameId = gameId,
             UserId = userId

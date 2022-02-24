@@ -4,10 +4,10 @@
 [Route("api/v1/game")]
 public class PlaySuggestionController : ControllerBase
 {
-    private readonly IPlaySuggestionService _suggestionService;
-    private readonly IMapper _mapper;
-    private readonly ILogger<PlaySuggestionController> _logger;
     private const int _pageSize = 10;
+    private readonly ILogger<PlaySuggestionController> _logger;
+    private readonly IMapper _mapper;
+    private readonly IPlaySuggestionService _suggestionService;
 
     public PlaySuggestionController(
         IPlaySuggestionService suggestionService,
@@ -21,8 +21,8 @@ public class PlaySuggestionController : ControllerBase
 
     [HttpGet]
     [Route("suggestions")]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType(typeof(PaginatedItemsDtoModel<GamePlaySuggestion>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int) HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(PaginatedItemsDtoModel<GamePlaySuggestion>), (int) HttpStatusCode.OK)]
     public async Task<IActionResult> GetSuggestionsAsync([FromQuery] int pageIndex = 1)
     {
         var totalSuggestions = await _suggestionService.CountPlaySuggestionsAsync();
@@ -36,9 +36,9 @@ public class PlaySuggestionController : ControllerBase
     }
 
     [HttpGet("suggestion/{suggestionId:int}", Name = nameof(GetSuggestionByIdAsync))]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType(typeof(GamePlaySuggestion), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int) HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(GamePlaySuggestion), (int) HttpStatusCode.OK)]
     public async Task<IActionResult> GetSuggestionByIdAsync([FromRoute] int suggestionId)
     {
         if (suggestionId <= 0 || suggestionId >= int.MaxValue) return BadRequest();
@@ -52,8 +52,8 @@ public class PlaySuggestionController : ControllerBase
     [HttpPost]
     [Route("suggestion")]
     [Authorize(Roles = "administrator")]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.Created)]
+    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int) HttpStatusCode.Created)]
     public async Task<IActionResult> CreateSuggestionAsync([FromBody] PlaySuggestionAddDto suggestionAddDto)
     {
         if (suggestionAddDto == null) return BadRequest();
@@ -64,19 +64,20 @@ public class PlaySuggestionController : ControllerBase
         _logger.LogInformation("administrator: id:{id}, name:{Name} add a suggestion -> suggestion:{@suggestion}",
             User.FindFirst("sub").Value, User.Identity.Name, suggestionAddDto);
 
-        return CreatedAtRoute(nameof(GetSuggestionByIdAsync), new { suggestionId = entityToAdd.Id }, null);
+        return CreatedAtRoute(nameof(GetSuggestionByIdAsync), new {suggestionId = entityToAdd.Id}, null);
     }
 
     [HttpDelete]
     [Route("suggestion/{id:int}")]
     [Authorize(Roles = "administrator")]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int) HttpStatusCode.NoContent)]
     public async Task<IActionResult> DeleteSuggestionAsync([FromRoute] int id)
     {
         if (id <= 0 || id >= int.MaxValue) return BadRequest();
 
-        _logger.LogInformation($"administrator: id:{User.FindFirst("sub").Value}, name:{User.Identity.Name} delete a suggestion -> Id:{id}");
+        _logger.LogInformation(
+            $"administrator: id:{User.FindFirst("sub").Value}, name:{User.Identity.Name} delete a suggestion -> Id:{id}");
         var response = await _suggestionService.DeletePlaySuggestionAsync(id);
         return response == true ? NoContent() : NotFound();
     }
@@ -85,18 +86,15 @@ public class PlaySuggestionController : ControllerBase
     [HttpPut]
     [Route("suggestion")]
     [Authorize(Roles = "administrator")]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int) HttpStatusCode.NoContent)]
     public async Task<IActionResult> UpdateSuggestionAsync([FromBody] PlaySuggestionUpdateDto suggestionUpdateDto)
     {
         if (suggestionUpdateDto == null) return BadRequest();
 
         var entityToUpdate = await _suggestionService.GetPlaySuggestionAsync(suggestionUpdateDto.Id);
 
-        if (entityToUpdate == null)
-        {
-            return NotFound();
-        }
+        if (entityToUpdate == null) return NotFound();
 
         _logger.LogInformation("administrator: id:{id}, name:{Name} add a suggestion -> old:{@old} new:{@new}",
             User.FindFirst("sub").Value, User.Identity.Name, entityToUpdate, suggestionUpdateDto);

@@ -4,10 +4,7 @@ public class ValidateModelStateFilter : ActionFilterAttribute
 {
     public override void OnActionExecuting(ActionExecutingContext context)
     {
-        if (context.ModelState.IsValid)
-        {
-            return;
-        }
+        if (context.ModelState.IsValid) return;
 
         var validationErrors = context.ModelState
             .Keys
@@ -23,4 +20,3 @@ public class ValidateModelStateFilter : ActionFilterAttribute
         context.Result = new BadRequestObjectResult(json);
     }
 }
-

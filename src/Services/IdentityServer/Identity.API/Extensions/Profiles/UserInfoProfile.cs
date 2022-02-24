@@ -4,7 +4,7 @@ public static class UserInfoMapping
 {
     public static UserInfoDto MapToDtoModel(ApplicationUser src)
     {
-        var mapToUser = new UserInfoDto()
+        var mapToUser = new UserInfoDto
         {
             UserId = src.Id,
             Avatar = src.Avatar,
@@ -28,5 +28,4 @@ public static class UserInfoMapping
         dest.BirthOfDay = src.BirthOfDay;
         return dest;
     }
-
 }

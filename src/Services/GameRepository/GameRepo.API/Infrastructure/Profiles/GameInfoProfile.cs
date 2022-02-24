@@ -15,8 +15,8 @@ public class GameInfoProfile : Profile
             .ForMember(dest => dest.GamePlaySuggestionId, opt => opt.MapFrom(src => src.SuggestionId));
 
         CreateMap<GameInfoUpdateDto, GameInfo>()
-           .ForMember(dest => dest.GameCategoryId, opt => opt.MapFrom(src => src.CategoryId))
-           .ForMember(dest => dest.GameCompanyId, opt => opt.MapFrom(src => src.CompanyId))
-           .ForMember(dest => dest.GamePlaySuggestionId, opt => opt.MapFrom(src => src.SuggestionId));
+            .ForMember(dest => dest.GameCategoryId, opt => opt.MapFrom(src => src.CategoryId))
+            .ForMember(dest => dest.GameCompanyId, opt => opt.MapFrom(src => src.CompanyId))
+            .ForMember(dest => dest.GamePlaySuggestionId, opt => opt.MapFrom(src => src.SuggestionId));
     }
 }

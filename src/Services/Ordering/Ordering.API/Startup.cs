@@ -12,7 +12,7 @@ public class Startup
     public virtual IServiceProvider ConfigureServices(IServiceCollection services)
     {
         #region GrpcClient
-      
+
         services.AddGrpc();
         services.AddGrpcClient<GameRepository.GameRepositoryClient>(options =>
         {
@@ -27,11 +27,8 @@ public class Startup
 
         #region MvcSettings
 
-        services.AddControllers(options =>
-           {
-               options.Filters.Add(typeof(HttpGlobalExceptionFilter));
-           })
-           .AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = true);
+        services.AddControllers(options => { options.Filters.Add(typeof(HttpGlobalExceptionFilter)); })
+            .AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = true);
 
         services.AddHttpLogging(options =>
         {
@@ -65,14 +62,14 @@ public class Startup
             options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
             {
                 Type = SecuritySchemeType.OAuth2,
-                Flows = new OpenApiOAuthFlows()
+                Flows = new OpenApiOAuthFlows
                 {
-                    Implicit = new OpenApiOAuthFlow()
+                    Implicit = new OpenApiOAuthFlow
                     {
                         AuthorizationUrl =
                             new Uri($"{Configuration.GetValue<string>("IdentityUrlExternal")}/connect/authorize"),
                         TokenUrl = new Uri($"{Configuration.GetValue<string>("IdentityUrlExternal")}/connect/token"),
-                        Scopes = new Dictionary<string, string>()
+                        Scopes = new Dictionary<string, string>
                         {
                             {"ordering-buy", "商品下单服务权限"},
                             {"ordering-manage", "订单管理权限"}
@@ -106,14 +103,13 @@ public class Startup
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-
         }).AddJwtBearer(options =>
         {
             options.Authority = identityUrl;
             options.RequireHttpsMetadata = false;
             options.Audience = "ordering";
-           
-            options.TokenValidationParameters = new TokenValidationParameters()
+
+            options.TokenValidationParameters = new TokenValidationParameters
             {
                 NameClaimType = "name",
                 RoleClaimType = "role",
@@ -131,7 +127,8 @@ public class Startup
         {
             var redisClient = provider.GetRequiredService<IRedisClientFactory>();
             var redLockFactory = RedLockFactory.Create(
-                new List<RedLockMultiplexer> { new RedLockMultiplexer(redisClient.GetDefaultRedisClient().ConnectionPoolManager.GetConnection()) }
+                new List<RedLockMultiplexer>
+                    {new(redisClient.GetDefaultRedisClient().ConnectionPoolManager.GetConnection())}
             );
             return redLockFactory;
         });
@@ -146,8 +143,8 @@ public class Startup
             .AddCheck("self", () => HealthCheckResult.Healthy())
             .AddRedis(
                 Configuration["RedisHCCheckConnection"],
-                name: "redis-check",
-                tags: new string[] { "db", "redis", "ordering" });
+                "redis-check",
+                tags: new string[] {"db", "redis", "ordering"});
 
         #endregion
 
@@ -173,16 +170,10 @@ public class Startup
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
-        if (env.IsDevelopment())
-        {
-            IdentityModelEventSource.ShowPII = true;
-        }
+        if (env.IsDevelopment()) IdentityModelEventSource.ShowPII = true;
 
         var pathBase = Configuration["PATH_BASE"];
-        if (!string.IsNullOrEmpty(pathBase))
-        {
-            app.UsePathBase(pathBase);
-        }
+        if (!string.IsNullOrEmpty(pathBase)) app.UsePathBase(pathBase);
 
         app.UseSwagger()
             .UseSwaggerUI(setup =>
@@ -192,7 +183,8 @@ public class Startup
                     "Ordering.API V1");
                 setup.OAuthClientId("orderingswaggerui");
                 setup.OAuthAppName("Ordering Swagger UI");
-                setup.OAuth2RedirectUrl($"http://localhost:{Configuration.GetValue<string>("SwaggerRedirectUrlPort","50001")}/swagger/oauth2-redirect.html");
+                setup.OAuth2RedirectUrl(
+                    $"http://localhost:{Configuration.GetValue<string>("SwaggerRedirectUrlPort", "50001")}/swagger/oauth2-redirect.html");
             });
 
         app.UseHttpLogging();
@@ -209,7 +201,7 @@ public class Startup
             endpoints.MapControllers();
             endpoints.MapGrpcService<OrderingService>();
 
-            endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
+            endpoints.MapHealthChecks("/hc", new HealthCheckOptions
             {
                 Predicate = _ => true,
                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
