@@ -19,3 +19,14 @@ services:
   cache_master:
     image: redis:latest
 
+  consul-server1:
+    image: consul:latest
+
+  consul-server2:
+    image: consul:latest
+
+  consul-server3:
+    image: consul:latest
+
+  consul-client:
+    image: consul:latest

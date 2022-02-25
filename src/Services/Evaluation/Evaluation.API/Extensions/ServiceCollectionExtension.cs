@@ -115,11 +115,11 @@ public static class ServiceCollectionExtension
                 configuration["ConnectionStrings:EvaluationDbConnectString"],
                 "EvaluationDB-check",
                 HealthStatus.Degraded,
-                new[] {"db", "evaluation", "mysql"})
+                new[] { "db", "evaluation", "mysql" })
             .AddRabbitMQ(
                 $"amqp://{mqName}:{mqPassword}@{mqHost}/",
                 name: "evaluation-rabbitmqbus-check",
-                tags: new[] {"rabbitmqbus"});
+                tags: new[] { "rabbitmqbus" });
 
         return services;
     }
@@ -142,7 +142,7 @@ public static class ServiceCollectionExtension
 
                 return new BadRequestObjectResult(problemDetails)
                 {
-                    ContentTypes = {"application/problem+json", "application/problem+xml"}
+                    ContentTypes = { "application/problem+json", "application/problem+xml" }
                 };
             };
         });
@@ -274,6 +274,20 @@ public static class ServiceCollectionExtension
             };
         });
 
+        return services;
+    }
+
+    public static IServiceCollection AddCustomRegister(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<ServiceRegisterOptions>(configuration.GetSection("ServiceRegister"));
+        services.AddSingleton<Consul.IConsulClient>(p => new Consul.ConsulClient(cfg =>
+        {
+            var serviceConfiguration = p.GetRequiredService<IOptions<ServiceRegisterOptions>>().Value;
+            if (!string.IsNullOrEmpty(serviceConfiguration.Register.HttpEndpoint))
+            {
+                cfg.Address = new Uri(serviceConfiguration.Register.HttpEndpoint);
+            }
+        }));
         return services;
     }
 }

@@ -18,57 +18,131 @@ services:
 
   cache_master:
     image: redis:latest
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
 
-  gateway_web:
+  gateway_envoy:
     image: envoyproxy/envoy-dev:35f8d59b1172a85f02dd119791a9ef42c728cfa8
+
+  consul-server1:
+    image: consul:latest
+
+  consul-server2:
+    image: consul:latest
+
+  consul-server3:
+    image: consul:latest
+
+  consul-client:
+    image: consul:latest
 
   identity-api:
     image: ${REGISTRY:-esite}/identity.api:${PLATFORM:-linux}-${TAG:-latest}
     build:
       context: .
       dockerfile: Services/IdentityServer/Identity.API/Dockerfile
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
     depends_on:
       - db_indentity
       - mq_evaluation
+      - consul-server1
 
   evaluation-api:
     image: ${REGISTRY:-esite}/evaluation.api:${PLATFORM:-linux}-${TAG:-latest}
     build:
       context: .
       dockerfile: Services/Evaluation/Evaluation.API/Dockerfile
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.type == evaluation-api
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
     depends_on:
       - db_evaluation
       - mq_evaluation
       - identity-api
+      - consul-server1
+
+  evaluation-api-2:
+    image: ${REGISTRY:-esite}/evaluation.api:${PLATFORM:-linux}-${TAG:-latest}
+    build:
+      context: .
+      dockerfile: Services/Evaluation/Evaluation.API/Dockerfile
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.type == evaluation-api-2
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
+    depends_on:
+      - db_evaluation
+      - mq_evaluation
+      - identity-api
+      - consul-server1
 
   gamerepo-api:
     image: ${REGISTRY:-esite}/gamerepo.api:${PLATFORM:-linux}-${TAG:-latest}
     build:
       context: .
       dockerfile: Services/GameRepository/GameRepo.API/Dockerfile
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
     depends_on:
       - cache_master
       - db_gamerepo
       - mq_evaluation
       - identity-api
+      - consul-server1
 
   ordering-api:
     image: ${REGISTRY:-esite}/ordering.api:${PLATFORM:-linux}-${TAG:-latest}
     build:
       context: .
       dockerfile: Services/Ordering/Ordering.API/Dockerfile
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
     depends_on:
       - cache_master
       - identity-api
+      - consul-server1
 
   backmanage-api:
     image: ${REGISTRY:-esite}/backmanage.api:${PLATFORM:-linux}-${TAG:-latest}
     build:
       context: .
       dockerfile: Services/BackManager/BackManage.API/Dockerfile
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
     depends_on:
       - db_backmanage
       - identity-api
+      - consul-server1
 
   webstatus:
     image: ${REGISTRY:-esite}/webstatus:${PLATFORM:-linux}-${TAG:-latest}

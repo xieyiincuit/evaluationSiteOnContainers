@@ -1,4 +1,6 @@
-﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Extensions;
+﻿using Consul;
+
+namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Extensions;
 
 public static class ApplicationBuilderExtension
 {

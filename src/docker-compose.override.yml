@@ -45,14 +45,13 @@ services:
       - "5672:5672"
 
   cache_master:
-    restart: always
     ports:
       - '6379:6379'
     command: redis-server --save 20 1 --loglevel warning --requirepass zhouredis11..
     volumes:
       - redis_master:/data
 
-  gateway_web:
+  gateway_envoy:
     volumes:
       - ./ApiGateways/Envoy/config/envoy.yaml:/etc/envoy/envoy.yaml
       - ./ApiGateways/Envoy/logs:/var/log
@@ -61,6 +60,56 @@ services:
       - 10000:10000
     environment:
       - "ENVOY_UID=0"
+
+  consul-server1:
+    restart: always
+    networks:
+      - consul
+    ports:
+      - "8500:8500"
+      - "8600:8600/tcp"
+      - "8600:8600/udp"
+    volumes:
+      - consul_center:/consul/data
+      - consul_center:/consul/config
+    command: agent -server -ui -bootstrap-expect=3 -node=server-1 -client=0.0.0.0 -retry-join consul-server2 -retry-join consul-server3
+    environment:
+      - 'CONSUL_LOCAL_CONFIG={"connect": {"enabled": true}}'
+
+  consul-server2:
+    restart: always
+    networks:
+      - consul
+    volumes:
+      - consul_center1:/consul/data
+      - consul_center1:/consul/config
+    command: agent -server -ui -bootstrap-expect=3 -node=server-2 -client=0.0.0.0 -retry-join consul-server1 -retry-join consul-server3
+    environment:
+      - 'CONSUL_LOCAL_CONFIG={"connect": {"enabled": true}}'
+
+  consul-server3:
+    restart: always
+    networks:
+      - consul
+    volumes:
+      - consul_center2:/consul/data
+      - consul_center2:/consul/config
+    command: agent -server -ui -bootstrap-expect=3 -node=server-3 -client=0.0.0.0 -retry-join consul-server1 -retry-join consul-server2
+    environment:
+      - 'CONSUL_LOCAL_CONFIG={"connect": {"enabled": true}}'
+
+  consul-client:
+    restart: always
+    networks:
+      - consul
+    volumes:
+      - consul_client:/consul/data
+      - consul_client:/consul/config
+    command: agent -node=client-1 -client=0.0.0.0 -retry-join consul-server1 -retry-join consul-server2 -retry-join consul-server3
+    environment:
+      - 'CONSUL_LOCAL_CONFIG={"connect": {"enabled": true}}'
+    ports:
+      - "18500:8500"
 
   identity-api:
     environment:
@@ -75,6 +124,10 @@ services:
       - OrderingApiClient=http://localhost:5102
       - BackManageApiClient=http://localhost:5104
       - IdentityUrl=http://identity-api
+      - ServiceRegister__ServiceName=identity-api
+      - ServiceRegister__ServiceHost=host.docker.internal
+      - ServiceRegister__ServicePort=5105
+      - ServiceRegister__Register__HttpEndpoint=http://host.docker.internal:18500
     ports:
       - "5105:80"
 
@@ -93,8 +146,34 @@ services:
       - PATH_BASE=/evaluation-api
       - UseCustomizationData=True
       - SwaggerRedirectUrlPort=5100
+      - ServiceRegister__ServiceName=evaluation-api
+      - ServiceRegister__ServiceHost=host.docker.internal
+      - ServiceRegister__ServicePort=5100
+      - ServiceRegister__Register__HttpEndpoint=http://host.docker.internal:18500
     ports:
       - "5100:80"
+
+  evaluation-api-2:
+    volumes:
+      - ./Services/Evaluation/Evaluation.API/Setup:/app/Setup
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://0.0.0.0:80
+      - ConnectionStrings__EvaluationDbConnectString=server=db_evaluation;port=3306;database=game_evaluation;user=root;password=Zhoushan!1n;IgnoreCommandTransaction=true
+      - EventBusSettings__Connection=mq_evaluation
+      - EventBusSettings__UserName=zhoushanlin
+      - EventBusSettings__PassWord=rabbitmq!!..
+      - IdentityUrlExternal=http://localhost:5105
+      - IdentityUrl=http://identity-api
+      - PATH_BASE=/evaluation-api
+      - UseCustomizationData=True
+      - SwaggerRedirectUrlPort=6100
+      - ServiceRegister__ServiceName=evaluation-api
+      - ServiceRegister__ServiceHost=host.docker.internal
+      - ServiceRegister__ServicePort=6100
+      - ServiceRegister__Register__HttpEndpoint=http://host.docker.internal:18500
+    ports:
+      - "6100:80"
 
   #容器内通讯使用容器开放的端口 而不是映射到主机的端口
   gamerepo-api:
@@ -117,6 +196,10 @@ services:
       - GRPC_PORT=81
       - PORT=80
       - SwaggerRedirectUrlPort=5101
+      - ServiceRegister__ServiceName=gamerepo-api
+      - ServiceRegister__ServiceHost=host.docker.internal
+      - ServiceRegister__ServicePort=5101
+      - ServiceRegister__Register__HttpEndpoint=http://host.docker.internal:18500
     ports:
       - "5101:80"
       - "9101:81"
@@ -136,6 +219,10 @@ services:
       - GRPC_PORT=81
       - PORT=80
       - SwaggerRedirectUrlPort=5102
+      - ServiceRegister__ServiceName=ordering-api
+      - ServiceRegister__ServiceHost=host.docker.internal
+      - ServiceRegister__ServicePort=5102
+      - ServiceRegister__Register__HttpEndpoint=http://host.docker.internal:18500
     ports:
       - "5102:80"
       - "9102:81"
@@ -149,6 +236,10 @@ services:
       - IdentityUrl=http://identity-api
       - PATH_BASE=/backmanage-api
       - SwaggerRedirectUrlPort=5104
+      - ServiceRegister__ServiceName=backmanage-api
+      - ServiceRegister__ServiceHost=host.docker.internal
+      - ServiceRegister__ServicePort=5104
+      - ServiceRegister__Register__HttpEndpoint=http://host.docker.internal:18500
     ports:
       - "5104:80"
 
@@ -175,3 +266,11 @@ volumes:
   mssql_identity:
   rabbitmq_evaluation:
   redis_master:
+  consul_center:
+  consul_center1:
+  consul_center2:
+  consul_client:
+
+networks:
+  consul:
+    driver: bridge

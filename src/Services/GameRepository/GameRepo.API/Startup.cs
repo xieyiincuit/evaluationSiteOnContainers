@@ -12,6 +12,20 @@ public class Startup
     // This method gets called by the runtime. Use this method to add services to the container.
     public virtual IServiceProvider ConfigureServices(IServiceCollection services)
     {
+        #region ConsulRegister
+
+        services.Configure<ServiceRegisterOptions>(Configuration.GetSection("ServiceRegister"));
+        services.AddSingleton<Consul.IConsulClient>(p => new Consul.ConsulClient(cfg =>
+        {
+            var serviceConfiguration = p.GetRequiredService<IOptions<ServiceRegisterOptions>>().Value;
+            if (!string.IsNullOrEmpty(serviceConfiguration.Register.HttpEndpoint))
+            {
+                cfg.Address = new Uri(serviceConfiguration.Register.HttpEndpoint);
+            }
+        }));
+
+        #endregion
+
         services.AddGrpc();
 
         #region MvcSettings
@@ -145,7 +159,7 @@ public class Startup
 
                 return new BadRequestObjectResult(problemDetails)
                 {
-                    ContentTypes = {"application/problem+json", "application/problem+xml"}
+                    ContentTypes = { "application/problem+json", "application/problem+xml" }
                 };
             };
         });
@@ -244,19 +258,19 @@ public class Startup
                 .AddMySql(
                     Configuration["ConnectionStrings:GameRepoDbConnectString"],
                     "GameRepoDB-check",
-                    tags: new string[] {"db", "mysql", "gamerepo"});
+                    tags: new string[] { "db", "mysql", "gamerepo" });
 
             hcBuilder
                 .AddRedis(
                     Configuration["RedisHCCheckConnection"],
                     "redis-check",
-                    tags: new string[] {"db", "redis", "gamerepo"});
+                    tags: new string[] { "db", "redis", "gamerepo" });
 
             hcBuilder
                 .AddRabbitMQ(
                     $"amqp://{mqName}:{mqPassword}@{mqHost}/",
                     name: "gamerepo-rabbitmqbus-check",
-                    tags: new string[] {"rabbitmqbus"});
+                    tags: new string[] { "rabbitmqbus" });
         }
 
         #endregion
@@ -315,7 +329,7 @@ public class Startup
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime lifetime)
     {
         if (env.IsDevelopment()) IdentityModelEventSource.ShowPII = true;
 
@@ -358,6 +372,10 @@ public class Startup
                 Predicate = r => r.Name.Contains("self")
             });
         });
+
+        var consul = app.ApplicationServices.GetRequiredService<Consul.IConsulClient>();
+        var serviceConfiguration = app.ApplicationServices.GetRequiredService<IOptions<ServiceRegisterOptions>>();
+        app.RegisterService(serviceConfiguration, consul, lifetime);
 
         ConfigureEventBus(app);
     }

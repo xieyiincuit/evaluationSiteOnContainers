@@ -14,6 +14,7 @@ public class Startup
     {
         services
             .AddCustomMvc(Configuration)
+            .AddCustomRegister(Configuration)
             .AddCustomSwagger(Configuration)
             .AddCustomDbContext(Configuration)
             .AddCustomHealthCheck(Configuration)
@@ -33,8 +34,10 @@ public class Startup
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime lifetime)
     {
+        
+
         if (env.IsDevelopment()) IdentityModelEventSource.ShowPII = true;
 
         app.UseBundleSwagger(Configuration);
@@ -61,6 +64,10 @@ public class Startup
                 Predicate = r => r.Name.Contains("self")
             });
         });
+
+        var consul = app.ApplicationServices.GetRequiredService<Consul.IConsulClient>();
+        var serviceConfiguration = app.ApplicationServices.GetRequiredService<IOptions<ServiceRegisterOptions>>();
+        app.RegisterService(serviceConfiguration, consul, lifetime);
 
         app.UseCustomEventBus();
     }

@@ -11,6 +11,20 @@ public class Startup
 
     public virtual IServiceProvider ConfigureServices(IServiceCollection services)
     {
+        #region ConsulRegister
+
+        services.Configure<ServiceRegisterOptions>(Configuration.GetSection("ServiceRegister"));
+        services.AddSingleton<Consul.IConsulClient>(p => new Consul.ConsulClient(cfg =>
+        {
+            var serviceConfiguration = p.GetRequiredService<IOptions<ServiceRegisterOptions>>().Value;
+            if (!string.IsNullOrEmpty(serviceConfiguration.Register.HttpEndpoint))
+            {
+                cfg.Address = new Uri(serviceConfiguration.Register.HttpEndpoint);
+            }
+        }));
+
+        #endregion
+
         #region MvcSettings
 
         services.AddControllers(options => { options.Filters.Add(typeof(HttpGlobalExceptionFilter)); })
@@ -142,7 +156,7 @@ public class Startup
             .AddMySql(
                 Configuration["BackDbConnectString"],
                 "mysql-check",
-                tags: new string[] {"db", "mysql", "backmanage"});
+                tags: new string[] { "db", "mysql", "backmanage" });
 
         #endregion
 
@@ -180,7 +194,7 @@ public class Startup
         return new AutofacServiceProvider(container.Build());
     }
 
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime lifetime)
     {
         if (env.IsDevelopment()) IdentityModelEventSource.ShowPII = true;
 
@@ -222,5 +236,10 @@ public class Startup
                 Predicate = r => r.Name.Contains("self")
             });
         });
+
+
+        var consul = app.ApplicationServices.GetRequiredService<Consul.IConsulClient>();
+        var serviceConfiguration = app.ApplicationServices.GetRequiredService<IOptions<ServiceRegisterOptions>>();
+        app.RegisterService(serviceConfiguration, consul, lifetime);
     }
 }
