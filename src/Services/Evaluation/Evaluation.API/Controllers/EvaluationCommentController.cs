@@ -116,7 +116,7 @@ public class EvaluationCommentController : ControllerBase
 
     [Authorize]
     [HttpGet]
-    [Route("u/comments")]
+    [Route("comments/user")]
     [ProducesResponseType((int) HttpStatusCode.NotFound)]
     [ProducesResponseType((int) HttpStatusCode.BadRequest)]
     public async Task<IActionResult> GetUserComments([FromQuery] int pageIndex = 1)

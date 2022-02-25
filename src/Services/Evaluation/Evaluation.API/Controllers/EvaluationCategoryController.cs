@@ -1,7 +1,7 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Controllers;
 
 [ApiController]
-[Route("api/v1/evaluation")]
+[Route("api/v1/evaluation/category")]
 [Authorize(Roles = _adminRole)]
 public class EvaluationCategoryController : ControllerBase
 {
@@ -22,7 +22,7 @@ public class EvaluationCategoryController : ControllerBase
 
     [AllowAnonymous]
     [HttpGet]
-    [Route("categories")]
+    [Route("list")]
     [ProducesResponseType((int) HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(List<EvaluationCategory>), (int) HttpStatusCode.OK)]
     public async Task<IActionResult> GetEvaluateCategoriesAsync()
@@ -33,7 +33,7 @@ public class EvaluationCategoryController : ControllerBase
     }
 
     [AllowAnonymous]
-    [HttpGet("category/{id:int}", Name = nameof(GetEvaluateCategoryAsync))]
+    [HttpGet("{id:int}", Name = nameof(GetEvaluateCategoryAsync))]
     [ProducesResponseType((int) HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(EvaluationCategory), (int) HttpStatusCode.OK)]
     public async Task<IActionResult> GetEvaluateCategoryAsync([FromRoute] int id)
@@ -44,7 +44,7 @@ public class EvaluationCategoryController : ControllerBase
     }
 
     [HttpPut]
-    [Route("category")]
+    [Route("")]
     [ProducesResponseType((int) HttpStatusCode.BadRequest)]
     [ProducesResponseType((int) HttpStatusCode.NotFound)]
     [ProducesResponseType((int) HttpStatusCode.NoContent)]
@@ -64,7 +64,7 @@ public class EvaluationCategoryController : ControllerBase
     }
 
     [HttpPost]
-    [Route("category")]
+    [Route("")]
     [ProducesResponseType((int) HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(EvaluationCategory), (int) HttpStatusCode.Created)]
     public async Task<IActionResult> AddEvaluateCategoryAsync([FromBody] CategoryAddDto categoryAddDto)
@@ -80,7 +80,7 @@ public class EvaluationCategoryController : ControllerBase
     }
 
     [HttpDelete]
-    [Route("category/{id:int}")]
+    [Route("{id:int}")]
     [ProducesResponseType((int) HttpStatusCode.BadRequest)]
     [ProducesResponseType((int) HttpStatusCode.NotFound)]
     [ProducesResponseType((int) HttpStatusCode.NoContent)]
