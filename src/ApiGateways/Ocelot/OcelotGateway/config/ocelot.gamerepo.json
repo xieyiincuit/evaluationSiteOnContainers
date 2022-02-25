@@ -1,0 +1,55 @@
+{
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/gamerepo-api/api/{version}/game/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "gamerepo-api",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "{version}/g/{everything}",
+      "UpstreamHttpMethod": [],
+      "QoSOptions": {
+        "ExceptionsAllowedBeforeBreaking": 3,
+        "DurationOfBreak": 3000,
+        "TimeoutValue": 5000
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/gamerepo-api/api/{version}/user/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "gamerepo-api",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "{version}/g/user/{everything}",
+      "UpstreamHttpMethod": [],
+      "QoSOptions": {
+        "ExceptionsAllowedBeforeBreaking": 3,
+        "DurationOfBreak": 3000,
+        "TimeoutValue": 5000
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/gamerepo-api/api/{version}/shop/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "gamerepo-api",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "{version}/shop/{everything}",
+      "UpstreamHttpMethod": [],
+      "QoSOptions": {
+        "ExceptionsAllowedBeforeBreaking": 3,
+        "DurationOfBreak": 3000,
+        "TimeoutValue": 5000
+      }
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/evaluation-api/api/{version}/evaluation/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "evaluation-api",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/{version}/e/{everything}",
+      "UpstreamHttpMethod": [],
+      "QoSOptions": {
+        "ExceptionsAllowedBeforeBreaking": 3,
+        "DurationOfBreak": 5000,
+        "TimeoutValue": 5000
+      }
+    }
+  ]
+}

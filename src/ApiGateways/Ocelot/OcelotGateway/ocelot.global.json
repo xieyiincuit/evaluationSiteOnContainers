@@ -1,0 +1,10 @@
+{
+  "Routes": [],
+  "GlobalConfiguration": {
+    "BaseUrl": "http://localhost:20000",
+    "ServiceDiscoveryProvider": {
+      "Host": "localhost",
+      "Port": 8500
+    }
+  }
+}

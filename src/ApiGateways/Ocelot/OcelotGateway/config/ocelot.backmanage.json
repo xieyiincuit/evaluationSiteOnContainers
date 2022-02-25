@@ -1,0 +1,21 @@
+{
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/backmanage-api/api/{version}/back/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "backmanage-api",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/{version}/b/{everything}",
+      "UpstreamHttpMethod": [],
+      "QoSOptions": {
+        "ExceptionsAllowedBeforeBreaking": 3,
+        "DurationOfBreak": 3000,
+        "TimeoutValue": 5000
+      }
+    }
+  ]
+}
