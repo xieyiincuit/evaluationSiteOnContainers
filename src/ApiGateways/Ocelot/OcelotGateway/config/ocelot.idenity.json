@@ -3,14 +3,12 @@
     {
       "DownstreamPathTemplate": "/identity-api/api/{version}/user/{everything}",
       "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "identity-api",
-          "Port": 80
-        }
-      ],
-      "UpstreamPathTemplate": "{version}/u/{everything}",
+      "UpstreamPathTemplate": "/{version}/u/{everything}",
       "UpstreamHttpMethod": [],
+      "ServiceName": "identity-api",
+      "LoadBalancerOptions": {
+        "Type": "LeastConnection"
+      },
       "QoSOptions": {
         "ExceptionsAllowedBeforeBreaking": 3,
         "DurationOfBreak": 10000,

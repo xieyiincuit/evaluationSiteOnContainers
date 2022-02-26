@@ -3,14 +3,12 @@
     {
       "DownstreamPathTemplate": "/gamerepo-api/api/{version}/game/{everything}",
       "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "gamerepo-api",
-          "Port": 80
-        }
-      ],
-      "UpstreamPathTemplate": "{version}/g/{everything}",
+      "UpstreamPathTemplate": "/{version}/g/{everything}",
       "UpstreamHttpMethod": [],
+      "ServiceName": "gamerepo-api",
+      "LoadBalancerOptions": {
+        "Type": "LeastConnection"
+      },
       "QoSOptions": {
         "ExceptionsAllowedBeforeBreaking": 3,
         "DurationOfBreak": 3000,
@@ -20,14 +18,12 @@
     {
       "DownstreamPathTemplate": "/gamerepo-api/api/{version}/user/{everything}",
       "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "gamerepo-api",
-          "Port": 80
-        }
-      ],
-      "UpstreamPathTemplate": "{version}/g/user/{everything}",
+      "UpstreamPathTemplate": "/{version}/g/user/{everything}",
       "UpstreamHttpMethod": [],
+      "ServiceName": "gamerepo-api",
+      "LoadBalancerOptions": {
+        "Type": "LeastConnection"
+      },
       "QoSOptions": {
         "ExceptionsAllowedBeforeBreaking": 3,
         "DurationOfBreak": 3000,
@@ -37,14 +33,12 @@
     {
       "DownstreamPathTemplate": "/gamerepo-api/api/{version}/shop/{everything}",
       "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "gamerepo-api",
-          "Port": 80
-        }
-      ],
-      "UpstreamPathTemplate": "{version}/shop/{everything}",
+      "UpstreamPathTemplate": "/{version}/shop/{everything}",
       "UpstreamHttpMethod": [],
+      "ServiceName": "gamerepo-api",
+      "LoadBalancerOptions": {
+        "Type": "LeastConnection"
+      },
       "QoSOptions": {
         "ExceptionsAllowedBeforeBreaking": 3,
         "DurationOfBreak": 3000,

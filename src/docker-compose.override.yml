@@ -61,10 +61,16 @@ services:
     environment:
       - "ENVOY_UID=0"
 
+  gateway_ocelot:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://0.0.0.0:80
+      - IdentityUrl=http://identity-api
+    ports:
+      - 20000:80
+
   consul-server1:
     restart: always
-    networks:
-      - consul
     ports:
       - "8500:8500"
       - "8600:8600/tcp"
@@ -78,8 +84,6 @@ services:
 
   consul-server2:
     restart: always
-    networks:
-      - consul
     volumes:
       - consul_center1:/consul/data
       - consul_center1:/consul/config
@@ -89,8 +93,6 @@ services:
 
   consul-server3:
     restart: always
-    networks:
-      - consul
     volumes:
       - consul_center2:/consul/data
       - consul_center2:/consul/config
@@ -100,8 +102,6 @@ services:
 
   consul-client:
     restart: always
-    networks:
-      - consul
     volumes:
       - consul_client:/consul/data
       - consul_client:/consul/config
@@ -109,7 +109,7 @@ services:
     environment:
       - 'CONSUL_LOCAL_CONFIG={"connect": {"enabled": true}}'
     ports:
-      - "18500:8500"
+      - "8500"
 
   identity-api:
     environment:
@@ -125,12 +125,11 @@ services:
       - BackManageApiClient=http://localhost:5104
       - IdentityUrl=http://identity-api
       - ServiceRegister__ServiceName=identity-api
-      - ServiceRegister__ServiceHost=host.docker.internal
-      - ServiceRegister__ServicePort=5105
-      - ServiceRegister__Register__HttpEndpoint=http://host.docker.internal:18500
+      - ServiceRegister__ServiceAddress=http://identity-api:80
+      - ServiceRegister__Register__HttpEndpoint=http://consul-client:8500
     ports:
       - "5105:80"
-
+   
   evaluation-api:
     volumes:
       - ./Services/Evaluation/Evaluation.API/Setup:/app/Setup
@@ -147,12 +146,11 @@ services:
       - UseCustomizationData=True
       - SwaggerRedirectUrlPort=5100
       - ServiceRegister__ServiceName=evaluation-api
-      - ServiceRegister__ServiceHost=host.docker.internal
-      - ServiceRegister__ServicePort=5100
-      - ServiceRegister__Register__HttpEndpoint=http://host.docker.internal:18500
+      - ServiceRegister__ServiceAddress=http://evaluation-api:80
+      - ServiceRegister__Register__HttpEndpoint=http://consul-client:8500
     ports:
       - "5100:80"
-
+ 
   evaluation-api-2:
     volumes:
       - ./Services/Evaluation/Evaluation.API/Setup:/app/Setup
@@ -169,12 +167,11 @@ services:
       - UseCustomizationData=True
       - SwaggerRedirectUrlPort=6100
       - ServiceRegister__ServiceName=evaluation-api
-      - ServiceRegister__ServiceHost=host.docker.internal
-      - ServiceRegister__ServicePort=6100
-      - ServiceRegister__Register__HttpEndpoint=http://host.docker.internal:18500
+      - ServiceRegister__ServiceAddress=http://evaluation-api-2:80
+      - ServiceRegister__Register__HttpEndpoint=http://consul-client:8500
     ports:
-      - "6100:80"
-
+      - "80"
+  
   #容器内通讯使用容器开放的端口 而不是映射到主机的端口
   gamerepo-api:
     volumes:
@@ -197,13 +194,12 @@ services:
       - PORT=80
       - SwaggerRedirectUrlPort=5101
       - ServiceRegister__ServiceName=gamerepo-api
-      - ServiceRegister__ServiceHost=host.docker.internal
-      - ServiceRegister__ServicePort=5101
-      - ServiceRegister__Register__HttpEndpoint=http://host.docker.internal:18500
+      - ServiceRegister__ServiceAddress=http://gamerepo-api:80
+      - ServiceRegister__Register__HttpEndpoint=http://consul-client:8500
     ports:
       - "5101:80"
       - "9101:81"
-
+  
   ordering-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
@@ -220,13 +216,12 @@ services:
       - PORT=80
       - SwaggerRedirectUrlPort=5102
       - ServiceRegister__ServiceName=ordering-api
-      - ServiceRegister__ServiceHost=host.docker.internal
-      - ServiceRegister__ServicePort=5102
-      - ServiceRegister__Register__HttpEndpoint=http://host.docker.internal:18500
+      - ServiceRegister__ServiceAddress=http://ordering-api:80
+      - ServiceRegister__Register__HttpEndpoint=http://consul-client:8500
     ports:
       - "5102:80"
       - "9102:81"
-
+ 
   backmanage-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
@@ -237,9 +232,8 @@ services:
       - PATH_BASE=/backmanage-api
       - SwaggerRedirectUrlPort=5104
       - ServiceRegister__ServiceName=backmanage-api
-      - ServiceRegister__ServiceHost=host.docker.internal
-      - ServiceRegister__ServicePort=5104
-      - ServiceRegister__Register__HttpEndpoint=http://host.docker.internal:18500
+      - ServiceRegister__ServiceAddress=http://backmanage-api:80
+      - ServiceRegister__Register__HttpEndpoint=http://consul-client:8500
     ports:
       - "5104:80"
 
@@ -270,7 +264,3 @@ volumes:
   consul_center1:
   consul_center2:
   consul_client:
-
-networks:
-  consul:
-    driver: bridge

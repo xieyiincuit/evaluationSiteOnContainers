@@ -28,6 +28,24 @@ services:
   gateway_envoy:
     image: envoyproxy/envoy-dev:35f8d59b1172a85f02dd119791a9ef42c728cfa8
 
+  gateway_ocelot:
+    image: ocelotproxy:${PLATFORM:-linux}-${TAG:-latest}
+    build:
+      context: .
+      dockerfile: ApiGateways/Ocelot/OcelotGateway/Dockerfile
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 5
+    depends_on:
+      - identity-api
+      - evaluation-api
+      - evaluation-api-2
+      - gamrepo-api
+      - ordering-api
+      - backmanage-api
+
   consul-server1:
     image: consul:latest
 
@@ -53,7 +71,7 @@ services:
     depends_on:
       - db_indentity
       - mq_evaluation
-      - consul-server1
+      - consul-client
 
   evaluation-api:
     image: ${REGISTRY:-esite}/evaluation.api:${PLATFORM:-linux}-${TAG:-latest}
@@ -74,7 +92,7 @@ services:
       - db_evaluation
       - mq_evaluation
       - identity-api
-      - consul-server1
+      - consul-client
 
   evaluation-api-2:
     image: ${REGISTRY:-esite}/evaluation.api:${PLATFORM:-linux}-${TAG:-latest}
@@ -95,7 +113,7 @@ services:
       - db_evaluation
       - mq_evaluation
       - identity-api
-      - consul-server1
+      - consul-client
 
   gamerepo-api:
     image: ${REGISTRY:-esite}/gamerepo.api:${PLATFORM:-linux}-${TAG:-latest}
@@ -112,7 +130,7 @@ services:
       - db_gamerepo
       - mq_evaluation
       - identity-api
-      - consul-server1
+      - consul-client
 
   ordering-api:
     image: ${REGISTRY:-esite}/ordering.api:${PLATFORM:-linux}-${TAG:-latest}
@@ -127,7 +145,7 @@ services:
     depends_on:
       - cache_master
       - identity-api
-      - consul-server1
+      - consul-client
 
   backmanage-api:
     image: ${REGISTRY:-esite}/backmanage.api:${PLATFORM:-linux}-${TAG:-latest}
@@ -142,7 +160,7 @@ services:
     depends_on:
       - db_backmanage
       - identity-api
-      - consul-server1
+      - consul-client
 
   webstatus:
     image: ${REGISTRY:-esite}/webstatus:${PLATFORM:-linux}-${TAG:-latest}

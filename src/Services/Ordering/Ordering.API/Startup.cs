@@ -17,9 +17,9 @@ public class Startup
         services.AddSingleton<Consul.IConsulClient>(p => new Consul.ConsulClient(cfg =>
         {
             var serviceConfiguration = p.GetRequiredService<IOptions<ServiceRegisterOptions>>().Value;
-            if (!string.IsNullOrEmpty(serviceConfiguration.Register.HttpEndpoint))
+            if (serviceConfiguration.Register.HttpEndpoint != null)
             {
-                cfg.Address = new Uri(serviceConfiguration.Register.HttpEndpoint);
+                cfg.Address = serviceConfiguration.Register.HttpEndpoint;
             }
         }));
 

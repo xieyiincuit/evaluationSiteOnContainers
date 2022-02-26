@@ -13,23 +13,23 @@ public static class ApplicationBuilderExtension
         IConsulClient consul,
         IHostApplicationLifetime lifetime)
     {
-        var serviceId = $"{serviceRegisterOptions.Value.ServiceName}_{serviceRegisterOptions.Value.ServiceHost}:{serviceRegisterOptions.Value.ServicePort}";
+        var serviceId = $"{serviceRegisterOptions.Value.ServiceName}_{serviceRegisterOptions.Value.ServiceAddress.Host}:{serviceRegisterOptions.Value.ServiceAddress.Port}";
 
         var httpCheck = new AgentServiceCheck()
         {
             DeregisterCriticalServiceAfter = TimeSpan.FromSeconds(10),//服务启动多久后注册
             Interval = TimeSpan.FromSeconds(10),//健康检查时间间隔，或者称为心跳间隔
-            HTTP = $"http://{serviceRegisterOptions.Value.ServiceHost}:{serviceRegisterOptions.Value.ServicePort}/api/health",//健康检查地址
+            HTTP = $"http://{serviceRegisterOptions.Value.ServiceAddress.Host}:{serviceRegisterOptions.Value.ServiceAddress.Port}/api/health",//健康检查地址
         };
 
         var registration = new AgentServiceRegistration()
         {
             Checks = new[] { httpCheck },
-            Address = serviceRegisterOptions.Value.ServiceHost,
+            Address = serviceRegisterOptions.Value.ServiceAddress.Host,
             ID = serviceId,
             Name = serviceRegisterOptions.Value.ServiceName,
-            Port = serviceRegisterOptions.Value.ServicePort,
-            Tags = new[] { $"urlprefix/{serviceRegisterOptions.Value.ServiceName}", $"hostprefix/{serviceRegisterOptions.Value.ServiceHost}" }
+            Port = serviceRegisterOptions.Value.ServiceAddress.Port,
+            Tags = new[] { $"urlprefix/{serviceRegisterOptions.Value.ServiceName}", $"hostprefix/{serviceRegisterOptions.Value.ServiceAddress.Host}" }
         };
 
         var retry =
@@ -59,11 +59,7 @@ public class ServiceRegisterOptions
     /// <summary>
     /// 服务IP或者域名
     /// </summary>
-    public string ServiceHost { get; set; }
-    /// <summary>
-    /// 服务端口号
-    /// </summary>
-    public int ServicePort { get; set; }
+    public Uri ServiceAddress { get; set; }
     /// <summary>
     /// consul注册地址
     /// </summary>
@@ -72,5 +68,5 @@ public class ServiceRegisterOptions
 
 public class RegisterOptions
 {
-    public string HttpEndpoint { get; set; }
+    public Uri HttpEndpoint { get; set; }
 }

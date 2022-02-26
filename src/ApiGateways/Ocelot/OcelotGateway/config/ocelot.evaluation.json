@@ -3,18 +3,20 @@
     {
       "DownstreamPathTemplate": "/evaluation-api/api/{version}/evaluation/{everything}",
       "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "evaluation-api",
-          "Port": 80
-        }
-      ],
       "UpstreamPathTemplate": "/{version}/e/{everything}",
       "UpstreamHttpMethod": [],
+      "ServiceName": "evaluation-api",
+      "LoadBalancerOptions": {
+        "Type": "LeastConnection"
+      },
       "QoSOptions": {
         "ExceptionsAllowedBeforeBreaking": 3,
         "DurationOfBreak": 5000,
         "TimeoutValue": 5000
+      },
+      "FileCacheOptions": {
+        "TtlSeconds": 10,
+        "Region": "get-articles"
       }
     }
   ]

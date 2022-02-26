@@ -1,0 +1,123 @@
+{
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/evaluation-api/api/{version}/evaluation/{everything}",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/{version}/e/{everything}",
+      "UpstreamHttpMethod": [],
+      "ServiceName": "evaluation-api",
+      "LoadBalancerOptions": {
+        "Type": "LeastConnection"
+      },
+      "QoSOptions": {
+        "ExceptionsAllowedBeforeBreaking": 3,
+        "DurationOfBreak": 5000,
+        "TimeoutValue": 5000
+      },
+      "FileCacheOptions": {
+        "TtlSeconds": 10,
+        "Region": "get-articles"
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/gamerepo-api/api/{version}/game/{everything}",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/{version}/g/{everything}",
+      "UpstreamHttpMethod": [],
+      "ServiceName": "gamerepo-api",
+      "LoadBalancerOptions": {
+        "Type": "LeastConnection"
+      },
+      "QoSOptions": {
+        "ExceptionsAllowedBeforeBreaking": 3,
+        "DurationOfBreak": 3000,
+        "TimeoutValue": 5000
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/gamerepo-api/api/{version}/user/{everything}",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/{version}/g/user/{everything}",
+      "UpstreamHttpMethod": [],
+      "ServiceName": "gamerepo-api",
+      "LoadBalancerOptions": {
+        "Type": "LeastConnection"
+      },
+      "QoSOptions": {
+        "ExceptionsAllowedBeforeBreaking": 3,
+        "DurationOfBreak": 3000,
+        "TimeoutValue": 5000
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/gamerepo-api/api/{version}/shop/{everything}",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/{version}/shop/{everything}",
+      "UpstreamHttpMethod": [],
+      "ServiceName": "gamerepo-api",
+      "LoadBalancerOptions": {
+        "Type": "LeastConnection"
+      },
+      "QoSOptions": {
+        "ExceptionsAllowedBeforeBreaking": 3,
+        "DurationOfBreak": 3000,
+        "TimeoutValue": 5000
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/ordering-api/api/{version}/order/{everything}",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/{version}/o/{everything}",
+      "UpstreamHttpMethod": [ "POST", "OPTIONS" ],
+      "ServiceName": "ordering-api",
+      "LoadBalancerOptions": {
+        "Type": "LeastConnection"
+      },
+      "QoSOptions": {
+        "ExceptionsAllowedBeforeBreaking": 3,
+        "DurationOfBreak": 10000,
+        "TimeoutValue": 5000
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/backmanage-api/api/{version}/back/{everything}",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/{version}/b/{everything}",
+      "UpstreamHttpMethod": [],
+      "ServiceName": "backmanage-api",
+      "LoadBalancerOptions": {
+        "Type": "LeastConnection"
+      },
+      "QoSOptions": {
+        "ExceptionsAllowedBeforeBreaking": 3,
+        "DurationOfBreak": 3000,
+        "TimeoutValue": 5000
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/identity-api/api/{version}/user/{everything}",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/{version}/u/{everything}",
+      "UpstreamHttpMethod": [],
+      "ServiceName": "identity-api",
+      "LoadBalancerOptions": {
+        "Type": "LeastConnection"
+      },
+      "QoSOptions": {
+        "ExceptionsAllowedBeforeBreaking": 3,
+        "DurationOfBreak": 10000,
+        "TimeoutValue": 5000
+      }
+    }
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl": "http://0.0.0.0:80",
+    "ServiceDiscoveryProvider": {
+      "Scheme": "http",
+      "Host": "consul-client",
+      "Port": 8500,
+      "Type": "Consul",
+      "PollingInterval": 5000
+    }
+  }
+}

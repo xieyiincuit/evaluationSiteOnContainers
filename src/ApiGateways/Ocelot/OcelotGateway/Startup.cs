@@ -1,4 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using Ocelot.Cache.CacheManager;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 using Ocelot.Provider.Consul;
@@ -17,25 +18,29 @@ namespace OcelotGateway
 
         public void ConfigureServices(IServiceCollection services)
         {
-            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-            var identityUrl = Configuration.GetValue<string>("IdentityUrl");
-            const string authenticationProviderKey = "IdentityApiKey";
+            //JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+            //var identityUrl = Configuration.GetValue<string>("IdentityUrl");
+            //const string authenticationProviderKey = "IdentityApiKey";
 
-            services.AddAuthentication()
-                .AddJwtBearer(authenticationProviderKey, x =>
-                {
-                    x.Authority = identityUrl;
-                    x.RequireHttpsMetadata = false;
-                    x.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters()
-                    {
-                        ValidAudiences = new[] { "ordering", "evaluation", "gamerepo", "backmanage", "identity" }
-                    };
-                });
+            //services.AddAuthentication()
+            //    .AddJwtBearer(authenticationProviderKey, x =>
+            //    {
+            //        x.Authority = identityUrl;
+            //        x.RequireHttpsMetadata = false;
+            //        x.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters()
+            //        {
+            //            ValidAudiences = new[] { "ordering", "evaluation", "gamerepo", "backmanage", "identity" }
+            //        };
+            //    });
 
             services.AddOcelot()
                 .AddConsul()
                 .AddPolly()
-                .AddConfigStoredInConsul();
+                .AddConfigStoredInConsul()
+                .AddCacheManager(x =>
+                {
+                    x.WithDictionaryHandle();
+                });
         }
 
         public void Configure(IApplicationBuilder app, IHostEnvironment env)

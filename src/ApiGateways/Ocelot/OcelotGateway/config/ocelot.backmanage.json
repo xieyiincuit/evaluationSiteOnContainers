@@ -3,14 +3,12 @@
     {
       "DownstreamPathTemplate": "/backmanage-api/api/{version}/back/{everything}",
       "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "backmanage-api",
-          "Port": 80
-        }
-      ],
       "UpstreamPathTemplate": "/{version}/b/{everything}",
       "UpstreamHttpMethod": [],
+      "ServiceName": "backmanage-api",
+      "LoadBalancerOptions": {
+        "Type": "LeastConnection"
+      },
       "QoSOptions": {
         "ExceptionsAllowedBeforeBreaking": 3,
         "DurationOfBreak": 3000,

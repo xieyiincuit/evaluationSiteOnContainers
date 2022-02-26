@@ -3,22 +3,22 @@
     {
       "DownstreamPathTemplate": "/ordering-api/api/{version}/order",
       "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/{version}/o",
       "DownstreamHostAndPorts": [
         {
           "Host": "ordering-api",
           "Port": 80
         }
       ],
-      "UpstreamPathTemplate": "{version}/o",
       "UpstreamHttpMethod": [ "POST", "OPTIONS" ],
+      //"ServiceName": "ordering-api",
+      //"LoadBalancerOptions": {
+      //  "Type": "LeastConnection"
+      //},
       "QoSOptions": {
         "ExceptionsAllowedBeforeBreaking": 3,
         "DurationOfBreak": 10000,
         "TimeoutValue": 5000
-      },
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "IdentityApiKey",
-        "AllowedScopes": []
       }
     }
   ]
