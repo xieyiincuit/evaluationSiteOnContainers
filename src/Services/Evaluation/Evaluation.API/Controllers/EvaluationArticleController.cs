@@ -148,17 +148,16 @@ public class EvaluationArticleController : ControllerBase
     // Put api/v1/evaluation/articles
     [Authorize(Roles = _evaluatorRole)]
     [HttpPut]
-    [Route("article/{id:int}")]
+    [Route("article")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    public async Task<IActionResult> UpdateArticleAsync([FromRoute] int id,
-        [FromBody] ArticleUpdateDto articleUpdateDto)
+    public async Task<IActionResult> UpdateArticleAsync([FromBody] ArticleUpdateDto articleUpdateDto)
     {
-        if (id <= 0 || id >= int.MaxValue) return BadRequest();
-        if (await _articleService.IsArticleExist(id) == false) return NotFound();
+        if (articleUpdateDto.Id <= 0 || articleUpdateDto.Id >= int.MaxValue) return BadRequest();
+        if (await _articleService.IsArticleExist(articleUpdateDto.Id) == false) return NotFound();
 
-        var articleToUpdate = await _articleService.GetArticleAsync(id);
+        var articleToUpdate = await _articleService.GetArticleAsync(articleUpdateDto.Id);
         //校验该文章是否为当前请求修改用户吻合
         var userId = User.FindFirst("sub").Value;
         if (userId != articleToUpdate.UserId) return BadRequest();
@@ -167,7 +166,7 @@ public class EvaluationArticleController : ControllerBase
 
         await _articleService.UpdateArticleAsync(articleToUpdate);
         _logger.LogInformation("---- evaluator:id:{UserId}, name:{Name} update a article -> id:{Id} content:{@content}",
-            userId, User.Identity.Name, id, articleToUpdate);
+            userId, User.Identity.Name, articleUpdateDto.Id, articleToUpdate);
         return NoContent();
     }
 }

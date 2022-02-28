@@ -2,6 +2,7 @@
 
 public class ArticleUpdateDto
 {
+    public int Id { get; set; }
     public string Title { get; set; }
     public string? DescriptionImage { get; set; }
     public string? ArticleImage { get; set; }
