@@ -56,8 +56,8 @@ services:
       - ./ApiGateways/Envoy/config/envoy.yaml:/etc/envoy/envoy.yaml
       - ./ApiGateways/Envoy/logs:/var/log
     ports:
-      - 9901:9901
-      - 10000:10000
+      - "9901:9901"
+      - "10000:10000"
     environment:
       - "ENVOY_UID=0"
 
@@ -67,7 +67,7 @@ services:
       - ASPNETCORE_URLS=http://0.0.0.0:80
       - IdentityUrl=http://identity-api
     ports:
-      - 20000:80
+      - "20000:80"
 
   consul-server1:
     restart: always
@@ -152,8 +152,6 @@ services:
       - "5100:80"
  
   evaluation-api-2:
-    volumes:
-      - ./Services/Evaluation/Evaluation.API/Setup:/app/Setup
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
@@ -164,7 +162,6 @@ services:
       - IdentityUrlExternal=http://localhost:5105
       - IdentityUrl=http://identity-api
       - PATH_BASE=/evaluation-api
-      - UseCustomizationData=True
       - SwaggerRedirectUrlPort=6100
       - ServiceRegister__ServiceName=evaluation-api
       - ServiceRegister__ServiceAddress=http://evaluation-api-2:80
