@@ -2,22 +2,22 @@ version: '3.9'
 
 services:
   db_evaluation:
-    image: mysql:latest
+    image: mysql:8.0.27
 
   db_gamerepo:
-    image: mysql:latest
+    image: mysql:8.0.27
 
   db_indentity:
     image: mcr.microsoft.com/mssql/server:2019-latest
 
   db_backmanage:
-    image: mysql:latest
+    image: mysql:8.0.27
 
   mq_evaluation:
     image: rabbitmq:3.9.13-management
 
   cache_master:
-    image: redis:latest
+    image: redis:6.2.6
     deploy:
       restart_policy:
         condition: on-failure
@@ -26,7 +26,7 @@ services:
         window: 120s
 
   gateway_envoy:
-    image: envoyproxy/envoy-dev:35f8d59b1172a85f02dd119791a9ef42c728cfa8
+    image: envoyproxy/envoy:v1.20.2
 
   gateway_ocelot:
     image: ocelotproxy:${PLATFORM:-linux}-${TAG:-latest}
@@ -47,16 +47,16 @@ services:
       - backmanage-api
 
   consul-server1:
-    image: consul:latest
+    image: consul:1.9
 
   consul-server2:
-    image: consul:latest
+    image: consul:1.9
 
   consul-server3:
-    image: consul:latest
+    image: consul:1.9
 
   consul-client:
-    image: consul:latest
+    image: consul:1.9
 
   identity-api:
     image: ${REGISTRY:-esite}/identity.api:${PLATFORM:-linux}-${TAG:-latest}

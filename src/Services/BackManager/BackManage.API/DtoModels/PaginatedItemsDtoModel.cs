@@ -2,8 +2,7 @@
 
 public class PaginatedItemsDtoModel<TEntity> where TEntity : class
 {
-    public PaginatedItemsDtoModel(int pageIndex, int pageSize, int count, IEnumerable<TEntity> data,
-        List<UserAvatarDto> other)
+    public PaginatedItemsDtoModel(int pageIndex, int pageSize, int count, IEnumerable<TEntity> data, List<UserAvatarDto> other)
     {
         CurrentPage = pageIndex;
         PageSize = pageSize;
@@ -13,14 +12,13 @@ public class PaginatedItemsDtoModel<TEntity> where TEntity : class
         UserInfo = other;
     }
 
-    public int CurrentPage { get; }
-    public int TotalPages { get; set; }
-    public int PageSize { get; }
-    public int TotalCount { get; }
+    private int CurrentPage { get; }
+    private int TotalPages { get; }
+    private int PageSize { get; }
+    private int TotalCount { get; }
     public bool HasPrevious => CurrentPage > 1;
     public bool HasNext => CurrentPage < TotalPages;
 
-    public IEnumerable<TEntity> Data { get; }
-
-    public List<UserAvatarDto> UserInfo { get; set; }
+    private IEnumerable<TEntity> Data { get; }
+    private List<UserAvatarDto> UserInfo { get; }
 }

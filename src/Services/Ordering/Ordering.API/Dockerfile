@@ -2,18 +2,30 @@ FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
 EXPOSE 80
 
-#设置字符集为UTF-8
 ENV LANG en_US.UTF-8
-#设置时间为中国上海
 ENV TZ=Asia/Shanghai
 ENV DEBIAN_FRONTEND noninteractive
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["Services/Ordering/Ordering.API/Ordering.API.csproj", "Services/Ordering/Ordering.API/"]
-COPY ["BuildingBlocks/DistributedCache/RedisRepository/RedisRepository.csproj", "BuildingBlocks/DistributedCache/RedisRepository/"]
-COPY ["BuildingBlocks/WebHostKits/WebHost.Customization/WebHost.Customization.csproj", "BuildingBlocks/WebHostKits/WebHost.Customization/"]
-RUN dotnet restore "Services/Ordering/Ordering.API/Ordering.API.csproj"
+
+COPY "evaluationSiteOnContainers.sln" "evaluationSiteOnContainers.sln"
+COPY "ApiGateways/Ocelot/OcelotGateway/OcelotGateway.csproj" "ApiGateways/Ocelot/OcelotGateway/OcelotGateway.csproj"
+COPY "BuildingBlocks/DistributedCache/RedisRepository/RedisRepository.csproj" "BuildingBlocks/DistributedCache/RedisRepository/RedisRepository.csproj"
+COPY "BuildingBlocks/EventBus/EventBusBase/EventBusBase.csproj" "BuildingBlocks/EventBus/EventBusBase/EventBusBase.csproj"
+COPY "BuildingBlocks/EventBus/EventBusRabbitMQ/EventBusRabbitMQ.csproj" "BuildingBlocks/EventBus/EventBusRabbitMQ/EventBusRabbitMQ.csproj"
+COPY "BuildingBlocks/EventBus/IntegrationEventLogEF/IntegrationEventLogEF.csproj" "BuildingBlocks/EventBus/IntegrationEventLogEF/IntegrationEventLogEF.csproj"
+COPY "BuildingBlocks/WebHostKits/WebHost.Customization/WebHost.Customization.csproj" "BuildingBlocks/WebHostKits/WebHost.Customization/WebHost.Customization.csproj"
+COPY "Services/BackManager/BackManage.API/BackManage.API.csproj" "Services/BackManager/BackManage.API/BackManage.API.csproj"
+COPY "Services/Evaluation/Evaluation.API/Evaluation.API.csproj" "Services/Evaluation/Evaluation.API/Evaluation.API.csproj"
+COPY "Services/GameRepository/GameRepo.API/GameRepo.API.csproj" "Services/GameRepository/GameRepo.API/GameRepo.API.csproj"
+COPY "Services/IdentityServer/Identity.API/Identity.API.csproj" "Services/IdentityServer/Identity.API/Identity.API.csproj"
+COPY "Services/Ordering/Ordering.API/Ordering.API.csproj" "Services/Ordering/Ordering.API/Ordering.API.csproj"
+COPY "Web/WebStatus/WebStatus.csproj" "Web/WebStatus/WebStatus.csproj"
+COPY "docker-compose.dcproj" "docker-compose.dcproj"
+
+RUN dotnet restore "evaluationSiteOnContainers.sln"
+
 COPY . .
 WORKDIR "/src/Services/Ordering/Ordering.API"
 RUN dotnet build "Ordering.API.csproj" -c Release -o /app/build

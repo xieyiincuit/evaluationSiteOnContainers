@@ -1,7 +1,7 @@
 {
   "Routes": [
     {
-      "DownstreamPathTemplate": "/evaluation-api/api/{version}/evaluation/{everything}",
+      "DownstreamPathTemplate": "/evaluation-api/api/{version}/{everything}",
       "DownstreamScheme": "http",
       "UpstreamPathTemplate": "/{version}/e/{everything}",
       "UpstreamHttpMethod": [],
@@ -37,7 +37,7 @@
     {
       "DownstreamPathTemplate": "/gamerepo-api/api/{version}/user/{everything}",
       "DownstreamScheme": "http",
-      "UpstreamPathTemplate": "/{version}/g/user/{everything}",
+      "UpstreamPathTemplate": "/{version}/g/u/{everything}",
       "UpstreamHttpMethod": [],
       "ServiceName": "gamerepo-api",
       "LoadBalancerOptions": {
@@ -52,7 +52,7 @@
     {
       "DownstreamPathTemplate": "/gamerepo-api/api/{version}/shop/{everything}",
       "DownstreamScheme": "http",
-      "UpstreamPathTemplate": "/{version}/shop/{everything}",
+      "UpstreamPathTemplate": "/{version}/s/{everything}",
       "UpstreamHttpMethod": [],
       "ServiceName": "gamerepo-api",
       "LoadBalancerOptions": {

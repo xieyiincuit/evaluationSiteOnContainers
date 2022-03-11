@@ -27,12 +27,19 @@ static_resources:
               domains:
               - "*"
               routes:
+              - name: "u-short"
+                match:
+                  prefix: "/i"
+                route:
+                  auto_host_rewrite: true
+                  prefix_rewrite: "/identity-api/api/v1"
+                  cluster: identity
               - name: "e-short"
                 match:
                   prefix: "/e"
                 route:
                   auto_host_rewrite: true
-                  prefix_rewrite: "/evaluation-api/api/v1/evaluation"
+                  prefix_rewrite: "/evaluation-api/api/v1"
                   cluster: evaluation    
               - name: "o-short"
                 match:
@@ -75,6 +82,19 @@ static_resources:
                 upstream_cluster: "%UPSTREAM_CLUSTER%"
                 upstream_local_address: "%UPSTREAM_LOCAL_ADDRESS%"
   clusters:
+  - name: identity
+    connect_timeout: 0.25s
+    type: LOGICAL_DNS
+    lb_policy: ROUND_ROBIN
+    load_assignment:
+      cluster_name: identity
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: identity-api
+                port_value: 80
   - name: evaluation
     connect_timeout: 0.25s
     type: LOGICAL_DNS
