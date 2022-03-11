@@ -1,0 +1,16 @@
+﻿global using AutoMapper;
+global using Microsoft.AspNetCore.Http;
+global using Microsoft.AspNetCore.Mvc;
+global using Microsoft.Extensions.Logging;
+global using Moq;
+global using System;
+global using System.Collections.Generic;
+global using System.Net;
+global using System.Net.Http;
+global using System.Security.Claims;
+global using System.Threading.Tasks;
+global using Xunit;
+global using Zhouxieyi.evaluationSiteOnContainers.Services.BackManage.API.Controllers;
+global using Zhouxieyi.evaluationSiteOnContainers.Services.BackManage.API.HttpClients;
+global using Zhouxieyi.evaluationSiteOnContainers.Services.BackManage.API.Models;
+global using Zhouxieyi.evaluationSiteOnContainers.Services.BackManage.API.Services;

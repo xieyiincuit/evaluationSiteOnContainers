@@ -59,7 +59,7 @@ public class ApproveController : ControllerBase
     public async Task<IActionResult> GetSelfApproveAsync()
     {
         var currentUser = User.FindFirstValue("sub");
-
+        
         var approve = await _approvalService.GetApproveRecordByUserIdAsync(currentUser);
         if (approve == null) return NotFound();
 
