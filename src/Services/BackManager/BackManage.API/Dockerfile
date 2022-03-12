@@ -17,6 +17,8 @@ COPY "BuildingBlocks/EventBus/EventBusRabbitMQ/EventBusRabbitMQ.csproj" "Buildin
 COPY "BuildingBlocks/EventBus/IntegrationEventLogEF/IntegrationEventLogEF.csproj" "BuildingBlocks/EventBus/IntegrationEventLogEF/IntegrationEventLogEF.csproj"
 COPY "BuildingBlocks/WebHostKits/WebHost.Customization/WebHost.Customization.csproj" "BuildingBlocks/WebHostKits/WebHost.Customization/WebHost.Customization.csproj"
 COPY "Services/BackManager/BackManage.API/BackManage.API.csproj" "Services/BackManager/BackManage.API/BackManage.API.csproj"
+COPY "Services/BackManager/BackManage.FunctionalTests/BackManage.FunctionalTests.csproj" "Services/BackManager/BackManage.FunctionalTests/BackManage.FunctionalTests.csproj"
+COPY "Services/BackManager/BackManage.UnitTests/BackManage.UnitTests.csproj" "Services/BackManager/BackManage.UnitTests/BackManage.UnitTests.csproj"
 COPY "Services/Evaluation/Evaluation.API/Evaluation.API.csproj" "Services/Evaluation/Evaluation.API/Evaluation.API.csproj"
 COPY "Services/GameRepository/GameRepo.API/GameRepo.API.csproj" "Services/GameRepository/GameRepo.API/GameRepo.API.csproj"
 COPY "Services/IdentityServer/Identity.API/Identity.API.csproj" "Services/IdentityServer/Identity.API/Identity.API.csproj"

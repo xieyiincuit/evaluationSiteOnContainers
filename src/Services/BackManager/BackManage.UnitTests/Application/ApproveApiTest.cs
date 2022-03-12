@@ -1,20 +1,19 @@
-﻿using Zhouxieyi.evaluationSiteOnContainers.Services.BackManage.API.DtoModels;
-using Zhouxieyi.evaluationSiteOnContainers.Services.BackManage.API.Infrastructure;
-
-namespace BackManage.UnitTests.Application;
+﻿namespace BackManage.UnitTests.Application;
 
 public class ApproveApiTest
 {
+    //Mock ApproveController的依赖项。
     private readonly Mock<IApprovalService> _approvalServiceMock;
     private readonly Mock<ILogger<ApproveController>> _loggerMock;
     private readonly Mock<IMapper> _mapperMock;
 
-    //Mock IdentityClientService Parameters
+    //IdentityClientService 是一个实体类，而不是接口，所以还需Mock IdentityIdentityClientService的依赖项来初始化类。
     private readonly Mock<IdentityClientService> _identityClientMock;
     private readonly HttpClient _httpClient;
     private readonly Mock<ILogger<IdentityClientService>> _identityLoggerMock;
     private readonly Mock<IHttpContextAccessor> _contextAccessorMock;
 
+    //构造函数实体化
     public ApproveApiTest()
     {
         _approvalServiceMock = new Mock<IApprovalService>();
@@ -29,11 +28,12 @@ public class ApproveApiTest
     [Fact]
     public async Task Get_user_approve_list_success()
     {
-        //Arrange
+        //Arrange 声明需要的变量
         var pageIndex = 1;
         var pageSize = 10;
         var status = ApproveStatus.Progressing;
 
+        //Mock 方法得到的返回值
         _approvalServiceMock
             .Setup(x => x.CountApproveRecordByTypeAsync(It.Is<ApproveStatus>(s => s == status)))
             .ReturnsAsync(10);
@@ -42,7 +42,7 @@ public class ApproveApiTest
             .Setup(x => x.GetApproveRecordsAsync(It.Is<int>(i => i == pageIndex), It.Is<int>(i => i == pageSize), It.Is<ApproveStatus>(s => s == status)))
             .ReturnsAsync(GetUserApproveFakeList());
 
-        //Action
+        //Action 执行Controller方法
         var approveController = new ApproveController(
             _loggerMock.Object,
             _approvalServiceMock.Object,
@@ -51,7 +51,7 @@ public class ApproveApiTest
 
         var actionResult = await approveController.GetApproveUserListAsync();
 
-        //Assert
+        //Assert 断言返回值
         Assert.Equal(((OkObjectResult)actionResult).StatusCode, (int)HttpStatusCode.OK);
     }
 

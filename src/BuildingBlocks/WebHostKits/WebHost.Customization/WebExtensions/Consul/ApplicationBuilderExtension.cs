@@ -18,7 +18,7 @@ public static class ApplicationBuilderExtension
         var httpCheck = new AgentServiceCheck()
         {
             DeregisterCriticalServiceAfter = TimeSpan.FromSeconds(10),//服务启动多久后注册
-            Interval = TimeSpan.FromSeconds(10),//健康检查时间间隔，或者称为心跳间隔
+            Interval = TimeSpan.FromSeconds(30),//健康检查时间间隔，或者称为心跳间隔
             HTTP = $"http://{serviceRegisterOptions.Value.ServiceAddress.Host}:{serviceRegisterOptions.Value.ServiceAddress.Port}/api/health",//健康检查地址
         };
 

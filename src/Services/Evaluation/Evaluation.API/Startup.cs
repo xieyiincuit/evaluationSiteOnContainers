@@ -41,7 +41,7 @@ public class Startup
         if (env.IsDevelopment()) IdentityModelEventSource.ShowPII = true;
 
         app.UseBundleSwagger(Configuration);
-        app.UseHttpLogging();
+        //app.UseHttpLogging();
 
         app.UseRouting();
         app.UseCors("CorsPolicy");

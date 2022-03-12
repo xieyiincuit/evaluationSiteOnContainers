@@ -165,9 +165,9 @@ public class Startup
                             null);
                     });
 
-                dbContextOptions.LogTo(Console.WriteLine, LogLevel.Information);
-                dbContextOptions.EnableSensitiveDataLogging();
-                dbContextOptions.EnableDetailedErrors();
+                //dbContextOptions.LogTo(Console.WriteLine, LogLevel.Information);
+                //dbContextOptions.EnableSensitiveDataLogging();
+                //dbContextOptions.EnableDetailedErrors();
             });
 
         //注入IIntegrationEventLogService

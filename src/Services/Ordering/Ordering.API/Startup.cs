@@ -25,7 +25,6 @@ public class Startup
 
         #endregion
 
-
         #region GrpcClient
 
         services.AddGrpc();
@@ -202,7 +201,7 @@ public class Startup
                     $"http://localhost:{Configuration.GetValue<string>("SwaggerRedirectUrlPort", "50001")}/swagger/oauth2-redirect.html");
             });
 
-        app.UseHttpLogging();
+        //app.UseHttpLogging();
 
         app.UseRouting();
         app.UseCors("CorsPolicy");

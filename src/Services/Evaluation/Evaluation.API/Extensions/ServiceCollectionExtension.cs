@@ -49,9 +49,9 @@ public static class ServiceCollectionExtension
                     sqlOptions => { sqlOptions.EnableRetryOnFailure(15, TimeSpan.FromSeconds(30), null); })
                 // The following three options help with debugging, but should
                 // be changed or removed for production.
-                .LogTo(Console.WriteLine, LogLevel.Information)
-                .EnableSensitiveDataLogging()
-                .EnableDetailedErrors()
+                //.LogTo(Console.WriteLine, LogLevel.Information)
+                //.EnableSensitiveDataLogging()
+                //.EnableDetailedErrors()
         );
         return services;
     }

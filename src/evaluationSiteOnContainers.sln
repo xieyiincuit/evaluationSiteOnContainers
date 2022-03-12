@@ -69,11 +69,13 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-co
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ocelot", "Ocelot", "{3640675F-2A57-4EEC-B4C3-6BEF7115738E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OcelotGateway", "ApiGateways\Ocelot\OcelotGateway\OcelotGateway.csproj", "{C4912814-A686-498D-9A30-354840D0C9F1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OcelotGateway", "ApiGateways\Ocelot\OcelotGateway\OcelotGateway.csproj", "{C4912814-A686-498D-9A30-354840D0C9F1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{E5F72042-E088-4C9C-B0FE-E9F819EA1CE8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackManage.UnitTests", "Services\BackManager\BackManage.UnitTests\BackManage.UnitTests.csproj", "{6D2E52D6-20EB-4C7D-8E78-DB575C2A4EF1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BackManage.UnitTests", "Services\BackManager\BackManage.UnitTests\BackManage.UnitTests.csproj", "{6D2E52D6-20EB-4C7D-8E78-DB575C2A4EF1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackManage.FunctionalTests", "Services\BackManager\BackManage.FunctionalTests\BackManage.FunctionalTests.csproj", "{E25D0256-2F70-43E1-80CB-91B07D8F80FA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -137,6 +139,10 @@ Global
 		{6D2E52D6-20EB-4C7D-8E78-DB575C2A4EF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D2E52D6-20EB-4C7D-8E78-DB575C2A4EF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D2E52D6-20EB-4C7D-8E78-DB575C2A4EF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E25D0256-2F70-43E1-80CB-91B07D8F80FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E25D0256-2F70-43E1-80CB-91B07D8F80FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E25D0256-2F70-43E1-80CB-91B07D8F80FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E25D0256-2F70-43E1-80CB-91B07D8F80FA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -171,6 +177,7 @@ Global
 		{C4912814-A686-498D-9A30-354840D0C9F1} = {3640675F-2A57-4EEC-B4C3-6BEF7115738E}
 		{E5F72042-E088-4C9C-B0FE-E9F819EA1CE8} = {736CFC8D-A0E5-4E64-B260-146162D89832}
 		{6D2E52D6-20EB-4C7D-8E78-DB575C2A4EF1} = {E5F72042-E088-4C9C-B0FE-E9F819EA1CE8}
+		{E25D0256-2F70-43E1-80CB-91B07D8F80FA} = {E5F72042-E088-4C9C-B0FE-E9F819EA1CE8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6224699B-0AAE-4964-859B-ADDAD53620DF}

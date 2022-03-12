@@ -115,9 +115,9 @@ public class Startup
                                 TimeSpan.FromSeconds(30),
                                 null);
                         });
-                    dbContextOptions.LogTo(Console.WriteLine, LogLevel.Information);
-                    dbContextOptions.EnableSensitiveDataLogging();
-                    dbContextOptions.EnableDetailedErrors();
+                    //dbContextOptions.LogTo(Console.WriteLine, LogLevel.Information);
+                    //dbContextOptions.EnableSensitiveDataLogging();
+                    //dbContextOptions.EnableDetailedErrors();
                 });
 
             services.AddDbContext<IntegrationEventLogContext>(
@@ -133,9 +133,9 @@ public class Startup
                                 null);
                         });
 
-                    dbContextOptions.LogTo(Console.WriteLine, LogLevel.Information);
-                    dbContextOptions.EnableSensitiveDataLogging();
-                    dbContextOptions.EnableDetailedErrors();
+                    //dbContextOptions.LogTo(Console.WriteLine, LogLevel.Information);
+                    //dbContextOptions.EnableSensitiveDataLogging();
+                    //dbContextOptions.EnableDetailedErrors();
                 });
         }
 
@@ -348,7 +348,7 @@ public class Startup
                     $"http://localhost:{Configuration.GetValue<string>("SwaggerRedirectUrlPort", "50001")}/swagger/oauth2-redirect.html");
             });
 
-        app.UseHttpLogging();
+        //app.UseHttpLogging();
 
         app.UseRouting();
         app.UseCors("CorsPolicy");

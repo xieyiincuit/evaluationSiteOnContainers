@@ -11,6 +11,8 @@ global using System.Security.Claims;
 global using System.Threading.Tasks;
 global using Xunit;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.BackManage.API.Controllers;
+global using Zhouxieyi.evaluationSiteOnContainers.Services.BackManage.API.DtoModels;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.BackManage.API.HttpClients;
+global using Zhouxieyi.evaluationSiteOnContainers.Services.BackManage.API.Infrastructure;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.BackManage.API.Models;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.BackManage.API.Services;
