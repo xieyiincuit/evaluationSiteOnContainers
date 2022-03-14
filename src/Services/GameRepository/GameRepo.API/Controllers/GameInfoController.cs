@@ -59,21 +59,26 @@ public class GameInfoController : ControllerBase
         return Ok(gameDto);
     }
 
-    [HttpPost]
-    [Route("info")]
-    [Authorize(Roles = "administrator")]
+    [HttpPost] //定义该Action为HTTP POST
+    [Route("info")] //定义子路由
+    [Authorize(Roles = "administrator")] //定义该方法需要身份验证且授权给administrator用户
     [ProducesResponseType((int) HttpStatusCode.BadRequest)]
     [ProducesResponseType((int) HttpStatusCode.Created)]
-    public async Task<IActionResult> CreateGameInfoAsync([FromBody] GameInfoAddDto gameInfoAddDto)
+    public async Task<IActionResult> CreateGameInfoAsync([FromBody] GameInfoAddDto gameInfoAddDto) //规定参数从HTTP Body中接受
     {
+        //若未带参数请求该接口 直接返回400
         if (gameInfoAddDto == null) return BadRequest();
 
+        //将DTO映射为游戏信息数据库实体
         var entityToAdd = _mapper.Map<GameInfo>(gameInfoAddDto);
 
-        _logger.LogInformation(
-            $"administrator: id:{User.FindFirst("sub").Value}, name:{User.Identity.Name} add a gameInfo -> GameName:{gameInfoAddDto.Name}");
+        //记录日志
+        _logger.LogInformation($"administrator: id:{User.FindFirst("sub").Value}, name:{User.Identity.Name} add a gameInfo -> GameName:{gameInfoAddDto.Name}");
 
+        //调用Service将游戏实体写入数据库
         await _gameInfoService.AddGameInfoAsync(entityToAdd);
+
+        //工作单元保存
         await _unitOfWorkService.SaveChangesAsync();
         return CreatedAtRoute(nameof(GetGameInfoByIdAsync), new {gameId = entityToAdd.Id}, null);
     }

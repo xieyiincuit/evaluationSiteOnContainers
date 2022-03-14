@@ -162,8 +162,8 @@ services:
       - identity-api
       - consul-client
 
-  #webstatus:
-  #  image: ${REGISTRY:-esite}/webstatus:${PLATFORM:-linux}-${TAG:-latest}
-  #  build:
-  #    context: .
-  #    dockerfile: Web/WebStatus/Dockerfile
+  webstatus:
+    image: ${REGISTRY:-esite}/webstatus:${PLATFORM:-linux}-${TAG:-latest}
+    build:
+      context: .
+      dockerfile: Web/WebStatus/Dockerfile

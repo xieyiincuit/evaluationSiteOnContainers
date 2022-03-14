@@ -219,21 +219,28 @@ public static class ServiceCollectionExtension
         return services;
     }
 
+    //IOC服务注入
     public static IServiceCollection AddCustomEventBus(this IServiceCollection services, IConfiguration configuration)
     {
+        // 注册单例模式
         services.AddSingleton<IEventBus, EventBusRabbitMQ>(sp =>
         {
+            // 定义服务订阅名
             var subscriptionClientName = configuration["SubscriptionClientName"];
+            // 获取eventBusSettings，如连接端口，userName, passWord等
             var eventBusSettings = sp.GetRequiredService<IOptions<EventBusSettings>>().Value;
+            // 获取RabbitMQ连接接口
             var rabbitMQPersistentConnection = sp.GetRequiredService<IRabbitMQPersistentConnection>();
             var iLifetimeScope = sp.GetRequiredService<ILifetimeScope>();
             var logger = sp.GetRequiredService<ILogger<EventBusRabbitMQ>>();
+            // 获取事件订阅管理接口
             var eventBusSubscriptionManager = sp.GetRequiredService<IEventBusSubscriptionsManager>();
 
             var retryCount = 5;
             if (!string.IsNullOrEmpty(eventBusSettings.RetryCount))
                 retryCount = int.Parse(eventBusSettings.RetryCount);
 
+            //连接RabbitMQ
             return new EventBusRabbitMQ(
                 rabbitMQPersistentConnection, logger, iLifetimeScope,
                 eventBusSubscriptionManager, subscriptionClientName, retryCount);
@@ -243,8 +250,8 @@ public static class ServiceCollectionExtension
         services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();
 
         //Handler服务注入，这里切记要注入，不然AutoFac映射不到对应的Handler
-        services.AddTransient<GameNameChangedIntegrationEventHandler>();
-        services.AddTransient<NickNameChangedIntegrationEventHandler>();
+        services.AddTransient<GameNameChangedIntegrationEventHandler>(); //注入游戏名更改类型事件
+        services.AddTransient<NickNameChangedIntegrationEventHandler>(); //注入用户名更改类型事件
         return services;
     }
 

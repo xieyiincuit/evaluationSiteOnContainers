@@ -108,28 +108,28 @@ public partial class InMemoryEventBusSubscriptionsManager : IEventBusSubscriptio
         // 初始化映射表, 防止第一次添加事件时NullReference
         if (!HasSubscriptionsForEvent(eventName)) _handlers.Add(eventName, new List<SubscriptionInfo>());
 
+        // 添加事件之前对事件存储进行检查，防止重复注册
         if (_handlers[eventName].Any(s => s.HandlerType == handlerType))
-            throw new ArgumentException($"Handler Type {handlerType.Name} already registered for '{eventName}'",
-                nameof(handlerType));
-
+            throw new ArgumentException($"Handler Type {handlerType.Name} already registered for '{eventName}'", nameof(handlerType));
+        // 根据事件的类型来选择不同的处理接口
         if (isDynamic)
-            _handlers[eventName].Add(SubscriptionInfo.Dynamic(handlerType));
+            _handlers[eventName].Add(SubscriptionInfo.Dynamic(handlerType)); // 添加动态接口处理
         else
-            _handlers[eventName].Add(SubscriptionInfo.Typed(handlerType));
+            _handlers[eventName].Add(SubscriptionInfo.Typed(handlerType)); // 添加准确类型接口处理
     }
 
-
+    // 移除订阅列表中的事件名为eventName的事件
     private void DoRemoveHandler(string eventName, SubscriptionInfo subsToRemove)
     {
-        if (subsToRemove != null)
+        if (subsToRemove != null) // 订阅列表不为空
         {
-            //移除映射表中的特定事件类型中的某个事件
+            // 移除映射表中的特定事件类型中的某个事件
             _handlers[eventName].Remove(subsToRemove);
 
-            //如果该事件类型没有订阅的事件了, 则将该事件类型一并移除
+            // 如果该事件类型没有订阅的事件了, 则将该事件类型一并移除
             if (!_handlers[eventName].Any())
             {
-                _handlers.Remove(eventName);
+                _handlers.Remove(eventName); 
                 var eventType = _eventTypes.SingleOrDefault(e => e.Name == eventName);
                 if (eventType != null) _eventTypes.Remove(eventType);
 
@@ -142,7 +142,7 @@ public partial class InMemoryEventBusSubscriptionsManager : IEventBusSubscriptio
     private void RaiseOnEventRemoved(string eventName)
     {
         var handler = OnEventRemoved;
-        handler?.Invoke(this, eventName);
+        handler.Invoke(this, eventName);
     }
 
     private SubscriptionInfo FindDynamicSubscriptionToRemove<TH>(string eventName)

@@ -108,24 +108,29 @@ public class GameShopItemController : ControllerBase
         return Ok(itemDtoToUser);
     }
 
-    [HttpPost]
-    [Route("game/shop")]
-    [Authorize(Roles = "administrator")]
+    [HttpPost] //定义该Action为HTTP POST
+    [Route("game/shop")] //定义子路由
+    [Authorize(Roles = "administrator")] //定义该方法需要身份验证且授权给administrator用户
     [ProducesResponseType((int) HttpStatusCode.Created)]
     [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> PublishShopItemAsync([FromBody] ShopItemAddDto addDto)
+    public async Task<IActionResult> PublishShopItemAsync([FromBody] ShopItemAddDto addDto) //规定参数从HTTP Body中接受
     {
+        //如果Request Body为空，则返回400
         if (addDto == null) return BadRequest();
 
+        //映射DTO实体为Model实体
         var entityToAdd = _mapper.Map<GameShopItem>(addDto);
 
-        _logger.LogInformation(
-            $"administrator: id:{User.FindFirst("sub").Value}, name:{User.Identity.Name} add a shopItem");
+        _logger.LogInformation($"administrator: id:{User.FindFirst("sub").Value}, name:{User.Identity.Name} add a shopItem");
+
+        //新增商品上架信息，并开启事务
         var firstCreated = await _shopItemService.AddGameShopItemAsync(entityToAdd);
+        //事务开启失败，也即是添加失败，返回错误。
         if (firstCreated != true) return BadRequest();
 
-        var response =
-            await _sdkService.GenerateSDKForGameShopItemAsync(entityToAdd.AvailableStock, entityToAdd.GameInfoId);
+        //批量生成SDK
+        var response = await _sdkService.GenerateSDKForGameShopItemAsync(entityToAdd.AvailableStock, entityToAdd.GameInfoId);
+        //Redis字段创建
         await _redisDatabase.Database.StringSetAsync($"ProductStock_{entityToAdd.Id}", entityToAdd.AvailableStock);
 
         if (response == true)

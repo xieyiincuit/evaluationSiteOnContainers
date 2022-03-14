@@ -43,8 +43,6 @@ public class GameInfoAddDto
     public int? CompanyId { get; set; }
 
     [Display(Name = "游戏建议")]
-    //[Required(ErrorMessage = "required | 请选择{0}")]
-    //[Range(0, int.MaxValue, ErrorMessage = "invalid | 非法参数: suggestionId")]
     public int? SuggestionId { get; set; }
 
     //TODO 标签选择    
