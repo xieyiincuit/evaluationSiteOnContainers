@@ -32,7 +32,7 @@ public class EvaluationArticleService : IEvaluationArticleService
         else
         {
             articles = await _evaluationContext.Articles
-                .OrderBy(c => c.CreateTime)
+                .OrderByDescending(c => c.CreateTime)
                 .Skip(pageSize * (pageIndex - 1))
                 .Take(pageSize)
                 .AsNoTracking()
@@ -49,7 +49,7 @@ public class EvaluationArticleService : IEvaluationArticleService
     {
         var articles = await _evaluationContext.Articles
             .Where(art => art.CategoryTypeId == categoryTypeId)
-            .OrderBy(c => c.CreateTime)
+            .OrderByDescending(c => c.CreateTime)
             .Skip(pageSize * (pageIndex - 1))
             .Take(pageSize)
             .AsNoTracking()
@@ -112,7 +112,10 @@ public class EvaluationArticleService : IEvaluationArticleService
     public async Task<List<EvaluationArticle>> GetArticlesByGameInfoAsync(int gameId)
     {
         //追踪实体修改游戏名
-        var articles = await _evaluationContext.Articles.Where(x => x.GameId == gameId).ToListAsync();
+        var articles = await _evaluationContext.Articles
+            .Where(x => x.GameId == gameId)
+            .OrderByDescending(x=>x.CreateTime)
+            .ToListAsync();
         return articles;
     }
 

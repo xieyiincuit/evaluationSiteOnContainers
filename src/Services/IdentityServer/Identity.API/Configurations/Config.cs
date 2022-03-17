@@ -2,63 +2,68 @@
 
 public static class Config
 {
-    public static IEnumerable<IdentityResource> IdentityResources =>
-        new IdentityResource[]
+    public static IEnumerable<IdentityResource> GetIdentityResources()
+    {
+        return new List<IdentityResource>
         {
             new IdentityResources.OpenId(),
-            new IdentityResources.Profile()
+            new IdentityResources.Profile(),
+            new IdentityResources.Email(),
+            new IdentityResource("role", "角色", new List<string> {JwtClaimTypes.Role}),
+            new IdentityResource("nickname", "昵称", new List<string> {JwtClaimTypes.NickName}),
         };
+    }
 
-    public static IEnumerable<ApiResource> ApiResources =>
-        new ApiResource[]
+
+    public static IEnumerable<ApiResource> GetApiResources()
+    {
+        return new List<ApiResource>
         {
             new("evaluation", "Evaluation API")
             {
                 Scopes = {"eval-write", "eval-manage"}
             },
-
             new("gamerepo", "Gamerepo API")
             {
                 Scopes = {"repo-manage"}
             },
-
             new("ordering", "Ordering API")
             {
                 Scopes = {"ordering-buy", "ordering-manage"}
             },
-
             new("backmanage", "BackManage API")
             {
                 Scopes = {"back-manage"}
             }
         };
+    }
 
-    public static IEnumerable<ApiScope> ApiScopes =>
-        new ApiScope[]
+    public static IEnumerable<ApiScope> GetApiScopes()
+    {
+        return new List<ApiScope>
         {
             new("eval-write", "评测服务写权限",
                 new List<string> {JwtClaimTypes.Role, JwtClaimTypes.Name, JwtClaimTypes.Id}),
-
             new("eval-manage", "评测服务管理权限",
                 new List<string> {JwtClaimTypes.Role, JwtClaimTypes.Name, JwtClaimTypes.Id}),
-
             new("repo-manage", "游戏信息服务管理权限",
                 new List<string> {JwtClaimTypes.Role, JwtClaimTypes.Name, JwtClaimTypes.Id}),
-
             new("ordering-buy", "商品下单服务权限",
                 new List<string> {JwtClaimTypes.Role, JwtClaimTypes.Name, JwtClaimTypes.Id}),
-
             new("ordering-manage", "订单管理权限",
                 new List<string> {JwtClaimTypes.Role, JwtClaimTypes.Name, JwtClaimTypes.Id}),
-
             new("back-manage", "网站后台管理权限",
                 new List<string> {JwtClaimTypes.Role, JwtClaimTypes.Name, JwtClaimTypes.Id})
         };
+    }
 
-    public static IEnumerable<Client> Clients(Dictionary<string, string> clientsUrl)
+
+    public static IEnumerable<Client> GetClients(Dictionary<string, string> clientsUrl)
     {
-        return new Client[]
+        return new List<Client>
         {
+            #region SwaggerClient
+
             new()
             {
                 ClientId = "evaluationswaggerui",
@@ -132,7 +137,38 @@ public static class Config
                     IdentityServerConstants.StandardScopes.Profile,
                     "back-manage"
                 }
-            }
+            },
+
+            #endregion
+
+            #region WebSPAClient
+
+            // JavaScript Client Web
+            new Client
+            {
+                ClientId = "evaluationsitevuejs",
+                ClientName = "Evaluation SPA OpenId Client",
+                AllowedGrantTypes = GrantTypes.Implicit,
+                AllowAccessTokensViaBrowser = true,
+                RequireConsent = false,
+                
+                RedirectUris = {$"{clientsUrl["WebSPA"]}/callback"},
+                PostLogoutRedirectUris = {$"{clientsUrl["WebSPA"]}/"},
+                AllowedCorsOrigins = {$"{clientsUrl["WebSPA"]}"},
+                
+                AccessTokenLifetime = 7200,
+                
+                AllowedScopes =
+                {
+                    IdentityServerConstants.StandardScopes.OpenId,
+                    IdentityServerConstants.StandardScopes.Profile,
+                    IdentityServerConstants.StandardScopes.Email,
+                    "eval-write",
+                    "ordering-buy"
+                }
+            },
+
+            #endregion
         };
     }
 }

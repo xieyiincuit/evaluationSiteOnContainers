@@ -45,7 +45,6 @@ services:
       - "5672:5672"
 
   cache_master:
-    restart: always
     ports:
       - '6379:6379'
     command: redis-server --save 20 1 --loglevel warning --requirepass zhouredis11..
@@ -54,8 +53,6 @@ services:
 
   consul-server1:
     restart: always
-    networks:
-      - consul
     ports:
       - "8500:8500"
       - "8600:8600/tcp"
@@ -63,34 +60,36 @@ services:
     volumes:
       - consul_center:/consul/data
       - consul_center:/consul/config
-    command: agent -server -ui -bootstrap-expect=3 -node=server-1 -client=0.0.0.0
+    command: agent -server -ui -bootstrap-expect=3 -node=server-1 -client=0.0.0.0 -retry-join consul-server2 -retry-join consul-server3
+    environment:
+      - 'CONSUL_LOCAL_CONFIG={"connect": {"enabled": true}}'
 
   consul-server2:
     restart: always
-    networks:
-      - consul
     volumes:
       - consul_center1:/consul/data
       - consul_center1:/consul/config
-    command: agent -server -ui -bootstrap-expect=3 -node=server-2 -client=0.0.0.0 -retry-join consul-server1
+    command: agent -server -ui -bootstrap-expect=3 -node=server-2 -client=0.0.0.0 -retry-join consul-server1 -retry-join consul-server3
+    environment:
+      - 'CONSUL_LOCAL_CONFIG={"connect": {"enabled": true}}'
 
   consul-server3:
     restart: always
-    networks:
-      - consul
     volumes:
       - consul_center2:/consul/data
       - consul_center2:/consul/config
-    command: agent -server -ui -bootstrap-expect=3 -node=server-3 -client=0.0.0.0 -retry-join consul-server1
+    command: agent -server -ui -bootstrap-expect=3 -node=server-3 -client=0.0.0.0 -retry-join consul-server1 -retry-join consul-server2
+    environment:
+      - 'CONSUL_LOCAL_CONFIG={"connect": {"enabled": true}}'
 
   consul-client:
     restart: always
-    networks:
-      - consul
     volumes:
       - consul_client:/consul/data
       - consul_client:/consul/config
-    command: agent -node=client-1 -client=0.0.0.0 -retry-join consul-server1
+    command: agent -node=client-1 -client=0.0.0.0 -retry-join consul-server1 -retry-join consul-server2 -retry-join consul-server3
+    environment:
+      - 'CONSUL_LOCAL_CONFIG={"connect": {"enabled": true}}'
 
 volumes:
   mysql_gamerepo:
@@ -103,7 +102,3 @@ volumes:
   consul_center1:
   consul_center2:
   consul_client:
-
-networks:
-  consul:
-    driver: bridge

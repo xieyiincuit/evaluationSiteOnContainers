@@ -41,10 +41,21 @@ namespace OcelotGateway
                 {
                     x.WithDictionaryHandle();
                 });
+            
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    builder => builder
+                        .SetIsOriginAllowed(host => true)
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials());
+            });
         }
 
         public void Configure(IApplicationBuilder app, IHostEnvironment env)
         {
+            app.UseCors("CorsPolicy");
             app.UseOcelot().Wait();
         }
     }

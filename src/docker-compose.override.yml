@@ -123,6 +123,7 @@ services:
       - GameRepoApiClient=http://localhost:5101
       - OrderingApiClient=http://localhost:5102
       - BackManageApiClient=http://localhost:5104
+      - WebSPAClient=http://localhost:3000
       - IdentityUrl=http://identity-api
       - ServiceRegister__ServiceName=identity-api
       - ServiceRegister__ServiceAddress=http://identity-api:80
@@ -152,6 +153,8 @@ services:
       - "5100:80"
 
   evaluation-api-2:
+    volumes:
+      - ./Services/Evaluation/Evaluation.API/Setup:/app/Setup
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80

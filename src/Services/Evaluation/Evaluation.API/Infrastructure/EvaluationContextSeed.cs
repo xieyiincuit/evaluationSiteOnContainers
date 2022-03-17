@@ -42,29 +42,81 @@ public class EvaluationContextSeed
             new()
             {
                 UserId = "1",
-                NickName = "default user",
-                Title = "《反恐精英—全球攻势》是全球最受欢迎的FPS游戏",
+                NickName = "user",
+                Title = " 它是全球最受欢迎的FPS游戏",
                 Content = "枪械、地图、道具大变化！全新大行动任务玩法、全新探员、全新枪械皮肤、全新武器箱、全新印花和布章上线！登录国服购买通行证，即刻体验“激流大行动”冲浪快感！",
                 CreateTime = DateTime.Now,
                 Description = "TOP1 FPS GAME IN THE WORLD",
                 Status = ArticleStatus.Normal,
                 CategoryTypeId = 2,
                 GameId = 1,
-                GameName = "CSGO"
+                GameName = "反恐精英—全球攻势"
             },
             new()
             {
-                UserId = "2",
-                NickName = "default user",
-                Title = "《双人成行》在2021年的Steam年度促销达到第一名",
+                UserId = "1",
+                NickName = "user",
+                Title = "在2021年的Steam年度促销达到第一名",
                 Content = "Mei and Kodi, Do some grate job to maintain their relationship",
                 CreateTime = DateTime.Now.AddDays(1),
                 Description = "Sell Top 1  GAME IN Steam on 2021",
                 Status = ArticleStatus.Normal,
-                CategoryTypeId = 2,
+                CategoryTypeId = 5,
                 GameId = 2,
                 GameName = "It Take two"
-            }
+            },
+            new()
+            {
+                UserId = "2",
+                NickName = "user2",
+                Title = "在2021年的Steam年度促销达到第二名",
+                Content = "Mei and Kodi, Do some grate job to maintain their relationship",
+                CreateTime = DateTime.Now.AddDays(9),
+                Description = "Sell Top 2  GAME IN Steam on 2021",
+                Status = ArticleStatus.Normal,
+                CategoryTypeId = 2,
+                GameId = 3,
+                GameName = "Apex"
+            },
+            new()
+            {
+                UserId = "1",
+                NickName = "user",
+                Title = "在2021年的Steam年度促销达到第三名",
+                Content = "Mei and Kodi, Do some grate job to maintain their relationship",
+                CreateTime = DateTime.Now.AddDays(4),
+                Description = "Sell Top 3  GAME IN Steam on 2021",
+                Status = ArticleStatus.Normal,
+                CategoryTypeId = 1,
+                GameId = 4,
+                GameName = "只狼"
+            },
+            new()
+            {
+                UserId = "3",
+                NickName = "user3",
+                Title = "在2021年的Steam年度促销达到第四名",
+                Content = "Mei and Kodi, Do some grate job to maintain their relationship",
+                CreateTime = DateTime.Now.AddDays(1),
+                Description = "Sell Top 4 GAME IN Steam on 2021",
+                Status = ArticleStatus.Normal,
+                CategoryTypeId = 3,
+                GameId = 5,
+                GameName = "王者荣耀"
+            },
+            new()
+            {
+            UserId = "3",
+            NickName = "user3",
+            Title = "在2021年的Steam年度促销达到第五名",
+            Content = "Mei and Kodi, Do some grate job to maintain their relationship",
+            CreateTime = DateTime.Now.AddDays(11),
+            Description = "Sell Top 3  GAME IN Steam on 2021",
+            Status = ArticleStatus.Normal,
+            CategoryTypeId = 4,
+            GameId = 6,
+            GameName = "电玩小子"
+        }
         };
     }
 

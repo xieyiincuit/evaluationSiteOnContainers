@@ -6,7 +6,7 @@ public class EvaluationArticleController : ControllerBase
 {
     private const string _adminRole = "administrator";
     private const string _evaluatorRole = "evaluator";
-    private const int _pageSize = 10;
+    private const int _pageSize = 5;
     private readonly IEvaluationArticleService _articleService;
     private readonly IEvaluationCategoryService _categoryService;
     private readonly ILogger<EvaluationArticleController> _logger;
