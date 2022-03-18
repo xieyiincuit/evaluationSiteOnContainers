@@ -5,6 +5,7 @@ public class EvaluationSettings
     public string ArticlePicBaseUrl { get; set; }
     public string DescriptionPicBaseUrl { get; set; }
     public bool UseCustomizationData { get; set; }
+    public bool IsMeshClient { get; set; }
 }
 
 public class EventBusSettings

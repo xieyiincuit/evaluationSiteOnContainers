@@ -5,6 +5,9 @@ public class EvaluationContextSeed
     public async Task SeedAsync(EvaluationContext context, ILogger<EvaluationContextSeed> logger,
         IOptions<EvaluationSettings> settings, IWebHostEnvironment env)
     {
+        //是Mesh则负责Seed
+        if (settings.Value.IsMeshClient) return;
+        
         //use policy to retry seed when connect database failure
         var policy = CreatePolicy(logger, nameof(EvaluationContextSeed));
 

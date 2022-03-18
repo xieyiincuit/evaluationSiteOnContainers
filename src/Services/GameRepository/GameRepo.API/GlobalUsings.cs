@@ -21,6 +21,8 @@ global using Microsoft.Extensions.Options;
 global using Microsoft.IdentityModel.Logging;
 global using Microsoft.IdentityModel.Tokens;
 global using Microsoft.OpenApi.Models;
+global using Minio;
+global using Minio.AspNetCore;
 global using MySqlConnector;
 global using Polly;
 global using Polly.Retry;

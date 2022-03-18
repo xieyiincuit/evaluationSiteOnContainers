@@ -5,39 +5,44 @@
 public class PostImageController : ControllerBase
 {
     private readonly ApplicationDbContext _appDbContextService;
+    private readonly MinioClient _minioClient;
     private readonly ILogger<PostImageController> _logger;
     private readonly IWebHostEnvironment _webHostEnvironment;
+    private const string _bucket = "userinfopic";
 
     public PostImageController(
         ILogger<PostImageController> logger,
         IWebHostEnvironment webHostEnvironment,
-        ApplicationDbContext appDbContextService)
+        ApplicationDbContext appDbContextService,
+        MinioClient client)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _webHostEnvironment = webHostEnvironment ?? throw new ArgumentNullException(nameof(webHostEnvironment));
         _appDbContextService = appDbContextService ?? throw new ArgumentNullException(nameof(appDbContextService));
+        _minioClient = client ?? throw new ArgumentNullException(nameof(client));
     }
 
     [HttpPost]
     [Authorize]
-    public async Task<IActionResult> PostAvatarAsync([FromForm] UserAvatarAddDto avatar)
+    public async Task<IActionResult> PostAvatarAsync([FromForm] IFormFile avatar)
     {
-        if (avatar.File == null || avatar.File.Length == 0 || string.IsNullOrEmpty(avatar.UserId))
-            return BadRequest("avatar file or userId is empty");
+        var userId = User.FindFirstValue("sub");
+        //检查用户的正确性
+        var user = await _appDbContextService.Users.FindAsync(userId);
+        if (user == null || user.Id != User.FindFirstValue("sub"))
+            return BadRequest();
 
-        var acceptTypes = new[] {".jpg", ".jpeg", ".png"};
-        if (acceptTypes.All(t => t != Path.GetExtension(avatar.File.FileName)?.ToLower()))
+        if (avatar == null || avatar.Length == 0 || avatar.FileName.Length >= 50)
+            return BadRequest("avatar file empty or file name > 50 char");
+
+        var acceptTypes = new[] { ".jpg", ".jpeg", ".png" };
+        if (acceptTypes.All(t => t != Path.GetExtension(avatar.FileName)?.ToLower()))
             return BadRequest("File type not valid, only jpg and png are acceptable.");
 
-        if (avatar.File.Length > 10 * 1024 * 3 * 1000) return BadRequest("File size cannot exceed 3M");
+        if (avatar.Length > 10 * 1024 * 3 * 1000) return BadRequest("File size cannot exceed 3M");
 
         if (string.IsNullOrWhiteSpace(_webHostEnvironment.WebRootPath))
             _webHostEnvironment.WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-
-        //检查用户的正确性
-        var user = await _appDbContextService.Users.FindAsync(avatar.UserId);
-        if (user == null || user.Id != User.FindFirstValue("sub"))
-            return BadRequest();
 
         var uploadsFolderPath = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
         if (!Directory.Exists(uploadsFolderPath))
@@ -46,14 +51,14 @@ public class PostImageController : ControllerBase
         _logger.LogDebug("---- user:{userName} wanna post a file: upLoadDirectory:{path}", user.NickName,
             uploadsFolderPath);
 
-        var fileName = avatar.UserId + DateTime.Now.Millisecond + Path.GetFileName(avatar.File.FileName);
+        var fileName = user.NickName + "-avatar-" + DateTime.Now.Millisecond + Path.GetExtension(avatar.FileName);
         var fileSavePath = Path.Combine(uploadsFolderPath, fileName);
         _logger.LogDebug("---- user:{userName} save a avatar: savePath:{path}, fileName:{name}", user.NickName,
             fileSavePath, fileName);
 
         //保存文件到文件资源库
         await using var stream = new FileStream(fileSavePath, FileMode.Create);
-        await avatar.File.CopyToAsync(stream);
+        await avatar.CopyToAsync(stream);
         _logger.LogDebug("---- user:{userName} save a avatar successfully", user.NickName);
 
         //删除旧头像文件
@@ -66,8 +71,53 @@ public class PostImageController : ControllerBase
         user.Avatar = fileName;
         await _appDbContextService.SaveChangesAsync();
 
-        //TODO 是否需要ImageMagic调整图片大小
+        return NoContent();
+    }
 
+    [HttpPost("oss")]
+    [Authorize]
+    public async Task<IActionResult> PostAvatarToOSSAsync([FromForm] IFormFile avatar)
+    {
+
+        var userId = User.FindFirstValue("sub");
+
+        //检查用户的正确性
+        var user = await _appDbContextService.Users.FindAsync(userId);
+        if (user == null || user.Id != User.FindFirstValue("sub"))
+            return BadRequest();
+
+        if (avatar == null || avatar.Length == 0 || avatar.FileName.Length >= 30)
+            return BadRequest("avatar file empty or file name > 30 char");
+
+        var acceptTypes = new[] { ".jpg", ".jpeg", ".png" };
+        if (acceptTypes.All(t => t != Path.GetExtension(avatar.FileName)?.ToLower()))
+            return BadRequest("File type not valid, only jpg and png are acceptable.");
+
+        if (avatar.Length > 10 * 1024 * 3 * 1000) return BadRequest("File size cannot exceed 3M");
+
+        //判断bucket是否存在
+        var bucketExist = await _minioClient.BucketExistsAsync(_bucket);
+        if (!bucketExist)
+        {
+            await _minioClient.MakeBucketAsync(_bucket);
+            _logger.LogInformation("Minio OSS create a bucket: {BucketName}", _bucket);
+        }
+
+        var avatarName = user.NickName + "-avatar-" + DateTime.Now.Minute + DateTime.Now.Millisecond + Path.GetExtension(avatar.FileName);
+
+        await using var stream = avatar.OpenReadStream();
+        await _minioClient.PutObjectAsync(_bucket,
+                                 avatarName,
+                                 stream,
+                                 avatar.Length,
+                                 avatar.ContentType);
+        _logger.LogInformation("User avatar uploads successful -> bucket: {BucketName}, object:{ObjectName}", _bucket, avatarName);
+
+        var oldAvatar = user.Avatar;
+        //更新用户头像引用地址
+        user.Avatar = avatarName;
+        await _appDbContextService.SaveChangesAsync();
+        await _minioClient.RemoveObjectAsync(_bucket, oldAvatar);
         return NoContent();
     }
 
@@ -81,10 +131,7 @@ public class PostImageController : ControllerBase
 
         if (user == null) return BadRequest();
 
-        var uploadsFolderPath = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
-        var userAvatarPath = Path.Combine(uploadsFolderPath, user.Avatar);
-
-        var result = new UserAvatarDto {Id = user.Id, NickName = user.NickName, Avatar = userAvatarPath};
+        var result = new UserAvatarDto { Id = user.Id, NickName = user.NickName, Avatar = user.Avatar };
 
         return Ok(result);
     }
@@ -103,7 +150,7 @@ public class PostImageController : ControllerBase
             var user = await _appDbContextService.Users
                 .AsNoTracking()
                 .Where(x => x.Id == id)
-                .Select(x => new UserAvatarDto {Id = x.Id, NickName = x.NickName, Avatar = x.Avatar})
+                .Select(x => new UserAvatarDto { Id = x.Id, NickName = x.NickName, Avatar = x.Avatar })
                 .FirstOrDefaultAsync();
             if (user != null)
                 result.Add(user);

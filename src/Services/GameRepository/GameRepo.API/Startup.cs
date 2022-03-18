@@ -26,10 +26,9 @@ public class Startup
 
         #endregion
 
-        services.AddGrpc();
-
         #region MvcSettings
 
+        services.AddGrpc();
         services.AddControllers(options => { options.Filters.Add(typeof(HttpGlobalExceptionFilter)); })
             .AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = true);
 
@@ -319,6 +318,18 @@ public class Startup
                     {new(redisClient.GetDefaultRedisClient().ConnectionPoolManager.GetConnection())}
             );
             return redLockFactory;
+        });
+
+        #endregion
+
+        #region MinIO
+
+        services.AddMinio(options =>
+        {
+            options.Endpoint = Configuration["Minio:Endpoint"];
+            options.AccessKey = Configuration["Minio:AccessKey"];
+            options.SecretKey = Configuration["Minio:SecretKey"];
+
         });
 
         #endregion

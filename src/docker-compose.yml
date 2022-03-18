@@ -1,6 +1,12 @@
 version: '3.9'
 
 services:
+  nginx:
+    image: nginx:1.19.2-alpine
+    depends_on:
+      - minio1
+      - minio2 
+  
   db_evaluation:
     image: mysql:8.0.27
 
@@ -162,8 +168,8 @@ services:
       - identity-api
       - consul-client
 
-  webstatus:
-    image: ${REGISTRY:-esite}/webstatus:${PLATFORM:-linux}-${TAG:-latest}
-    build:
-      context: .
-      dockerfile: Web/WebStatus/Dockerfile
+  #webstatus:
+  #  image: ${REGISTRY:-esite}/webstatus:${PLATFORM:-linux}-${TAG:-latest}
+  #  build:
+  #    context: .
+  #    dockerfile: Web/WebStatus/Dockerfile

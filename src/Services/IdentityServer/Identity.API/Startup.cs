@@ -27,12 +27,21 @@ public class Startup
 
         #endregion
 
-
         #region MvcSettings
 
         services.AddControllers(options => { options.Filters.Add(typeof(HttpGlobalExceptionFilter)); })
             .AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = true);
         services.AddControllersWithViews();
+
+        services.AddSwaggerGen(options =>
+       {
+           options.SwaggerDoc("v1", new OpenApiInfo
+           {
+               Title = "evaluationSiteOnContainers - Identity HTTP API",
+               Version = "v1",
+               Description = "The Identity Service HTTP API"
+           });
+       });
 
         #endregion
 
@@ -141,11 +150,11 @@ public class Startup
                 .AddCheck("self", () => HealthCheckResult.Healthy())
                 .AddSqlServer(Configuration.GetConnectionString("IdentityConnection"),
                     name: "IdentityDB-check",
-                    tags: new string[] {"IdentityDB"})
+                    tags: new string[] { "IdentityDB" })
                 .AddRabbitMQ(
                     $"amqp://{mqName}:{mqPassword}@{mqHost}/",
                     name: "identity-rabbitmqbus-check",
-                    tags: new string[] {"rabbitmqbus"});
+                    tags: new string[] { "rabbitmqbus" });
         }
 
         #endregion
@@ -230,6 +239,18 @@ public class Startup
 
         #endregion
 
+        #region MinIO
+
+        services.AddMinio(options =>
+        {
+            options.Endpoint = Configuration["Minio:Endpoint"];
+            options.AccessKey = Configuration["Minio:AccessKey"];
+            options.SecretKey = Configuration["Minio:SecretKey"];
+
+        });
+
+        #endregion
+
         var container = new ContainerBuilder();
         container.Populate(services);
         return new AutofacServiceProvider(container.Build());
@@ -238,6 +259,17 @@ public class Startup
     public void Configure(IApplicationBuilder app, IHostApplicationLifetime lifetime)
     {
         if (Environment.IsDevelopment()) app.UseDeveloperExceptionPage();
+        var pathBase = Configuration["PATH_BASE"];
+        if (!string.IsNullOrEmpty(pathBase)) app.UsePathBase(pathBase);
+
+        app.UseSwagger()
+          .UseSwaggerUI(setup =>
+          {
+              setup.SwaggerEndpoint(
+                  $"{(!string.IsNullOrEmpty(pathBase) ? pathBase : string.Empty)}/swagger/v1/swagger.json",
+                  "Identity.API V1");
+              setup.RoutePrefix = "swagger";
+          });
 
         app.UseStaticFiles();
 
@@ -255,7 +287,7 @@ public class Startup
         // Fix a problem with chrome. Chrome enabled a new feature "Cookies without SameSite must be secure", 
         // the cookies should be expired from https, but in this app, the internal communication in aks and docker compose is http.
         // To avoid this problem, the policy of cookies should be in Lax mode.
-        app.UseCookiePolicy(new CookiePolicyOptions {MinimumSameSitePolicy = SameSiteMode.Lax});
+        app.UseCookiePolicy(new CookiePolicyOptions { MinimumSameSitePolicy = SameSiteMode.Lax });
 
         app.UseAuthorization();
         app.UseEndpoints(endpoints =>

@@ -10,7 +10,7 @@
         "Type": "LeastConnection"
       },
       "QoSOptions": {
-        "ExceptionsAllowedBeforeBreaking": 3,
+        "ExceptionsAllowedBeforeBreaking": 5,
         "DurationOfBreak": 5000,
         "TimeoutValue": 5000
       },
@@ -29,7 +29,7 @@
         "Type": "LeastConnection"
       },
       "QoSOptions": {
-        "ExceptionsAllowedBeforeBreaking": 3,
+        "ExceptionsAllowedBeforeBreaking": 5,
         "DurationOfBreak": 3000,
         "TimeoutValue": 5000
       }
@@ -44,7 +44,7 @@
         "Type": "LeastConnection"
       },
       "QoSOptions": {
-        "ExceptionsAllowedBeforeBreaking": 3,
+        "ExceptionsAllowedBeforeBreaking": 5,
         "DurationOfBreak": 3000,
         "TimeoutValue": 5000
       }
@@ -59,7 +59,7 @@
         "Type": "LeastConnection"
       },
       "QoSOptions": {
-        "ExceptionsAllowedBeforeBreaking": 3,
+        "ExceptionsAllowedBeforeBreaking": 5,
         "DurationOfBreak": 3000,
         "TimeoutValue": 5000
       }
@@ -74,7 +74,7 @@
         "Type": "LeastConnection"
       },
       "QoSOptions": {
-        "ExceptionsAllowedBeforeBreaking": 3,
+        "ExceptionsAllowedBeforeBreaking": 5,
         "DurationOfBreak": 10000,
         "TimeoutValue": 5000
       }
@@ -89,7 +89,7 @@
         "Type": "LeastConnection"
       },
       "QoSOptions": {
-        "ExceptionsAllowedBeforeBreaking": 3,
+        "ExceptionsAllowedBeforeBreaking": 5,
         "DurationOfBreak": 3000,
         "TimeoutValue": 5000
       }
@@ -104,7 +104,7 @@
         "Type": "LeastConnection"
       },
       "QoSOptions": {
-        "ExceptionsAllowedBeforeBreaking": 3,
+        "ExceptionsAllowedBeforeBreaking": 5,
         "DurationOfBreak": 10000,
         "TimeoutValue": 5000
       }
