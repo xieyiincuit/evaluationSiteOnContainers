@@ -15,6 +15,8 @@ public class ArticleSmallDto
     public DateTime CreateTime { get; set; }
 
     public int CommentsCount { get; set; }
+    
+    public int SupportCount { get; set; }
 
     public string? Description { get; set; }
 

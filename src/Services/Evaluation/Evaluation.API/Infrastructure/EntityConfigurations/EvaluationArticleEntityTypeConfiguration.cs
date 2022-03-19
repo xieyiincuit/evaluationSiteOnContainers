@@ -66,12 +66,6 @@ internal class EvaluationArticleEntityTypeConfiguration : IEntityTypeConfigurati
             .HasDefaultValue(0)
             .IsRequired();
 
-        builder.Property(x => x.CommentsCount)
-            .HasColumnName("comments_count")
-            .HasComment("文章评论数量")
-            .HasDefaultValue(0)
-            .IsRequired();
-
         builder.Property(x => x.SupportCount)
             .HasColumnName("support_count")
             .HasComment("文章点赞数量")

@@ -50,11 +50,6 @@ public class EvaluationArticle
     public int JoinCount { get; set; }
 
     /// <summary>
-    ///     评论数量
-    /// </summary>
-    public int CommentsCount { get; set; }
-
-    /// <summary>
     ///     点赞数量
     /// </summary>
     public int SupportCount { get; set; }

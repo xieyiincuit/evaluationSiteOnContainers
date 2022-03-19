@@ -109,17 +109,17 @@ public class EvaluationContextSeed
             },
             new()
             {
-            UserId = "3",
-            NickName = "user3",
-            Title = "在2021年的Steam年度促销达到第五名",
-            Content = "Mei and Kodi, Do some grate job to maintain their relationship",
-            CreateTime = DateTime.Now.AddDays(11),
-            Description = "Sell Top 3  GAME IN Steam on 2021",
-            Status = ArticleStatus.Normal,
-            CategoryTypeId = 4,
-            GameId = 6,
-            GameName = "电玩小子"
-        }
+                UserId = "3",
+                NickName = "user3",
+                Title = "在2021年的Steam年度促销达到第五名",
+                Content = "Mei and Kodi, Do some grate job to maintain their relationship",
+                CreateTime = DateTime.Now.AddDays(11),
+                Description = "Sell Top 3  GAME IN Steam on 2021",
+                Status = ArticleStatus.Normal,
+                CategoryTypeId = 4,
+                GameId = 6,
+                GameName = "电玩小子"
+            }
         };
     }
 

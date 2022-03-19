@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Infrastructure;
 
@@ -11,9 +12,10 @@ using Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Infrastructur
 namespace Evaluation.API.Infrastructure.EvaluationMigrations
 {
     [DbContext(typeof(EvaluationContext))]
-    partial class EvaluationContextModelSnapshot : ModelSnapshot
+    [Migration("20220319020402_removeCommentCount")]
+    partial class removeCommentCount
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
