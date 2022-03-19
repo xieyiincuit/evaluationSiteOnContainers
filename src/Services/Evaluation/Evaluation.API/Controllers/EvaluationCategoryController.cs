@@ -34,6 +34,7 @@ public class EvaluationCategoryController : ControllerBase
         if (await _redisDatabase.Database.KeyExistsAsync(_categoryListKey))
         {
             var cacheCategory = await _redisDatabase.GetAsync<List<EvaluationCategory>>(_categoryListKey);
+            _logger.LogInformation("categories get from redis @{categoryList}", cacheCategory);
             return Ok(cacheCategory);
         }
 
