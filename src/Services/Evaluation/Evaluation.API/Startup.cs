@@ -25,7 +25,8 @@ public class Startup
             .AddCustomHttpClient(Configuration)
             .AddCustomEventBus(Configuration)
             .AddCustomMapper(Configuration)
-            .AddCustomValidator(Configuration);
+            .AddCustomValidator(Configuration)
+            .AddCustomRedis(Configuration);
 
         //use autofac
         var container = new ContainerBuilder();
@@ -36,8 +37,6 @@ public class Startup
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime lifetime)
     {
-        
-
         if (env.IsDevelopment()) IdentityModelEventSource.ShowPII = true;
 
         app.UseBundleSwagger(Configuration);

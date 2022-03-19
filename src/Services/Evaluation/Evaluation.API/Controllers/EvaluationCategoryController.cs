@@ -6,16 +6,20 @@
 public class EvaluationCategoryController : ControllerBase
 {
     private const string _adminRole = "administrator";
+    private const string _categoryListKey = "categories";
     private readonly IEvaluationCategoryService _categoryService;
+    private readonly IRedisDatabase _redisDatabase;
     private readonly ILogger<EvaluationCategoryController> _logger;
     private readonly IMapper _mapper;
 
     public EvaluationCategoryController(
         IEvaluationCategoryService categoryService,
+        IRedisDatabase redisDatabase,
         IMapper mapper,
         ILogger<EvaluationCategoryController> logger)
     {
         _categoryService = categoryService ?? throw new ArgumentNullException(nameof(categoryService));
+        _redisDatabase = redisDatabase ?? throw new ArgumentNullException(nameof(redisDatabase));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
@@ -23,19 +27,27 @@ public class EvaluationCategoryController : ControllerBase
     [AllowAnonymous]
     [HttpGet]
     [Route("list")]
-    [ProducesResponseType((int) HttpStatusCode.NotFound)]
-    [ProducesResponseType(typeof(List<EvaluationCategory>), (int) HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(List<EvaluationCategory>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetEvaluateCategoriesAsync()
     {
+        if (await _redisDatabase.Database.KeyExistsAsync(_categoryListKey))
+        {
+            var cacheCategory = await _redisDatabase.GetAsync<List<EvaluationCategory>>(_categoryListKey);
+            return Ok(cacheCategory);
+        }
+
         var categories = await _categoryService.GetEvaluationCategoriesAsync();
         if (categories == null || categories.Count == 0) return NotFound();
+        await _redisDatabase.AddAsync(_categoryListKey, categories);
         return Ok(categories);
     }
 
+
     [AllowAnonymous]
     [HttpGet("{id:int}", Name = nameof(GetEvaluateCategoryAsync))]
-    [ProducesResponseType((int) HttpStatusCode.NotFound)]
-    [ProducesResponseType(typeof(EvaluationCategory), (int) HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(EvaluationCategory), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetEvaluateCategoryAsync([FromRoute] int id)
     {
         var category = await _categoryService.GetEvaluationCategoryAsync(id);
@@ -45,9 +57,9 @@ public class EvaluationCategoryController : ControllerBase
 
     [HttpPut]
     [Route("")]
-    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int) HttpStatusCode.NotFound)]
-    [ProducesResponseType((int) HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
     public async Task<IActionResult> ChangeEvaluateCategoryAsync([FromBody] CategoryUpdateDto categoryUpdateDto)
     {
         if (categoryUpdateDto == null) return BadRequest();
@@ -60,13 +72,17 @@ public class EvaluationCategoryController : ControllerBase
         var userId = User.FindFirst("sub").Value;
         _logger.LogInformation("---- administrator:id:{UserId}, name:{Name} update a category -> old:{@old} new:{@new}",
             userId, User.Identity.Name, entity, categoryUpdateDto);
+
+        if (await _redisDatabase.Database.KeyExistsAsync(_categoryListKey))
+            await _redisDatabase.Database.KeyDeleteAsync(_categoryListKey);
+
         return NoContent();
     }
 
     [HttpPost]
     [Route("")]
-    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(EvaluationCategory), (int) HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(EvaluationCategory), (int)HttpStatusCode.Created)]
     public async Task<IActionResult> AddEvaluateCategoryAsync([FromBody] CategoryAddDto categoryAddDto)
     {
         if (categoryAddDto == null) return BadRequest();
@@ -76,20 +92,24 @@ public class EvaluationCategoryController : ControllerBase
         var userId = User.FindFirst("sub").Value;
         _logger.LogInformation("---- administrator:id:{UserId}, name:{Name} add a category -> old:{@old} new:{@new}",
             userId, User.Identity.Name, entity, categoryAddDto);
-        return CreatedAtRoute(nameof(GetEvaluateCategoryAsync), new {id = entity.CategoryId}, null);
+        if (await _redisDatabase.Database.KeyExistsAsync(_categoryListKey))
+            await _redisDatabase.Database.KeyDeleteAsync(_categoryListKey);
+        return CreatedAtRoute(nameof(GetEvaluateCategoryAsync), new { id = entity.CategoryId }, null);
     }
 
     [HttpDelete]
     [Route("{id:int}")]
-    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int) HttpStatusCode.NotFound)]
-    [ProducesResponseType((int) HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
     public async Task<IActionResult> RemoveEvaluateCategoryAsync(int id)
     {
         if (id <= 0 || id >= int.MaxValue) return BadRequest();
         var userId = User.FindFirst("sub").Value;
         _logger.LogInformation("---- administrator:id:{UserId}, name:{Name} delete a category -> id:{id}",
             userId, User.Identity.Name, id);
+        if (await _redisDatabase.Database.KeyExistsAsync(_categoryListKey))
+            await _redisDatabase.Database.KeyDeleteAsync(_categoryListKey);
         return await _categoryService.DeleteEvaluationCategoryAsync(id) ? NoContent() : NotFound();
     }
 }

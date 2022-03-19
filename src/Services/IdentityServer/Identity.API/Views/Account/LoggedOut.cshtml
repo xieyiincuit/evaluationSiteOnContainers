@@ -18,6 +18,13 @@
             <span>@Model.ClientName</span> application.
         </div>
     }
+    else
+    {
+
+        <div>
+            Click <a class="PostLogoutRedirectUri" href="../">here</a> to return to  home.
+        </div>
+    }
 
     @if (Model.SignOutIframeUrl != null)
     {
@@ -29,6 +36,6 @@
 {
     @if (Model.AutomaticRedirectAfterSignOut)
     {
-        <script src="~/js/signout-redirect.js"></script>
+<script src="~/js/signout-redirect.js"></script>
     }
 }

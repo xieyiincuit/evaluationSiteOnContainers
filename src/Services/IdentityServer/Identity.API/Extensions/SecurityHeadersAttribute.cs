@@ -14,7 +14,8 @@ public class SecurityHeadersAttribute : ActionFilterAttribute
                 context.HttpContext.Response.Headers.Add("X-Frame-Options", "SAMEORIGIN");
 
             var csp =
-                "default-src 'self'; object-src 'none'; frame-ancestors 'none'; sandbox allow-forms allow-same-origin allow-scripts; base-uri 'self';";
+                "default-src 'self'; object-src 'none'; frame-ancestors 'none'; sandbox allow-forms allow-same-origin allow-scripts; base-uri 'self';" +
+                "img-src 'self' https://mdbcdn.b-cdn.net http://localhost:9000; connect-src 'self'";
             // also consider adding upgrade-insecure-requests once you have HTTPS in place for production
             //csp += "upgrade-insecure-requests;";
 

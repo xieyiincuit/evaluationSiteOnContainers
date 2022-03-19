@@ -47,11 +47,11 @@ public static class ServiceCollectionExtension
             dbContextOptions => dbContextOptions
                 .UseMySql(connectionString, serverVersion,
                     sqlOptions => { sqlOptions.EnableRetryOnFailure(15, TimeSpan.FromSeconds(30), null); })
-                // The following three options help with debugging, but should
-                // be changed or removed for production.
-                //.LogTo(Console.WriteLine, LogLevel.Information)
-                //.EnableSensitiveDataLogging()
-                //.EnableDetailedErrors()
+        // The following three options help with debugging, but should
+        // be changed or removed for production.
+        //.LogTo(Console.WriteLine, LogLevel.Information)
+        //.EnableSensitiveDataLogging()
+        //.EnableDetailedErrors()
         );
         return services;
     }
@@ -119,7 +119,11 @@ public static class ServiceCollectionExtension
             .AddRabbitMQ(
                 $"amqp://{mqName}:{mqPassword}@{mqHost}/",
                 name: "evaluation-rabbitmqbus-check",
-                tags: new[] { "rabbitmqbus" });
+                tags: new[] { "rabbitmqbus" })
+            .AddRedis(
+                configuration["RedisHCCheckConnection"],
+                "redis-check",
+                tags: new string[] { "db", "redis", "gamerepo" });
 
         return services;
     }
@@ -295,6 +299,22 @@ public static class ServiceCollectionExtension
                 cfg.Address = serviceConfiguration.Register.HttpEndpoint;
             }
         }));
+        return services;
+    }
+
+    public static IServiceCollection AddCustomRedis(this IServiceCollection services, IConfiguration configuration)
+    {
+        var redisConfiguration = configuration.GetSection("Redis").Get<RedisConfiguration>();
+        services.AddStackExchangeRedisExtensions<RedisNewtonsoftSerializer>(redisConfiguration);
+        services.AddSingleton<IDistributedLockFactory>(provider =>
+        {
+            var redisClient = provider.GetRequiredService<IRedisClientFactory>();
+            var redLockFactory = RedLockFactory.Create(
+                new List<RedLockMultiplexer>
+                    {new(redisClient.GetDefaultRedisClient().ConnectionPoolManager.GetConnection())}
+            );
+            return redLockFactory;
+        });
         return services;
     }
 }

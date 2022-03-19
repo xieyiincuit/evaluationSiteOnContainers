@@ -19,7 +19,7 @@ public class PostImageController : ControllerBase
 
     [HttpPost("pic")]
     [Authorize]
-    public async Task<IActionResult> PostToOSSAsync([FromForm] IFormFile file)
+    public async Task<IActionResult> PostToOssAsync([FromForm] IFormFile file)
     {
         if (file == null || file.Length == 0 || file.FileName.Length >= 30)
             return BadRequest("file empty or file name > 30 char");
@@ -35,6 +35,8 @@ public class PostImageController : ControllerBase
         if (!bucketExist)
         {
             await _minioClient.MakeBucketAsync(_bucket);
+            var policyJson = $@"{{""Version"":""2012-10-17"",""Statement"":[{{""Action"":[""s3:GetBucketLocation""],""Effect"":""Allow"",""Principal"":{{""AWS"":[""*""]}},""Resource"":[""arn:aws:s3:::{_bucket}""],""Sid"":""""}},{{""Action"":[""s3:ListBucket""],""Condition"":{{""StringEquals"":{{""s3:prefix"":[""foo"",""prefix/""]}}}},""Effect"":""Allow"",""Principal"":{{""AWS"":[""*""]}},""Resource"":[""arn:aws:s3:::{_bucket}""],""Sid"":""""}},{{""Action"":[""s3:GetObject""],""Effect"":""Allow"",""Principal"":{{""AWS"":[""*""]}},""Resource"":[""arn:aws:s3:::{_bucket}/foo*"",""arn:aws:s3:::{_bucket}/prefix/*""],""Sid"":""""}}]}}";
+            await _minioClient.SetPolicyAsync(_bucket, policyJson);
             _logger.LogInformation("Minio OSS create a bucket: {BucketName}", _bucket);
         }
 
