@@ -25,6 +25,14 @@
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
     <PackageReference Include="Consul" Version="1.6.10.4" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="10.4.0" />
+    <PackageReference Include="Google.Protobuf" Version="3.19.4" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.40.0" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.44.0" />
+    <PackageReference Include="Grpc.Net.ClientFactory" Version="2.44.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.44.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.3">
       <PrivateAssets>all</PrivateAssets>
@@ -44,6 +52,7 @@
 
   <ItemGroup>
     <Folder Include="Infrastructure\EvaluationMigrations\" />
+    <Folder Include="Grpc\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -55,6 +64,12 @@
     <ProjectReference Include="..\..\..\BuildingBlocks\EventBus\EventBusBase\EventBusBase.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\EventBus\EventBusRabbitMQ\EventBusRabbitMQ.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\WebHostKits\WebHost.Customization\WebHost.Customization.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="..\..\GameRepository\GameRepo.API\Proto\gameRepository.proto" GrpcServices="Client">
+      <Link>Protos\gameRepository.proto</Link>
+    </Protobuf>
   </ItemGroup>
 
 </Project>

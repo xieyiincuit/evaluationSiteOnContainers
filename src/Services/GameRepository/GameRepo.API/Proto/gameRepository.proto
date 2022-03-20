@@ -6,6 +6,7 @@ package GameRepoApi;
 
 service GameRepository {
 	rpc ChangeShopSellStatus(shopStatusChangeRequest) returns (shopStatusChangeResponse) {}
+	rpc GetGameInformation(gameInfoRequest) returns (gameInfoResponse) {}
 }
 
 message shopStatusChangeRequest {
@@ -15,4 +16,14 @@ message shopStatusChangeRequest {
 message shopStatusChangeResponse {
 	int32 shopItemId = 1;
 	bool stopSell = 2;
+}
+
+message gameInfoRequest {
+	int32 gameId = 1;
+}
+
+message gameInfoResponse {
+	int32 gameId = 1;
+	string gameName = 2;
+	string descriptionPic = 3;
 }

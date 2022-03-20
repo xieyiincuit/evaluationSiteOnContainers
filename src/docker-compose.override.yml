@@ -191,6 +191,9 @@ services:
       - IdentityUrlExternal=http://localhost:5105
       - IdentityUrl=http://identity-api
       - PATH_BASE=/evaluation-api
+      - GrpcGameRepoUrl=http://gamerepo-api:81
+      - GRPC_PORT=81
+      - PORT=80
       - UseCustomizationData=True
       - SwaggerRedirectUrlPort=5100
       - ServiceRegister__ServiceName=evaluation-api
@@ -202,6 +205,7 @@ services:
       - Minio__SecretKey=zhou11..
     ports:
       - "5100:80"
+      - "9100:81"
 
   evaluation-api-2:
     environment:
@@ -216,7 +220,10 @@ services:
       - RedisHCCheckConnection=cache_master,DefaultDatabase=0,password=zhouredis11..
       - IdentityUrlExternal=http://localhost:5105
       - IdentityUrl=http://identity-api
+      - GrpcGameRepoUrl=http://gamerepo-api:81
       - PATH_BASE=/evaluation-api
+      - GRPC_PORT=81
+      - PORT=80
       - IsMeshClient=true
       - ServiceRegister__ServiceName=evaluation-api
       - ServiceRegister__ServiceAddress=http://evaluation-api-2:80
@@ -227,6 +234,7 @@ services:
       - Minio__SecretKey=zhou11..
     ports:
       - "80"
+      - "81"
 
   #容器内通讯使用容器开放的端口 而不是映射到主机的端口
   gamerepo-api:

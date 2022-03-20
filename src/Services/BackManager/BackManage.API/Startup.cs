@@ -176,7 +176,7 @@ public class Startup
                 response.StatusCode == HttpStatusCode.RequestTimeout)
             .WaitAndRetryAsync(3, _ => TimeSpan.FromMilliseconds(300));
 
-        services.AddHttpClient<IdentityClientService>(client =>
+        services.AddHttpClient<IdentityHttpClient>(client =>
             {
                 client.BaseAddress = new Uri(Configuration["IdentityUrl"]);
                 client.DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));

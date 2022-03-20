@@ -27,14 +27,12 @@ public class Startup
 
         #region GrpcClient
 
-        services.AddGrpc();
         services.AddGrpcClient<GameRepository.GameRepositoryClient>(options =>
         {
             var grpcGameRepoUrl = Configuration.GetValue("GrpcGameRepoUrl", "http://127.0.0.1:55001");
             options.Address = new Uri(grpcGameRepoUrl);
         }).AddInterceptor<GrpcExceptionInterceptor>();
-        services.AddScoped(typeof(GrpcRepoCallService));
-        services.AddScoped(typeof(GrpcBaseCallService));
+        services.AddScoped<GameRepoGrpcService>();
         services.AddTransient<GrpcExceptionInterceptor>();
 
         #endregion
@@ -164,7 +162,7 @@ public class Startup
 
         #region HttpClients
 
-        services.AddHttpClient<RepoCallService>(client =>
+        services.AddHttpClient<GameRepoHttpClient>(client =>
             {
                 client.BaseAddress = new Uri(Configuration["GameRepoUrl"]);
                 client.DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
@@ -213,8 +211,6 @@ public class Startup
         {
             endpoints.MapDefaultControllerRoute();
             endpoints.MapControllers();
-            endpoints.MapGrpcService<OrderingService>();
-
             endpoints.MapHealthChecks("/hc", new HealthCheckOptions
             {
                 Predicate = _ => true,

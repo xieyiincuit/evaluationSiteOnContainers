@@ -19,7 +19,6 @@
 
   <ItemGroup>
     <Folder Include="Infrastructure\BackManageMigrations\" />
-    <Folder Include="HttpClients\" />
     <Folder Include="Services\" />
   </ItemGroup>
 

@@ -6,17 +6,17 @@ public class BannedController : ControllerBase
 {
     private const int _pageSize = 10;
     private readonly IBannedService _bannedService;
-    private readonly IdentityClientService _identityClient;
+    private readonly IdentityHttpClient _identityHttpClient;
     private readonly ILogger<BannedController> _logger;
     private readonly IMapper _mapper;
 
     public BannedController(
         ILogger<BannedController> logger, IBannedService bannedService,
-        IdentityClientService identityClient, IMapper mapper)
+        IdentityHttpClient identityHttpClient, IMapper mapper)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _bannedService = bannedService ?? throw new ArgumentNullException(nameof(bannedService));
-        _identityClient = identityClient ?? throw new ArgumentNullException(nameof(identityClient));
+        _identityHttpClient = identityHttpClient ?? throw new ArgumentNullException(nameof(identityHttpClient));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
@@ -33,7 +33,7 @@ public class BannedController : ControllerBase
         var bannedRecords = await _bannedService.GetBannedRecordsAsync(pageIndex, _pageSize, status);
 
         var userIds = bannedRecords.Select(x => x.UserId).ToList();
-        using var response = await _identityClient.GetCommentsUserProfileAsync(userIds);
+        using var response = await _identityHttpClient.GetUserProfileAsync(userIds);
         var userInfoDto = new List<UserAvatarDto>();
         if (response.IsSuccessStatusCode) userInfoDto = await response.Content.ReadFromJsonAsync<List<UserAvatarDto>>();
 
@@ -89,7 +89,7 @@ public class BannedController : ControllerBase
         var bannedRecord = await _bannedService.GetBannedRecordByIdAsync(id);
         if (bannedRecord == null) return BadRequest();
 
-        using var response = await _identityClient.RecoverUserToNormalUserAsync(bannedRecord.UserId);
+        using var response = await _identityHttpClient.RecoverUserToNormalUserAsync(bannedRecord.UserId);
         if (response.IsSuccessStatusCode)
         {
             _logger.LogInformation("----- backmanage call identity successfully, cancel band user:{id} -----",
@@ -104,7 +104,7 @@ public class BannedController : ControllerBase
             }
 
             _logger.LogInformation("----- progress error, now start to banned user:{id} -----", bannedRecord.UserId);
-            var bandResult = await _identityClient.BannedUserAsync(bannedRecord.UserId);
+            var bandResult = await _identityHttpClient.BannedUserAsync(bannedRecord.UserId);
             if (!bandResult.IsSuccessStatusCode)
                 throw new BackManageDomainException("recover user occurred error, please check logging and fix it");
         }
@@ -119,7 +119,7 @@ public class BannedController : ControllerBase
         var bannedRecord = await _bannedService.GetBannedRecordByUserIdAsync(userId);
         if (bannedRecord == null) return BadRequest();
 
-        using var response = await _identityClient.BannedUserAsync(userId);
+        using var response = await _identityHttpClient.BannedUserAsync(userId);
         if (response.IsSuccessStatusCode)
         {
             _logger.LogInformation("----- backmanage call identity successfully, band user:{id} -----", userId);
@@ -134,7 +134,7 @@ public class BannedController : ControllerBase
             }
 
             _logger.LogInformation("----- progress error, now start to recover banned user:{id} -----", userId);
-            var recoverResult = await _identityClient.RecoverUserToNormalUserAsync(userId);
+            var recoverResult = await _identityHttpClient.RecoverUserToNormalUserAsync(userId);
             if (!recoverResult.IsSuccessStatusCode)
                 throw new BackManageDomainException("banned user occurred error, please check logging and fix it");
         }

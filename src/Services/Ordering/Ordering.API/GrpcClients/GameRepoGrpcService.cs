@@ -1,11 +1,11 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Ordering.API.GrpcClients;
 
-public class GrpcRepoCallService
+public class GameRepoGrpcService
 {
     private readonly GameRepository.GameRepositoryClient _client;
-    private readonly ILogger<GrpcRepoCallService> _logger;
+    private readonly ILogger<GameRepoGrpcService> _logger;
 
-    public GrpcRepoCallService(GameRepository.GameRepositoryClient client, ILogger<GrpcRepoCallService> logger)
+    public GameRepoGrpcService(GameRepository.GameRepositoryClient client, ILogger<GameRepoGrpcService> logger)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));

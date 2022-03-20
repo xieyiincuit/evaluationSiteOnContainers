@@ -6,17 +6,17 @@ public class ApproveController : ControllerBase
 {
     private const int _pageSize = 10;
     private readonly IApprovalService _approvalService;
-    private readonly IdentityClientService _identityClient;
+    private readonly IdentityHttpClient _identityHttpClient;
     private readonly ILogger<ApproveController> _logger;
     private readonly IMapper _mapper;
 
     public ApproveController(
         ILogger<ApproveController> logger, IApprovalService approvalService,
-        IdentityClientService identityClient, IMapper mapper)
+        IdentityHttpClient identityHttpClient, IMapper mapper)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _approvalService = approvalService ?? throw new ArgumentNullException(nameof(approvalService));
-        _identityClient = identityClient ?? throw new ArgumentNullException(nameof(identityClient));
+        _identityHttpClient = identityHttpClient ?? throw new ArgumentNullException(nameof(identityHttpClient));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
@@ -34,7 +34,7 @@ public class ApproveController : ControllerBase
         var approves = await _approvalService.GetApproveRecordsAsync(pageIndex, _pageSize, status);
 
         var userIds = approves.Select(x => x.UserId).ToList();
-        using var response = await _identityClient.GetCommentsUserProfileAsync(userIds);
+        using var response = await _identityHttpClient.GetUserProfileAsync(userIds);
         var userInfoDto = new List<UserAvatarDto>();
         if (response.IsSuccessStatusCode) userInfoDto = await response.Content.ReadFromJsonAsync<List<UserAvatarDto>>();
 
@@ -148,7 +148,7 @@ public class ApproveController : ControllerBase
         var approve = await _approvalService.GetApproveRecordByUserIdAsync(userId);
         if (approve == null) return BadRequest();
 
-        using var response = await _identityClient.ApproveUserToEvaluatorAsync(userId);
+        using var response = await _identityHttpClient.ApproveUserToEvaluatorAsync(userId);
         if (response.IsSuccessStatusCode)
         {
             _logger.LogInformation("----- backmanage call identity successfully, make user:{Id} be a evaluator -----",
@@ -165,7 +165,7 @@ public class ApproveController : ControllerBase
             }
 
             _logger.LogInformation("----- progress error, now start to redraw approve user:{Id} -----", userId);
-            var redrawResult = await _identityClient.RedrawUserToNormalUserAsync(userId);
+            var redrawResult = await _identityHttpClient.RedrawUserToNormalUserAsync(userId);
             if (!redrawResult.IsSuccessStatusCode)
                 throw new BackManageDomainException("approve user occurred error, please check logging and fix it");
         }
@@ -180,7 +180,7 @@ public class ApproveController : ControllerBase
         var approve = await _approvalService.GetApproveRecordByUserIdAsync(userId);
         if (approve == null) return BadRequest();
 
-        using var response = await _identityClient.RedrawUserToNormalUserAsync(userId);
+        using var response = await _identityHttpClient.RedrawUserToNormalUserAsync(userId);
         if (response.IsSuccessStatusCode)
         {
             _logger.LogInformation(
@@ -197,7 +197,7 @@ public class ApproveController : ControllerBase
             }
 
             _logger.LogInformation("----- progress error, now start to rollback approve user:{Id} -----", userId);
-            var approveResult = await _identityClient.ApproveUserToEvaluatorAsync(userId);
+            var approveResult = await _identityHttpClient.ApproveUserToEvaluatorAsync(userId);
             if (!approveResult.IsSuccessStatusCode)
                 throw new BackManageDomainException("approve user occurred error, please check logging and fix it");
         }

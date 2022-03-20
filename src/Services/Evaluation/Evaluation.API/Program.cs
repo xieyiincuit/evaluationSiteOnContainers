@@ -39,6 +39,15 @@ IWebHost BuildWebHost(IConfiguration configuration, string[] args)
 {
     return WebHost.CreateDefaultBuilder(args)
         .CaptureStartupErrors(false)
+        .ConfigureKestrel(options =>
+        {
+            var ports = GetDefinedPorts(configuration);
+            options.Listen(IPAddress.Any, ports.httpPort,
+                listenOptions => { listenOptions.Protocols = HttpProtocols.Http1AndHttp2; });
+
+            options.Listen(IPAddress.Any, ports.grpcPort,
+                listenOptions => { listenOptions.Protocols = HttpProtocols.Http2; });
+        })
         .ConfigureAppConfiguration(x => x.AddConfiguration(configuration))
         .UseStartup<Startup>()
         .UseContentRoot(Directory.GetCurrentDirectory())
@@ -70,6 +79,13 @@ IConfiguration GetConfiguration()
 
     var config = builder.Build();
     return builder.Build();
+}
+
+(int httpPort, int grpcPort) GetDefinedPorts(IConfiguration config)
+{
+    var grpcPort = config.GetValue("GRPC_PORT", 55000);
+    var port = config.GetValue("PORT", 50000);
+    return (port, grpcPort);
 }
 
 public partial class Program

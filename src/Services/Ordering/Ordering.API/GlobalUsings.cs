@@ -1,8 +1,6 @@
 ﻿global using Autofac;
 global using Autofac.Extensions.DependencyInjection;
-global using Grpc.Core;
 global using GrpcGameRepository;
-global using GrpcOrdering;
 global using HealthChecks.UI.Client;
 global using Microsoft.AspNetCore;
 global using Microsoft.AspNetCore.Authentication.JwtBearer;

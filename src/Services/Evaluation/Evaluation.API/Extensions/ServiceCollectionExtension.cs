@@ -56,6 +56,18 @@ public static class ServiceCollectionExtension
         return services;
     }
 
+    public static IServiceCollection AddCustomGrpcClient(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddGrpcClient<GameRepository.GameRepositoryClient>(options =>
+        {
+            var grpcGameRepoUrl = configuration.GetValue("GrpcGameRepoUrl", "http://127.0.0.1:55001");
+            options.Address = new Uri(grpcGameRepoUrl);
+        }).AddInterceptor<GrpcExceptionInterceptor>();
+        services.AddScoped<GameRepoGrpcService>();
+        services.AddTransient<GrpcExceptionInterceptor>();
+        return services;
+    }
+
     public static IServiceCollection AddCustomMvc(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddControllers(options =>

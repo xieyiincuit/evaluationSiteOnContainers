@@ -10,6 +10,7 @@ public class EvaluationArticleController : ControllerBase
     private readonly IEvaluationArticleService _articleService;
     private readonly IEvaluationCategoryService _categoryService;
     private readonly IEvaluationCommentService _commentService;
+    private readonly GameRepoGrpcService _gameRepoGrpcClient;
     private readonly ILogger<EvaluationArticleController> _logger;
     private readonly IMapper _mapper;
 
@@ -17,12 +18,14 @@ public class EvaluationArticleController : ControllerBase
         IEvaluationArticleService articleService,
         IEvaluationCategoryService categoryService,
         IEvaluationCommentService commentService,
+        GameRepoGrpcService gameRepoGrpcClient,
         IMapper mapper,
         ILogger<EvaluationArticleController> logger)
     {
         _articleService = articleService ?? throw new ArgumentNullException(nameof(articleService));
         _categoryService = categoryService ?? throw new ArgumentNullException(nameof(categoryService));
         _commentService = commentService ?? throw new ArgumentNullException(nameof(commentService));
+        _gameRepoGrpcClient = gameRepoGrpcClient ?? throw new ArgumentNullException(nameof(gameRepoGrpcClient));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
@@ -107,6 +110,12 @@ public class EvaluationArticleController : ControllerBase
             _mapper.Map<List<ArticleSmallDto>>(
                 await _articleService.GetArticlesAsync(_pageSize, pageIndex, categoryId));
 
+        //获取评论数量
+        foreach (var article in articlesToReturn)
+        {
+            article.CommentsCount = await _commentService.CountArticleRootCommentsAsync(article.ArticleId);
+        }
+
         var model = new PaginatedItemsDtoModel<ArticleSmallDto>(pageIndex, _pageSize, totalArticles, articlesToReturn,
             null);
         return Ok(model);
@@ -122,8 +131,15 @@ public class EvaluationArticleController : ControllerBase
     {
         if (articleAddDto == null) return BadRequest();
 
+        if (await _gameRepoGrpcClient.CheckGameExistAsync(articleAddDto.GameId) == false) return BadRequest();
+
         //mapping        
         var entity = _mapper.Map<EvaluationArticle>(articleAddDto);
+        //grpc通信获取游戏信息
+        var gameInfo = await _gameRepoGrpcClient.GetGameInfoAsync(articleAddDto.GameId);
+        entity.GameName = gameInfo.GameName;
+        entity.DescriptionImage = gameInfo.DescriptionPic;
+
         entity.UserId = User.FindFirstValue("sub");
         entity.NickName = User.FindFirstValue("nickname");
 

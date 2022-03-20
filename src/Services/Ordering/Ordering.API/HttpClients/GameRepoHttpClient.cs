@@ -1,12 +1,12 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Ordering.API.HttpClients;
 
-public class RepoCallService
+public class GameRepoHttpClient
 {
     private readonly HttpClient _httpClient;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly ILogger<RepoCallService> _logger;
+    private readonly ILogger<GameRepoHttpClient> _logger;
 
-    public RepoCallService(HttpClient httpClient, ILogger<RepoCallService> logger,
+    public GameRepoHttpClient(HttpClient httpClient, ILogger<GameRepoHttpClient> logger,
         IHttpContextAccessor httpContextAccessor)
     {
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));

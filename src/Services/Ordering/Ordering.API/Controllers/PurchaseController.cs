@@ -5,25 +5,25 @@
 public class PurchaseController : ControllerBase
 {
     private readonly IDistributedLockFactory _distributedLockFactory;
-    private readonly GrpcRepoCallService _grpcRepoCallService;
+    private readonly GameRepoGrpcService _gameRepoGrpcService;
     private readonly ILogger<PurchaseController> _logger;
     private readonly IRedisDatabase _redisDatabase;
-    private readonly RepoCallService _repoCallService;
+    private readonly GameRepoHttpClient _gameRepoHttpClient;
 
     public PurchaseController(
         ILogger<PurchaseController> logger,
         IRedisClient redisClient,
         IRedisDatabase redisDatabase,
         IDistributedLockFactory distributedLockFactory,
-        RepoCallService repoCallService,
-        GrpcRepoCallService grpcRepoCallService)
+        GameRepoHttpClient gameRepoHttpClient,
+        GameRepoGrpcService gameRepoGrpcService)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _redisDatabase = redisDatabase ?? throw new ArgumentNullException(nameof(redisDatabase));
         _distributedLockFactory =
             distributedLockFactory ?? throw new ArgumentNullException(nameof(distributedLockFactory));
-        _repoCallService = repoCallService ?? throw new ArgumentNullException(nameof(repoCallService));
-        _grpcRepoCallService = grpcRepoCallService ?? throw new ArgumentNullException(nameof(grpcRepoCallService));
+        _gameRepoHttpClient = gameRepoHttpClient ?? throw new ArgumentNullException(nameof(gameRepoHttpClient));
+        _gameRepoGrpcService = gameRepoGrpcService ?? throw new ArgumentNullException(nameof(gameRepoGrpcService));
     }
 
     [HttpPost("item/{shopItemId:int}")]
@@ -54,7 +54,7 @@ public class PurchaseController : ControllerBase
             if (currentQuantity < 1)
             {
                 _logger.LogInformation("shopItem:{id} all sell, begin grpc call gameRepo to stop this", shopItemId);
-                var response = await _grpcRepoCallService.StopShopSellAsync(shopItemId);
+                var response = await _gameRepoGrpcService.StopShopSellAsync(shopItemId);
                 if (response == false)
                     _logger.LogError("shopItem:{id} all sell, begin grpc call gameRepo to stop this but fail",
                         shopItemId);
@@ -63,7 +63,7 @@ public class PurchaseController : ControllerBase
 
             await _redisDatabase.Database.StringDecrementAsync(stockKey, 1);
             //通信服务 发送SDK保存拥有记录
-            await _repoCallService.SaveBuyerRecordAsync(User.FindFirstValue("sub"), shopItemId);
+            await _gameRepoHttpClient.SaveBuyerRecordAsync(User.FindFirstValue("sub"), shopItemId);
             _logger.LogInformation("user:{name} buy a shopItem:{id}", User.FindFirstValue("nickname"), shopItemId);
         }
         else

@@ -17,12 +17,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Proto\ordering.proto" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <Folder Include="Grpc\" />
     <Folder Include="Models\" />
-    <Folder Include="HttpClients\" />
+    <Folder Include="Proto\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,8 +27,7 @@
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="6.0.4" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.2.0" />
     <PackageReference Include="Google.Protobuf" Version="3.19.4" />
-    <PackageReference Include="Grpc.AspNetCore.Server" Version="2.44.0" />
-    <PackageReference Include="Grpc.AspNetCore.Server.ClientFactory" Version="2.44.0" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.44.0" />
     <PackageReference Include="Grpc.Net.ClientFactory" Version="2.44.0" />
     <PackageReference Include="Grpc.Tools" Version="2.44.0">
       <PrivateAssets>all</PrivateAssets>
@@ -54,7 +50,6 @@
     <Protobuf Include="..\..\GameRepository\GameRepo.API\Proto\gameRepository.proto" GrpcServices="Client">
       <Link>Protos\gameRepository.proto</Link>
     </Protobuf>
-    <Protobuf Include="Proto\ordering.proto" GrpcServices="Server" />
   </ItemGroup>
 
 </Project>

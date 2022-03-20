@@ -1,6 +1,4 @@
-﻿using Minio.AspNetCore.HealthChecks;
-
-namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API;
 
 public class Startup
 {

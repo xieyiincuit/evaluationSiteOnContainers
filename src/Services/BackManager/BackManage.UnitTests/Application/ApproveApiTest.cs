@@ -8,9 +8,9 @@ public class ApproveApiTest
     private readonly Mock<IMapper> _mapperMock;
 
     //IdentityClientService 是一个实体类，而不是接口，所以还需Mock IdentityIdentityClientService的依赖项来初始化类。
-    private readonly Mock<IdentityClientService> _identityClientMock;
+    private readonly Mock<IdentityHttpClient> _identityClientMock;
     private readonly HttpClient _httpClient;
-    private readonly Mock<ILogger<IdentityClientService>> _identityLoggerMock;
+    private readonly Mock<ILogger<IdentityHttpClient>> _identityLoggerMock;
     private readonly Mock<IHttpContextAccessor> _contextAccessorMock;
 
     //构造函数实体化
@@ -20,9 +20,9 @@ public class ApproveApiTest
         _mapperMock = new Mock<IMapper>();
         _loggerMock = new Mock<ILogger<ApproveController>>();
         _httpClient = new HttpClient();
-        _identityLoggerMock = new Mock<ILogger<IdentityClientService>>();
+        _identityLoggerMock = new Mock<ILogger<IdentityHttpClient>>();
         _contextAccessorMock = new Mock<IHttpContextAccessor>();
-        _identityClientMock = new Mock<IdentityClientService>(_httpClient, _identityLoggerMock.Object, _contextAccessorMock.Object);
+        _identityClientMock = new Mock<IdentityHttpClient>(_httpClient, _identityLoggerMock.Object, _contextAccessorMock.Object);
     }
 
     [Fact]

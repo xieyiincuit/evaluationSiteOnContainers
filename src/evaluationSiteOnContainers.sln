@@ -75,7 +75,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{E5F72042
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BackManage.UnitTests", "Services\BackManager\BackManage.UnitTests\BackManage.UnitTests.csproj", "{6D2E52D6-20EB-4C7D-8E78-DB575C2A4EF1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackManage.FunctionalTests", "Services\BackManager\BackManage.FunctionalTests\BackManage.FunctionalTests.csproj", "{E25D0256-2F70-43E1-80CB-91B07D8F80FA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BackManage.FunctionalTests", "Services\BackManager\BackManage.FunctionalTests\BackManage.FunctionalTests.csproj", "{E25D0256-2F70-43E1-80CB-91B07D8F80FA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

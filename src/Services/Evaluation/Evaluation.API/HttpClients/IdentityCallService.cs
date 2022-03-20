@@ -1,4 +1,4 @@
-﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Communication;
+﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.HttpClients;
 
 public class IdentityCallService
 {

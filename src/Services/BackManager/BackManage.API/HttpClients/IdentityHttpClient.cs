@@ -1,12 +1,12 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.BackManage.API.HttpClients;
 
-public class IdentityClientService
+public class IdentityHttpClient
 {
     private readonly HttpClient _client;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly ILogger<IdentityClientService> _logger;
+    private readonly ILogger<IdentityHttpClient> _logger;
 
-    public IdentityClientService(HttpClient client, ILogger<IdentityClientService> logger,
+    public IdentityHttpClient(HttpClient client, ILogger<IdentityHttpClient> logger,
         IHttpContextAccessor httpContextAccessor)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
@@ -14,7 +14,7 @@ public class IdentityClientService
         _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
     }
 
-    public async Task<HttpResponseMessage> GetCommentsUserProfileAsync(List<string> userIds)
+    public async Task<HttpResponseMessage> GetUserProfileAsync(List<string> userIds)
     {
         _logger.LogDebug("---- BackManage client call identity services: baseUrl:{url}", _client.BaseAddress);
         var callUrl = _client.BaseAddress + "api/v1/u/avatar/batch";
@@ -31,8 +31,7 @@ public class IdentityClientService
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
 
-            _logger.LogInformation(
-                $"received callback response -> callUrl:{callUrl}, statusCode:{response.StatusCode}");
+            _logger.LogInformation($"received callback response -> callUrl:{callUrl}, statusCode:{response.StatusCode}");
             return response;
         }
         catch (Exception e)
