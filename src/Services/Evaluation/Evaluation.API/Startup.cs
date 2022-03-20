@@ -26,7 +26,8 @@ public class Startup
             .AddCustomEventBus(Configuration)
             .AddCustomMapper(Configuration)
             .AddCustomValidator(Configuration)
-            .AddCustomRedis(Configuration);
+            .AddCustomRedis(Configuration)
+            .AddCustomMinio(Configuration);
 
         //use autofac
         var container = new ContainerBuilder();

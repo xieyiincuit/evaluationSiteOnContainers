@@ -8,7 +8,7 @@ public class PostImageController : ControllerBase
     private readonly MinioClient _minioClient;
     private readonly ILogger<PostImageController> _logger;
     private readonly IWebHostEnvironment _webHostEnvironment;
-    private const string _bucket = "userinfopic";
+    private const string _userInfoBucket = "userinfopic";
 
     public PostImageController(
         ILogger<PostImageController> logger,
@@ -96,30 +96,32 @@ public class PostImageController : ControllerBase
         if (avatar.Length > 10 * 1024 * 3 * 1000) return BadRequest("File size cannot exceed 3M");
 
         //判断bucket是否存在
-        var bucketExist = await _minioClient.BucketExistsAsync(_bucket);
+        var bucketExist = await _minioClient.BucketExistsAsync(_userInfoBucket);
         if (!bucketExist)
         {
-            await _minioClient.MakeBucketAsync(_bucket);
-            var policyJson = $@"{{""Version"":""2012-10-17"",""Statement"":[{{""Action"":[""s3:GetBucketLocation""],""Effect"":""Allow"",""Principal"":{{""AWS"":[""*""]}},""Resource"":[""arn:aws:s3:::{_bucket}""],""Sid"":""""}},{{""Action"":[""s3:ListBucket""],""Condition"":{{""StringEquals"":{{""s3:prefix"":[""foo"",""prefix/""]}}}},""Effect"":""Allow"",""Principal"":{{""AWS"":[""*""]}},""Resource"":[""arn:aws:s3:::{_bucket}""],""Sid"":""""}},{{""Action"":[""s3:GetObject""],""Effect"":""Allow"",""Principal"":{{""AWS"":[""*""]}},""Resource"":[""arn:aws:s3:::{_bucket}/foo*"",""arn:aws:s3:::{_bucket}/prefix/*""],""Sid"":""""}}]}}";
-            await _minioClient.SetPolicyAsync(_bucket, policyJson);
-            _logger.LogInformation("Minio OSS create a bucket: {BucketName}", _bucket);
+            await _minioClient.MakeBucketAsync(_userInfoBucket);
+            _logger.LogInformation("Minio OSS create a bucket: {BucketName}", _userInfoBucket);
         }
 
-        var avatarName = user.NickName + "-avatar-" + DateTime.Now.Minute + DateTime.Now.Millisecond + Path.GetExtension(avatar.FileName);
+        var avatarName = "avatar-" + DateTime.Now.Ticks + Path.GetExtension(avatar.FileName);
+        var uploadPath = $"/{userId}/{avatarName}";
 
         await using var stream = avatar.OpenReadStream();
-        await _minioClient.PutObjectAsync(_bucket,
-                                 avatarName,
-                                 stream,
-                                 avatar.Length,
-                                 avatar.ContentType);
-        _logger.LogInformation("User avatar uploads successful -> bucket: {BucketName}, object:{ObjectName}", _bucket, avatarName);
+        await _minioClient.PutObjectAsync(_userInfoBucket,
+            uploadPath,
+            stream,
+            avatar.Length,
+            avatar.ContentType);
+        _logger.LogInformation("User avatar uploads successful -> bucket: {BucketName}, object:{ObjectName}", _userInfoBucket, uploadPath);
 
-        var oldAvatar = user.Avatar;
+        ////删除修改前的头像
+        //var oldAvatar = user.Avatar;
+        //await _minioClient.RemoveObjectAsync(_bucket, oldAvatar);
+
         //更新用户头像引用地址
-        user.Avatar = avatarName;
+        user.Avatar = $"{_userInfoBucket}{uploadPath}";
         await _appDbContextService.SaveChangesAsync();
-        await _minioClient.RemoveObjectAsync(_bucket, oldAvatar);
+
         return NoContent();
     }
 

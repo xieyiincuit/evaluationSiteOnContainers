@@ -6,12 +6,10 @@ public class PostImageController : ControllerBase
 {
     private readonly MinioClient _minioClient;
     private readonly ILogger<PostImageController> _logger;
-    private const string _bucket = "gameinfopic";
+    private const string _gameInfoBucket = "gameinfopic";
+    private const string _shopInfoBucket = "shopinfopic";
 
-    public PostImageController(
-        ILogger<PostImageController> logger,
-        IWebHostEnvironment webHostEnvironment,
-        MinioClient client)
+    public PostImageController(ILogger<PostImageController> logger, MinioClient client)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _minioClient = client ?? throw new ArgumentNullException(nameof(client));
@@ -19,7 +17,7 @@ public class PostImageController : ControllerBase
 
     [HttpPost("pic")]
     [Authorize]
-    public async Task<IActionResult> PostToOssAsync([FromForm] IFormFile file)
+    public async Task<IActionResult> PostGamePicToOssAsync([FromForm] IFormFile file)
     {
         if (file == null || file.Length == 0 || file.FileName.Length >= 30)
             return BadRequest("file empty or file name > 30 char");
@@ -31,24 +29,58 @@ public class PostImageController : ControllerBase
         if (file.Length > 10 * 1024 * 3 * 1000) return BadRequest("File size cannot exceed 3M");
 
         //判断bucket是否存在
-        var bucketExist = await _minioClient.BucketExistsAsync(_bucket);
+        var bucketExist = await _minioClient.BucketExistsAsync(_gameInfoBucket);
         if (!bucketExist)
         {
-            await _minioClient.MakeBucketAsync(_bucket);
-            var policyJson = $@"{{""Version"":""2012-10-17"",""Statement"":[{{""Action"":[""s3:GetBucketLocation""],""Effect"":""Allow"",""Principal"":{{""AWS"":[""*""]}},""Resource"":[""arn:aws:s3:::{_bucket}""],""Sid"":""""}},{{""Action"":[""s3:ListBucket""],""Condition"":{{""StringEquals"":{{""s3:prefix"":[""foo"",""prefix/""]}}}},""Effect"":""Allow"",""Principal"":{{""AWS"":[""*""]}},""Resource"":[""arn:aws:s3:::{_bucket}""],""Sid"":""""}},{{""Action"":[""s3:GetObject""],""Effect"":""Allow"",""Principal"":{{""AWS"":[""*""]}},""Resource"":[""arn:aws:s3:::{_bucket}/foo*"",""arn:aws:s3:::{_bucket}/prefix/*""],""Sid"":""""}}]}}";
-            await _minioClient.SetPolicyAsync(_bucket, policyJson);
-            _logger.LogInformation("Minio OSS create a bucket: {BucketName}", _bucket);
+            await _minioClient.MakeBucketAsync(_gameInfoBucket);
+            _logger.LogInformation("Minio OSS create a bucket: {BucketName}", _gameInfoBucket);
         }
 
-        var gamePic = "gamePic-" + DateTime.Now.Minute + DateTime.Now.Millisecond + Path.GetExtension(file.FileName);
-
+        var gamePic = "gamePic-" + DateTime.Now.Ticks + Path.GetExtension(file.FileName);
+        var uploadFile = $"/gamerepo/{gamePic}";
         await using var stream = file.OpenReadStream();
-        await _minioClient.PutObjectAsync(_bucket,
-                                 gamePic,
-                                 stream,
-                                 gamePic.Length,
-                                 file.ContentType);
-        _logger.LogInformation("game Pic uploads successful -> bucket: {BucketName}, object:{ObjectName}", _bucket, gamePic);
-        return NoContent();
+        await _minioClient.PutObjectAsync(_gameInfoBucket,
+            uploadFile,
+            stream,
+            gamePic.Length,
+            file.ContentType);
+        _logger.LogInformation("game Pic uploads successful -> bucket: {BucketName}, object:{ObjectName}", _gameInfoBucket, uploadFile);
+
+        return Ok(uploadFile);
     }
+
+    [HttpPost("shop/pic")]
+    [Authorize]
+    public async Task<IActionResult> PostShopPicToOssAsync([FromForm] IFormFile file)
+    {
+        if (file == null || file.Length == 0 || file.FileName.Length >= 30)
+            return BadRequest("file empty or file name > 30 char");
+
+        var acceptTypes = new[] { ".jpg", ".jpeg", ".png" };
+        if (acceptTypes.All(t => t != Path.GetExtension(file.FileName)?.ToLower()))
+            return BadRequest("File type not valid, only jpg and png are acceptable.");
+
+        if (file.Length > 10 * 1024 * 3 * 1000) return BadRequest("File size cannot exceed 3M");
+
+        //判断bucket是否存在
+        var bucketExist = await _minioClient.BucketExistsAsync(_shopInfoBucket);
+        if (!bucketExist)
+        {
+            await _minioClient.MakeBucketAsync(_shopInfoBucket);
+            _logger.LogInformation("Minio OSS create a bucket: {BucketName}", _shopInfoBucket);
+        }
+
+        var shopPic = "shopPic-" + DateTime.Now.Ticks + Path.GetExtension(file.FileName);
+        var uploadFile = $"/gamerepo/{shopPic}";
+        await using var stream = file.OpenReadStream();
+        await _minioClient.PutObjectAsync(_shopInfoBucket,
+            uploadFile,
+            stream,
+            shopPic.Length,
+            file.ContentType);
+        _logger.LogInformation("shopPic Pic uploads successful -> bucket: {BucketName}, object:{ObjectName}", _shopInfoBucket, uploadFile);
+
+        return Ok(uploadFile);
+    }
+    
 }

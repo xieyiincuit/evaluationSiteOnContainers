@@ -36,6 +36,7 @@ global using Microsoft.IdentityModel.Tokens;
 global using Microsoft.OpenApi.Models;
 global using Minio;
 global using Minio.AspNetCore;
+global using Minio.AspNetCore.HealthChecks;
 global using RabbitMQ.Client;
 global using Serilog;
 global using Serilog.Events;

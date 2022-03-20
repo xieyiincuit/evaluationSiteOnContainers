@@ -154,7 +154,8 @@ public class Startup
                 .AddRabbitMQ(
                     $"amqp://{mqName}:{mqPassword}@{mqHost}/",
                     name: "identity-rabbitmqbus-check",
-                    tags: new string[] { "rabbitmqbus" });
+                    tags: new string[] { "rabbitmqbus" })
+                .AddMinio(sp => sp.GetRequiredService<MinioClient>(), name: "identity-minio", tags: new[] { "oss", "minio", "identity" });
         }
 
         #endregion

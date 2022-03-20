@@ -59,3 +59,6 @@ global using Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Integr
 global using Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Interfaces;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Models;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Services;
+global using Minio;
+global using Minio.AspNetCore;
+global using Minio.AspNetCore.HealthChecks;

@@ -1,4 +1,6 @@
-﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API;
+﻿using Minio.AspNetCore.HealthChecks;
+
+namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API;
 
 public class Startup
 {
@@ -270,6 +272,11 @@ public class Startup
                     $"amqp://{mqName}:{mqPassword}@{mqHost}/",
                     name: "gamerepo-rabbitmqbus-check",
                     tags: new string[] { "rabbitmqbus" });
+
+            hcBuilder.AddMinio(
+                sp => sp.GetRequiredService<MinioClient>(),
+                name: "gamerepo-minio",
+                tags: new[] { "oss", "minio", "gamerepo" });
         }
 
         #endregion

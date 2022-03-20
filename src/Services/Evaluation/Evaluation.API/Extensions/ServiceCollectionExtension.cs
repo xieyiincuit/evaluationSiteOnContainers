@@ -115,15 +115,19 @@ public static class ServiceCollectionExtension
                 configuration["ConnectionStrings:EvaluationDbConnectString"],
                 "EvaluationDB-check",
                 HealthStatus.Degraded,
-                new[] { "db", "evaluation", "mysql" })
+                new[] {"db", "evaluation", "mysql"})
             .AddRabbitMQ(
                 $"amqp://{mqName}:{mqPassword}@{mqHost}/",
                 name: "evaluation-rabbitmqbus-check",
-                tags: new[] { "rabbitmqbus" })
+                tags: new[] {"rabbitmqbus"})
             .AddRedis(
                 configuration["RedisHCCheckConnection"],
                 "redis-check",
-                tags: new string[] { "db", "redis", "gamerepo" });
+                tags: new string[] {"db", "redis", "evaluation"})
+            .AddMinio(
+                sp => sp.GetRequiredService<MinioClient>(),
+                name: "evaluation-minio",
+                tags: new[] {"oss", "minio", "evaluation"});
 
         return services;
     }
@@ -154,8 +158,7 @@ public static class ServiceCollectionExtension
         return services;
     }
 
-    public static IServiceCollection AddCustomServicesInjection(this IServiceCollection services,
-        IConfiguration configuration)
+    public static IServiceCollection AddCustomServicesInjection(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<IEvaluationArticleService, EvaluationArticleService>();
         services.AddScoped<IEvaluationCategoryService, EvaluationCategoryService>();
@@ -191,8 +194,7 @@ public static class ServiceCollectionExtension
         return services;
     }
 
-    public static IServiceCollection AddCustomIntegrationEvent(this IServiceCollection services,
-        IConfiguration configuration)
+    public static IServiceCollection AddCustomIntegrationEvent(this IServiceCollection services, IConfiguration configuration)
     {
         //注册IRabbitMQPersistentConnection服务用于设置RabbitMQ连接
         services.AddSingleton<IRabbitMQPersistentConnection>(sp =>
@@ -314,6 +316,18 @@ public static class ServiceCollectionExtension
                     {new(redisClient.GetDefaultRedisClient().ConnectionPoolManager.GetConnection())}
             );
             return redLockFactory;
+        });
+        return services;
+    }
+
+    public static IServiceCollection AddCustomMinio(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddMinio(options =>
+        {
+            options.Endpoint = configuration["Minio:Endpoint"];
+            options.AccessKey = configuration["Minio:AccessKey"];
+            options.SecretKey = configuration["Minio:SecretKey"];
+
         });
         return services;
     }
