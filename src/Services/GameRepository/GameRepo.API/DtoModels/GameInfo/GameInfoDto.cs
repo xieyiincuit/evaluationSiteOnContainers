@@ -6,6 +6,7 @@ public class GameInfoDto
     public string Name { get; set; }
     public double? AverageScore { get; set; }
     public string? RoughPicture { get; set; }
+    public string? SupportPlatform { get; set; } 
     public string Issue { get; set; }
     public string CategoryType { get; set; }
 }

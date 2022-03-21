@@ -22,7 +22,7 @@ public class ArticleSmallDto
 
     public ArticleStatus Status { get; set; }
 
-    public int CategoryTypeId { get; set; }
+    public int? CategoryTypeId { get; set; }
 
     public int GameId { get; set; }
 

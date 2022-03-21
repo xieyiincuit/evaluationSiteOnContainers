@@ -6,7 +6,7 @@ public class PostImageController : ControllerBase
 {
     private readonly MinioClient _minioClient;
     private readonly ILogger<PostImageController> _logger;
-    private const string _articleBucket = "articlepic";
+    private const string _articleBucket = "articleinfo";
 
     public PostImageController(ILogger<PostImageController> logger, MinioClient client)
     {
@@ -45,6 +45,7 @@ public class PostImageController : ControllerBase
             file.ContentType);
         _logger.LogInformation("article Pic uploads successful -> bucket: {BucketName}, object:{ObjectName}", _articleBucket, uploadFile);
 
-        return Ok(uploadFile);
+        var sourcePath = $"{_articleBucket}{uploadFile}";
+        return Ok(sourcePath);
     }
 }

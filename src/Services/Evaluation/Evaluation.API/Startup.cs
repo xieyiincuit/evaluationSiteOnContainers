@@ -14,6 +14,7 @@ public class Startup
     {
         services
             .AddCustomMvc(Configuration)
+            .AddCustomGrpcClient(Configuration)
             .AddCustomRegister(Configuration)
             .AddCustomSwagger(Configuration)
             .AddCustomDbContext(Configuration)

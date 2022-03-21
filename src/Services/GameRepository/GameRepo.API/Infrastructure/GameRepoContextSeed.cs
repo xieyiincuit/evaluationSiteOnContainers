@@ -84,24 +84,118 @@ public class GameRepoContextSeed
         {
             new()
             {
-                Name = "CSGO",
-                Description =
-                    "《反恐精英：全球攻势》，原名Counter-Strike: Global Offensive，是一款由VALVE与Hidden Path Entertainment合作开发、Valve Software发行的第一人称射击游戏，于2012年8月21日在欧美地区正式发售，国服发布会于2017年4月11日在北京召开。  游戏为《反恐精英》系列游戏的第四款作品,游戏玩家分为反恐精英（CT阵营）与恐怖份子（T阵营）两个阵营，双方需在一个地图上进行多回合的战斗，达到地图要求目标或消灭全部敌方则取得胜利。",
-                SupportPlatform = "PC/XBox",
-                GameCompanyId = 14,
-                GameCategoryId = 1,
-                GamePlaySuggestionId = 1
+                Name = "永劫无间",
+                Description = "《永劫无间》是由24 Entertainment制作发行的一款动作游戏新作。在域外之地聚窟州，神秘的力量等待着来自各大文明的武者。玩家需要运用丰富的武器战胜敌人，而世界的真相将向最终的胜者展开。",
+                SupportPlatform = "PC/PS5",
+                GameCompanyId = 16,
+                GameCategoryId = 3,
+                GamePlaySuggestionId = 1,
+                AverageScore = 7.3,
+                HotPoints = 2467,
+                DetailsPicture = "gameinfopic/gamerepo/gameyongjiebig.jpg",
+                RoughPicture = "gameinfopic/gamerepo/gameyongjie.jpg",
             },
             new()
             {
-                Name = "It Take Two",
-                Description =
-                    "游玩《双人成行》，踏上生命中最疯狂的旅程。邀请好友通过远程同乐**免费游玩，体验各种搞笑而混乱的合作游戏挑战。这是一款别开生面的平台冒险游戏，只有一件事是肯定的：二人同心，其利断金。",
+                Name = "艾尔登法环",
+                Description = "《艾尔登法环》是一款以正统黑暗奇幻世界为舞台的动作RPG游戏。走进辽阔的场景与地下迷宫探索未知，挑战困难重重的险境，享受克服困境时的成就感吧。不仅如此，登场角色之间的利害关系谱成的群像剧，更是不容错过。",
                 SupportPlatform = "PC/XBox/PS4/PS5",
+                GameCompanyId = 17,
+                GameCategoryId = 3,
+                GamePlaySuggestionId = 2,
+                AverageScore = 9.1,
+                HotPoints = 12387,
+                DetailsPicture = "gameinfopic/gamerepo/gamelaotouhuanbig.jpg",
+                RoughPicture = "gameinfopic/gamerepo/gamelaotouhuan.jpg"
+            },
+            new()
+            {
+                Name = "战地5",
+                Description = "《战地5》是一款由EA制作并发行的第一人称射击游戏，为《战地》的正统续作。本作的多人模式增加了多个如同电影大片般的角色动画，玩家叱诧战场，还得提防背后敌人的袭击，震撼的画质加上角色动画，堪比电影大片。",
+                SupportPlatform = "PC/XBox/PS4",
                 GameCompanyId = 15,
-                GameCategoryId = 15,
-                GamePlaySuggestionId = 2
-            }
+                GameCategoryId = 1,
+                GamePlaySuggestionId = 3,
+                AverageScore = 8.1,
+                HotPoints = 5543,
+                DetailsPicture = "gameinfopic/gamerepo/gamezhandiwubig.jpg",
+                RoughPicture = "gameinfopic/gamerepo/gamezhandiwu.jpg"
+            },
+            new()
+            {
+                Name = "Apex英雄",
+                Description = "《Apex英雄》（Apex Legends）是一款免费的战术竞技游戏，适用经典的战术竞技游戏规则，由泰坦陨落制作组Respawn研发。在游戏中，我们将领略到拥有强大技能的传说级角色，并与他们携手，在这充满危险与机遇的土地上，为荣誉、为利益、为名望，携手而战吧！",
+                SupportPlatform = "PC/Switch/PS4/Xbox",
+                GameCompanyId = 15,
+                GameCategoryId = 1,
+                GamePlaySuggestionId = 4,
+                AverageScore = 8.6,
+                HotPoints = 8977,
+                DetailsPicture = "gameinfopic/gamerepo/gameapexbig.jpg",
+                RoughPicture = "gameinfopic/gamerepo/gameapex.jpg"
+            },
+            new()
+            {
+                Name = "幻塔",
+                Description = "《幻塔》是完美世界游戏旗下Hotta Studio自主研发并打造的轻科幻开放世界手游。融合去标签化角色塑造，影视级动作捕捉，高自由度世界探索玩法、轻科幻美术风格、多样场景互动解谜元素与自由职业战斗，讲述有关拯救与毁灭的末世故事。",
+                SupportPlatform = "IOS/Android",
+                GameCompanyId = 4,
+                GameCategoryId = 4,
+                AverageScore = 6.3,
+                HotPoints = 2567,
+                DetailsPicture = "gameinfopic/gamerepo/gamehuantabig.jpg",
+                RoughPicture = "gameinfopic/gamerepo/gamehuanta.jpg"
+            },
+            new()
+            {
+                Name = "王者荣耀",
+                Description = "《王者荣耀》是一款由腾讯天美工作室开发，腾讯游戏运营的MOBA手游。在游戏中赵云、昭君、曹操、嬴政，5000年东方英雄集结战场，大战一触即发。浓郁的东方元素、创新性3V3设定、1条路对决、10分钟快意决胜负，再配以两指即可玩转的简易操作，本作MOBA类手游注入全新活力。",
+                SupportPlatform = "IOS/Android/Switch",
+                GameCompanyId = 1,
+                GameCategoryId = 4,
+                AverageScore = 7.3,
+                HotPoints = 29322,
+                DetailsPicture = "gameinfopic/gamerepo/gamewangzhebig.jpg",
+                RoughPicture = "gameinfopic/gamerepo/gamewangzhe.jpg"
+            },
+            new()
+            {
+                Name = "永进",
+                Description = "《永进》是一款3D解密冒险游戏，故事讲述了少女雅的故事。她独自生活在一座孤岛上，突然有一日被拉入了充满着诡异气息的异空间之中，各种复杂困难的谜题接踵而至，她不得不迎面而上。随着她的前进，她的记忆渐渐复苏，她为何独自一人？她到底身在何方？一切关于这个世界的关于自身的谜题终将被慢慢解开。",
+                SupportPlatform = "PC/Switch/PS4/PS5/Xbox",
+                GameCompanyId = 18,
+                GameCategoryId = 8,
+                GamePlaySuggestionId = 5,
+                AverageScore = 7.6,
+                HotPoints = 1287,
+                DetailsPicture = "gameinfopic/gamerepo/gameyongjinbig.jpg",
+                RoughPicture = "gameinfopic/gamerepo/gameyongjin.jpg"
+            },
+            new()
+            {
+                Name = "GT7",
+                Description = "《GT7》是由Polyphony Digital工作室制作的一款赛车竞速游戏，该作为《GT6》的正统续作。本作除了延续《GT》系列“最真实赛车游戏”的美誉外，游戏还将逼真运行所有画面，《GT7》会坚持更高的原创性，使游戏更具新作魅力。",
+                SupportPlatform = "PS4/PS5",
+                GameCompanyId = 12,
+                GameCategoryId = 5,
+                AverageScore = 8.8,
+                HotPoints = 8964,
+                DetailsPicture = "gameinfopic/gamerepo/gamegt7big.jpg",
+                RoughPicture = "gameinfopic/gamerepo/gamegt7.jpg"
+            },
+            new()
+            {
+                Name = "最终幻想：起源",
+                Description = "《最终幻想：起源》由野村哲也、野岛一成与Team Ninja协力开发，将让玩家们从一个大胆的新角度来看《最终幻想》。本作中玩家将跟随主角Jack和他的伙伴Ash、Jed，在打开混沌神殿的大门之时，打败混沌的决心在三人的胸中燃烧。然而他们也有着一丝疑虑——他们真的是预言中的光之战士吗。",
+                SupportPlatform = "PC/PS4/PS5/Xbox",
+                GameCompanyId = 19,
+                GameCategoryId = 4,
+                GamePlaySuggestionId = 9,
+                AverageScore = 8.5,
+                HotPoints = 6794,
+                DetailsPicture = "gameinfopic/gamerepo/gamezzhxbig.jpg",
+                RoughPicture = "gameinfopic/gamerepo/gamezzhx.jpg"
+            },
         };
     }
 
@@ -308,13 +402,39 @@ public class GameRepoContextSeed
         {
             new()
             {
-                CPUName = "R7 5800H", GraphicsCard = "GTX 1060", DiskSize = 20, MemorySize = 16,
-                OperationSystem = "Windows 11", GameId = 1
+                CPUName = "Intel i5-8500", GraphicsCard = "GeForce GTX 1060",
+                DiskSize = 50, MemorySize = 12,
+                OperationSystem = "Windows 10", GameId = 1
             },
             new()
             {
-                CPUName = "i7 12500K", GraphicsCard = "GTX 1080", DiskSize = 50, MemorySize = 16,
-                OperationSystem = "Windows 11", GameId = 2
+                CPUName = "Intel i5-8400", GraphicsCard = "GeForce GTX 1060",
+                DiskSize = 60, MemorySize = 12,
+                OperationSystem = "Windows 10", GameId = 2
+            },
+            new()
+            {
+                CPUName = "Intel i5-6600k", GraphicsCard = "GeForce GTX 1050",
+                DiskSize = 50, MemorySize = 8,
+                OperationSystem = "Windows 10", GameId = 3
+            },
+            new()
+            {
+                CPUName = "Intel i5-3570K", GraphicsCard = "GeForce GTX 970",
+                DiskSize = 22, MemorySize = 8,
+                OperationSystem = "Windows 10", GameId = 4
+            },
+            new()
+            {
+                CPUName = "Intel i5-2500K", GraphicsCard = "GeForce GTX 970",
+                DiskSize = 4, MemorySize = 8,
+                OperationSystem = "Windows 10", GameId = 7
+            },
+            new()
+            {
+                CPUName = "Intel i7-8700", GraphicsCard = "GeForce GTX 1660",
+                DiskSize = 80, MemorySize = 16,
+                OperationSystem = "Windows 10", GameId = 9
             }
         };
     }

@@ -21,7 +21,12 @@ public class GameInfoService : IGameInfoService
 
     public async Task<GameInfo> GetGameInfoAsync(int gameId)
     {
-        return await _repoContext.GameInfos.FindAsync(gameId);
+        return await _repoContext.GameInfos
+            .Include(info => info.GameCategory)
+            .Include(info => info.GameCompany)
+            .Where(x => x.Id == gameId)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
     }
 
     public async Task<List<GameInfo>> GetGameInfosAsync(int pageIndex, int pageSize)
@@ -48,5 +53,14 @@ public class GameInfoService : IGameInfoService
     {
         _repoContext.GameInfos.Update(gameInfo);
         return Task.CompletedTask;
+    }
+
+    public async Task<bool> GameExistAsync(int gameId)
+    {
+        var game = await _repoContext.GameInfos
+            .Where(x => x.Id == gameId)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+        return game != null;
     }
 }

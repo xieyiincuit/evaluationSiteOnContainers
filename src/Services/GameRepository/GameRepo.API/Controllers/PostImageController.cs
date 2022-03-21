@@ -46,7 +46,8 @@ public class PostImageController : ControllerBase
             file.ContentType);
         _logger.LogInformation("game Pic uploads successful -> bucket: {BucketName}, object:{ObjectName}", _gameInfoBucket, uploadFile);
 
-        return Ok(uploadFile);
+        var sourcePath = $"{_gameInfoBucket}{uploadFile}";
+        return Ok(sourcePath);
     }
 
     [HttpPost("shop/pic")]
@@ -80,7 +81,8 @@ public class PostImageController : ControllerBase
             file.ContentType);
         _logger.LogInformation("shopPic Pic uploads successful -> bucket: {BucketName}, object:{ObjectName}", _shopInfoBucket, uploadFile);
 
-        return Ok(uploadFile);
+        var sourcePath = $"{_shopInfoBucket}{uploadFile}";
+        return Ok(sourcePath);
     }
     
 }

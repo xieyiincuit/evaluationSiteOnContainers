@@ -3,12 +3,10 @@
 public class EvaluationArticleService : IEvaluationArticleService
 {
     private readonly EvaluationContext _evaluationContext;
-    private readonly EvaluationSettings _settings;
 
-    public EvaluationArticleService(EvaluationContext context, IOptionsSnapshot<EvaluationSettings> settings)
+    public EvaluationArticleService(EvaluationContext context)
     {
         _evaluationContext = context;
-        _settings = settings.Value;
     }
 
     public async Task<int> CountArticlesAsync()
@@ -21,42 +19,57 @@ public class EvaluationArticleService : IEvaluationArticleService
         return await _evaluationContext.Articles.Where(x => x.CategoryTypeId == categoryId).CountAsync();
     }
 
-    public async Task<List<EvaluationArticle>> GetArticlesAsync(int pageSize, int pageIndex, string ids = null)
+    public async Task<List<ArticleSmallDto>> GetArticlesAsync(int pageSize, int pageIndex)
     {
-        List<EvaluationArticle> articles;
-
-        if (!string.IsNullOrEmpty(ids))
-        {
-            articles = await GetArticlesByIdsAsync(ids);
-        }
-        else
-        {
-            articles = await _evaluationContext.Articles
-                .OrderByDescending(c => c.CreateTime)
-                .Skip(pageSize * (pageIndex - 1))
-                .Take(pageSize)
-                .AsNoTracking()
-                .ToListAsync();
-
-            //兼容图片显示
-            articles = ChangePicsUri(articles);
-        }
+        var articles = await _evaluationContext.Articles
+            .Select(x => new ArticleSmallDto()
+            {
+                ArticleId = x.ArticleId,
+                Author = x.NickName,
+                CategoryTypeId = x.CategoryTypeId,
+                CreateTime = x.CreateTime,
+                Description = x.Description,
+                DescriptionImage = x.DescriptionImage,
+                GameId = x.GameId,
+                GameName = x.GameName,
+                Status = x.Status,
+                UserId = x.UserId,
+                Title = x.Title,
+                SupportCount = x.SupportCount
+            })
+           .OrderByDescending(c => c.CreateTime)
+           .Skip(pageSize * (pageIndex - 1))
+           .Take(pageSize)
+           .AsNoTracking()
+           .ToListAsync();
 
         return articles;
     }
 
-    public async Task<List<EvaluationArticle>> GetArticlesAsync(int pageSize, int pageIndex, int categoryTypeId)
+    public async Task<List<ArticleSmallDto>> GetArticlesAsync(int pageSize, int pageIndex, int categoryTypeId)
     {
         var articles = await _evaluationContext.Articles
             .Where(art => art.CategoryTypeId == categoryTypeId)
+            .Select(x => new ArticleSmallDto()
+            {
+                ArticleId = x.ArticleId,
+                Author = x.NickName,
+                CategoryTypeId = x.CategoryTypeId,
+                CreateTime = x.CreateTime,
+                Description = x.Description,
+                DescriptionImage = x.DescriptionImage,
+                GameId = x.GameId,
+                GameName = x.GameName,
+                Status = x.Status,
+                UserId = x.UserId,
+                Title = x.Title,
+                SupportCount = x.SupportCount
+            })
             .OrderByDescending(c => c.CreateTime)
             .Skip(pageSize * (pageIndex - 1))
             .Take(pageSize)
             .AsNoTracking()
             .ToListAsync();
-
-        //兼容图片显示
-        articles = ChangePicsUri(articles);
 
         return articles;
     }
@@ -64,14 +77,6 @@ public class EvaluationArticleService : IEvaluationArticleService
     public async Task<EvaluationArticle> GetArticleAsync(int id)
     {
         var article = await _evaluationContext.Articles.AsNoTracking().FirstOrDefaultAsync(x => x.ArticleId == id);
-
-        if (article != null)
-        {
-            var articlePicBaseUrl = _settings.ArticlePicBaseUrl;
-            var descriptionPicBaseUrl = _settings.DescriptionPicBaseUrl;
-            article.FillDefaultArticlePicture(articlePicBaseUrl, descriptionPicBaseUrl);
-        }
-
         return article;
     }
 
@@ -109,19 +114,31 @@ public class EvaluationArticleService : IEvaluationArticleService
     }
 
 
+    /// <summary>
+    ///  此方法需要用于修改实例，不建议用属性投影
+    /// </summary>
+    /// <param name="gameId"></param>
+    /// <returns></returns>
     public async Task<List<EvaluationArticle>> GetArticlesByGameInfoAsync(int gameId)
     {
         //追踪实体修改游戏名
         var articles = await _evaluationContext.Articles
             .Where(x => x.GameId == gameId)
-            .OrderByDescending(x=>x.CreateTime)
+            .OrderByDescending(x => x.CreateTime)
             .ToListAsync();
         return articles;
     }
 
+    /// <summary>
+    ///  此方法需要用于修改实例，不建议用属性投影
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
     public async Task<List<EvaluationArticle>> GetArticlesByAuthorInfoAsync(string userId)
     {
-        var articles = await _evaluationContext.Articles.Where(x => x.UserId == userId).ToListAsync();
+        var articles = await _evaluationContext.Articles
+            .Where(x => x.UserId == userId)
+            .ToListAsync();
         return articles;
     }
 
@@ -130,40 +147,37 @@ public class EvaluationArticleService : IEvaluationArticleService
         return await _evaluationContext.SaveChangesAsync() > 0;
     }
 
-    /// <summary>
-    ///     Bulks get articles
-    /// </summary>
-    /// <param name="ids"></param>
-    /// <returns></returns>
-    private async Task<List<EvaluationArticle>> GetArticlesByIdsAsync(string ids)
-    {
-        var numIds = ids.Split(',').Select(id => (Ok: int.TryParse(id, out var x), Value: x));
+    ///// <summary>
+    /////     Bulks get articles
+    ///// </summary>
+    ///// <param name="ids"></param>
+    ///// <returns></returns>
+    //private async Task<List<EvaluationArticle>> GetArticlesByIdsAsync(string ids)
+    //{
+    //    var numIds = ids.Split(',').Select(id => (Ok: int.TryParse(id, out var x), Value: x));
 
-        if (!numIds.All(nid => nid.Ok)) return new List<EvaluationArticle>();
+    //    if (!numIds.All(nid => nid.Ok)) return new List<EvaluationArticle>();
 
-        var idsToSelect = numIds.Select(id => id.Value);
-        var items = await _evaluationContext.Articles.AsNoTracking()
-            .Where(ci => idsToSelect.Contains(ci.ArticleId))
-            .ToListAsync();
+    //    var idsToSelect = numIds.Select(id => id.Value);
+    //    var items = await _evaluationContext.Articles.AsNoTracking()
+    //        .Where(ci => idsToSelect.Contains(ci.ArticleId))
+    //        .ToListAsync();
 
-        //检查pics设置
-        items = ChangePicsUri(items);
+    //    return items;
+    //}
 
-        return items;
-    }
+    ///// <summary>
+    /////     Fill picture use default
+    ///// </summary>
+    ///// <param name="items"></param>
+    ///// <returns></returns>
+    //private List<EvaluationArticle> ChangePicsUri(List<EvaluationArticle> items)
+    //{
+    //    var articlePicBaseUrl = _settings.ArticlePicBaseUrl;
+    //    var descriptionPicBaseUrl = _settings.DescriptionPicBaseUrl;
 
-    /// <summary>
-    ///     Fill picture use default
-    /// </summary>
-    /// <param name="items"></param>
-    /// <returns></returns>
-    private List<EvaluationArticle> ChangePicsUri(List<EvaluationArticle> items)
-    {
-        var articlePicBaseUrl = _settings.ArticlePicBaseUrl;
-        var descriptionPicBaseUrl = _settings.DescriptionPicBaseUrl;
+    //    foreach (var item in items) item.FillDefaultArticlePicture(articlePicBaseUrl, descriptionPicBaseUrl);
 
-        foreach (var item in items) item.FillDefaultArticlePicture(articlePicBaseUrl, descriptionPicBaseUrl);
-
-        return items;
-    }
+    //    return items;
+    //}
 }

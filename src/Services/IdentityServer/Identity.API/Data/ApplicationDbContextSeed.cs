@@ -53,66 +53,66 @@ public class ApplicationDbContextSeed
     {
         var admin = new ApplicationUser
         {
-            NickName = "Simple",
-            Avatar = "default",
+            Id = "A71C1391-1105-4E9A-BCBB-F70467EF070C".ToLower(),
+            NickName = "胡图图",
+            Avatar = "userinfopic/admin.jpg",
             Sex = Gender.Male,
             SecurityQuestion = "where are you born？",
             SecurityAnswer = "Langzhong",
-            Introduction = "I am admin",
+            Introduction = "我的图图呢 我的图图呢",
             RegistrationDate = DateTime.Now.ToLocalTime(),
             BirthOfYear = 2000,
             BirthOfMonth = 7,
             BirthOfDay = 15,
-            Email = "zhouslthere@outlook.com",
-            Id = Guid.NewGuid().ToString(),
+            Email = "admin@outlook.com",
             PhoneNumber = "15182979603",
-            UserName = "zhouslthere",
-            NormalizedEmail = "ZHOUSLTHERE@OUTLOOK.COM",
-            NormalizedUserName = "ZHOUSLTHERE",
+            UserName = "admin",
+            NormalizedEmail = "ADMIN@OUTLOOK.COM",
+            NormalizedUserName = "ADMIN",
             SecurityStamp = Guid.NewGuid().ToString("D")
         };
         admin.PasswordHash = _passwordHasher.HashPassword(admin, "zhou11..");
 
         var user = new ApplicationUser
         {
-            NickName = "Zywoo",
-            Avatar = "default",
+            Id = "FB9755FE-D011-435B-BD49-C4277FEB4938".ToLower(),
+            NickName = "周写意",
+            Avatar = "userinfopic/male.jpg",
             Sex = Gender.Male,
             SecurityQuestion = "where are you born？",
-            SecurityAnswer = "Guangdong",
-            Introduction = "I am user",
+            SecurityAnswer = "Langzhong",
+            Introduction = "回首昨天的自己",
             RegistrationDate = DateTime.Now.ToLocalTime(),
             BirthOfYear = 2000,
             BirthOfMonth = 4,
             BirthOfDay = 28,
-            Email = "zywoothere@outlook.com",
-            Id = Guid.NewGuid().ToString(),
+            Email = "zhousl@outlook.com",
             PhoneNumber = "18176543788",
-            UserName = "zywoothere",
-            NormalizedEmail = "ZYWOOTHERE@OUTLOOK.COM",
-            NormalizedUserName = "ZYWOOTHERE",
+            UserName = "zhousl",
+            NormalizedEmail = "ZHOUSL@OUTLOOK.COM",
+            NormalizedUserName = "ZHOUSL",
             SecurityStamp = Guid.NewGuid().ToString("D")
         };
         user.PasswordHash = _passwordHasher.HashPassword(user, "zhou11..");
 
         var evaluator = new ApplicationUser
         {
-            NickName = "Niko",
-            Avatar = "default",
-            Sex = Gender.Male,
+            Id = "8440A693-5DDF-4036-9972-BCA66A8002A3".ToLower(),
+            NickName = "留六颗橙",
+            Avatar = "userinfopic/female.jpg",
+            Sex = Gender.Female,
             SecurityQuestion = "where are you born？",
-            SecurityAnswer = "Chengdu",
-            Introduction = "I am evaluator",
+            SecurityAnswer = "Langzhong",
+            Introduction = "潮湿的大雾终会散去 累了就停下脚步来休息",
             RegistrationDate = DateTime.Now.ToLocalTime(),
-            BirthOfYear = 1998,
+            BirthOfYear = 1999,
             BirthOfMonth = 7,
             BirthOfDay = 15,
-            Email = "nikothere@outlook.com",
-            Id = Guid.NewGuid().ToString(),
+            Email = "liukc@outlook.com",
             PhoneNumber = "12346778677",
-            UserName = "nikothere",
-            NormalizedEmail = "NIKOTHERE@OUTLOOK.COM",
-            NormalizedUserName = "NIKOTHERE",
+            UserName = "liukc",
+            NormalizedEmail = "LIUKC@OUTLOOK.COM",
+            NormalizedUserName = "LIUKC",
             SecurityStamp = Guid.NewGuid().ToString("D")
         };
         evaluator.PasswordHash = _passwordHasher.HashPassword(evaluator, "zhou11..");
@@ -164,13 +164,13 @@ public class ApplicationDbContextSeed
 
     private async Task<List<IdentityUserRole<string>>> SetUserRolesAsync(ApplicationDbContext context)
     {
-        var admin = await context.Users.FirstOrDefaultAsync(x => x.UserName == "ZHOUSLTHERE".ToLower());
+        var admin = await context.Users.FirstOrDefaultAsync(x => x.UserName == "ADMIN".ToLower());
         var adminRole = await context.Roles.FirstOrDefaultAsync(x => x.Name == "ADMINISTRATOR".ToLower());
 
-        var user = await context.Users.FirstOrDefaultAsync(x => x.UserName == "ZYWOOTHERE".ToLower());
+        var user = await context.Users.FirstOrDefaultAsync(x => x.UserName == "ZHOUSL".ToLower());
         var userRole = await context.Roles.FirstOrDefaultAsync(x => x.Name == "NORMALUSER".ToLower());
 
-        var evaluator = await context.Users.FirstOrDefaultAsync(x => x.UserName == "NIKOTHERE".ToLower());
+        var evaluator = await context.Users.FirstOrDefaultAsync(x => x.UserName == "LIUKC".ToLower());
         var evaluatorRole = await context.Roles.FirstOrDefaultAsync(x => x.Name == "EVALUATOR".ToLower());
 
         var linkRoles = new List<IdentityUserRole<string>>

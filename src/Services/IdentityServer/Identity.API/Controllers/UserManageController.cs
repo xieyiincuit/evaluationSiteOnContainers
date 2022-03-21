@@ -26,6 +26,17 @@ public class UserManageController : ControllerBase
         _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
     }
 
+    [HttpGet("author")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetAuthorInfoAsync([FromQuery] string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null) return NotFound();
+
+        var authorDto = UserInfoMapping.MapToAuthorModel(user);
+        return Ok(authorDto);
+    }
+
     [HttpGet("info")]
     [Authorize(Roles = "normaluser, administrator, evaluator")]
     public async Task<IActionResult> GetUserInfoAsync()

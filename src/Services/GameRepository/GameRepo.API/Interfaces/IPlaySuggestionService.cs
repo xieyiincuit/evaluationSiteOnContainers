@@ -4,6 +4,7 @@ public interface IPlaySuggestionService
 {
     Task<List<GamePlaySuggestion>> GetPlaySuggestionsAsync(int pageIndex, int pageSize);
     Task<GamePlaySuggestion> GetPlaySuggestionAsync(int suggestionId);
+    Task<GamePlaySuggestion> GetPlaySuggestionByGameAsync(int gameId);
     Task<int> CountPlaySuggestionsAsync();
     Task<bool> AddPlaySuggestionAsync(GamePlaySuggestion gamePlaySuggestion);
     Task<bool> DeletePlaySuggestionAsync(int suggestionId);

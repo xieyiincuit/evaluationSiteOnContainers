@@ -37,26 +37,14 @@ public class EvaluationArticleController : ControllerBase
     [ProducesResponseType(typeof(PaginatedItemsDtoModel<EvaluationArticle>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(IEnumerable<ArticleSmallDto>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> GetArticlesAsync([FromQuery] int pageIndex = 1, [FromQuery] string? ids = null)
+    public async Task<IActionResult> GetArticlesAsync([FromQuery] int pageIndex = 1)
     {
-        if (!string.IsNullOrEmpty(ids))
-        {
-            var articles = await _articleService.GetArticlesAsync(_pageSize, pageIndex, ids);
-
-            if (!articles.Any())
-                return BadRequest("ids value invalid. Must be comma-separated list of numbers: like ids=1,2,3");
-
-            var articleToReturn = _mapper.Map<List<ArticleDto>>(articles);
-            return Ok(articleToReturn);
-        }
-
         //validate pageIndex        
         var totalArticles = await _articleService.CountArticlesAsync();
         if (ParameterValidateHelper.IsInvalidPageIndex(totalArticles, _pageSize, pageIndex))
             pageIndex = 1; // pageIndex不合法重设
 
-        var articlesToReturn =
-            _mapper.Map<List<ArticleSmallDto>>(await _articleService.GetArticlesAsync(_pageSize, pageIndex));
+        var articlesToReturn = await _articleService.GetArticlesAsync(_pageSize, pageIndex);
 
         //获取评论数量
         foreach (var smallDto in articlesToReturn)
@@ -106,9 +94,7 @@ public class EvaluationArticleController : ControllerBase
         var totalArticles = await _articleService.CountArticlesByTypeAsync(categoryId);
         if (ParameterValidateHelper.IsInvalidPageIndex(totalArticles, _pageSize, pageIndex)) pageIndex = 1;
 
-        var articlesToReturn =
-            _mapper.Map<List<ArticleSmallDto>>(
-                await _articleService.GetArticlesAsync(_pageSize, pageIndex, categoryId));
+        var articlesToReturn = await _articleService.GetArticlesAsync(_pageSize, pageIndex, categoryId);
 
         //获取评论数量
         foreach (var article in articlesToReturn)
@@ -116,8 +102,7 @@ public class EvaluationArticleController : ControllerBase
             article.CommentsCount = await _commentService.CountArticleRootCommentsAsync(article.ArticleId);
         }
 
-        var model = new PaginatedItemsDtoModel<ArticleSmallDto>(pageIndex, _pageSize, totalArticles, articlesToReturn,
-            null);
+        var model = new PaginatedItemsDtoModel<ArticleSmallDto>(pageIndex, _pageSize, totalArticles, articlesToReturn, null);
         return Ok(model);
     }
 

@@ -8,4 +8,5 @@ public interface IGameInfoService
     Task AddGameInfoAsync(GameInfo gameInfo);
     Task RemoveGameInfoAsync(int gameId);
     Task UpdateGameInfoAsync(GameInfo gameInfo);
+    Task<bool> GameExistAsync(int gameId);
 }
