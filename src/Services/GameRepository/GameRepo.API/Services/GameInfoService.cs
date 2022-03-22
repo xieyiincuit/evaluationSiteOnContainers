@@ -14,6 +14,16 @@ public class GameInfoService : IGameInfoService
         await _repoContext.AddAsync(gameInfo);
     }
 
+    public async Task<List<GameRankDto>> GetGameInfoRankAsync()
+    {
+        return await _repoContext.GameInfos
+            .Select(x => new GameRankDto() { GameId = x.Id, GameName = x.Name, GameScore = x.AverageScore })
+            .OrderByDescending(x => x.GameScore)
+            .Take(10)
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
     public async Task<int> CountGameInfoAsync()
     {
         return await _repoContext.GameInfos.CountAsync();

@@ -28,8 +28,8 @@ public class GameInfoController : ControllerBase
 
     [HttpGet]
     [Route("infos")]
-    [ProducesResponseType((int) HttpStatusCode.NotFound)]
-    [ProducesResponseType(typeof(PaginatedItemsDtoModel<GameInfoDto>), (int) HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(PaginatedItemsDtoModel<GameInfoDto>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetGameInfosAsync([FromQuery] int pageIndex = 1)
     {
         var totalGames = await _gameInfoService.CountGameInfoAsync();
@@ -44,10 +44,18 @@ public class GameInfoController : ControllerBase
         return Ok(model);
     }
 
+    [HttpGet]
+    [Route("ranks")]
+    public async Task<IActionResult> GetGameRankAsync()
+    {
+        var games = await _gameInfoService.GetGameInfoRankAsync();
+        return !games.Any() ? NotFound() : Ok(games);
+    }
+
     [HttpGet("info/{gameId:int}", Name = nameof(GetGameInfoByIdAsync))]
-    [ProducesResponseType((int) HttpStatusCode.NotFound)]
-    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(GameInfoDto), (int) HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(GameInfoDto), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetGameInfoByIdAsync([FromRoute] int gameId)
     {
         if (gameId <= 0 || gameId >= int.MaxValue) return BadRequest();
@@ -62,8 +70,8 @@ public class GameInfoController : ControllerBase
     [HttpPost] //定义该Action为HTTP POST
     [Route("info")] //定义子路由
     [Authorize(Roles = "administrator")] //定义该方法需要身份验证且授权给administrator用户
-    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int) HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.Created)]
     public async Task<IActionResult> CreateGameInfoAsync([FromBody] GameInfoAddDto gameInfoAddDto) //规定参数从HTTP Body中接受
     {
         //若未带参数请求该接口 直接返回400
@@ -80,20 +88,20 @@ public class GameInfoController : ControllerBase
 
         //工作单元保存
         await _unitOfWorkService.SaveChangesAsync();
-        return CreatedAtRoute(nameof(GetGameInfoByIdAsync), new {gameId = entityToAdd.Id}, null);
+        return CreatedAtRoute(nameof(GetGameInfoByIdAsync), new { gameId = entityToAdd.Id }, null);
     }
 
     [HttpPut]
     [Route("info")]
     [Authorize(Roles = "administrator")]
-    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int) HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
     public async Task<IActionResult> UpdateGameInfoAsync([FromBody] GameInfoUpdateDto gameInfoUpdateDto)
     {
         if (gameInfoUpdateDto == null) return BadRequest();
 
         var gameItem = await _gameInfoService.GetGameInfoAsync(gameInfoUpdateDto.Id);
-        if (gameItem == null) return NotFound(new {Message = $"game with id {gameInfoUpdateDto.Id} not fount."});
+        if (gameItem == null) return NotFound(new { Message = $"game with id {gameInfoUpdateDto.Id} not fount." });
 
         //检查是否更新了游戏名，若更新需要发布集成事件通知其他相关服务
         var oldName = gameItem.Name;
@@ -125,9 +133,9 @@ public class GameInfoController : ControllerBase
     [HttpDelete]
     [Route("info/{id:int}")]
     [Authorize(Roles = "administrator")]
-    [ProducesResponseType((int) HttpStatusCode.NotFound)]
-    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int) HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
     public async Task<IActionResult> DeleteGameInfoAsync([FromRoute] int id)
     {
         if (id <= 0 || id >= int.MaxValue) return BadRequest();

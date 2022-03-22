@@ -17,4 +17,6 @@ public class ReplyCommentDto
     ///     每个子评论所属于的唯一父评论
     /// </summary>
     public int RootCommentId { get; set; }
+
+    public string? ReplyUserId { get; set; }
 }

@@ -180,7 +180,7 @@ public class Startup
             {
                 client.BaseAddress = new Uri(Configuration["IdentityUrl"]);
                 client.DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
-                client.Timeout = TimeSpan.FromSeconds(2);
+                client.Timeout = TimeSpan.FromSeconds(10);
             })
             .SetHandlerLifetime(TimeSpan.FromHours(6))
             .AddPolicyHandler(retryPolicy);

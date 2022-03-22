@@ -166,7 +166,7 @@ public class Startup
             {
                 client.BaseAddress = new Uri(Configuration["GameRepoUrl"]);
                 client.DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
-                client.Timeout = TimeSpan.FromMilliseconds(500);
+                client.Timeout = TimeSpan.FromSeconds(5);
             })
             .SetHandlerLifetime(TimeSpan.FromHours(6))
             .AddTransientHttpErrorPolicy(p => p.WaitAndRetryAsync(5, _ => TimeSpan.FromMilliseconds(200)));
