@@ -127,19 +127,19 @@ public static class ServiceCollectionExtension
                 configuration["ConnectionStrings:EvaluationDbConnectString"],
                 "EvaluationDB-check",
                 HealthStatus.Degraded,
-                new[] {"db", "evaluation", "mysql"})
+                new[] { "db", "evaluation", "mysql" })
             .AddRabbitMQ(
                 $"amqp://{mqName}:{mqPassword}@{mqHost}/",
                 name: "evaluation-rabbitmqbus-check",
-                tags: new[] {"rabbitmqbus"})
+                tags: new[] { "rabbitmqbus" })
             .AddRedis(
                 configuration["RedisHCCheckConnection"],
                 "redis-check",
-                tags: new string[] {"db", "redis", "evaluation"})
+                tags: new string[] { "db", "redis", "evaluation" })
             .AddMinio(
                 sp => sp.GetRequiredService<MinioClient>(),
                 name: "evaluation-minio",
-                tags: new[] {"oss", "minio", "evaluation"});
+                tags: new[] { "oss", "minio", "evaluation" });
 
         return services;
     }
@@ -295,7 +295,7 @@ public static class ServiceCollectionExtension
                 RoleClaimType = "role",
 
                 ValidateIssuer = true,
-                ValidIssuer = "http://identity-api"
+                ValidIssuer = "http://identity-api",
             };
         });
 

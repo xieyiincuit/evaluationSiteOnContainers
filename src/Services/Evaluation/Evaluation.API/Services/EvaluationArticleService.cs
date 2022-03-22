@@ -19,6 +19,11 @@ public class EvaluationArticleService : IEvaluationArticleService
         return await _evaluationContext.Articles.Where(x => x.CategoryTypeId == categoryId).CountAsync();
     }
 
+    public async Task<int> CountArticlesByUserAsync(string userId)
+    {
+        return await _evaluationContext.Articles.Where(x => x.UserId == userId).CountAsync();
+    }
+
     public async Task<List<ArticleSmallDto>> GetArticlesAsync(int pageSize, int pageIndex)
     {
         var articles = await _evaluationContext.Articles
@@ -72,6 +77,51 @@ public class EvaluationArticleService : IEvaluationArticleService
             .ToListAsync();
 
         return articles;
+    }
+
+    public async Task<List<ArticleTableDto>> GetUserArticlesAsync(int pageSize, int pageIndex, string userId, int? categoryId = null, bool timeDesc = true)
+    {
+        var queryString = _evaluationContext.Articles
+            .Select(x => new ArticleTableDto()
+            {
+                Id = x.ArticleId,
+                CategoryId = x.CategoryTypeId,
+                CreateTime = x.CreateTime,
+                GameName = x.GameName,
+                Title = x.Title,
+                Status = x.Status
+            })
+            .AsNoTracking();
+
+        if (categoryId != null)
+        {
+            queryString = _evaluationContext.Articles
+                .Where(x => x.CategoryTypeId == categoryId)
+                .Select(x => new ArticleTableDto()
+                {
+                    Id = x.ArticleId,
+                    CategoryId = x.CategoryTypeId,
+                    CreateTime = x.CreateTime,
+                    GameName = x.GameName,
+                    Title = x.Title,
+                    Status = x.Status
+                })
+                .AsNoTracking();
+        }
+
+        var result = timeDesc switch
+        {
+            true => await queryString.OrderByDescending(x => x.CreateTime)
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(),
+            false => await queryString.OrderBy(x => x.CreateTime)
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(),
+
+        };
+        return result;
     }
 
     public async Task<EvaluationArticle> GetArticleAsync(int id)

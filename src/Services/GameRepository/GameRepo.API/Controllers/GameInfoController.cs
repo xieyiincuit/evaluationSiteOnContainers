@@ -52,6 +52,14 @@ public class GameInfoController : ControllerBase
         return !games.Any() ? NotFound() : Ok(games);
     }
 
+    [HttpGet]
+    [Route("selectlist")]
+    public async Task<IActionResult> GetGameSelectListAsync()
+    {
+        var games = await _gameInfoService.GetGameSelectAsync();
+        return !games.Any() ? NotFound() : Ok(games);
+    }
+
     [HttpGet("info/{gameId:int}", Name = nameof(GetGameInfoByIdAsync))]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]

@@ -41,7 +41,7 @@ public class PostImageController : ControllerBase
         await _minioClient.PutObjectAsync(_articleBucket,
             uploadFile,
             stream,
-            articlePic.Length,
+            file.Length,
             file.ContentType);
         _logger.LogInformation("article Pic uploads successful -> bucket: {BucketName}, object:{ObjectName}", _articleBucket, uploadFile);
 

@@ -129,13 +129,33 @@ public class EvaluationArticleController : ControllerBase
         entity.NickName = User.FindFirstValue("nickname");
 
         await _articleService.AddArticleAsync(entity);
-        _logger.LogInformation(
-            $"---- evaluator:id:{entity.UserId}, name:{User.Identity.Name} create a article -> id:{entity.ArticleId}, title:{articleAddDto.Title}");
-        return CreatedAtRoute(nameof(GetArticleByIdAsync), new { id = entity.ArticleId }, null);
+        _logger.LogInformation($"---- evaluator:id:{entity.UserId}, name:{User.Identity.Name} create a article -> id:{entity.ArticleId}, title:{articleAddDto.Title}");
+        return CreatedAtRoute(nameof(GetArticleByIdAsync), new { id = entity.ArticleId }, new { articleId = entity.ArticleId });
+
+    }
+
+    [Authorize(Roles = _evaluatorRole)]
+    [HttpGet]
+    [Route("my/articles")]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    public async Task<IActionResult> GetUserArticlesAsync([FromQuery] int pageIndex,
+        [FromQuery] int? categoryId, [FromQuery] bool timeDesc = true)
+    {
+        var currentUserId = User.FindFirst("sub").Value;
+
+        var totalArticles = await _articleService.CountArticlesByUserAsync(currentUserId);
+        if (ParameterValidateHelper.IsInvalidPageIndex(totalArticles, 10, pageIndex))
+            pageIndex = 1; // pageIndex不合法重设
+
+        var userArticles = await _articleService.GetUserArticlesAsync(10, pageIndex, currentUserId, categoryId, timeDesc);
+
+        var model = new PaginatedItemsDtoModel<ArticleTableDto>(pageIndex, 10, totalArticles, userArticles, null);
+        return Ok(model);
     }
 
     // Delete api/v1/evaluation/articles/{id}
-    [Authorize(Roles = _adminRole)]
+    [Authorize(Roles = $"{_adminRole}, {_evaluatorRole}")]
     [HttpDelete]
     [Route("article/{id:int}")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
@@ -144,14 +164,17 @@ public class EvaluationArticleController : ControllerBase
     public async Task<IActionResult> DeleteArticleByIdAsync([FromRoute] int id)
     {
         if (id <= 0 || id >= int.MaxValue) return BadRequest();
-
         if (await _articleService.IsArticleExist(id) == false) return NotFound();
 
-        await _articleService.DeleteArticleAsync(id);
-
         var userId = User.FindFirst("sub").Value;
-        _logger.LogInformation(
-            $"---- administrator:id:{userId}, name:{User.Identity.Name} delete a article -> id:{id}");
+        if (User.FindFirstValue("role") == _evaluatorRole)
+        {
+            var article = await _articleService.GetArticleAsync(id);
+            if (article.UserId != userId) return BadRequest();
+        }
+
+        await _articleService.DeleteArticleAsync(id);
+        _logger.LogInformation($"---- administrator:id:{userId}, name:{User.Identity.Name} delete a article -> id:{id}");
         return NoContent();
     }
 
@@ -173,7 +196,6 @@ public class EvaluationArticleController : ControllerBase
         if (userId != articleToUpdate.UserId) return BadRequest();
 
         _mapper.Map(articleUpdateDto, articleToUpdate);
-
         await _articleService.UpdateArticleAsync(articleToUpdate);
         _logger.LogInformation("---- evaluator:id:{UserId}, name:{Name} update a article -> id:{Id} content:{@content}",
             userId, User.Identity.Name, articleUpdateDto.Id, articleToUpdate);

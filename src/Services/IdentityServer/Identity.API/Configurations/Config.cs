@@ -151,13 +151,14 @@ public static class Config
                 AllowedGrantTypes = GrantTypes.Implicit,
                 AllowAccessTokensViaBrowser = true,
                 RequireConsent = false,
-                
+
                 RedirectUris = {$"{clientsUrl["WebSPA"]}/callback"},
                 PostLogoutRedirectUris = {$"{clientsUrl["WebSPA"]}/"},
                 AllowedCorsOrigins = {$"{clientsUrl["WebSPA"]}"},
-                
-                AccessTokenLifetime = 7200,
-                
+
+                AccessTokenLifetime = 3600 * 24 * 7,
+                UpdateAccessTokenClaimsOnRefresh = true,
+
                 AllowedScopes =
                 {
                     IdentityServerConstants.StandardScopes.OpenId,

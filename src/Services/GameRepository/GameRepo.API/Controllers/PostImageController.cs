@@ -42,7 +42,7 @@ public class PostImageController : ControllerBase
         await _minioClient.PutObjectAsync(_gameInfoBucket,
             uploadFile,
             stream,
-            gamePic.Length,
+            file.Length,
             file.ContentType);
         _logger.LogInformation("game Pic uploads successful -> bucket: {BucketName}, object:{ObjectName}", _gameInfoBucket, uploadFile);
 
@@ -77,7 +77,7 @@ public class PostImageController : ControllerBase
         await _minioClient.PutObjectAsync(_shopInfoBucket,
             uploadFile,
             stream,
-            shopPic.Length,
+            file.Length,
             file.ContentType);
         _logger.LogInformation("shopPic Pic uploads successful -> bucket: {BucketName}, object:{ObjectName}", _shopInfoBucket, uploadFile);
 

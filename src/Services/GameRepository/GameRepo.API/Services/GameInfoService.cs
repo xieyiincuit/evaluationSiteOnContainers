@@ -24,6 +24,14 @@ public class GameInfoService : IGameInfoService
             .ToListAsync();
     }
 
+    public async Task<List<GameSelectDto>> GetGameSelectAsync()
+    {
+        return await _repoContext.GameInfos
+            .Select(x => new GameSelectDto() { GameId = x.Id, GameName = x.Name })
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
     public async Task<int> CountGameInfoAsync()
     {
         return await _repoContext.GameInfos.CountAsync();
