@@ -9,7 +9,7 @@ public class IntegrationEventLogContextDesignTimeFactory : IDesignTimeDbContextF
             .AddJsonFile("appsettings.json")
             .Build();
 
-        var connectionString = configuration.GetConnectionString("IntegrationConnection");
+        var connectionString = configuration.GetConnectionString("IdentityConnection");
         var optionsBuilder = new DbContextOptionsBuilder<IntegrationEventLogContext>();
 
         optionsBuilder.UseSqlServer(connectionString,
@@ -19,5 +19,5 @@ public class IntegrationEventLogContextDesignTimeFactory : IDesignTimeDbContextF
         return new IntegrationEventLogContext(optionsBuilder.Options);
     }
 
-    //dotnet ef migrations add Initial -p ../../BuildingBlocks/IntegrationEventLogEF -o ../../Services/Identity.API/Migrations/IntegrationsDb -c IntegrationEventLogContext -v
+    //dotnet ef migrations add Initial -p ../../../BuildingBlocks/EventBus/IntegrationEventLogEF -o ../../../Services/IdentityServer/Identity.API/Migrations/IntegrationsDb -c IntegrationEventLogContext -v
 }
