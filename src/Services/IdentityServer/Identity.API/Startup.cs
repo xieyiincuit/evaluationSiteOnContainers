@@ -81,7 +81,7 @@ public class Startup
 
         services.AddSession(configure =>
         {
-            configure.IdleTimeout = TimeSpan.FromSeconds(30);
+            configure.IdleTimeout = TimeSpan.FromDays(1);
         });
 
         #endregion

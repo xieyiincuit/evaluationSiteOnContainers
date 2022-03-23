@@ -18,15 +18,14 @@ public class ApplicationUser : IdentityUser
     [MaxLength(100, ErrorMessage = "长度不能超过一百个字符")]
     public string SecurityAnswer { get; set; }
 
-    [Required] public DateTime RegistrationDate { get; set; }
+    [Required]
+    public DateTime RegistrationDate { get; set; }
 
     public DateTime? LastChangeNameTime { get; set; }
 
-    public int? BirthOfYear { get; set; }
-    public int? BirthOfMonth { get; set; }
-    public int? BirthOfDay { get; set; }
+    public DateTime? BirthDate { get; set; }
 
-    [MaxLength(500, ErrorMessage = "不超过五百个字符")]
+    [MaxLength(50, ErrorMessage = "不超过50字符")]
     public string Introduction { get; set; }
 }
 

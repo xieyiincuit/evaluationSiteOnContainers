@@ -60,13 +60,22 @@ public class UserManageController : ControllerBase
         return Ok(userDto);
     }
 
+    [HttpGet("name/check")]
+    [Authorize]
+    public async Task<IActionResult> CheckNickNameAsync([FromQuery] string nickName)
+    {
+        var currentUserId = User.FindFirstValue("sub");
+        //找到不是自己之外的其他用户使用该姓名
+        var user = await _userManager.Users.FirstOrDefaultAsync(x => x.NickName == nickName && x.Id != currentUserId);
+        return Ok(user == null);
+    }
+
     [HttpPut("info")]
     [Authorize]
     public async Task<IActionResult> UpdateUserInfoAsync([FromBody] UserInfoUpdateDto updateDto)
     {
-        if (updateDto.UserId != User.FindFirstValue("sub")) return BadRequest();
-
-        var userEntityForUpdate = await _userManager.FindByIdAsync(updateDto.UserId);
+        var userId = User.FindFirstValue("sub");
+        var userEntityForUpdate = await _userManager.FindByIdAsync(userId);
 
         //检查NickName是否更改, 若更改需要触发事件通知其他服务
         var oldNickName = userEntityForUpdate.NickName;

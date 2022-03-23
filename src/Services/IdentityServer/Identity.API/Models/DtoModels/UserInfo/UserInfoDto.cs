@@ -6,8 +6,7 @@ public class UserInfoDto
     public string Avatar { get; set; }
     public string NickName { get; set; }
     public Gender? Sex { get; set; }
-    public int? BirthOfYear { get; set; }
-    public int? BirthOfMonth { get; set; }
-    public int? BirthOfDay { get; set; }
+
+    public DateTime? BirthDate { get; set; }
     public string Introduction { get; set; }
 }

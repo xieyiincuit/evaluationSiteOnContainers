@@ -78,7 +78,6 @@ public class PostImageController : ControllerBase
     [Authorize]
     public async Task<IActionResult> PostAvatarToOssAsync([FromForm] IFormFile avatar)
     {
-
         var userId = User.FindFirstValue("sub");
 
         //检查用户的正确性
@@ -122,7 +121,7 @@ public class PostImageController : ControllerBase
         user.Avatar = $"{_userInfoBucket}{uploadPath}";
         await _appDbContextService.SaveChangesAsync();
 
-        return NoContent();
+        return Ok();
     }
 
     [AllowAnonymous]

@@ -11,9 +11,7 @@ public static class UserInfoMapping
             NickName = src.NickName,
             Sex = src.Sex,
             Introduction = src.Introduction,
-            BirthOfYear = src.BirthOfYear,
-            BirthOfMonth = src.BirthOfMonth,
-            BirthOfDay = src.BirthOfDay
+            BirthDate = src.BirthDate
         };
         return mapToUser;
     }
@@ -35,9 +33,7 @@ public static class UserInfoMapping
         dest.NickName = src.NickName;
         dest.Sex = src.Sex;
         dest.Introduction = src.Introduction;
-        dest.BirthOfYear = src.BirthOfYear;
-        dest.BirthOfMonth = src.BirthOfMonth;
-        dest.BirthOfDay = src.BirthOfDay;
+        dest.BirthDate = src.BirthDate;
         return dest;
     }
 }
