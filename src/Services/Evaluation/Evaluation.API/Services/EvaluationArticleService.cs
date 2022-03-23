@@ -11,12 +11,13 @@ public class EvaluationArticleService : IEvaluationArticleService
 
     public async Task<int> CountArticlesAsync()
     {
-        return await _evaluationContext.Articles.CountAsync();
+        return await _evaluationContext.Articles.CountAsync(x => x.Status == ArticleStatus.Normal);
     }
 
     public async Task<int> CountArticlesByTypeAsync(int categoryId)
     {
-        return await _evaluationContext.Articles.Where(x => x.CategoryTypeId == categoryId).CountAsync();
+        return await _evaluationContext.Articles
+            .Where(x => x.CategoryTypeId == categoryId).CountAsync(x => x.Status == ArticleStatus.Normal);
     }
 
     public async Task<int> CountArticlesByUserAsync(string userId)
@@ -42,11 +43,12 @@ public class EvaluationArticleService : IEvaluationArticleService
                 Title = x.Title,
                 SupportCount = x.SupportCount
             })
-           .OrderByDescending(c => c.CreateTime)
-           .Skip(pageSize * (pageIndex - 1))
-           .Take(pageSize)
-           .AsNoTracking()
-           .ToListAsync();
+            .Where(x => x.Status == ArticleStatus.Normal)
+            .OrderByDescending(c => c.CreateTime)
+            .Skip(pageSize * (pageIndex - 1))
+            .Take(pageSize)
+            .AsNoTracking()
+            .ToListAsync();
 
         return articles;
     }
@@ -70,6 +72,7 @@ public class EvaluationArticleService : IEvaluationArticleService
                 Title = x.Title,
                 SupportCount = x.SupportCount
             })
+            .Where(x => x.Status == ArticleStatus.Normal)
             .OrderByDescending(c => c.CreateTime)
             .Skip(pageSize * (pageIndex - 1))
             .Take(pageSize)
@@ -126,7 +129,8 @@ public class EvaluationArticleService : IEvaluationArticleService
 
     public async Task<EvaluationArticle> GetArticleAsync(int id)
     {
-        var article = await _evaluationContext.Articles.AsNoTracking().FirstOrDefaultAsync(x => x.ArticleId == id);
+        var article = await _evaluationContext.Articles.AsNoTracking()
+            .FirstOrDefaultAsync(x => x.ArticleId == id);
         return article;
     }
 
@@ -138,7 +142,10 @@ public class EvaluationArticleService : IEvaluationArticleService
 
     public async Task<bool> AddArticleAsync(EvaluationArticle evaluationArticle)
     {
+        var random = new Random(DateTime.Now.Millisecond);
         evaluationArticle.CreateTime = DateTime.Now.ToLocalTime();
+        evaluationArticle.JoinCount = random.Next(24, 5000);
+        evaluationArticle.SupportCount = random.Next(5, 100);
         await _evaluationContext.Articles.AddAsync(evaluationArticle);
         return await _evaluationContext.SaveChangesAsync() > 0;
     }

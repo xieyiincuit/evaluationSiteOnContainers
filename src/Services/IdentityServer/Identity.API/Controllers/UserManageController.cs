@@ -26,6 +26,11 @@ public class UserManageController : ControllerBase
         _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
     }
 
+    /// <summary>
+    ///  用于测评内容页面获取作者信息
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
     [HttpGet("author")]
     [AllowAnonymous]
     public async Task<IActionResult> GetAuthorInfoAsync([FromQuery] string userId)
@@ -38,7 +43,7 @@ public class UserManageController : ControllerBase
     }
 
     [HttpGet("info")]
-    [Authorize(Roles = "normaluser, administrator, evaluator")]
+    [Authorize]
     public async Task<IActionResult> GetUserInfoAsync()
     {
         var currentUserId = User.FindFirstValue("sub");
@@ -46,7 +51,7 @@ public class UserManageController : ControllerBase
         //非法访问他人Id或无效Id
         if (string.IsNullOrEmpty(currentUserId))
             return BadRequest(
-                new {Message = "can't find sub claim in current context"});
+                new { Message = "can't find sub claim in current context" });
 
         var user = await _userManager.FindByIdAsync(currentUserId);
         if (user == null) return NotFound();
@@ -56,7 +61,7 @@ public class UserManageController : ControllerBase
     }
 
     [HttpPut("info")]
-    [Authorize(Roles = "normaluser, administrator, evaluator")]
+    [Authorize]
     public async Task<IActionResult> UpdateUserInfoAsync([FromBody] UserInfoUpdateDto updateDto)
     {
         if (updateDto.UserId != User.FindFirstValue("sub")) return BadRequest();
@@ -104,6 +109,23 @@ public class UserManageController : ControllerBase
         }
 
         return NoContent();
+    }
+
+    [HttpPut("password")]
+    [Authorize]
+    public async Task<IActionResult> ChangeUserPasswordAsync([FromBody] UserPasswordDto passwordDto)
+    {
+        var userId = User.FindFirstValue("sub");
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null) return BadRequest();
+        if (await _userManager.CheckPasswordAsync(user, passwordDto.Password))
+        {
+            var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+            await _userManager.ResetPasswordAsync(user, resetToken, passwordDto.ConfirmPassword);
+            return NoContent();
+        }
+
+        return BadRequest("password error");
     }
 
     [HttpGet("list")]
@@ -171,8 +193,12 @@ public class UserManageController : ControllerBase
                 .Where(x => x.Id == id)
                 .Select(x => new UserRoleDto
                 {
-                    Id = x.Id, NickName = x.NickName, UserName = x.UserName, RegisterTime = x.RegistrationDate,
-                    Role = role.Name, Avatar = x.Avatar
+                    Id = x.Id,
+                    NickName = x.NickName,
+                    UserName = x.UserName,
+                    RegisterTime = x.RegistrationDate,
+                    Role = role.Name,
+                    Avatar = x.Avatar
                 })
                 .AsNoTracking()
                 .OrderBy(x => x.RegisterTime)
@@ -205,7 +231,7 @@ public class UserManageController : ControllerBase
             await _applicationDbContext.SaveChangesAsync();
         }
 
-        var newRoleLink = new IdentityUserRole<string> {RoleId = banRole.Id, UserId = user.Id};
+        var newRoleLink = new IdentityUserRole<string> { RoleId = banRole.Id, UserId = user.Id };
         await _applicationDbContext.UserRoles.AddAsync(newRoleLink);
         var result = await _applicationDbContext.SaveChangesAsync();
 
@@ -239,7 +265,7 @@ public class UserManageController : ControllerBase
             await _applicationDbContext.SaveChangesAsync();
         }
 
-        var newRoleLink = new IdentityUserRole<string> {RoleId = normalRole.Id, UserId = user.Id};
+        var newRoleLink = new IdentityUserRole<string> { RoleId = normalRole.Id, UserId = user.Id };
         await _applicationDbContext.UserRoles.AddAsync(newRoleLink);
         var result = await _applicationDbContext.SaveChangesAsync();
 
@@ -273,7 +299,7 @@ public class UserManageController : ControllerBase
             await _applicationDbContext.SaveChangesAsync();
         }
 
-        var newRoleLink = new IdentityUserRole<string> {RoleId = evaluatorRole.Id, UserId = user.Id};
+        var newRoleLink = new IdentityUserRole<string> { RoleId = evaluatorRole.Id, UserId = user.Id };
         await _applicationDbContext.UserRoles.AddAsync(newRoleLink);
         var result = await _applicationDbContext.SaveChangesAsync();
         if (result > 0)
@@ -306,7 +332,7 @@ public class UserManageController : ControllerBase
             await _applicationDbContext.SaveChangesAsync();
         }
 
-        var newRoleLink = new IdentityUserRole<string> {RoleId = normalRole.Id, UserId = user.Id};
+        var newRoleLink = new IdentityUserRole<string> { RoleId = normalRole.Id, UserId = user.Id };
         await _applicationDbContext.UserRoles.AddAsync(newRoleLink);
         var result = await _applicationDbContext.SaveChangesAsync();
         if (result > 0)

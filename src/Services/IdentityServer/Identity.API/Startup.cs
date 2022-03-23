@@ -79,6 +79,11 @@ public class Startup
             options.Lockout.AllowedForNewUsers = true;
         });
 
+        services.AddSession(configure =>
+        {
+            configure.IdleTimeout = TimeSpan.FromSeconds(30);
+        });
+
         #endregion
 
         #region SelfJwtAuth
@@ -267,23 +272,24 @@ public class Startup
           .UseSwaggerUI(setup =>
           {
               setup.SwaggerEndpoint(
-                  $"{(!string.IsNullOrEmpty(pathBase) ? pathBase : string.Empty)}/swagger/v1/swagger.json",
-                  "Identity.API V1");
+                  $"{(!string.IsNullOrEmpty(pathBase) ? pathBase : string.Empty)}/swagger/v1/swagger.json", "Identity.API V1");
               setup.RoutePrefix = "swagger";
           });
-
-        app.UseStaticFiles();
-
-        app.UseRouting();
-        app.UseForwardedHeaders();
-        app.UseIdentityServer();
 
         // Fix a problem with chrome. Chrome enabled a new feature "Cookies without SameSite must be secure", 
         // the cookies should be expired from https, but in this app, the internal communication in aks and docker compose is http.
         // To avoid this problem, the policy of cookies should be in Lax mode.
         app.UseCookiePolicy(new CookiePolicyOptions { MinimumSameSitePolicy = SameSiteMode.Lax });
+        app.UseSession();
 
+        app.UseStaticFiles();
+        app.UseRouting();
+        app.UseForwardedHeaders();
+        app.UseIdentityServer();
+
+        app.UseAuthentication();
         app.UseAuthorization();
+
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapDefaultControllerRoute();
@@ -304,6 +310,7 @@ public class Startup
         app.RegisterService(serviceConfiguration, consul, lifetime);
 
         ConfigureEventBus(app);
+        //TODO IPLimitRating
     }
 
     protected virtual void ConfigureEventBus(IApplicationBuilder app)

@@ -4,6 +4,10 @@ public class ArticleUpdateDtoValidator : AbstractValidator<ArticleUpdateDto>
 {
     public ArticleUpdateDtoValidator()
     {
+        RuleFor(c => c.Id)
+            .GreaterThan(0).WithMessage("invalid | 非法参数: Id")
+            .LessThan(int.MaxValue).WithMessage("invalid | 非法参数: Id");
+
         RuleFor(x => x.Title)
             .NotEmpty().WithMessage("required | 请输入测评文章的标题")
             .MaximumLength(50).WithMessage("length | 文章标题不应超过50个字符");

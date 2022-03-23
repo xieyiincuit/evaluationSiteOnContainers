@@ -143,14 +143,14 @@ public class EvaluationArticleController : ControllerBase
         [FromQuery] int? categoryId, [FromQuery] bool timeDesc = true)
     {
         var currentUserId = User.FindFirst("sub").Value;
-
+        int pageSize = 15;
         var totalArticles = await _articleService.CountArticlesByUserAsync(currentUserId);
-        if (ParameterValidateHelper.IsInvalidPageIndex(totalArticles, 10, pageIndex))
+        if (ParameterValidateHelper.IsInvalidPageIndex(totalArticles, pageSize, pageIndex))
             pageIndex = 1; // pageIndex不合法重设
 
-        var userArticles = await _articleService.GetUserArticlesAsync(10, pageIndex, currentUserId, categoryId, timeDesc);
+        var userArticles = await _articleService.GetUserArticlesAsync(pageSize, pageIndex, currentUserId, categoryId, timeDesc);
 
-        var model = new PaginatedItemsDtoModel<ArticleTableDto>(pageIndex, 10, totalArticles, userArticles, null);
+        var model = new PaginatedItemsDtoModel<ArticleTableDto>(pageIndex, pageSize, totalArticles, userArticles, null);
         return Ok(model);
     }
 

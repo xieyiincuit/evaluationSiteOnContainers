@@ -20,7 +20,7 @@ public class ArticleAddDtoValidator : AbstractValidator<ArticleAddDto>
             .NotNull().WithMessage("required | 请选择测评文章的类别")
             .GreaterThan(0).WithMessage("invalid | 不存在的测评分类");
 
-        RuleFor(x => x.ArticleStatus)
+        RuleFor(x => x.Status)
             .NotNull().WithMessage("required | 请选择文章状态")
             .IsInEnum();
 

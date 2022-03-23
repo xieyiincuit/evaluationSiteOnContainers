@@ -6,7 +6,7 @@ public class ArticleAddDto
     public string? ArticleImage { get; set; }
     public string Content { get; set; }
     public string? Description { get; set; }
-    public ArticleStatus ArticleStatus { get; set; }
+    public ArticleStatus Status { get; set; }
     public int CategoryTypeId { get; set; }
     public int GameId { get; set; }
 }
