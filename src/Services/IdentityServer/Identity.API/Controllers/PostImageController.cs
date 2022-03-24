@@ -2,6 +2,7 @@
 
 [ApiController]
 [Route("api/v1/user/avatar")]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class PostImageController : ControllerBase
 {
     private readonly ApplicationDbContext _appDbContextService;

@@ -127,14 +127,14 @@ public class UserManageController : ControllerBase
         var userId = User.FindFirstValue("sub");
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null) return BadRequest();
-        if (await _userManager.CheckPasswordAsync(user, passwordDto.Password))
+        if (await _userManager.CheckPasswordAsync(user, passwordDto.OldPassword))
         {
             var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
-            await _userManager.ResetPasswordAsync(user, resetToken, passwordDto.ConfirmPassword);
+            await _userManager.ResetPasswordAsync(user, resetToken, passwordDto.NewPassword);
             return NoContent();
         }
 
-        return BadRequest("password error");
+        return BadRequest("oldPassword validate fail");
     }
 
     [HttpGet("list")]
