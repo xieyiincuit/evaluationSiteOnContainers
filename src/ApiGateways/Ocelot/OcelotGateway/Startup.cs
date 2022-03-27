@@ -1,5 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using Ocelot.Cache.CacheManager;
+﻿using Ocelot.Cache.CacheManager;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 using Ocelot.Provider.Consul;
@@ -41,7 +40,7 @@ namespace OcelotGateway
                 {
                     x.WithDictionaryHandle();
                 });
-            
+
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy",

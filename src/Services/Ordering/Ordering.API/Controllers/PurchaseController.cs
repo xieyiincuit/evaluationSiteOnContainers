@@ -49,7 +49,7 @@ public class PurchaseController : ControllerBase
         {
             _logger.LogInformation("shopItemId:{id} get the distribute locked", shopItemId);
             var stockKey = GetProductStockKey(shopItemId);
-            var currentQuantity = (int) await _redisDatabase.Database.StringGetAsync(stockKey);
+            var currentQuantity = (int)await _redisDatabase.Database.StringGetAsync(stockKey);
 
             if (currentQuantity < 1)
             {

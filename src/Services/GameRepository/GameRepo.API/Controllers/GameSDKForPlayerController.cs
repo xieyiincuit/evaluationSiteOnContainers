@@ -27,9 +27,9 @@ public class GameSDKForPlayerController : ControllerBase
 
     [HttpGet("user/sdks")]
     [Authorize]
-    [ProducesResponseType((int) HttpStatusCode.NotFound)]
-    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(PaginatedItemsDtoModel<PlaySDKDto>), (int) HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(PaginatedItemsDtoModel<PlaySDKDto>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetUserSDKsByUserIdAsync([FromQuery] bool? hasChecked,
         [FromQuery] int pageIndex = 1)
     {
@@ -53,9 +53,9 @@ public class GameSDKForPlayerController : ControllerBase
 
     [HttpGet("game/sdk/{sdkId:int}")]
     [Authorize(Roles = "administrator")]
-    [ProducesResponseType((int) HttpStatusCode.NotFound)]
-    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(GameItemSDK), (int) HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(GameItemSDK), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetSDKByIdAsync([FromRoute] int sdkId)
     {
         if (sdkId <= 0 || sdkId >= int.MaxValue) return BadRequest();
@@ -66,8 +66,8 @@ public class GameSDKForPlayerController : ControllerBase
 
     [HttpPut("user/sdk/{sdkId:int}")]
     [Authorize]
-    [ProducesResponseType((int) HttpStatusCode.NoContent)]
-    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> CheckUserSdkAsync([FromRoute] int sdkId)
     {
         if (sdkId <= 0 || sdkId >= int.MaxValue) return BadRequest();
@@ -84,7 +84,7 @@ public class GameSDKForPlayerController : ControllerBase
 
     [HttpPost("user/sdk/send")]
     [Authorize]
-    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> SendSdkToBuyerAsync([FromBody] SDKPlayerAddDto addDto)
     {
         var sdk = await _sdkSendService.GetOneSDKToSendUserAsync(addDto.ShopItemId);

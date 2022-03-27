@@ -15,7 +15,7 @@ public class UserInfoUpdateDto
     public Gender? Sex { get; set; }
 
     public DateTime? BirthDate { get; set; }
-    
+
     [MaxLength(50, ErrorMessage = "length | 自我介绍控制在50个字符以内")]
     public string Introduction { get; set; }
 }

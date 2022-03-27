@@ -40,7 +40,7 @@ public class BannedService : IBannedService
     {
         await _dbContext.BannedRecords.AddAsync(bannedRecord);
         await _dbContext.BannedUserLinks.AddAsync(new BannedUserLink
-            {BannedUserId = bannedRecord.UserId, CheckUserId = checkUserId});
+        { BannedUserId = bannedRecord.UserId, CheckUserId = checkUserId });
 
         return await _dbContext.SaveChangesAsync() > 0;
     }
@@ -50,7 +50,7 @@ public class BannedService : IBannedService
         var updateEntity = await _dbContext.BannedRecords.FindAsync(id);
         updateEntity.ReportCount += 1;
 
-        var userBanLink = new BannedUserLink {BannedUserId = updateEntity.UserId, CheckUserId = checkUserId};
+        var userBanLink = new BannedUserLink { BannedUserId = updateEntity.UserId, CheckUserId = checkUserId };
         await _dbContext.BannedUserLinks.AddAsync(userBanLink);
         return await _dbContext.SaveChangesAsync() > 0;
     }

@@ -67,7 +67,7 @@ public class BannedController : ControllerBase
         var bannedRecord = await _bannedService.GetBannedRecordByUserIdAsync(addDto.UserId);
         if (bannedRecord == null)
         {
-            var entityToAdd = new BannedRecord {UserId = addDto.UserId};
+            var entityToAdd = new BannedRecord { UserId = addDto.UserId };
             var addResponse = await _bannedService.AddBannedRecordAsync(entityToAdd, checkUserId);
             return addResponse == true
                 ? Ok()

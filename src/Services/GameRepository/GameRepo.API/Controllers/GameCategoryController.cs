@@ -21,8 +21,8 @@ public class GameCategoryController : ControllerBase
 
     [HttpGet]
     [Route("categories")]
-    [ProducesResponseType((int) HttpStatusCode.NotFound)]
-    [ProducesResponseType(typeof(PaginatedItemsDtoModel<GameCategory>), (int) HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(PaginatedItemsDtoModel<GameCategory>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetCategoriesAsync([FromQuery] int pageIndex = 1)
     {
         var totalCategories = await _categoryService.CountCategoryAsync();
@@ -36,9 +36,9 @@ public class GameCategoryController : ControllerBase
     }
 
     [HttpGet("category/{categoryId:int}", Name = nameof(GetCategoryAsync))]
-    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int) HttpStatusCode.NotFound)]
-    [ProducesResponseType(typeof(GameCategory), (int) HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(GameCategory), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetCategoryAsync([FromRoute] int categoryId)
     {
         if (categoryId <= 0 || categoryId >= int.MaxValue) return BadRequest();
@@ -52,8 +52,8 @@ public class GameCategoryController : ControllerBase
     [HttpPost]
     [Authorize(Roles = "administrator")]
     [Route("category")]
-    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int) HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.Created)]
     public async Task<IActionResult> CreateCategoryAsync([FromBody] GameCategoryAddDto categoryAddDto)
     {
         if (categoryAddDto == null) return BadRequest();
@@ -64,14 +64,14 @@ public class GameCategoryController : ControllerBase
         _logger.LogInformation(
             $"administrator: id:{User.FindFirst("sub").Value}, name:{User.Identity.Name} add a category -> categoryName:{categoryAddDto.CategoryName}");
 
-        return CreatedAtRoute(nameof(GetCategoryAsync), new {categoryId = entityToAdd.Id}, null);
+        return CreatedAtRoute(nameof(GetCategoryAsync), new { categoryId = entityToAdd.Id }, null);
     }
 
     [HttpDelete]
     [Authorize(Roles = "administrator")]
     [Route("category/{id:int}")]
-    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int) HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
     public async Task<IActionResult> DeleteCategoryAsync([FromRoute] int id)
     {
         if (id <= 0 || id >= int.MaxValue) return BadRequest();
@@ -84,8 +84,8 @@ public class GameCategoryController : ControllerBase
     [HttpPut]
     [Authorize(Roles = "administrator")]
     [Route("category")]
-    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int) HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
     public async Task<IActionResult> UpdateCategoryAsync([FromBody] GameCategoryUpdateDto categoryUpdateDto)
     {
         if (categoryUpdateDto == null) return BadRequest();

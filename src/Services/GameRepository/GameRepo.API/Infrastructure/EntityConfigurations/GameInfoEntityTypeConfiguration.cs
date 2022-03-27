@@ -17,7 +17,7 @@ public class GameInfoEntityTypeConfiguration : IEntityTypeConfiguration<GameInfo
                     .HasOne(t => t.GameInfo)
                     .WithMany(g => g.GameInfoTags)
                     .HasForeignKey(f => f.GameId),
-                j => j.HasKey(t => new {t.GameId, t.TagId})
+                j => j.HasKey(t => new { t.GameId, t.TagId })
             );
 
         builder

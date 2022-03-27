@@ -34,7 +34,7 @@ public partial class Initial : Migration
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     game_id = table.Column<int>("int", nullable: false, comment: "游戏信息id")
                 },
-                constraints: table => { table.PrimaryKey("PK_game_owner", x => new {x.user_id, x.game_id}); },
+                constraints: table => { table.PrimaryKey("PK_game_owner", x => new { x.user_id, x.game_id }); },
                 comment: "玩家游戏拥有表")
             .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -149,7 +149,7 @@ public partial class Initial : Migration
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_gameinfo_tag", x => new {x.game_id, x.tag_id});
+                    table.PrimaryKey("PK_gameinfo_tag", x => new { x.game_id, x.tag_id });
                     table.ForeignKey(
                         "FK_gameinfo_tag_game_info_game_id",
                         x => x.game_id,

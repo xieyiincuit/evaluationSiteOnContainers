@@ -284,7 +284,7 @@ public class EventBusRabbitMQ : IEventBus, IDisposable
             await using var scope = _autofac.BeginLifetimeScope(AUTOFAC_SCOPE_NAME);
             //从订阅管理中获取该事件的处理对象
             var subscriptions = _subsManager.GetHandlersForEvent(eventName);
-            
+
             //遍历事件处理Handler
             foreach (var subscription in subscriptions)
                 if (subscription.IsDynamic) //若是动态处理事件
@@ -295,7 +295,7 @@ public class EventBusRabbitMQ : IEventBus, IDisposable
 
                     //获取message数据
                     using dynamic eventData = JsonDocument.Parse(message);
-                    
+
                     //以下两个await方法是在数据迭代中异步执行可回调的方法
                     await Task.Yield();
                     await handler.Handle(eventData);
@@ -305,19 +305,19 @@ public class EventBusRabbitMQ : IEventBus, IDisposable
                     // 解析出订阅的事件类型Handler
                     var handler = scope.ResolveOptional(subscription.HandlerType);
                     if (handler == null) continue;
-                    
+
                     //从订阅管理中获取事件类型
                     var eventType = _subsManager.GetEventTypeByName(eventName);
                     //将该事件解析对应eventType的integrationEvent对象
                     var integrationEvent = JsonSerializer.Deserialize(message, eventType,
-                        new JsonSerializerOptions {PropertyNameCaseInsensitive = true});
-                    
+                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
                     //利用反射映射出具体的泛型处理接口
                     var concreteType = typeof(IIntegrationEventHandler<>).MakeGenericType(eventType);
                     //在数据迭代中异步执行可回调的方法
                     await Task.Yield();
                     //反射调用具体integrationEvent类型的Handle方法
-                    await (Task) concreteType.GetMethod("Handle").Invoke(handler, new[] {integrationEvent});
+                    await (Task)concreteType.GetMethod("Handle").Invoke(handler, new[] { integrationEvent });
                 }
         }
         else

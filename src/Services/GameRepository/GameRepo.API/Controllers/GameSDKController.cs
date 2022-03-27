@@ -16,8 +16,8 @@ public class GameSDKController : ControllerBase
 
     [HttpGet("{gameItemId:int}")]
     [Authorize(Roles = "administrator")]
-    [ProducesResponseType(typeof(PaginatedItemsDtoModel<GameItemSDK>), (int) HttpStatusCode.OK)]
-    [ProducesResponseType((int) HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(PaginatedItemsDtoModel<GameItemSDK>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<IActionResult> GetGameSDKAsync(
         [FromQuery] bool hasSend, [FromRoute] int gameItemId, [FromQuery] int pageIndex = 1)
     {

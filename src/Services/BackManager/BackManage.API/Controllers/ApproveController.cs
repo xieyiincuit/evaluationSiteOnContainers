@@ -59,7 +59,7 @@ public class ApproveController : ControllerBase
     public async Task<IActionResult> GetSelfApproveAsync()
     {
         var currentUser = User.FindFirstValue("sub");
-        
+
         var approve = await _approvalService.GetApproveRecordByUserIdAsync(currentUser);
         if (approve == null) return NotFound();
 
@@ -83,7 +83,7 @@ public class ApproveController : ControllerBase
         var response = await _approvalService.AddApproveRecordAsync(entity);
         if (response != true)
             throw new BackManageDomainException($"user {User.FindFirstValue("nickname")} add approve apply fail");
-        
+
         _logger.LogInformation("user:{Name} add a approve:{Id} to be a evaluator", User.FindFirstValue("nickname"), entity.Id);
         return Ok();
     }
@@ -102,7 +102,7 @@ public class ApproveController : ControllerBase
 
         var response = await _approvalService.UpdateApproveInfoAsync(approve.Id, updateDto.Body);
         if (response == true) return NoContent();
-        
+
         throw new BackManageDomainException($"user {User.FindFirstValue("nickname")} edit approve body fail");
     }
 
@@ -119,7 +119,7 @@ public class ApproveController : ControllerBase
         var response = await _approvalService.DeleteApproveRecordAsync(approve);
         if (response != true)
             throw new BackManageDomainException($"user {User.FindFirstValue("nickname")} delete approve fail");
-        
+
         _logger.LogInformation("user:{Name} redraw a approve:{Id} to be a evaluator", User.FindFirstValue("nickname"), approve.Id);
         return NoContent();
     }
@@ -136,7 +136,7 @@ public class ApproveController : ControllerBase
             await _approvalService.UpdateApproveStatusAsync(approve.Id, ApproveStatus.Rejected, applyUser);
         if (statusUpdateResult != true)
             throw new BackManageDomainException("reject user occurred error, please check logging and fix it");
-        
+
         _logger.LogInformation("----- user:{Id} has been reject to a evaluator -----", userId);
         return NoContent();
     }

@@ -67,7 +67,7 @@ public partial class Initial : Migration
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_banned_user_link", x => new {x.banned_user_id, x.check_user_id});
+                    table.PrimaryKey("PK_banned_user_link", x => new { x.banned_user_id, x.check_user_id });
                 },
                 comment: "用户举报链接表")
             .Annotation("MySql:CharSet", "utf8mb4");

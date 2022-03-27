@@ -6,7 +6,7 @@ public class GameShopItemProfile : Profile
     {
         CreateMap<GameShopItem, ShopItemDtoToUser>()
             .ForMember(dest => dest.FinalPrice,
-                options => options.MapFrom(src => src.Price * (decimal) (src.Discount / 100)))
+                options => options.MapFrom(src => src.Price * (decimal)(src.Discount / 100)))
             .ForMember(dest => dest.GameId, options => options.MapFrom(src => src.GameInfoId))
             .ForMember(dest => dest.GameName, options => options.MapFrom(src => src.GameInfo.Name))
             .ForMember(dest => dest.Picture, options => options.MapFrom(src => src.GameInfo.RoughPicture));

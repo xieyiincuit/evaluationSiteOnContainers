@@ -7,7 +7,7 @@ public class PaginatedItemsDtoModel<TEntity> where TEntity : class
         CurrentPage = pageIndex;
         PageSize = pageSize;
         TotalCount = count;
-        TotalPages = (int) Math.Ceiling(count / (double) pageSize);
+        TotalPages = (int)Math.Ceiling(count / (double)pageSize);
         Data = data;
     }
 

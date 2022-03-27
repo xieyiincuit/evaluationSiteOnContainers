@@ -1,9 +1,9 @@
-﻿using System.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MySqlConnector;
 using Polly;
+using System.Data.SqlClient;
 
 namespace Microsoft.AspNetCore.Hosting;
 

@@ -236,7 +236,7 @@ public class Startup
                 Predicate = r => r.Name.Contains("self")
             });
         });
-        
+
         var consul = app.ApplicationServices.GetRequiredService<Consul.IConsulClient>();
         var serviceConfiguration = app.ApplicationServices.GetRequiredService<IOptions<ServiceRegisterOptions>>();
         app.RegisterService(serviceConfiguration, consul, lifetime);

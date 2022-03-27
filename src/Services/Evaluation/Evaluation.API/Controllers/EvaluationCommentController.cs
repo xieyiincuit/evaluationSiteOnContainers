@@ -28,9 +28,9 @@ public class EvaluationCommentController : ControllerBase
     [AllowAnonymous]
     [HttpGet]
     [Route("article/{articleId:int}/comments")]
-    [ProducesResponseType((int) HttpStatusCode.NotFound)]
-    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(IEnumerable<ArticleCommentDto>), (int) HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(IEnumerable<ArticleCommentDto>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetArticleComments([FromRoute] int articleId, [FromQuery] int pageIndex = 1)
     {
         if (articleId <= 0 || articleId >= int.MaxValue) return BadRequest(); // id非法
@@ -82,9 +82,9 @@ public class EvaluationCommentController : ControllerBase
     [AllowAnonymous]
     [HttpGet]
     [Route("article/comments/{rootCommentId:int}")]
-    [ProducesResponseType((int) HttpStatusCode.NotFound)]
-    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(IEnumerable<ReplyCommentDto>), (int) HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(IEnumerable<ReplyCommentDto>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetRootCommentsReplies([FromRoute] int rootCommentId,
         [FromQuery] int pageIndex = 1)
     {
@@ -94,7 +94,7 @@ public class EvaluationCommentController : ControllerBase
 
         if (parentComment == null) return NotFound(); //父评论不存在
 
-        var userIds = new HashSet<string> {parentComment.UserId};
+        var userIds = new HashSet<string> { parentComment.UserId };
 
         var totalComments = await _commentService.CountCommentChildrenCommentsAsync(rootCommentId);
         if (ParameterValidateHelper.IsInvalidPageIndex(totalComments, _pageSize, pageIndex)) pageIndex = 1;
@@ -117,8 +117,8 @@ public class EvaluationCommentController : ControllerBase
     [Authorize]
     [HttpGet]
     [Route("comments/user")]
-    [ProducesResponseType((int) HttpStatusCode.NotFound)]
-    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> GetUserComments([FromQuery] int pageIndex = 1)
     {
         var loginUserId = User.FindFirstValue("sub");
@@ -133,9 +133,9 @@ public class EvaluationCommentController : ControllerBase
 
     [AllowAnonymous]
     [HttpGet("comments/{commentId:int}", Name = nameof(GetCommentByIdAsync))]
-    [ProducesResponseType((int) HttpStatusCode.NotFound)]
-    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(EvaluationComment), (int) HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(EvaluationComment), (int)HttpStatusCode.OK)]
     public async Task<ActionResult<EvaluationComment>> GetCommentByIdAsync([FromRoute] int commentId)
     {
         if (commentId <= 0 || commentId >= int.MaxValue) return BadRequest();
@@ -148,8 +148,8 @@ public class EvaluationCommentController : ControllerBase
     [HttpPost]
     [Authorize(Roles = "administrator, evaluator, normaluser")]
     [Route("article/comments")]
-    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int) HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.Created)]
     public async Task<IActionResult> PostCommentOnArticleAsync([FromBody] ArticleCommentAddDto commentAddDto)
     {
         if (commentAddDto == null) return BadRequest();
@@ -161,14 +161,14 @@ public class EvaluationCommentController : ControllerBase
         comment.UserId = loginUserId;
 
         await _commentService.AddCommentArticleAsync(comment);
-        return CreatedAtRoute(nameof(GetCommentByIdAsync), new {commentId = comment.CommentId}, null);
+        return CreatedAtRoute(nameof(GetCommentByIdAsync), new { commentId = comment.CommentId }, null);
     }
 
     [HttpPost]
     [Authorize(Roles = "administrator, evaluator, normaluser")]
     [Route("article/comments/reply")]
-    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int) HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.Created)]
     public async Task<IActionResult> PostReplyOnCommentAsync([FromBody] ReplyCommentAddDto replyAddDto)
     {
         if (replyAddDto == null) return BadRequest();
@@ -181,14 +181,14 @@ public class EvaluationCommentController : ControllerBase
         comment.IsReplay = true;
 
         await _commentService.AddCommentArticleAsync(comment);
-        return CreatedAtRoute(nameof(GetCommentByIdAsync), new {commentId = comment.CommentId}, null);
+        return CreatedAtRoute(nameof(GetCommentByIdAsync), new { commentId = comment.CommentId }, null);
     }
 
     [HttpDelete]
     [Authorize(Roles = "administrator, evaluator")]
     [Route("article/comments/{commentId:int}")]
-    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int) HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
     public async Task<IActionResult> DeleteCommentAsync([FromRoute] int commentId)
     {
         throw new NotImplementedException();

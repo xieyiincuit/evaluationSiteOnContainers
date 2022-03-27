@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore;
-using Ocelot.DependencyInjection;
 
 namespace OcelotGateway
 {

@@ -60,12 +60,12 @@ public partial class GrantsInit : Migration
         migrationBuilder.CreateIndex(
             "IX_PersistedGrants_SubjectId_ClientId_Type",
             "PersistedGrants",
-            new[] {"SubjectId", "ClientId", "Type"});
+            new[] { "SubjectId", "ClientId", "Type" });
 
         migrationBuilder.CreateIndex(
             "IX_PersistedGrants_SubjectId_SessionId_Type",
             "PersistedGrants",
-            new[] {"SubjectId", "SessionId", "Type"});
+            new[] { "SubjectId", "SessionId", "Type" });
     }
 
     protected override void Down(MigrationBuilder migrationBuilder)

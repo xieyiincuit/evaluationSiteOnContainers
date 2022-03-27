@@ -69,7 +69,7 @@ public class DeviceController : Controller
         // user clicked 'no' - send back the standard 'access_denied' response
         if (model.Button == "no")
         {
-            grantedConsent = new ConsentResponse {Error = AuthorizationError.AccessDenied};
+            grantedConsent = new ConsentResponse { Error = AuthorizationError.AccessDenied };
 
             // emit event
             await _events.RaiseAsync(new ConsentDeniedEvent(User.GetSubjectId(), request.Client.ClientId,

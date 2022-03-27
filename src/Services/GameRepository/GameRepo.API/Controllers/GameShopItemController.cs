@@ -31,8 +31,8 @@ public class GameShopItemController : ControllerBase
     [HttpGet]
     [Route("game/shops")]
     [Authorize(Roles = "administrator")]
-    [ProducesResponseType((int) HttpStatusCode.NotFound)]
-    [ProducesResponseType(typeof(PaginatedItemsDtoModel<ShopItemDtoToAdmin>), (int) HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(PaginatedItemsDtoModel<ShopItemDtoToAdmin>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetShopItemsToAdminAsync([FromQuery] int pageIndex = 1)
     {
         var shopItemsCount = await _shopItemService.CountGameShopItemAsync();
@@ -49,8 +49,8 @@ public class GameShopItemController : ControllerBase
     [HttpGet]
     [Route("shop/items")]
     [AllowAnonymous]
-    [ProducesResponseType((int) HttpStatusCode.NotFound)]
-    [ProducesResponseType(typeof(PaginatedItemsDtoModel<ShopItemDtoToUser>), (int) HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(PaginatedItemsDtoModel<ShopItemDtoToUser>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetShopItemsToUserAsync([FromQuery] int pageIndex = 1)
     {
         var shopItemsCount = await _shopItemService.CountGameShopItemAsync();
@@ -66,8 +66,8 @@ public class GameShopItemController : ControllerBase
 
     [HttpGet("shop/{itemId:int}", Name = nameof(GetShopItemsByIdAsync))]
     [AllowAnonymous]
-    [ProducesResponseType((int) HttpStatusCode.NotFound)]
-    [ProducesResponseType(typeof(ShopItemDtoToUser), (int) HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(ShopItemDtoToUser), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetShopItemsByIdAsync([FromRoute] int itemId)
     {
         if (itemId <= 0 || itemId >= int.MaxValue) return BadRequest();
@@ -81,8 +81,8 @@ public class GameShopItemController : ControllerBase
 
     [HttpGet("game/shop/{itemId:int}", Name = nameof(GetShopItemsByIdForAdminAsync))]
     [Authorize(Roles = "administrator")]
-    [ProducesResponseType((int) HttpStatusCode.NotFound)]
-    [ProducesResponseType(typeof(ShopItemDtoToAdmin), (int) HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(ShopItemDtoToAdmin), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetShopItemsByIdForAdminAsync([FromRoute] int itemId)
     {
         if (itemId <= 0 || itemId >= int.MaxValue) return BadRequest();
@@ -95,8 +95,8 @@ public class GameShopItemController : ControllerBase
     }
 
     [HttpGet("shop", Name = nameof(GetShopItemsByGameIdAsync))]
-    [ProducesResponseType((int) HttpStatusCode.NotFound)]
-    [ProducesResponseType(typeof(ShopItemDtoToUser), (int) HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(ShopItemDtoToUser), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetShopItemsByGameIdAsync([FromQuery] int gameId)
     {
         if (gameId <= 0 || gameId >= int.MaxValue) return BadRequest();
@@ -111,8 +111,8 @@ public class GameShopItemController : ControllerBase
     [HttpPost] //定义该Action为HTTP POST
     [Route("game/shop")] //定义子路由
     [Authorize(Roles = "administrator")] //定义该方法需要身份验证且授权给administrator用户
-    [ProducesResponseType((int) HttpStatusCode.Created)]
-    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> PublishShopItemAsync([FromBody] ShopItemAddDto addDto) //规定参数从HTTP Body中接受
     {
         //如果Request Body为空，则返回400
@@ -134,15 +134,15 @@ public class GameShopItemController : ControllerBase
         await _redisDatabase.Database.StringSetAsync($"ProductStock_{entityToAdd.Id}", entityToAdd.AvailableStock);
 
         if (response == true)
-            return CreatedAtRoute(nameof(GetShopItemsByIdForAdminAsync), new {itemId = entityToAdd.Id}, null);
+            return CreatedAtRoute(nameof(GetShopItemsByIdForAdminAsync), new { itemId = entityToAdd.Id }, null);
         return BadRequest();
     }
 
     [HttpPut]
     [Route("game/shop")]
     [Authorize(Roles = "administrator")]
-    [ProducesResponseType((int) HttpStatusCode.NoContent)]
-    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> UpdateShopItemInfoAsync([FromBody] ShopItemUpdateDto updateDto)
     {
         var shopItemToUpdate = await _shopItemService.GetGameShopItemByIdAsync(updateDto.Id);
@@ -156,8 +156,8 @@ public class GameShopItemController : ControllerBase
     [HttpPut]
     [Route("game/shop/status/{itemId:int}")]
     [Authorize(Roles = "administrator")]
-    [ProducesResponseType((int) HttpStatusCode.NoContent)]
-    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> ChangeShopItemStatusAsync([FromRoute] int itemId)
     {
         _logger.LogInformation("admin:{name} take down shopItem:{id}, will sync stock in next step",
@@ -178,8 +178,8 @@ public class GameShopItemController : ControllerBase
     [HttpPut]
     [Route("game/shop/stock")]
     [Authorize(Roles = "administrator")]
-    [ProducesResponseType((int) HttpStatusCode.NoContent)]
-    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> ChangeShopItemStockAsync([FromBody] ShopItemStockUpdateDto stockUpdateDto)
     {
         var shopItem = await _shopItemService.GetGameShopItemByIdAsync(stockUpdateDto.Id);
@@ -213,8 +213,8 @@ public class GameShopItemController : ControllerBase
     [HttpDelete]
     [Route("game/shop/{itemId:int}")]
     [Authorize(Roles = "administrator")]
-    [ProducesResponseType((int) HttpStatusCode.NoContent)]
-    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> DeleteShopItemAsync([FromRoute] int itemId)
     {
         throw new NotImplementedException();

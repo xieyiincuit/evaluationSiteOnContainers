@@ -21,8 +21,8 @@ public class GameTagController : ControllerBase
 
     [HttpGet]
     [Route("tags")]
-    [ProducesResponseType((int) HttpStatusCode.NotFound)]
-    [ProducesResponseType(typeof(PaginatedItemsDtoModel<GameTag>), (int) HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(PaginatedItemsDtoModel<GameTag>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetTagsAsync([FromQuery] int pageIndex = 1)
     {
         var totalTags = await _tagService.CountTagsAsync();
@@ -36,9 +36,9 @@ public class GameTagController : ControllerBase
     }
 
     [HttpGet("tag/{tagId:int}", Name = nameof(GetTagByIdAsync))]
-    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int) HttpStatusCode.NotFound)]
-    [ProducesResponseType(typeof(GameTag), (int) HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(GameTag), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetTagByIdAsync([FromRoute] int tagId)
     {
         if (tagId <= 0 || tagId >= int.MaxValue) return BadRequest();
@@ -52,8 +52,8 @@ public class GameTagController : ControllerBase
     [HttpPost]
     [Route("tag")]
     [Authorize(Roles = "administrator")]
-    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int) HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.Created)]
     public async Task<IActionResult> CreateTagAsync([FromBody] GameTagAddDto tagAddDto)
     {
         if (tagAddDto == null) return BadRequest();
@@ -63,14 +63,14 @@ public class GameTagController : ControllerBase
 
         _logger.LogInformation(
             $"administrator: id:{User.FindFirst("sub").Value}, name:{User.Identity.Name} add a gameTag -> tagName:{tagAddDto.TagName}");
-        return CreatedAtRoute(nameof(GetTagByIdAsync), new {tagId = entityToAdd.Id}, null);
+        return CreatedAtRoute(nameof(GetTagByIdAsync), new { tagId = entityToAdd.Id }, null);
     }
 
     [HttpDelete]
     [Route("tag/{id:int}")]
     [Authorize(Roles = "administrator")]
-    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int) HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
     public async Task<IActionResult> DeleteCategoryAsync([FromRoute] int id)
     {
         if (id <= 0 || id >= int.MaxValue) return BadRequest();
@@ -83,8 +83,8 @@ public class GameTagController : ControllerBase
     [HttpPut]
     [Route("tag")]
     [Authorize(Roles = "administrator")]
-    [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int) HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
     public async Task<IActionResult> UpdateCategoryAsync([FromBody] GameTagUpdateDto tagUpdateDto)
     {
         if (tagUpdateDto == null) return BadRequest();

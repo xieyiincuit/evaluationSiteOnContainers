@@ -20,7 +20,7 @@ public partial class InMemoryEventBusSubscriptionsManager : IEventBusSubscriptio
     //定义事件移除后的事件处理
     public event EventHandler<string> OnEventRemoved;
 
-    public bool IsEmpty => _handlers is {Count: 0};
+    public bool IsEmpty => _handlers is { Count: 0 };
 
     public void Clear()
     {
@@ -129,7 +129,7 @@ public partial class InMemoryEventBusSubscriptionsManager : IEventBusSubscriptio
             // 如果该事件类型没有订阅的事件了, 则将该事件类型一并移除
             if (!_handlers[eventName].Any())
             {
-                _handlers.Remove(eventName); 
+                _handlers.Remove(eventName);
                 var eventType = _eventTypes.SingleOrDefault(e => e.Name == eventName);
                 if (eventType != null) _eventTypes.Remove(eventType);
 

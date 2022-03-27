@@ -37,7 +37,7 @@ public class BackManageContext : DbContext
             .HasDefaultValue(BannedStatus.Checking);
 
         modelBuilder.Entity<BannedUserLink>()
-            .HasKey(x => new {x.BannedUserId, x.CheckUserId});
+            .HasKey(x => new { x.BannedUserId, x.CheckUserId });
     }
 }
 

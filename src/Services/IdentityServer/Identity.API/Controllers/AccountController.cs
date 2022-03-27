@@ -38,7 +38,7 @@ public class AccountController : Controller
 
         if (vm.IsExternalLoginOnly)
             // we only have one option for logging in and it's an external provider
-            return RedirectToAction("Challenge", "External", new {scheme = vm.ExternalLoginScheme, returnUrl});
+            return RedirectToAction("Challenge", "External", new { scheme = vm.ExternalLoginScheme, returnUrl });
 
         return View(vm);
     }
@@ -151,10 +151,10 @@ public class AccountController : Controller
             // build a return URL so the upstream provider will redirect back
             // to us after the user has logged out. this allows us to then
             // complete our single sign-out processing.
-            var url = Url.Action("Logout", new {logoutId = vm.LogoutId});
+            var url = Url.Action("Logout", new { logoutId = vm.LogoutId });
 
             // this triggers a redirect to the external provider for sign-out
-            return SignOut(new AuthenticationProperties {RedirectUri = url}, vm.ExternalAuthenticationScheme);
+            return SignOut(new AuthenticationProperties { RedirectUri = url }, vm.ExternalAuthenticationScheme);
         }
 
         return View("LoggedOut", vm);
@@ -232,7 +232,7 @@ public class AccountController : Controller
             if (HttpContext.User.Identity.IsAuthenticated)
                 return Redirect(returnUrl);
             if (ModelState.IsValid)
-                return RedirectToAction("login", "account", new {returnUrl});
+                return RedirectToAction("login", "account", new { returnUrl });
             return View(model);
         }
 
@@ -277,7 +277,7 @@ public class AccountController : Controller
             {
                 var useIdKey = Guid.NewGuid().ToString("N");
                 TempData[useIdKey] = user.Id;
-                return RedirectToAction("ResetPassword", "Account", new {code = useIdKey, returnUrl});
+                return RedirectToAction("ResetPassword", "Account", new { code = useIdKey, returnUrl });
             }
 
             ModelState.AddModelError("SecurityAnswer", "Œ Ã‚ªÿ¥¥ÌŒÛ");
@@ -317,7 +317,7 @@ public class AccountController : Controller
             return View(model);
         }
 
-        return RedirectToAction("login", "account", new {returnUrl});
+        return RedirectToAction("login", "account", new { returnUrl });
     }
 
 
@@ -339,7 +339,7 @@ public class AccountController : Controller
                 Username = context.LoginHint
             };
 
-            if (!local) vm.ExternalProviders = new[] {new ExternalProvider {AuthenticationScheme = context.IdP}};
+            if (!local) vm.ExternalProviders = new[] { new ExternalProvider { AuthenticationScheme = context.IdP } };
 
             return vm;
         }
@@ -388,7 +388,7 @@ public class AccountController : Controller
 
     private async Task<LogoutViewModel> BuildLogoutViewModelAsync(string logoutId)
     {
-        var vm = new LogoutViewModel {LogoutId = logoutId, ShowLogoutPrompt = AccountOptions.ShowLogoutPrompt};
+        var vm = new LogoutViewModel { LogoutId = logoutId, ShowLogoutPrompt = AccountOptions.ShowLogoutPrompt };
 
         if (User.Identity.IsAuthenticated != true)
         {

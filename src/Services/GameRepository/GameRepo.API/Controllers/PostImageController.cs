@@ -84,5 +84,5 @@ public class PostImageController : ControllerBase
         var sourcePath = $"{_shopInfoBucket}{uploadFile}";
         return Ok(sourcePath);
     }
-    
+
 }
