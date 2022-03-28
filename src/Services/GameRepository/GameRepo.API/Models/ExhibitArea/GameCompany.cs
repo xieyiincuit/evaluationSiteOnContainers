@@ -12,7 +12,7 @@ public class GameCompany
     [Required]
     [MaxLength(50)]
     [Column("company_name")]
-    [Comment("游戏类型名")]
+    [Comment("游戏发行公司名")]
     public string CompanyName { get; set; }
 
     [Column("is_deleted")]

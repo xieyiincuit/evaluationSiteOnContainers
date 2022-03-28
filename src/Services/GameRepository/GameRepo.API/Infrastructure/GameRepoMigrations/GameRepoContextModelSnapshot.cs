@@ -59,7 +59,7 @@ namespace GameRepo.API.Infrastructure.GameRepoMigrations
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)")
                         .HasColumnName("company_name")
-                        .HasComment("游戏类型名");
+                        .HasComment("游戏发行公司名");
 
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("tinyint(1)")

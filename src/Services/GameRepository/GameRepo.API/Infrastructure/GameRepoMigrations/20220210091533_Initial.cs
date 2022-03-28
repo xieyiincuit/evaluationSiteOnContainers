@@ -18,7 +18,7 @@ public partial class Initial : Migration
                 {
                     company_id = table.Column<int>("int", nullable: false, comment: "主键")
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    company_name = table.Column<string>("varchar(50)", maxLength: 50, nullable: false, comment: "游戏类型名")
+                    company_name = table.Column<string>("varchar(50)", maxLength: 50, nullable: false, comment: "游戏发行公司名")
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     is_deleted = table.Column<bool>("tinyint(1)", nullable: true, comment: "逻辑删除")
                 },
