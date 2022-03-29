@@ -50,10 +50,40 @@ public class GameInfoService : IGameInfoService
     public async Task<List<GameInfo>> GetGameInfosAsync(int pageIndex, int pageSize)
     {
         return await _repoContext.GameInfos
-            .Include(info => info.GameCategory)
-            .Include(info => info.GameCompany)
             .OrderBy(x => x.Name)
             .AsNoTracking()
+            .Skip((pageIndex - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+    }
+
+    public async Task<List<GameInfo>> GetGameInfoWithTermAsync(int pageIndex, int pageSize, int? categoryId, int? companyId, string order = "hot")
+    {
+        var queryString = _repoContext.GameInfos
+            .AsNoTracking();
+
+        //Both
+        if (categoryId.HasValue && categoryId.Value != 0 && companyId.HasValue && companyId.Value != 0)
+        {
+            queryString = queryString.Where(x => x.GameCategoryId == categoryId && x.GameCompanyId == companyId);
+        }
+        else if (categoryId.HasValue && categoryId.Value != 0 || companyId.HasValue && companyId.Value != 0) // One of them
+        {
+            if (companyId.HasValue && companyId.Value != 0)
+                queryString = queryString.Where(x => x.GameCompanyId == companyId);
+            else
+                queryString = queryString.Where(x => x.GameCategoryId == categoryId);
+        }
+
+        queryString = order switch
+        {
+            "hot" => queryString.OrderByDescending(x => x.HotPoints),
+            "time" => queryString.OrderByDescending(x => x.SellTime),
+            "score" => queryString.OrderByDescending(x => x.AverageScore),
+            _ => queryString.OrderBy(x => x.Name),
+        };
+
+        return await queryString
             .Skip((pageIndex - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
@@ -81,4 +111,5 @@ public class GameInfoService : IGameInfoService
             .FirstOrDefaultAsync();
         return game != null;
     }
+
 }

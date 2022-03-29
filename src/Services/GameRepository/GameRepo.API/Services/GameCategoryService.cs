@@ -28,6 +28,11 @@ public class GameCategoryService : IGameCategoryService
         return await _repoContext.SaveChangesAsync() > 0;
     }
 
+    public async Task<List<GameCategory>> GetAllGameCategoriesAsync()
+    {
+        return await _repoContext.GameCategories.AsNoTracking().ToListAsync();
+    }
+
     public async Task<List<GameCategory>> GetGameCategoriesAsync(int pageIndex, int pageSize)
     {
         var categories = await _repoContext.GameCategories

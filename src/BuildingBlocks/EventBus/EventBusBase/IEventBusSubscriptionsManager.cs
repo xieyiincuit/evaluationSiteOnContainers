@@ -1,4 +1,6 @@
-﻿namespace Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.EventBusBase;
+﻿using static Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.EventBusBase.InMemoryEventBusSubscriptionsManager;
+
+namespace Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.EventBusBase;
 
 /// <summary>
 ///     用于维护事件的订阅和注销, 以及订阅信息的持久化

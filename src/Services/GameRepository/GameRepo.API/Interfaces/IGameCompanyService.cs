@@ -3,6 +3,7 @@
 public interface IGameCompanyService
 {
     Task<List<GameCompany>> GetGameCompaniesAsync(int pageIndex, int pageSize);
+    Task<List<GameCompany>> GetAllGameCompaniesAsync();
     Task<GameCompany> GetGameCompanyAsync(int companyId);
     Task<int> CountCompanyAsync();
     Task<bool> AddGameCompanyAsync(GameCompany gameCompany);

@@ -20,6 +20,15 @@ public class GameCompanyController : ControllerBase
     }
 
     [HttpGet]
+    [Route("companies/all")]
+    public async Task<IActionResult> GetAllCompaniesAsync()
+    {
+        var companies = await _companyService.GetAllGameCompaniesAsync();
+        if (!companies.Any()) return NotFound();
+        return Ok(companies);
+    }
+
+    [HttpGet]
     [Route("companies")]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(PaginatedItemsDtoModel<GameCompany>), (int)HttpStatusCode.OK)]

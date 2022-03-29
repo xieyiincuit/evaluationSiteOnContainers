@@ -20,6 +20,15 @@ public class GameCategoryController : ControllerBase
     }
 
     [HttpGet]
+    [Route("categories/all")]
+    public async Task<IActionResult> GetAllCategoryAsync()
+    {
+        var categores = await _categoryService.GetAllGameCategoriesAsync();
+        if (!categores.Any()) return NotFound();
+        return Ok(categores);
+    }
+
+    [HttpGet]
     [Route("categories")]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(PaginatedItemsDtoModel<GameCategory>), (int)HttpStatusCode.OK)]

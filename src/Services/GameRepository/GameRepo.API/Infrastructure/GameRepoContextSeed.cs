@@ -94,6 +94,7 @@ public class GameRepoContextSeed
                 HotPoints = 2467,
                 DetailsPicture = "gameinfopic/gamerepo/gameyongjiebig.jpg",
                 RoughPicture = "gameinfopic/gamerepo/gameyongjie.jpg",
+                SellTime = DateTime.Now.AddYears(-1)
             },
             new()
             {
@@ -106,7 +107,8 @@ public class GameRepoContextSeed
                 AverageScore = 9.1,
                 HotPoints = 12387,
                 DetailsPicture = "gameinfopic/gamerepo/gamelaotouhuanbig.jpg",
-                RoughPicture = "gameinfopic/gamerepo/gamelaotouhuan.jpg"
+                RoughPicture = "gameinfopic/gamerepo/gamelaotouhuan.jpg",
+                SellTime = DateTime.Now.AddMonths(-4)
             },
             new()
             {
@@ -119,7 +121,8 @@ public class GameRepoContextSeed
                 AverageScore = 8.1,
                 HotPoints = 5543,
                 DetailsPicture = "gameinfopic/gamerepo/gamezhandiwubig.jpg",
-                RoughPicture = "gameinfopic/gamerepo/gamezhandiwu.jpg"
+                RoughPicture = "gameinfopic/gamerepo/gamezhandiwu.jpg",
+                SellTime = DateTime.Now.AddMonths(-3)
             },
             new()
             {
@@ -132,7 +135,8 @@ public class GameRepoContextSeed
                 AverageScore = 8.6,
                 HotPoints = 8977,
                 DetailsPicture = "gameinfopic/gamerepo/gameapexbig.jpg",
-                RoughPicture = "gameinfopic/gamerepo/gameapex.jpg"
+                RoughPicture = "gameinfopic/gamerepo/gameapex.jpg",
+                SellTime = DateTime.Now.AddMonths(-5)
             },
             new()
             {
@@ -144,7 +148,8 @@ public class GameRepoContextSeed
                 AverageScore = 6.3,
                 HotPoints = 2567,
                 DetailsPicture = "gameinfopic/gamerepo/gamehuantabig.jpg",
-                RoughPicture = "gameinfopic/gamerepo/gamehuanta.jpg"
+                RoughPicture = "gameinfopic/gamerepo/gamehuanta.jpg",
+                SellTime = DateTime.Now.AddMonths(-1)
             },
             new()
             {
@@ -156,7 +161,8 @@ public class GameRepoContextSeed
                 AverageScore = 7.3,
                 HotPoints = 29322,
                 DetailsPicture = "gameinfopic/gamerepo/gamewangzhebig.jpg",
-                RoughPicture = "gameinfopic/gamerepo/gamewangzhe.jpg"
+                RoughPicture = "gameinfopic/gamerepo/gamewangzhe.jpg",
+                SellTime = DateTime.Now.AddYears(-4)
             },
             new()
             {
@@ -169,7 +175,8 @@ public class GameRepoContextSeed
                 AverageScore = 7.6,
                 HotPoints = 1287,
                 DetailsPicture = "gameinfopic/gamerepo/gameyongjinbig.jpg",
-                RoughPicture = "gameinfopic/gamerepo/gameyongjin.jpg"
+                RoughPicture = "gameinfopic/gamerepo/gameyongjin.jpg",
+                SellTime = DateTime.Now.AddYears(-7)
             },
             new()
             {
@@ -181,7 +188,8 @@ public class GameRepoContextSeed
                 AverageScore = 8.8,
                 HotPoints = 8964,
                 DetailsPicture = "gameinfopic/gamerepo/gamegt7big.jpg",
-                RoughPicture = "gameinfopic/gamerepo/gamegt7.jpg"
+                RoughPicture = "gameinfopic/gamerepo/gamegt7.jpg",
+                SellTime = DateTime.Now.AddYears(-5)
             },
             new()
             {
@@ -194,7 +202,8 @@ public class GameRepoContextSeed
                 AverageScore = 8.5,
                 HotPoints = 6794,
                 DetailsPicture = "gameinfopic/gamerepo/gamezzhxbig.jpg",
-                RoughPicture = "gameinfopic/gamerepo/gamezzhx.jpg"
+                RoughPicture = "gameinfopic/gamerepo/gamezzhx.jpg",
+                SellTime = DateTime.Now.AddYears(-3)
             },
         };
     }

@@ -3,6 +3,7 @@
 public interface IGameInfoService
 {
     Task<List<GameInfo>> GetGameInfosAsync(int pageIndex, int pageSize);
+    Task<List<GameInfo>> GetGameInfoWithTermAsync(int pageIndex, int pageSize, int? categoryId, int? companyId, string order = "hot");
     Task<GameInfo> GetGameInfoAsync(int gameId);
     Task<List<GameRankDto>> GetGameInfoRankAsync();
     Task<List<GameSelectDto>> GetGameSelectAsync();

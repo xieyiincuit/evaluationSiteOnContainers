@@ -4,7 +4,7 @@
 [Route("api/v1/game")]
 public class GameInfoController : ControllerBase
 {
-    private const int _pageSize = 20;
+    private const int _pageSize = 18;
     private readonly IGameInfoService _gameInfoService;
     private readonly ILogger<GameInfoController> _logger;
     private readonly IMapper _mapper;
@@ -29,18 +29,20 @@ public class GameInfoController : ControllerBase
     [HttpGet]
     [Route("infos")]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType(typeof(PaginatedItemsDtoModel<GameInfoDto>), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> GetGameInfosAsync([FromQuery] int pageIndex = 1)
+    [ProducesResponseType(typeof(PaginatedItemsDtoModel<GameInfoSmallDto>), (int)HttpStatusCode.OK)]
+    public async Task<IActionResult> GetGameInfosAsync(
+        [FromQuery] int? categoryId, [FromQuery] int? companyId,
+        [FromQuery] int pageIndex = 1, [FromQuery] string order = "hot")
     {
         var totalGames = await _gameInfoService.CountGameInfoAsync();
         if (ParameterValidateHelper.IsInvalidPageIndex(totalGames, _pageSize, pageIndex)) pageIndex = 1;
 
-        var games = await _gameInfoService.GetGameInfosAsync(pageIndex, _pageSize);
+        var games = await _gameInfoService.GetGameInfoWithTermAsync(pageIndex, _pageSize, categoryId, companyId, order);
+
         if (!games.Any()) return NotFound();
+        var gamesDto = _mapper.Map<List<GameInfoSmallDto>>(games);
 
-        var gamesDto = _mapper.Map<List<GameInfoDto>>(games);
-
-        var model = new PaginatedItemsDtoModel<GameInfoDto>(pageIndex, _pageSize, totalGames, gamesDto);
+        var model = new PaginatedItemsDtoModel<GameInfoSmallDto>(pageIndex, _pageSize, totalGames, gamesDto);
         return Ok(model);
     }
 
@@ -63,7 +65,7 @@ public class GameInfoController : ControllerBase
     [HttpGet("info/{gameId:int}", Name = nameof(GetGameInfoByIdAsync))]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(GameInfoDto), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(GameInfoSmallDto), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetGameInfoByIdAsync([FromRoute] int gameId)
     {
         if (gameId <= 0 || gameId >= int.MaxValue) return BadRequest();
