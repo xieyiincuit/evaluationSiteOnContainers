@@ -214,7 +214,7 @@ public class AccountController : Controller
                 SecurityQuestion = model.User.SecurityQuestion,
                 SecurityAnswer = model.User.SecurityAnswer,
                 RegistrationDate = DateTime.Now.ToLocalTime(),
-                Avatar = "/userinfopic/avatar.jpg",
+                Avatar = "userinfopic/avatar.jpg",
                 PhoneNumber = model.PhoneNumber
             };
             var result = await _userManager.CreateAsync(user, model.Password);

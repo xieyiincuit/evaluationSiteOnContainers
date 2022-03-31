@@ -60,7 +60,7 @@ public class EvaluationCommentController : ControllerBase
         foreach (var item in parentComments)
         {
             var commentsDto = _mapper.Map<ArticleCommentDto>(item);
-
+            commentsDto.RepliesCount = await _commentService.CountCommentChildrenCommentsAsync(item.CommentId);
             var childrenCommentDto = _mapper.Map<List<ReplyCommentDto>>(
                 childrenReplies.Where(x => x.RootCommentId == item.CommentId).ToList());
 
@@ -74,8 +74,7 @@ public class EvaluationCommentController : ControllerBase
         using var response = await _identityService.GetCommentsUserProfileAsync(userIds.ToList());
         var userInfoDto = new List<UserAvatarDto>();
         if (response.IsSuccessStatusCode) userInfoDto = await response.Content.ReadFromJsonAsync<List<UserAvatarDto>>();
-        var model = new PaginatedItemsDtoModel<ArticleCommentDto>(pageIndex, _pageSize, totalComments, resultDto,
-            userInfoDto);
+        var model = new PaginatedItemsDtoModel<ArticleCommentDto>(pageIndex, _pageSize, totalComments, resultDto, userInfoDto);
         return Ok(model);
     }
 
@@ -100,8 +99,7 @@ public class EvaluationCommentController : ControllerBase
         if (ParameterValidateHelper.IsInvalidPageIndex(totalComments, _pageSize, pageIndex)) pageIndex = 1;
 
         var childrenReplies = new List<EvaluationComment>();
-        childrenReplies.AddRange(
-            await _commentService.GetCommentReplyAsync(pageIndex, _pageSize, parentComment.CommentId));
+        childrenReplies.AddRange(await _commentService.GetCommentReplyAsync(pageIndex, _pageSize, parentComment.CommentId));
 
         var childrenCommentDto = _mapper.Map<List<ReplyCommentDto>>(childrenReplies);
         childrenCommentDto.ForEach(x => userIds.Add(x.UserId));
@@ -109,8 +107,8 @@ public class EvaluationCommentController : ControllerBase
         using var response = await _identityService.GetCommentsUserProfileAsync(userIds.ToList());
         var userInfoDto = new List<UserAvatarDto>();
         if (response.IsSuccessStatusCode) userInfoDto = await response.Content.ReadFromJsonAsync<List<UserAvatarDto>>();
-        var model = new PaginatedItemsDtoModel<ReplyCommentDto>(pageIndex, _pageSize, totalComments, childrenCommentDto,
-            userInfoDto);
+        var model = new PaginatedItemsDtoModel<ReplyCommentDto>(pageIndex, _pageSize, totalComments, childrenCommentDto, userInfoDto);
+
         return Ok(model);
     }
 
