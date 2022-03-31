@@ -24,7 +24,10 @@ public class EvaluationArticleService : IEvaluationArticleService
     {
         return await _evaluationContext.Articles.Where(x => x.UserId == userId).CountAsync();
     }
-
+    public async Task<int> CountArticlesByGameAsync(int gameId)
+    {
+        return await _evaluationContext.Articles.Where(x => x.GameId == gameId).CountAsync();
+    }
     public async Task<List<ArticleSmallDto>> GetArticlesAsync(int pageSize, int pageIndex)
     {
         var articles = await _evaluationContext.Articles
@@ -56,7 +59,7 @@ public class EvaluationArticleService : IEvaluationArticleService
     public async Task<List<ArticleSmallDto>> GetArticlesAsync(int pageSize, int pageIndex, int categoryTypeId)
     {
         var articles = await _evaluationContext.Articles
-            .Where(art => art.CategoryTypeId == categoryTypeId)
+            .Where(art => art.CategoryTypeId == categoryTypeId && art.Status == ArticleStatus.Normal)
             .Select(x => new ArticleSmallDto()
             {
                 ArticleId = x.ArticleId,
@@ -72,12 +75,33 @@ public class EvaluationArticleService : IEvaluationArticleService
                 Title = x.Title,
                 SupportCount = x.SupportCount
             })
-            .Where(x => x.Status == ArticleStatus.Normal)
             .OrderByDescending(c => c.CreateTime)
             .Skip(pageSize * (pageIndex - 1))
             .Take(pageSize)
             .AsNoTracking()
             .ToListAsync();
+
+        return articles;
+    }
+
+    public async Task<List<ArticleGameDto>> GetArticlesByGameAsync(int pageSize, int pageIndex, int gameId)
+    {
+        var articles = await _evaluationContext.Articles
+           .Where(art => art.GameId == gameId && art.Status == ArticleStatus.Normal)
+           .Select(x => new ArticleGameDto()
+           {
+               ArticleId = x.ArticleId,
+               AuthorId = x.UserId,
+               Title = x.Title,
+               SupportCount = x.SupportCount,
+               Description = x.Description,
+               CreateTime = x.CreateTime,
+           })
+           .OrderByDescending(c => c.SupportCount)
+           .Skip(pageSize * (pageIndex - 1))
+           .Take(pageSize)
+           .AsNoTracking()
+           .ToListAsync();
 
         return articles;
     }

@@ -10,6 +10,7 @@ public class EvaluationArticleController : ControllerBase
     private readonly IEvaluationArticleService _articleService;
     private readonly IEvaluationCategoryService _categoryService;
     private readonly IEvaluationCommentService _commentService;
+    private readonly IdentityCallService _identityService;
     private readonly GameRepoGrpcService _gameRepoGrpcClient;
     private readonly ILogger<EvaluationArticleController> _logger;
     private readonly IMapper _mapper;
@@ -18,6 +19,7 @@ public class EvaluationArticleController : ControllerBase
         IEvaluationArticleService articleService,
         IEvaluationCategoryService categoryService,
         IEvaluationCommentService commentService,
+        IdentityCallService identityService,
         GameRepoGrpcService gameRepoGrpcClient,
         IMapper mapper,
         ILogger<EvaluationArticleController> logger)
@@ -25,6 +27,7 @@ public class EvaluationArticleController : ControllerBase
         _articleService = articleService ?? throw new ArgumentNullException(nameof(articleService));
         _categoryService = categoryService ?? throw new ArgumentNullException(nameof(categoryService));
         _commentService = commentService ?? throw new ArgumentNullException(nameof(commentService));
+        _identityService = identityService ?? throw new ArgumentNullException(nameof(identityService));
         _gameRepoGrpcClient = gameRepoGrpcClient ?? throw new ArgumentNullException(nameof(gameRepoGrpcClient));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -53,6 +56,34 @@ public class EvaluationArticleController : ControllerBase
         }
 
         var model = new PaginatedItemsDtoModel<ArticleSmallDto>(pageIndex, _pageSize, totalArticles, articlesToReturn, null);
+        return Ok(model);
+    }
+
+    [AllowAnonymous]
+    [HttpGet]
+    [Route("game/articles")]
+    public async Task<IActionResult> GetArticlesByGameAsync([FromQuery] int gameId, [FromQuery] int pageIndex = 1)
+    {
+        //validate pageIndex        
+        var totalArticles = await _articleService.CountArticlesByGameAsync(gameId);
+        if (ParameterValidateHelper.IsInvalidPageIndex(totalArticles, _pageSize, pageIndex))
+            pageIndex = 1; // pageIndex不合法重设
+
+        var articlesToReturn = await _articleService.GetArticlesByGameAsync(_pageSize, pageIndex, gameId);
+
+        //获取评论数量和UserId
+        var userIds = new HashSet<string>();
+        foreach (var smallDto in articlesToReturn)
+        {
+            smallDto.CommentsCount = await _commentService.CountArticleRootCommentsAsync(smallDto.ArticleId);
+            userIds.Add(smallDto.AuthorId);
+        }
+        //调用链的最上方释放
+        using var response = await _identityService.GetCommentsUserProfileAsync(userIds.ToList());
+        var userInfoDto = new List<UserAvatarDto>();
+        if (response.IsSuccessStatusCode) userInfoDto = await response.Content.ReadFromJsonAsync<List<UserAvatarDto>>();
+
+        var model = new PaginatedItemsDtoModel<ArticleGameDto>(pageIndex, _pageSize, totalArticles, articlesToReturn, userInfoDto);
         return Ok(model);
     }
 

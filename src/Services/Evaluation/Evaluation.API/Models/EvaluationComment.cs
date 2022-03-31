@@ -17,12 +17,12 @@ public class EvaluationComment
     /// <summary>
     ///     是否为回复
     /// </summary>
-    public bool? IsReplay { get; set; }
+    public bool? IsReply { get; set; }
 
     /// <summary>
     ///     回复的评论Id
     /// </summary>
-    public int? ReplayCommentId { get; set; }
+    public int? ReplyCommentId { get; set; }
 
     /// <summary>
     ///     回复的用户Id

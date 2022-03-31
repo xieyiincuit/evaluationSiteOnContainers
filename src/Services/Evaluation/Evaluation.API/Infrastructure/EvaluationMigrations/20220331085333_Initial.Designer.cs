@@ -12,14 +12,14 @@ using Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Infrastructur
 namespace Evaluation.API.Infrastructure.EvaluationMigrations
 {
     [DbContext(typeof(EvaluationContext))]
-    [Migration("20220126133606_Initial")]
+    [Migration("20220331085333_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.1")
+                .HasAnnotation("ProductVersion", "6.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Models.EvaluationArticle", b =>
@@ -41,13 +41,6 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                         .HasColumnType("int")
                         .HasColumnName("category_type_id")
                         .HasComment("测评类别主键");
-
-                    b.Property<int>("CommentsCount")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0)
-                        .HasColumnName("comments_count")
-                        .HasComment("文章评论数量");
 
                     b.Property<string>("Content")
                         .IsRequired()
@@ -187,11 +180,6 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                         .HasColumnName("article_id")
                         .HasComment("评论对应的测评id");
 
-                    b.Property<string>("Avatar")
-                        .HasColumnType("longtext")
-                        .HasColumnName("avatar")
-                        .HasComment("用户头像");
-
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasMaxLength(500)
@@ -209,31 +197,20 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                         .HasColumnName("is_deleted")
                         .HasComment("逻辑删除");
 
-                    b.Property<bool?>("IsReplay")
+                    b.Property<bool?>("IsReply")
                         .HasColumnType("tinyint(1)")
-                        .HasColumnName("is_replay")
+                        .HasColumnName("is_reply")
                         .HasComment("该评论是否为回复");
 
-                    b.Property<string>("NickName")
-                        .IsRequired()
-                        .HasColumnType("longtext")
-                        .HasColumnName("nick_name")
-                        .HasComment("用户名");
-
-                    b.Property<int?>("ReplayCommentId")
+                    b.Property<int?>("ReplyCommentId")
                         .HasColumnType("int")
-                        .HasColumnName("replay_comment_id")
+                        .HasColumnName("reply_comment_id")
                         .HasComment("回复的评论id");
-
-                    b.Property<string>("ReplyNickName")
-                        .HasColumnType("longtext")
-                        .HasColumnName("replay_nickname")
-                        .HasComment("回复的玩家名");
 
                     b.Property<string>("ReplyUserId")
                         .HasMaxLength(450)
                         .HasColumnType("varchar(450)")
-                        .HasColumnName("replay_userid")
+                        .HasColumnName("reply_userid")
                         .HasComment("回复的玩家Id");
 
                     b.Property<int?>("RootCommentId")

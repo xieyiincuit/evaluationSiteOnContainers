@@ -332,8 +332,8 @@ public class EvaluationContextSeed
                 Content = "网亿你懂的，当初喊着删通行证货币的玩家们，现在已经看不到踪影～",
                 CreateTime = DateTime.Now.AddHours(1).AddMinutes(20),
                 ArticleId = 1,
-                IsReplay = true,
-                ReplayCommentId = 1,
+                IsReply = true,
+                ReplyCommentId = 1,
                 RootCommentId = 1
             },
             new()
@@ -342,8 +342,8 @@ public class EvaluationContextSeed
                 Content = "这可是所谓的本国大厂哟，他们的行事作风难道还让你期待过？",
                 CreateTime = DateTime.Now.AddHours(1).AddMinutes(22),
                 ArticleId = 1,
-                IsReplay = true,
-                ReplayCommentId = 4,
+                IsReply = true,
+                ReplyCommentId = 4,
                 ReplyUserId = "8440A693-5DDF-4036-9972-BCA66A8002A3".ToLower(),
                 RootCommentId = 1
             },
@@ -353,8 +353,8 @@ public class EvaluationContextSeed
                 Content = "还有人给网易洗？皮肤不出的yellow点我们这种lsp会上当？ 网易那开箱世界第一低的几率， 符文系统更是连lol这个始祖级的都不用了，他一个大型多人在线pvp还拿来用，学王者荣耀啊？ 不好玩就是不好玩，这游戏就是花钱请各大平台主播宣传起来的！ 打死我都不玩！！！！！！",
                 CreateTime = DateTime.Now.AddHours(1).AddMinutes(30),
                 ArticleId = 1,
-                IsReplay = true,
-                ReplayCommentId = 1,
+                IsReply = true,
+                ReplyCommentId = 1,
                 RootCommentId = 1
             }
         };

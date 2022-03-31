@@ -33,7 +33,7 @@ public class EvaluationCommentService : IEvaluationCommentService
     public async Task<int> CountArticleRootCommentsAsync(int articleId)
     {
         return await _evaluationContext.Comments.CountAsync(comment =>
-            comment.ArticleId == articleId && comment.IsReplay == null);
+            comment.ArticleId == articleId && comment.IsReply == null);
     }
 
     public Task<int> CountCommentChildrenCommentsAsync(int rootCommentId)
@@ -50,8 +50,8 @@ public class EvaluationCommentService : IEvaluationCommentService
     {
         //无回复状态的评论为父级评论     
         var parentComments = await _evaluationContext.Comments
-            .Where(x => x.ArticleId == articleId && x.IsReplay == null)
-            .OrderBy(c => c.CreateTime)
+            .Where(x => x.ArticleId == articleId && x.IsReply == null)
+            .OrderByDescending(c => c.CreateTime)
             .Skip(pageSize * (pageIndex - 1))
             .Take(pageSize)
             .AsNoTracking().ToListAsync();
@@ -63,7 +63,7 @@ public class EvaluationCommentService : IEvaluationCommentService
     {
         var comments = await _evaluationContext.Comments
             .Where(x => x.UserId == userId)
-            .OrderBy(c => c.CreateTime)
+            .OrderByDescending(c => c.CreateTime)
             .Skip(pageSize * (pageIndex - 1))
             .Take(pageSize)
             .AsNoTracking()
@@ -74,7 +74,7 @@ public class EvaluationCommentService : IEvaluationCommentService
     public async Task<List<EvaluationComment>> GetCommentReplyAsync(int pageIndex, int pageSize, int parentCommentId)
     {
         var replies = await _evaluationContext.Comments
-            .Where(rpl => rpl.IsReplay == true && rpl.RootCommentId == parentCommentId)
+            .Where(rpl => rpl.IsReply == true && rpl.RootCommentId == parentCommentId)
             .OrderBy(c => c.CreateTime)
             .Skip(pageSize * (pageIndex - 1))
             .Take(pageSize)

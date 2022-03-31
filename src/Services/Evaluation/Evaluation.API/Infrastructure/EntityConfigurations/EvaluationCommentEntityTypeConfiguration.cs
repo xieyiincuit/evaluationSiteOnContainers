@@ -45,19 +45,19 @@ public class EvaluationCommentEntityTypeConfiguration : IEntityTypeConfiguration
             .HasComment("评论时间")
             .IsRequired();
 
-        builder.Property(e => e.IsReplay)
-            .HasColumnName("is_replay")
+        builder.Property(e => e.IsReply)
+            .HasColumnName("is_reply")
             .HasComment("该评论是否为回复")
             .IsRequired(false);
 
-        builder.Property(e => e.ReplayCommentId)
-            .HasColumnName("replay_comment_id")
+        builder.Property(e => e.ReplyCommentId)
+            .HasColumnName("reply_comment_id")
             .HasComment("回复的评论id")
             .IsRequired(false);
 
         builder.Property(e => e.ReplyUserId)
             .HasMaxLength(450)
-            .HasColumnName("replay_userid")
+            .HasColumnName("reply_userid")
             .HasComment("回复的玩家Id")
             .IsRequired(false);
 

@@ -178,7 +178,7 @@ public class EvaluationCommentController : ControllerBase
 
         var loginUserId = User.FindFirstValue("sub");
         comment.UserId = loginUserId;
-        comment.IsReplay = true;
+        comment.IsReply = true;
 
         await _commentService.AddCommentArticleAsync(comment);
         return CreatedAtRoute(nameof(GetCommentByIdAsync), new { commentId = comment.CommentId }, null);

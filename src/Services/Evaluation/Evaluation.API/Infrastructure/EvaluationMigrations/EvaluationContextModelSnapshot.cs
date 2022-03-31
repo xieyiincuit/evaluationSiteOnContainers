@@ -195,20 +195,20 @@ namespace Evaluation.API.Infrastructure.EvaluationMigrations
                         .HasColumnName("is_deleted")
                         .HasComment("逻辑删除");
 
-                    b.Property<bool?>("IsReplay")
+                    b.Property<bool?>("IsReply")
                         .HasColumnType("tinyint(1)")
-                        .HasColumnName("is_replay")
+                        .HasColumnName("is_reply")
                         .HasComment("该评论是否为回复");
 
-                    b.Property<int?>("ReplayCommentId")
+                    b.Property<int?>("ReplyCommentId")
                         .HasColumnType("int")
-                        .HasColumnName("replay_comment_id")
+                        .HasColumnName("reply_comment_id")
                         .HasComment("回复的评论id");
 
                     b.Property<string>("ReplyUserId")
                         .HasMaxLength(450)
                         .HasColumnType("varchar(450)")
-                        .HasColumnName("replay_userid")
+                        .HasColumnName("reply_userid")
                         .HasComment("回复的玩家Id");
 
                     b.Property<int?>("RootCommentId")
