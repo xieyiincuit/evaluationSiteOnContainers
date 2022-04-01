@@ -53,7 +53,8 @@ public static class Config
             new("ordering-manage", "订单管理权限",
                 new List<string> {JwtClaimTypes.Role, JwtClaimTypes.Name, JwtClaimTypes.Id}),
             new("back-manage", "网站后台管理权限",
-                new List<string> {JwtClaimTypes.Role, JwtClaimTypes.Name, JwtClaimTypes.Id})
+                new List<string> {JwtClaimTypes.Role, JwtClaimTypes.Name, JwtClaimTypes.Id}),
+
         };
     }
 
@@ -151,19 +152,21 @@ public static class Config
                 AllowedGrantTypes = GrantTypes.Implicit,
                 AllowAccessTokensViaBrowser = true,
                 RequireConsent = false,
-
+               
                 RedirectUris = {$"{clientsUrl["WebSPA"]}/callback"},
                 PostLogoutRedirectUris = {$"{clientsUrl["WebSPA"]}/"},
                 AllowedCorsOrigins = {$"{clientsUrl["WebSPA"]}"},
 
-                AccessTokenLifetime = 3600 * 24 * 7,
+                AccessTokenLifetime = 3600 * 12,
                 UpdateAccessTokenClaimsOnRefresh = true,
-
+                AllowOfflineAccess = true,
+                
                 AllowedScopes =
                 {
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Profile,
                     IdentityServerConstants.StandardScopes.Email,
+                    IdentityServerConstants.StandardScopes.OfflineAccess,
                     "eval-write",
                     "ordering-buy"
                 }

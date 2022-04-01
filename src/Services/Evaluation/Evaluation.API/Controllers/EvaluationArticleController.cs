@@ -19,10 +19,10 @@ public class EvaluationArticleController : ControllerBase
         IEvaluationArticleService articleService,
         IEvaluationCategoryService categoryService,
         IEvaluationCommentService commentService,
-        IdentityCallService identityService,
-        GameRepoGrpcService gameRepoGrpcClient,
         IMapper mapper,
-        ILogger<EvaluationArticleController> logger)
+        ILogger<EvaluationArticleController> logger,
+        IdentityCallService identityService,
+        GameRepoGrpcService gameRepoGrpcClient)
     {
         _articleService = articleService ?? throw new ArgumentNullException(nameof(articleService));
         _categoryService = categoryService ?? throw new ArgumentNullException(nameof(categoryService));
@@ -37,8 +37,7 @@ public class EvaluationArticleController : ControllerBase
     [AllowAnonymous]
     [HttpGet]
     [Route("articles")]
-    [ProducesResponseType(typeof(PaginatedItemsDtoModel<EvaluationArticle>), (int)HttpStatusCode.OK)]
-    [ProducesResponseType(typeof(IEnumerable<ArticleSmallDto>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(PaginatedItemsDtoModel<ArticleSmallDto>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> GetArticlesAsync([FromQuery] int pageIndex = 1)
     {

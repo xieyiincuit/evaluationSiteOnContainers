@@ -58,7 +58,7 @@ public class EvaluationContextSeed
                 但在高段位场次里，面对同样的进攻，我却需要在电光火石之间进行抉择。
                 这是因为设计者围绕战斗系统做出了很多的加法。令玩家能用跳跃、下蹲、闪避来打断攻击动作，进而实现收刀，并能顺势切出轻击，破除振刀状态。这衍生出了很多骗术，使振刀不再是收益最高的选项。
                 总之，围绕核心战斗系统的加减法，让《永劫无间》拥有了易上手难精通的特性，也令游戏的战斗体验，带上了武侠小说才有的独特韵味。另一方面，通过将战术竞技玩法与ACT进行融合，它还淡化了技术方面的优势，让运气也能成为胜负手，使“乱拳打死老师父”成为了可能。而这种体验上的微妙平衡，也让其成为了我心中近几年来最棒的竞技网游。",
-                CreateTime = DateTime.Now,
+                CreateTime = DateTime.Now.AddMonths(-1),
                 Description = "在《永劫无间》中，玩家能体验到具有武侠小说韵味的动作体验。丰富的兵器系统，多种元素满足你的武侠梦。",
                 Status = ArticleStatus.Normal,
                 ArticleImage = "articleinfo/evaluation/yongjiewujian11.jpg",
@@ -226,7 +226,7 @@ public class EvaluationContextSeed
 
                 好在游戏有一个相当便利的即时存档机制，我们能够借此实现快捷的回溯。这个功能让我得以在寻找谜底的过程中免去大量的重复工作，也让我能够放心大胆的去尝试各种预想中的解谜方案。这一定程度上缓解了卡关带来的痛苦，但终究是“治标不治本”。
                 《永进》是一款体量不大的解谜游戏，清新简约的画风相当讨喜，但其核心的解谜玩法却并没有超出预期的表现。后期的高难度谜题也缺乏一些适当的引导，容易造成卡关并令人产生挫败感。在叙事方面，过度碎片化、上下联系并不紧凑的叙事方式也没能让整个故事及其想要传达的情感得以深入人心。总而言之，这是一款质量中规中矩的小品游戏，如果你对解谜这一类别相当感兴趣的话，那么不妨尝试一下。",
-                CreateTime = DateTime.Now.AddHours(-6),
+                CreateTime = DateTime.Now.AddMonths(-2),
                 Description = "清新而简洁的画风能够让《永进》吸引到一部分玩家，但最终乐趣有限的玩法只能让游戏流于平庸。",
                 Status = ArticleStatus.Normal,
                 ArticleImage = "articleinfo/evaluation/yongjin11.jpg",
@@ -260,7 +260,7 @@ public class EvaluationContextSeed
                 总之，方向盘仍然是游玩GT赛车的不二选择，不过手柄相较于前作那迎来质变的操控手感，也让其成为了值得尝试的选项。
                 当然，想要顺畅地体验上面这一切，自然离不开长时间对技术的打磨，但新玩家也无需因此打退堂鼓，《GT7》提供了较为全面的辅助功能，自动刹车、自动转向、刹车区域与行车线提示，都可以让萌新不至于早早被劝退。随着驾驶技术的增长，这些辅助选项都可以分别进行调整。让玩家能有一个较为舒适的成长曲线。
                 《GT7》是对过去25年GT系列发展的一次总结，系列所有核心的优势都被保留且进一步打磨。山内一典为玩家们打造了一个内容充足且趣味十足的“汽车之城”，游戏中处处体现着其对汽车文化的热爱。虽然本作没有太大的惊喜与创新，却也无愧于“GT系列25年的集大成者”这一称谓。",
-                CreateTime = DateTime.Now.AddHours(-8),
+                CreateTime = DateTime.Now.AddMonths(-3),
                 Description = "在GT系列诞生的第25年，山内一典给玩家带来了最好的礼物——《GT7》。《GT7》无愧于“GT系列25周年集大成者”的称谓。",
                 Status = ArticleStatus.Normal,
                 ArticleImage = "articleinfo/evaluation/gt711.jpg",
@@ -287,7 +287,7 @@ public class EvaluationContextSeed
                 在《仁王》中，存在“开荒魂like，刷后开无双”的说法，所以虽然号称硬核动作游戏，但使用了相同装备养成系统的《起源》，也存在类似的情况。但由于《起源》有着不同的游戏难度，以及下文中会提到的职业系统和更低的死亡惩罚等，使得即便是在开荒期，玩家    也会某 种程   度  上，有着“开无双”的感觉。
                 一旦游戏一周目结束，便会从一个类魂游戏，变成一个装备驱动的刷子游戏。游戏内装备从白到橙分为五个等级，为了获取更好的装备，而反复刷图， 应该是游戏通关后的核心玩法。如果你是一个曾经在《仁王》中，为了某个套装、甚至某个词条刷了好几百小时的人，那么当你看到每个装备上的词条，那精确到小数点的数值后，应该能唤起你很多肝痛的回忆。
                 而令人遗憾的是，除了这些设计层面的内容，游戏最大的缺点也和《仁王》类似。流程后期随处可见大量堆怪的场景，《仁王》中那些靠堆砌数值来提升难度的不良回忆，让我在玩《起源》时再度体会了一遍。并且游戏内的怪物建模也少的可怜，后期鲜有新模型的怪物登场，大多都是之前怪物的换色，也让我在游玩时有了一些审美疲劳。",
-                CreateTime = DateTime.Now.AddHours(-8),
+                CreateTime = DateTime.Now.AddMonths(-6),
                 Description = "回看《最终幻想》近些年的作品，《最终幻想：起源》是一款有着《仁王》壳子的，正统《最终幻想》系列作品。",
                 Status = ArticleStatus.Normal,
                 ArticleImage = "articleinfo/evaluation/zzhx11.jpg",
@@ -309,28 +309,28 @@ public class EvaluationContextSeed
             {
                 UserId = "FB9755FE-D011-435B-BD49-C4277FEB4938".ToLower(),
                 Content = "买断制游戏完全按照免费游戏的玩法来。作成免费游戏还会有零氪玩家割不了这些韭菜了，作成买断制游戏就不会有零氪玩家了谁的韭菜都得割。英雄技能还需要解锁，符文页要买，符文也要买，符文升级费用还要随等级递增。这么多消耗古币的内容然而古币获取速度呢一天肝个十几个小时能获取多少呢？还TM的取消了双币购买，皮肤只能氪金了 ntm这样还不如直接开发古币用RMB购买省的每天用那么多时间去肝古币",
-                CreateTime = DateTime.Now,
+                CreateTime = DateTime.Now.AddDays(-10),
                 ArticleId = 1
             },
             new()
             {
                 UserId = "8440A693-5DDF-4036-9972-BCA66A8002A3".ToLower(),
                 Content = "钱都花在广告上了，游戏内容就是单纯的武侠吃鸡，没有新意。人物动作有时候不是很流畅，打击感像是故意做出来的一边挨揍一边从容出招......虽然希望国产能强大起来，但纵容垃圾，就会让开发商不思进取靠卖情赚钱，更不可能进步了，更玩不到好的国产了。",
-                CreateTime = DateTime.Now.AddMinutes(26),
+                CreateTime = DateTime.Now.AddDays(-1),
                 ArticleId = 1
             },
             new()
             {
                 UserId = "A71C1391-1105-4E9A-BCBB-F70467EF070C".ToLower(),
                 Content = "这游戏还挺不错的 但是官方是打算把这款游戏打造成中日风格的吗 又有妖刀姬又有达摩的. 本来好好的一款中国风格文化的游戏非要和日本那些魑魅魍魉结合起来 哎",
-                CreateTime = DateTime.Now.AddMinutes(44),
+                CreateTime = DateTime.Now.AddDays(-1),
                 ArticleId = 1
             },
             new()
             {
                 UserId = "8440A693-5DDF-4036-9972-BCA66A8002A3".ToLower(),
                 Content = "网亿你懂的，当初喊着删通行证货币的玩家们，现在已经看不到踪影～",
-                CreateTime = DateTime.Now.AddHours(1).AddMinutes(20),
+                CreateTime = DateTime.Now.AddDays(-3).AddMinutes(20),
                 ArticleId = 1,
                 IsReply = true,
                 ReplyCommentId = 1,
@@ -340,7 +340,7 @@ public class EvaluationContextSeed
             {
                 UserId = "A71C1391-1105-4E9A-BCBB-F70467EF070C".ToLower(),
                 Content = "这可是所谓的本国大厂哟，他们的行事作风难道还让你期待过？",
-                CreateTime = DateTime.Now.AddHours(1).AddMinutes(22),
+                CreateTime = DateTime.Now.AddDays(-1).AddMinutes(22),
                 ArticleId = 1,
                 IsReply = true,
                 ReplyCommentId = 4,
@@ -351,7 +351,7 @@ public class EvaluationContextSeed
             {
                 UserId = "A71C1391-1105-4E9A-BCBB-F70467EF070C".ToLower(),
                 Content = "还有人给网易洗？皮肤不出的yellow点我们这种lsp会上当？ 网易那开箱世界第一低的几率， 符文系统更是连lol这个始祖级的都不用了，他一个大型多人在线pvp还拿来用，学王者荣耀啊？ 不好玩就是不好玩，这游戏就是花钱请各大平台主播宣传起来的！ 打死我都不玩！！！！！！",
-                CreateTime = DateTime.Now.AddHours(1).AddMinutes(30),
+                CreateTime = DateTime.Now.AddDays(-1).AddHours(2),
                 ArticleId = 1,
                 IsReply = true,
                 ReplyCommentId = 1,
