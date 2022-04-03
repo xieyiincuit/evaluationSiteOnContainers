@@ -1,5 +1,8 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Controllers;
 
+/// <summary>
+/// 游戏类别管理
+/// </summary>
 [ApiController]
 [Route("api/v1/game")]
 public class GameCategoryController : ControllerBase
@@ -28,6 +31,11 @@ public class GameCategoryController : ControllerBase
         return Ok(categores);
     }
 
+    /// <summary>
+    /// 分页获取游戏类型
+    /// </summary>
+    /// <param name="pageIndex">index默认为1，pageSize后台定死为10</param>
+    /// <returns></returns>
     [HttpGet]
     [Route("categories")]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -44,6 +52,11 @@ public class GameCategoryController : ControllerBase
         return Ok(model);
     }
 
+    /// <summary>
+    /// 获取特定游戏类型
+    /// </summary>
+    /// <param name="categoryId"></param>
+    /// <returns></returns>
     [HttpGet("category/{categoryId:int}", Name = nameof(GetCategoryAsync))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -58,6 +71,11 @@ public class GameCategoryController : ControllerBase
         return Ok(category);
     }
 
+    /// <summary>
+    /// 新增游戏类型
+    /// </summary>
+    /// <param name="categoryAddDto"></param>
+    /// <returns></returns>
     [HttpPost]
     [Authorize(Roles = "administrator")]
     [Route("category")]
@@ -76,6 +94,11 @@ public class GameCategoryController : ControllerBase
         return CreatedAtRoute(nameof(GetCategoryAsync), new { categoryId = entityToAdd.Id }, null);
     }
 
+    /// <summary>
+    /// 删除游戏类型，若该类型下有游戏则不允许被删除
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [HttpDelete]
     [Authorize(Roles = "administrator")]
     [Route("category/{id:int}")]
@@ -90,6 +113,11 @@ public class GameCategoryController : ControllerBase
         return response == true ? NoContent() : NotFound();
     }
 
+    /// <summary>
+    /// 修改游戏类型名
+    /// </summary>
+    /// <param name="categoryUpdateDto"></param>
+    /// <returns></returns>
     [HttpPut]
     [Authorize(Roles = "administrator")]
     [Route("category")]

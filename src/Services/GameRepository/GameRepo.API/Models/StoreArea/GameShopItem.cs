@@ -34,6 +34,10 @@ public class GameShopItem
     [Comment("暂停销售")]
     public bool? TemporaryStopSell { get; set; }
 
+    [Column("sell_pictrue")]
+    [Comment("商品图片")]
+    public string? SellPictrue { get; set; }
+
     [Required]
     [Column("game_id")]
     [Comment("游戏信息外键")]

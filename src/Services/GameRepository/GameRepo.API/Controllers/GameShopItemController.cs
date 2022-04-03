@@ -28,6 +28,11 @@ public class GameShopItemController : ControllerBase
         _redisDatabase = redisDatabase ?? throw new ArgumentNullException(nameof(redisDatabase));
     }
 
+    /// <summary>
+    /// 获取商品信息To管理员
+    /// </summary>
+    /// <param name="pageIndex">分页大小定死为10</param>
+    /// <returns></returns>
     [HttpGet]
     [Route("game/shops")]
     [Authorize(Roles = "administrator")]
@@ -79,6 +84,11 @@ public class GameShopItemController : ControllerBase
         return Ok(itemToUser);
     }
 
+    /// <summary>
+    /// 管理员获取特定商品信息
+    /// </summary>
+    /// <param name="itemId"></param>
+    /// <returns></returns>
     [HttpGet("game/shop/{itemId:int}", Name = nameof(GetShopItemsByIdForAdminAsync))]
     [Authorize(Roles = "administrator")]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -108,6 +118,11 @@ public class GameShopItemController : ControllerBase
         return Ok(itemDtoToUser);
     }
 
+    /// <summary>
+    /// 新增商品信息
+    /// </summary>
+    /// <param name="addDto"></param>
+    /// <returns></returns>
     [HttpPost] //定义该Action为HTTP POST
     [Route("game/shop")] //定义子路由
     [Authorize(Roles = "administrator")] //定义该方法需要身份验证且授权给administrator用户
@@ -138,6 +153,11 @@ public class GameShopItemController : ControllerBase
         return BadRequest();
     }
 
+    /// <summary>
+    /// 修改商品信息
+    /// </summary>
+    /// <param name="updateDto">不允许使用该方法修改库存</param>
+    /// <returns></returns>
     [HttpPut]
     [Route("game/shop")]
     [Authorize(Roles = "administrator")]
@@ -153,6 +173,11 @@ public class GameShopItemController : ControllerBase
         return response == true ? NoContent() : BadRequest();
     }
 
+    /// <summary>
+    /// 下架商品
+    /// </summary>
+    /// <param name="itemId"></param>
+    /// <returns></returns>
     [HttpPut]
     [Route("game/shop/status/{itemId:int}")]
     [Authorize(Roles = "administrator")]
@@ -175,6 +200,11 @@ public class GameShopItemController : ControllerBase
         return response == true ? NoContent() : BadRequest();
     }
 
+    /// <summary>
+    /// 修改商品库存
+    /// </summary>
+    /// <param name="stockUpdateDto"></param>
+    /// <returns></returns>
     [HttpPut]
     [Route("game/shop/stock")]
     [Authorize(Roles = "administrator")]
@@ -210,6 +240,7 @@ public class GameShopItemController : ControllerBase
         return NoContent();
     }
 
+   
     [HttpDelete]
     [Route("game/shop/{itemId:int}")]
     [Authorize(Roles = "administrator")]

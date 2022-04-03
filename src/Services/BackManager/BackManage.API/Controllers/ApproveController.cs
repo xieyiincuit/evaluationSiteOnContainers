@@ -1,5 +1,8 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.BackManage.API.Controllers;
 
+/// <summary>
+/// 用户测评资格审批
+/// </summary>
 [ApiController]
 [Route("api/v1/back/approve")]
 public class ApproveController : ControllerBase
@@ -20,6 +23,12 @@ public class ApproveController : ControllerBase
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
+    /// <summary>
+    /// 获取审批列表 返回审批用户信息
+    /// </summary>
+    /// <param name="status">默认获取未进行操作的审批</param>
+    /// <param name="pageIndex">分页大小为10</param>
+    /// <returns></returns>
     [HttpGet("list")]
     [Authorize(Roles = "administrator")]
     public async Task<IActionResult> GetApproveUserListAsync(
@@ -43,6 +52,11 @@ public class ApproveController : ControllerBase
         return Ok(model);
     }
 
+    /// <summary>
+    /// 获取用户审批内容
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [HttpGet("{id:int}")]
     [Authorize(Roles = "administrator")]
     public async Task<IActionResult> GetApproveAsync([FromRoute] int id)
@@ -124,6 +138,12 @@ public class ApproveController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// 拒绝该用户的审批
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    /// <exception cref="BackManageDomainException"></exception>
     [HttpPut("reject/{userId}")]
     [Authorize(Roles = "administrator")]
     public async Task<IActionResult> RejectUserToEvaluatorAsync([FromRoute] string userId)
@@ -141,7 +161,13 @@ public class ApproveController : ControllerBase
         return NoContent();
     }
 
-    [HttpPost("check/{userId}")]
+    /// <summary>
+    /// 同意该用户的审批
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    /// <exception cref="BackManageDomainException"></exception>
+    [HttpPut("check/{userId}")]
     [Authorize(Roles = "administrator")]
     public async Task<IActionResult> ApprovedUserToEvaluatorAsync([FromRoute] string userId)
     {
@@ -173,7 +199,13 @@ public class ApproveController : ControllerBase
         throw new BackManageDomainException("approve user occurred error, because can't call identity microservice");
     }
 
-    [HttpPost("redraw/{userId}")]
+    /// <summary>
+    /// 撤回该用户的审批
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    /// <exception cref="BackManageDomainException"></exception>
+    [HttpPut("redraw/{userId}")]
     [Authorize(Roles = "administrator")]
     public async Task<IActionResult> RedrawUserToNormalUserAsync([FromRoute] string userId)
     {

@@ -57,9 +57,11 @@ public class GameInfoService : IGameInfoService
             .ToListAsync();
     }
 
-    public async Task<List<GameInfo>> GetGameInfoWithTermAsync(int pageIndex, int pageSize, int? categoryId, int? companyId, string order = "hot")
+    public async Task<List<GameInfo>> GetGameInfoWithTermAsync(int pageIndex, int pageSize, int? categoryId, int? companyId, string? order)
     {
         var queryString = _repoContext.GameInfos
+            .Include(g => g.GameCompany)
+            .Include(g => g.GameCategory)
             .AsNoTracking();
 
         //Both
@@ -80,7 +82,7 @@ public class GameInfoService : IGameInfoService
             "hot" => queryString.OrderByDescending(x => x.HotPoints),
             "time" => queryString.OrderByDescending(x => x.SellTime),
             "score" => queryString.OrderByDescending(x => x.AverageScore),
-            _ => queryString.OrderBy(x => x.Name),
+            _ => queryString.OrderByDescending(x => x.Id),
         };
 
         return await queryString

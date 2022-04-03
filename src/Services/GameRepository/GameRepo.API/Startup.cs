@@ -39,7 +39,11 @@ public class Startup
                 Title = "evaluationSiteOnContainers - GameRepo HTTP API",
                 Version = "v1",
                 Description = "The Control of GameInfo Service HTTP API"
+
             });
+
+            var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 
             //Swagger授权
             options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme

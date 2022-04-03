@@ -1,5 +1,8 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Controllers;
 
+/// <summary>
+/// 管理测评文章分类
+/// </summary>
 [ApiController]
 [Route("api/v1/category")]
 [Authorize(Roles = _adminRole)]
@@ -24,6 +27,10 @@ public class EvaluationCategoryController : ControllerBase
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
+    /// <summary>
+    /// 获取所有测评分类
+    /// </summary>
+    /// <returns></returns>
     [AllowAnonymous]
     [HttpGet]
     [Route("list")]
@@ -45,6 +52,11 @@ public class EvaluationCategoryController : ControllerBase
     }
 
 
+    /// <summary>
+    /// 根据Id获取特定测评分类
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [AllowAnonymous]
     [HttpGet("{id:int}", Name = nameof(GetEvaluateCategoryAsync))]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -56,8 +68,12 @@ public class EvaluationCategoryController : ControllerBase
         return Ok(category);
     }
 
+    /// <summary>
+    /// 修改分类名称
+    /// </summary>
+    /// <param name="categoryUpdateDto"></param>
+    /// <returns></returns>
     [HttpPut]
-    [Route("")]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
@@ -80,8 +96,12 @@ public class EvaluationCategoryController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// 新增分类
+    /// </summary>
+    /// <param name="categoryAddDto"></param>
+    /// <returns></returns>
     [HttpPost]
-    [Route("")]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(EvaluationCategory), (int)HttpStatusCode.Created)]
     public async Task<IActionResult> AddEvaluateCategoryAsync([FromBody] CategoryAddDto categoryAddDto)
@@ -98,6 +118,11 @@ public class EvaluationCategoryController : ControllerBase
         return CreatedAtRoute(nameof(GetEvaluateCategoryAsync), new { id = entity.CategoryId }, null);
     }
 
+    /// <summary>
+    /// 删除分类（该分类下有文章会被数据库约束阻止）
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [HttpDelete]
     [Route("{id:int}")]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]

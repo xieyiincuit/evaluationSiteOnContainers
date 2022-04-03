@@ -20,6 +20,12 @@ public class BannedController : ControllerBase
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
+    /// <summary>
+    /// 获取被举报用户列表
+    /// </summary>
+    /// <param name="pageIndex">分页大小为10</param>
+    /// <param name="status">checking-未处理 banned-已经封禁</param>
+    /// <returns></returns>
     [HttpGet("list")]
     [Authorize(Roles = "administrator")]
     public async Task<IActionResult> GetBannedUserListAsync(
@@ -43,6 +49,11 @@ public class BannedController : ControllerBase
         return Ok(model);
     }
 
+    /// <summary>
+    /// 获取特定封禁信息
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [HttpGet("{id:int}")]
     [Authorize(Roles = "administrator")]
     public async Task<IActionResult> GetBannedInfoAsync([FromRoute] int id)
@@ -82,6 +93,12 @@ public class BannedController : ControllerBase
                 $"user:{checkUserId} wanna ban {addDto.UserId} but update record fail");
     }
 
+    /// <summary>
+    /// 为用户解除封禁状态
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    /// <exception cref="BackManageDomainException"></exception>
     [HttpDelete("{id:int}")]
     [Authorize(Roles = "administrator")]
     public async Task<IActionResult> DeleteBannedInfoAsync([FromRoute] int id)
@@ -112,6 +129,12 @@ public class BannedController : ControllerBase
         throw new BackManageDomainException("recover user occurred error, because can't call identity microservice");
     }
 
+    /// <summary>
+    /// 封禁用户
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    /// <exception cref="BackManageDomainException"></exception>
     [HttpPost("ban/{userId}")]
     [Authorize(Roles = "administrator")]
     public async Task<IActionResult> BandUserAsync([FromRoute] string userId)

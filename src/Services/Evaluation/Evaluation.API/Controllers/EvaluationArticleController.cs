@@ -184,6 +184,35 @@ public class EvaluationArticleController : ControllerBase
         return Ok(model);
     }
 
+    /// <summary>
+    /// 管理员获取所有测评文章列表
+    /// </summary>
+    /// <param name="pageIndex">pageSize为15</param>
+    /// <param name="categoryId">可分类型筛选</param>
+    /// <returns></returns>
+    //[Authorize(Roles = _adminRole)]
+    [HttpGet]
+    [Route("admin/articles")]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    public async Task<IActionResult> GetArticlesForAdminAsync([FromQuery] int pageIndex, [FromQuery] int? categoryId)
+    {
+        int pageSize = 15;
+        int totalArticles = categoryId.HasValue
+            ? await _articleService.CountArticlesByTypeAsync(categoryId.Value)
+            : await _articleService.CountArticlesAsync();
+
+        if (ParameterValidateHelper.IsInvalidPageIndex(totalArticles, pageSize, pageIndex))
+            pageIndex = 1; // pageIndex不合法重设
+
+        List<ArticleSmallDto>? articles = categoryId.HasValue
+            ? await _articleService.GetArticlesAsync(pageSize, pageIndex, categoryId.Value)
+            : await _articleService.GetArticlesAsync(pageSize, pageIndex);
+
+        var model = new PaginatedItemsDtoModel<ArticleSmallDto>(pageIndex, pageSize, totalArticles, articles, null);
+        return Ok(model);
+    }
+
     // Delete api/v1/evaluation/articles/{id}
     [Authorize(Roles = $"{_adminRole}, {_evaluatorRole}")]
     [HttpDelete]

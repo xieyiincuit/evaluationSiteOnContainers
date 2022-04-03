@@ -1,5 +1,8 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Controllers;
 
+/// <summary>
+/// 游戏建议管理
+/// </summary>
 [ApiController]
 [Route("api/v1/game")]
 public class PlaySuggestionController : ControllerBase
@@ -22,6 +25,11 @@ public class PlaySuggestionController : ControllerBase
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
+    /// <summary>
+    /// 分页获取游戏建议
+    /// </summary>
+    /// <param name="pageIndex"></param>
+    /// <returns></returns>
     [HttpGet]
     [Route("suggestions")]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -38,6 +46,11 @@ public class PlaySuggestionController : ControllerBase
         return Ok(model);
     }
 
+    /// <summary>
+    /// 获取游戏建议Id获取游戏建议
+    /// </summary>
+    /// <param name="suggestionId"></param>
+    /// <returns></returns>
     [HttpGet("suggestion/{suggestionId:int}", Name = nameof(GetSuggestionByIdAsync))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -52,6 +65,11 @@ public class PlaySuggestionController : ControllerBase
         return Ok(suggestion);
     }
 
+    /// <summary>
+    /// 通过游戏Id获取游戏建议
+    /// </summary>
+    /// <param name="gameId"></param>
+    /// <returns></returns>
     [HttpGet("suggestion")]
     public async Task<IActionResult> GetSuggestionByGameIdAsync([FromQuery] int gameId)
     {
@@ -64,6 +82,11 @@ public class PlaySuggestionController : ControllerBase
         return Ok(suggestion);
     }
 
+    /// <summary>
+    /// 新增游戏建议 在新增游戏后让管理员填写游戏建议
+    /// </summary>
+    /// <param name="suggestionAddDto"></param>
+    /// <returns></returns>
     [HttpPost]
     [Route("suggestion")]
     [Authorize(Roles = "administrator")]
@@ -82,6 +105,11 @@ public class PlaySuggestionController : ControllerBase
         return CreatedAtRoute(nameof(GetSuggestionByIdAsync), new { suggestionId = entityToAdd.Id }, null);
     }
 
+    /// <summary>
+    /// 删除游戏建议
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [HttpDelete]
     [Route("suggestion/{id:int}")]
     [Authorize(Roles = "administrator")]
@@ -97,7 +125,11 @@ public class PlaySuggestionController : ControllerBase
         return response == true ? NoContent() : NotFound();
     }
 
-
+    /// <summary>
+    /// 修改游戏建议
+    /// </summary>
+    /// <param name="suggestionUpdateDto"></param>
+    /// <returns></returns>
     [HttpPut]
     [Route("suggestion")]
     [Authorize(Roles = "administrator")]

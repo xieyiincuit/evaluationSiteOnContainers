@@ -44,6 +44,7 @@ public class EvaluationContextSeed
         {
             new()
             {
+                ArticleId = 1,
                 UserId = "8440A693-5DDF-4036-9972-BCA66A8002A3".ToLower(),
                 NickName = "留六颗橙",
                 Title = " “侠”味十足的战斗体验",
@@ -71,6 +72,7 @@ public class EvaluationContextSeed
             },
             new()
             {
+                ArticleId = 2,
                 UserId = "8440A693-5DDF-4036-9972-BCA66A8002A3".ToLower(),
                 NickName = "留六颗橙",
                 Title = "宫崎英高再次跌上神坛",
@@ -108,6 +110,7 @@ public class EvaluationContextSeed
             },
             new()
             {
+                ArticleId = 3,
                 UserId = "8440A693-5DDF-4036-9972-BCA66A8002A3".ToLower(),
                 NickName = "留六颗橙",
                 Title = " 弄巧成拙的饥饿营销",
@@ -141,6 +144,7 @@ public class EvaluationContextSeed
             },
             new()
             {
+                ArticleId = 4,
                 UserId = "8440A693-5DDF-4036-9972-BCA66A8002A3".ToLower(),
                 NickName = "留六颗橙",
                 Title = "更有深度的战术竞技体验",
@@ -172,6 +176,7 @@ public class EvaluationContextSeed
             },
             new()
             {
+                ArticleId = 5,
                 UserId = "8440A693-5DDF-4036-9972-BCA66A8002A3".ToLower(),
                 NickName = "留六颗橙",
                 Title = "驾驶重立体机甲探索世界",
@@ -206,6 +211,7 @@ public class EvaluationContextSeed
             },
             new()
             {
+                ArticleId = 6,
                 UserId = "8440A693-5DDF-4036-9972-BCA66A8002A3".ToLower(),
                 NickName = "留六颗橙",
                 Title = "迷失少女的硬核解谜之旅",
@@ -239,6 +245,7 @@ public class EvaluationContextSeed
             },
             new()
             {
+                ArticleId = 7,
                 UserId = "8440A693-5DDF-4036-9972-BCA66A8002A3".ToLower(),
                 NickName = "留六颗橙",
                 Title = "汽车爱好者的嘉年华",
@@ -273,6 +280,7 @@ public class EvaluationContextSeed
             },
             new()
             {
+                ArticleId = 8,
                 UserId = "8440A693-5DDF-4036-9972-BCA66A8002A3".ToLower(),
                 NickName = "留六颗橙",
                 Title = "最暴力的《最终幻想》",
@@ -307,6 +315,7 @@ public class EvaluationContextSeed
         {
             new()
             {
+                CommentId = 1,
                 UserId = "FB9755FE-D011-435B-BD49-C4277FEB4938".ToLower(),
                 Content = "买断制游戏完全按照免费游戏的玩法来。作成免费游戏还会有零氪玩家割不了这些韭菜了，作成买断制游戏就不会有零氪玩家了谁的韭菜都得割。英雄技能还需要解锁，符文页要买，符文也要买，符文升级费用还要随等级递增。这么多消耗古币的内容然而古币获取速度呢一天肝个十几个小时能获取多少呢？还TM的取消了双币购买，皮肤只能氪金了 ntm这样还不如直接开发古币用RMB购买省的每天用那么多时间去肝古币",
                 CreateTime = DateTime.Now.AddDays(-10),
@@ -314,6 +323,7 @@ public class EvaluationContextSeed
             },
             new()
             {
+                CommentId = 2,
                 UserId = "8440A693-5DDF-4036-9972-BCA66A8002A3".ToLower(),
                 Content = "钱都花在广告上了，游戏内容就是单纯的武侠吃鸡，没有新意。人物动作有时候不是很流畅，打击感像是故意做出来的一边挨揍一边从容出招......虽然希望国产能强大起来，但纵容垃圾，就会让开发商不思进取靠卖情赚钱，更不可能进步了，更玩不到好的国产了。",
                 CreateTime = DateTime.Now.AddDays(-1),
@@ -321,6 +331,7 @@ public class EvaluationContextSeed
             },
             new()
             {
+                CommentId = 3,
                 UserId = "A71C1391-1105-4E9A-BCBB-F70467EF070C".ToLower(),
                 Content = "这游戏还挺不错的 但是官方是打算把这款游戏打造成中日风格的吗 又有妖刀姬又有达摩的. 本来好好的一款中国风格文化的游戏非要和日本那些魑魅魍魉结合起来 哎",
                 CreateTime = DateTime.Now.AddDays(-1),
@@ -328,6 +339,7 @@ public class EvaluationContextSeed
             },
             new()
             {
+                CommentId = 4,
                 UserId = "8440A693-5DDF-4036-9972-BCA66A8002A3".ToLower(),
                 Content = "网亿你懂的，当初喊着删通行证货币的玩家们，现在已经看不到踪影～",
                 CreateTime = DateTime.Now.AddDays(-3).AddMinutes(20),
@@ -338,6 +350,7 @@ public class EvaluationContextSeed
             },
             new()
             {
+                CommentId = 5,
                 UserId = "A71C1391-1105-4E9A-BCBB-F70467EF070C".ToLower(),
                 Content = "这可是所谓的本国大厂哟，他们的行事作风难道还让你期待过？",
                 CreateTime = DateTime.Now.AddDays(-1).AddMinutes(22),
@@ -349,6 +362,7 @@ public class EvaluationContextSeed
             },
             new()
             {
+                CommentId = 6,
                 UserId = "A71C1391-1105-4E9A-BCBB-F70467EF070C".ToLower(),
                 Content = "还有人给网易洗？皮肤不出的yellow点我们这种lsp会上当？ 网易那开箱世界第一低的几率， 符文系统更是连lol这个始祖级的都不用了，他一个大型多人在线pvp还拿来用，学王者荣耀啊？ 不好玩就是不好玩，这游戏就是花钱请各大平台主播宣传起来的！ 打死我都不玩！！！！！！",
                 CreateTime = DateTime.Now.AddDays(-1).AddHours(2),

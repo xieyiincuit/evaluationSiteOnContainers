@@ -55,7 +55,6 @@ public class GameInfo
 
     public GameCompany GameCompany { get; set; }
 
-
     [Column("category_id")]
     [Comment("游戏类别外键")]
     public int? GameCategoryId { get; set; }

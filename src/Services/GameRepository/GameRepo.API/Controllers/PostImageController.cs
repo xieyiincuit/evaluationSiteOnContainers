@@ -15,6 +15,11 @@ public class PostImageController : ControllerBase
         _minioClient = client ?? throw new ArgumentNullException(nameof(client));
     }
 
+    /// <summary>
+    /// 上传游戏略缩图和详细图
+    /// </summary>
+    /// <param name="file"></param>
+    /// <returns></returns>
     [HttpPost("pic")]
     [Authorize]
     public async Task<IActionResult> PostGamePicToOssAsync([FromForm] IFormFile file)
@@ -50,6 +55,11 @@ public class PostImageController : ControllerBase
         return Ok(sourcePath);
     }
 
+    /// <summary>
+    /// 上传商品图片
+    /// </summary>
+    /// <param name="file"></param>
+    /// <returns></returns>
     [HttpPost("shop/pic")]
     [Authorize]
     public async Task<IActionResult> PostShopPicToOssAsync([FromForm] IFormFile file)

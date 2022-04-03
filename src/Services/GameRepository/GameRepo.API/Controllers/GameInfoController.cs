@@ -1,5 +1,8 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Controllers;
 
+/// <summary>
+/// 游戏信息管理
+/// </summary>
 [ApiController]
 [Route("api/v1/game")]
 public class GameInfoController : ControllerBase
@@ -21,8 +24,7 @@ public class GameInfoController : ControllerBase
         _gameInfoService = gameInfoService ?? throw new ArgumentNullException(nameof(gameInfoService));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _repoIntegrationEventService = repoIntegrationEventService ??
-                                       throw new ArgumentNullException(nameof(repoIntegrationEventService));
+        _repoIntegrationEventService = repoIntegrationEventService ?? throw new ArgumentNullException(nameof(repoIntegrationEventService));
         _unitOfWorkService = unitOfWorkService ?? throw new ArgumentNullException(nameof(unitOfWorkService));
     }
 
@@ -46,6 +48,36 @@ public class GameInfoController : ControllerBase
         return Ok(model);
     }
 
+    /// <summary>
+    /// 管理员获取游戏信息
+    /// </summary>
+    /// <param name="categoryId">可根据游戏类别筛选</param>
+    /// <param name="companyId">可根据游戏公司筛选</param>
+    /// <param name="pageIndex">pageSize固定为10</param>
+    /// <param name="order">排序方式：hot-游戏热度倒序(默认) time-发售时间倒序 score-游戏评分倒序 (其他无效字段)-Id倒序</param>
+    /// <returns></returns>
+    [HttpGet]
+    [Route("admin/infos")]
+    //[Authorize(Roles = "administrator")]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(PaginatedItemsDtoModel<GameInfoAdminDto>), (int)HttpStatusCode.OK)]
+    public async Task<IActionResult> GetGameInfoForAdminAsync(
+        [FromQuery] int? categoryId, [FromQuery] int? companyId,
+        [FromQuery] int pageIndex = 1, [FromQuery] string? order = "hot")
+    {
+        int pageIndexForAdmin = 10;
+        var totalGames = await _gameInfoService.CountGameInfoAsync();
+        if (ParameterValidateHelper.IsInvalidPageIndex(totalGames, pageIndexForAdmin, pageIndex)) pageIndex = 1;
+
+        var games = await _gameInfoService.GetGameInfoWithTermAsync(pageIndex, pageIndexForAdmin, categoryId, companyId, order);
+
+        if (!games.Any()) return NotFound();
+        var gamesDto = _mapper.Map<List<GameInfoAdminDto>>(games);
+
+        var model = new PaginatedItemsDtoModel<GameInfoAdminDto>(pageIndex, pageIndexForAdmin, totalGames, gamesDto);
+        return Ok(model);
+    }
+
     [HttpGet]
     [Route("ranks")]
     public async Task<IActionResult> GetGameRankAsync()
@@ -54,6 +86,10 @@ public class GameInfoController : ControllerBase
         return !games.Any() ? NotFound() : Ok(games);
     }
 
+    /// <summary>
+    /// 获取所有游戏列表，可用于测评文章选择和商品上架游戏选择
+    /// </summary>
+    /// <returns></returns>
     [HttpGet]
     [Route("selectlist")]
     public async Task<IActionResult> GetGameSelectListAsync()
@@ -62,6 +98,11 @@ public class GameInfoController : ControllerBase
         return !games.Any() ? NotFound() : Ok(games);
     }
 
+    /// <summary>
+    /// 获取特定游戏具体信息
+    /// </summary>
+    /// <param name="gameId"></param>
+    /// <returns></returns>
     [HttpGet("info/{gameId:int}", Name = nameof(GetGameInfoByIdAsync))]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -77,6 +118,11 @@ public class GameInfoController : ControllerBase
         return Ok(gameDto);
     }
 
+    /// <summary>
+    /// 新增游戏信息
+    /// </summary>
+    /// <param name="gameInfoAddDto">supportPlatform需校验 内容用/隔开： 如PC/PS4</param>
+    /// <returns></returns>
     [HttpPost] //定义该Action为HTTP POST
     [Route("info")] //定义子路由
     [Authorize(Roles = "administrator")] //定义该方法需要身份验证且授权给administrator用户
@@ -101,6 +147,11 @@ public class GameInfoController : ControllerBase
         return CreatedAtRoute(nameof(GetGameInfoByIdAsync), new { gameId = entityToAdd.Id }, null);
     }
 
+    /// <summary>
+    /// 修改游戏信息
+    /// </summary>
+    /// <param name="gameInfoUpdateDto">supportPlatform需校验 内容用/隔开： 如PC/PS4</param>
+    /// <returns></returns>
     [HttpPut]
     [Route("info")]
     [Authorize(Roles = "administrator")]
@@ -140,6 +191,12 @@ public class GameInfoController : ControllerBase
         return NoContent();
     }
 
+
+    /// <summary>
+    /// 游戏管理不需要删除功能 提供修改即可
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [HttpDelete]
     [Route("info/{id:int}")]
     [Authorize(Roles = "administrator")]

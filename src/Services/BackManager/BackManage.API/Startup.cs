@@ -58,6 +58,9 @@ public class Startup
                 Description = "The Control of BackManage Service HTTP API"
             });
 
+            var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+
             //Swagger授权
             options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
             {

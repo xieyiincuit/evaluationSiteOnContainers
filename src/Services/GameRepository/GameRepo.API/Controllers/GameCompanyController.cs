@@ -1,5 +1,8 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Controllers;
 
+/// <summary>
+/// 游戏发行公司管理
+/// </summary>
 [ApiController]
 [Route("api/v1/game")]
 public class GameCompanyController : ControllerBase
@@ -28,6 +31,11 @@ public class GameCompanyController : ControllerBase
         return Ok(companies);
     }
 
+    /// <summary>
+    /// 分页获取游戏发行公司信息
+    /// </summary>
+    /// <param name="pageIndex">index默认为1, size后台固定为10</param>
+    /// <returns></returns>
     [HttpGet]
     [Route("companies")]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -44,6 +52,11 @@ public class GameCompanyController : ControllerBase
         return Ok(model);
     }
 
+    /// <summary>
+    /// 获取特定游戏发行公司信息
+    /// </summary>
+    /// <param name="companyId"></param>
+    /// <returns></returns>
     [HttpGet("company/{companyId:int}", Name = nameof(GetCompanyByIdAsync))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -58,6 +71,11 @@ public class GameCompanyController : ControllerBase
         return Ok(company);
     }
 
+    /// <summary>
+    /// 新增游戏发行公司信息
+    /// </summary>
+    /// <param name="companyAddDto"></param>
+    /// <returns></returns>
     [HttpPost]
     [Route("company")]
     [Authorize(Roles = "administrator")]
@@ -76,6 +94,11 @@ public class GameCompanyController : ControllerBase
         return CreatedAtRoute(nameof(GetCompanyByIdAsync), new { companyId = entityToAdd.Id }, null);
     }
 
+    /// <summary>
+    /// 删除游戏发行公司信息
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [HttpDelete]
     [Route("company/{id:int}")]
     [Authorize(Roles = "administrator")]
@@ -92,6 +115,11 @@ public class GameCompanyController : ControllerBase
         return response == true ? NoContent() : NotFound();
     }
 
+    /// <summary>
+    /// 修改游戏发行公司信息
+    /// </summary>
+    /// <param name="companyUpdateDto"></param>
+    /// <returns></returns>
     [HttpPut]
     [Route("company")]
     [Authorize(Roles = "administrator")]
