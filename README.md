@@ -4,32 +4,21 @@
 ## 系统架构图
 ![](img/architecture.png)
 
-<<<<<<< Updated upstream
-## 运行方式
-=======
-
 # 运行方式
->>>>>>> Stashed changes
 首先确保你[安装](https://docs.docker.com/docker-for-windows/install/)Docker并配置了[WSL](https://docs.docker.com/desktop/windows/wsl/)环境。然后, 在 `evaluationSiteOnContainers` 的 **/src/** 目录下启动命令行(CommandLine)。按照顺序执行以下参数：
 
 ```powershell
 docker compose build
 docker compose up
 ```
-
-<<<<<<< Updated upstream
 稍等片刻后执行以下命令查看容器状态：
-=======
-行以下命令查看容器状态：
->>>>>>> Stashed changes
+
 ```powershell
 docker ps
 ```
 ![](img/dockerps.png)
 
-<<<<<<< Updated upstream
 你也可以通过健康检查和服务注册来查看服务是否正常启动：
-=======
 # 运行状态
 你也可以通过URL访问健康检查和服务注册来查看服务是否正常启动及注册成功：
 
@@ -93,4 +82,3 @@ http:localhost:20000/v1/u/{everything}
 to 
 http:identity-api//identity-api/api/v1/user/{everything}
 ```
->>>>>>> Stashed changes
