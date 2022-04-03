@@ -152,7 +152,7 @@ public static class Config
                 AllowedGrantTypes = GrantTypes.Implicit,
                 AllowAccessTokensViaBrowser = true,
                 RequireConsent = false,
-               
+
                 RedirectUris = {$"{clientsUrl["WebSPA"]}/callback"},
                 PostLogoutRedirectUris = {$"{clientsUrl["WebSPA"]}/"},
                 AllowedCorsOrigins = {$"{clientsUrl["WebSPA"]}"},
@@ -160,7 +160,7 @@ public static class Config
                 AccessTokenLifetime = 3600 * 12,
                 UpdateAccessTokenClaimsOnRefresh = true,
                 AllowOfflineAccess = true,
-                
+
                 AllowedScopes =
                 {
                     IdentityServerConstants.StandardScopes.OpenId,
@@ -169,6 +169,34 @@ public static class Config
                     IdentityServerConstants.StandardScopes.OfflineAccess,
                     "eval-write",
                     "ordering-buy"
+                }
+            },
+
+            new Client
+            {
+                ClientId = "evaluationadminvuejs",
+                ClientName = "EvaluationAdmin SPA OpenId Client",
+                AllowedGrantTypes = GrantTypes.Implicit,
+                AllowAccessTokensViaBrowser = true,
+                RequireConsent = false,
+
+                RedirectUris = {$"{clientsUrl["AdminSPA"]}/callback"},
+                PostLogoutRedirectUris = {$"{clientsUrl["AdminSPA"]}/"},
+                AllowedCorsOrigins = {$"{clientsUrl["AdminSPA"]}"},
+
+                AccessTokenLifetime = 3600 * 24 * 7,
+                UpdateAccessTokenClaimsOnRefresh = true,
+                AllowOfflineAccess = true,
+
+                AllowedScopes =
+                {
+                    IdentityServerConstants.StandardScopes.OpenId,
+                    IdentityServerConstants.StandardScopes.Profile,
+                    IdentityServerConstants.StandardScopes.Email,
+                    IdentityServerConstants.StandardScopes.OfflineAccess,
+                    "eval-manage",
+                    "repo-manage",
+                    "back-manage"
                 }
             },
 

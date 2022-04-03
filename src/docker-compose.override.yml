@@ -163,6 +163,7 @@ services:
       - OrderingApiClient=http://localhost:5102
       - BackManageApiClient=http://localhost:5104
       - WebSPAClient=http://localhost:3000
+      - AdminClient=http://localhost:4000
       - IdentityUrl=http://identity-api
       - PATH_BASE=/identity-api
       - ServiceRegister__ServiceName=identity-api
