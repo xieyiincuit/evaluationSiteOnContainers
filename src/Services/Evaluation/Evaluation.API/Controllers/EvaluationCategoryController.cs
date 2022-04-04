@@ -74,6 +74,7 @@ public class EvaluationCategoryController : ControllerBase
     /// <param name="categoryUpdateDto"></param>
     /// <returns></returns>
     [HttpPut]
+    [Authorize(Roles = "administrator")]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
@@ -102,6 +103,7 @@ public class EvaluationCategoryController : ControllerBase
     /// <param name="categoryAddDto"></param>
     /// <returns></returns>
     [HttpPost]
+    [Authorize(Roles = "administrator")]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(EvaluationCategory), (int)HttpStatusCode.Created)]
     public async Task<IActionResult> AddEvaluateCategoryAsync([FromBody] CategoryAddDto categoryAddDto)
@@ -125,6 +127,7 @@ public class EvaluationCategoryController : ControllerBase
     /// <returns></returns>
     [HttpDelete]
     [Route("{id:int}")]
+    [Authorize(Roles = "administrator")]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
