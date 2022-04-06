@@ -27,5 +27,6 @@ public class GameSDKForPlayer
     [Comment("游戏发放的sdk外键")]
     public long SDKItemId { get; set; }
 
-    [NotMapped] public GameItemSDK GameItemSDK { get; set; }
+    [NotMapped] 
+    public GameItemSDK GameItemSDK { get; set; }
 }

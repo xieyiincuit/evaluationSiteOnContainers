@@ -19,7 +19,7 @@ public class SDKForPlayerService : ISDKForPlayerService
             .Select(x => new PlaySDKDto
             {
                 SDKString = x.GameItemSDK.SDKString,
-                GameItemName = x.GameItemSDK.GameShopItem.GameInfo.Name,
+                GameName = x.GameItemSDK.GameShopItem.GameInfo.Name,
                 SendTime = x.GameItemSDK.SendTime.Value
             })
             .Skip((pageIndex - 1) * pageSize)
@@ -28,31 +28,28 @@ public class SDKForPlayerService : ISDKForPlayerService
             .ToListAsync();
     }
 
-    public async Task<List<PlaySDKDto>> GetPlayerSDKByUserIdAndStatusAsync(string userId, int pageSize, int pageIndex,
-        bool? hasChecked)
+    public async Task<List<PlaySDKDto>> GetPlayerSDKByUserIdAndStatusAsync(string userId, int pageSize, int pageIndex, bool? hasChecked)
     {
         var queryString = _repoDbContext.GameSDKForPlayers
             .Include(sdk => sdk.GameItemSDK)
             .ThenInclude(item => item.GameShopItem)
             .ThenInclude(info => info.GameInfo)
-            .Where(x => x.UserId == userId);
-
-        _ = hasChecked switch
-        {
-            true => queryString.Where(x => x.HasChecked == true),
-            _ => queryString.Where(x => x.HasChecked == null || x.HasChecked == false)
-        };
+            .Where(x => x.HasChecked == hasChecked);
 
         return await queryString
             .Select(x => new PlaySDKDto
             {
+                Id = x.Id,
                 SDKString = x.GameItemSDK.SDKString,
-                GameItemName = x.GameItemSDK.GameShopItem.GameInfo.Name,
-                SendTime = x.GameItemSDK.SendTime.Value
+                GameId = x.GameItemSDK.GameItemId,
+                GamePictrue = x.GameItemSDK.GameShopItem.SellPictrue,
+                GameName = x.GameItemSDK.GameShopItem.GameInfo.Name,
+                SendTime = x.GameItemSDK.SendTime.Value,
+                hasChecked = x.HasChecked ?? false,
             })
             .Skip((pageIndex - 1) * pageSize)
             .Take(pageSize)
-            .OrderBy(x => x.SendTime)
+            .OrderByDescending(x => x.SendTime)
             .ToListAsync();
     }
 

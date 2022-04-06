@@ -35,21 +35,6 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/gamerepo-api/api/{version}/user/{everything}",
-      "DownstreamScheme": "http",
-      "UpstreamPathTemplate": "/{version}/g/u/{everything}",
-      "UpstreamHttpMethod": [],
-      "ServiceName": "gamerepo-api",
-      "LoadBalancerOptions": {
-        "Type": "LeastConnection"
-      },
-      "QoSOptions": {
-        "ExceptionsAllowedBeforeBreaking": 5,
-        "DurationOfBreak": 3000,
-        "TimeoutValue": 5000
-      }
-    },
-    {
       "DownstreamPathTemplate": "/gamerepo-api/api/{version}/shop/{everything}",
       "DownstreamScheme": "http",
       "UpstreamPathTemplate": "/{version}/s/{everything}",

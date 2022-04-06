@@ -25,15 +25,15 @@ public class GameSDKForPlayerController : ControllerBase
         _unitOfWorkService = unitOfWorkService ?? throw new ArgumentNullException(nameof(unitOfWorkService));
     }
 
-    [HttpGet("user/sdks")]
-    [Authorize]
+    [HttpGet("game/user/sdks")]
+    //[Authorize]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(PaginatedItemsDtoModel<PlaySDKDto>), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> GetUserSDKsByUserIdAsync([FromQuery] bool? hasChecked,
-        [FromQuery] int pageIndex = 1)
+    public async Task<IActionResult> GetUserSDKsByUserIdAsync([FromQuery] bool? hasChecked, [FromQuery] int pageIndex = 1)
     {
-        var userId = User.FindFirstValue("sub");
+        //var userId = User.FindFirstValue("sub");
+        var userId = "fb9755fe-d011-435b-bd49-c4277feb4938";
         if (string.IsNullOrEmpty(userId)) return BadRequest();
 
         var userSdkCount = await _sdkForPlayerService.CountPlayerSDKByUserId(userId);
@@ -42,7 +42,7 @@ public class GameSDKForPlayerController : ControllerBase
 
         var userSdksDto = hasChecked switch
         {
-            false => await _sdkForPlayerService.GetPlayerSDKByUserIdAndStatusAsync(userId, _pageSize, pageIndex, false),
+            false => await _sdkForPlayerService.GetPlayerSDKByUserIdAndStatusAsync(userId, _pageSize, pageIndex, null),
             true => await _sdkForPlayerService.GetPlayerSDKByUserIdAndStatusAsync(userId, _pageSize, pageIndex, true),
             _ => await _sdkForPlayerService.GetPlayerSDKByUserIdAsync(userId, _pageSize, pageIndex)
         };
@@ -64,7 +64,7 @@ public class GameSDKForPlayerController : ControllerBase
         return sdk == null ? NotFound() : Ok(sdk);
     }
 
-    [HttpPut("user/sdk/{sdkId:int}")]
+    [HttpPut("game/user/sdk/{sdkId:int}")]
     [Authorize]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
