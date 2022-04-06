@@ -20,8 +20,7 @@ public class PurchaseController : ControllerBase
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _redisDatabase = redisDatabase ?? throw new ArgumentNullException(nameof(redisDatabase));
-        _distributedLockFactory =
-            distributedLockFactory ?? throw new ArgumentNullException(nameof(distributedLockFactory));
+        _distributedLockFactory = distributedLockFactory ?? throw new ArgumentNullException(nameof(distributedLockFactory));
         _gameRepoHttpClient = gameRepoHttpClient ?? throw new ArgumentNullException(nameof(gameRepoHttpClient));
         _gameRepoGrpcService = gameRepoGrpcService ?? throw new ArgumentNullException(nameof(gameRepoGrpcService));
     }
@@ -56,8 +55,7 @@ public class PurchaseController : ControllerBase
                 _logger.LogInformation("shopItem:{id} all sell, begin grpc call gameRepo to stop this", shopItemId);
                 var response = await _gameRepoGrpcService.StopShopSellAsync(shopItemId);
                 if (response == false)
-                    _logger.LogError("shopItem:{id} all sell, begin grpc call gameRepo to stop this but fail",
-                        shopItemId);
+                    _logger.LogError("shopItem:{id} all sell, begin grpc call gameRepo to stop this but fail", shopItemId);
                 return BadRequest();
             }
 

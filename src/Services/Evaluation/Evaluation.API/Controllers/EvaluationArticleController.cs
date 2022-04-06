@@ -86,6 +86,23 @@ public class EvaluationArticleController : ControllerBase
         return Ok(model);
     }
 
+    [AllowAnonymous]
+    [HttpPost]
+    [Route("shop/articles")]
+    public async Task<IActionResult> GetArticlesByShopItemAsync([FromBody] List<int> gameIds)
+    {
+        if (gameIds == null || gameIds.Count == 0) return BadRequest();
+
+        var result = new List<ArticleShopDto>();
+        foreach (var gameId in gameIds)
+        {
+            var article = await _articleService.GetArticlesByShopItemAsync(gameId);
+            if (article == null) continue;
+            else result.Add(article);
+        }
+        return Ok(result);
+    }
+
     // GET api/v1/evaluation/articles/1
     [AllowAnonymous]
     [HttpGet("article/{id:int}", Name = nameof(GetArticleByIdAsync))]

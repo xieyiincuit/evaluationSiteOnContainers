@@ -1,6 +1,6 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.DtoModels;
 
-public class ShopItemDtoToUser
+public class ShopItemDetailDto
 {
     public int Id { get; set; }
     public decimal Price { get; set; }
@@ -11,8 +11,9 @@ public class ShopItemDtoToUser
 
     public int GameId { get; set; }
     public string GameName { get; set; }
-    public double GameScore { get; set; }
+    public string GameDescription { get; set; }
     public string GamePicture { get; set; }
     public DateTime SellTime { get; set; }
     public string GameCategory { get; set; }
+    public string GameIssue { get; set; }
 }

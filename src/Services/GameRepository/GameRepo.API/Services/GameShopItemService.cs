@@ -11,17 +11,18 @@ public class GameShopItemService : IGameShopItemService
         _redisDatabase = redisDatabase ?? throw new ArgumentNullException(nameof(redisDatabase));
     }
 
-    public async Task<List<GameShopItem>> GetGameShopItemListAsync(int pageIndex, int pageSize, int orderBy,
-        bool isAdmin)
+    public async Task<List<GameShopItem>> GetGameShopItemListAsync(int pageIndex, int pageSize, int orderBy, bool isAdmin)
     {
         var queryString = _repoDbContext.GameShopItems
             .Include(x => x.GameInfo)
+                .ThenInclude(g => g.GameCategory)
             .AsNoTracking();
 
         //非管理员不显示暂停售卖的Item
         if (!isAdmin)
             queryString = _repoDbContext.GameShopItems
                 .Include(x => x.GameInfo)
+                    .ThenInclude(g => g.GameCategory)
                 .Where(x => x.TemporaryStopSell == null || x.TemporaryStopSell == false)
                 .AsNoTracking();
 
@@ -31,11 +32,11 @@ public class GameShopItemService : IGameShopItemService
                 .Skip((pageIndex - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync(),
-            2 => await queryString.OrderBy(x => x.HotSellPoint)
+            2 => await queryString.OrderByDescending(x => x.HotSellPoint)
                 .Skip((pageIndex - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync(),
-            _ => await queryString.OrderBy(x => x.Price)
+            _ => await queryString.OrderByDescending(x => x.GameInfo.SellTime)
                 .Skip((pageIndex - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync()
@@ -47,6 +48,9 @@ public class GameShopItemService : IGameShopItemService
     {
         return await _repoDbContext.GameShopItems
             .Include(x => x.GameInfo)
+                .ThenInclude(g => g.GameCategory)
+            .Include(x => x.GameInfo)
+                .ThenInclude(g => g.GameCompany)
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == shopItemId);
     }

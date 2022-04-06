@@ -23,8 +23,7 @@ public class GameRepoHttpClient
         {
             var header = _httpContextAccessor.HttpContext.Request.Headers;
             _httpClient.DefaultRequestHeaders.Add("Authorization", header["Authorization"].ToString());
-            var postBody = JsonContent.Create(new { ShopItemId = shopItemId, UserId = userId },
-                MediaTypeHeaderValue.Parse("application/json"));
+            var postBody = JsonContent.Create(new { ShopItemId = shopItemId, UserId = userId }, MediaTypeHeaderValue.Parse("application/json"));
 
             var response = await _httpClient.PostAsync(callUrl, postBody);
 

@@ -8,6 +8,7 @@ public class GameShopItemController : ControllerBase
     private readonly ILogger<GameShopItemController> _logger;
     private readonly IMapper _mapper;
     private readonly IRedisDatabase _redisDatabase;
+    private readonly EvaluationCallService _evaluationService;
     private readonly IGameItemSDKService _sdkService;
     private readonly IGameShopItemService _shopItemService;
     private readonly IUnitOfWorkService _unitOfWorkService;
@@ -18,7 +19,8 @@ public class GameShopItemController : ControllerBase
         IUnitOfWorkService unitOfWorkService,
         IMapper mapper,
         ILogger<GameShopItemController> logger,
-        IRedisDatabase redisDatabase)
+        IRedisDatabase redisDatabase,
+        EvaluationCallService evaluationService)
     {
         _shopItemService = shopItemService ?? throw new ArgumentNullException(nameof(shopItemService));
         _sdkService = sdkService ?? throw new ArgumentNullException(nameof(sdkService));
@@ -26,6 +28,7 @@ public class GameShopItemController : ControllerBase
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _redisDatabase = redisDatabase ?? throw new ArgumentNullException(nameof(redisDatabase));
+        _evaluationService = evaluationService ?? throw new ArgumentNullException(nameof(evaluationService));
     }
 
     /// <summary>
@@ -56,16 +59,28 @@ public class GameShopItemController : ControllerBase
     [AllowAnonymous]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(PaginatedItemsDtoModel<ShopItemDtoToUser>), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> GetShopItemsToUserAsync([FromQuery] int pageIndex = 1)
+    public async Task<IActionResult> GetShopItemsToUserAsync([FromQuery] int pageIndex = 1, [FromQuery] int? orderby = 0)
     {
         var shopItemsCount = await _shopItemService.CountGameShopItemAsync();
         if (ParameterValidateHelper.IsInvalidPageIndex(shopItemsCount, _pageSize, pageIndex)) pageIndex = 1;
+        if (!orderby.HasValue) orderby = 0;
 
-        var shopItems = await _shopItemService.GetGameShopItemListAsync(pageIndex, _pageSize, 1, false);
+        //获取商品信息
+        var shopItems = await _shopItemService.GetGameShopItemListAsync(pageIndex, _pageSize, orderby.Value, false);
         if (!shopItems.Any()) return NotFound();
 
+        var gameIds = new List<int>();
+        foreach (var shopItem in shopItems)
+        {
+            gameIds.Add(shopItem.GameInfoId);
+        }
+
+        using var response = await _evaluationService.GetShopArticlesAsync(gameIds);
+        var articles = new List<ArticleShopDto>();
+        if (response.IsSuccessStatusCode) articles = await response.Content.ReadFromJsonAsync<List<ArticleShopDto>>();
+
         var shopItemsDto = _mapper.Map<List<ShopItemDtoToUser>>(shopItems);
-        var model = new PaginatedItemsDtoModel<ShopItemDtoToUser>(pageIndex, _pageSize, shopItemsCount, shopItemsDto);
+        var model = new PaginatedShopItemsDto<ShopItemDtoToUser>(pageIndex, _pageSize, shopItemsCount, shopItemsDto, articles);
         return Ok(model);
     }
 
@@ -80,8 +95,8 @@ public class GameShopItemController : ControllerBase
         var shopItem = await _shopItemService.GetGameShopItemByIdAsync(itemId);
         if (shopItem == null) return NotFound();
 
-        var itemToUser = _mapper.Map<ShopItemDtoToUser>(shopItem);
-        return Ok(itemToUser);
+        var itemDetailToUser = _mapper.Map<ShopItemDetailDto>(shopItem);
+        return Ok(itemDetailToUser);
     }
 
     /// <summary>
@@ -144,7 +159,7 @@ public class GameShopItemController : ControllerBase
         if (firstCreated != true) return BadRequest();
 
         //批量生成SDK
-        var response = await _sdkService.GenerateSDKForGameShopItemAsync(entityToAdd.AvailableStock, entityToAdd.GameInfoId);
+        var response = await _sdkService.GenerateSDKForGameShopItemAsync(entityToAdd.AvailableStock, entityToAdd.Id);
         //Redis字段创建
         await _redisDatabase.Database.StringSetAsync($"ProductStock_{entityToAdd.Id}", entityToAdd.AvailableStock);
 
@@ -240,7 +255,7 @@ public class GameShopItemController : ControllerBase
         return NoContent();
     }
 
-   
+
     [HttpDelete]
     [Route("game/shop/{itemId:int}")]
     [Authorize(Roles = "administrator")]

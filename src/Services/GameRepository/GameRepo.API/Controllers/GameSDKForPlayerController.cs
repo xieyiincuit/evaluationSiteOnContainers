@@ -97,6 +97,7 @@ public class GameSDKForPlayerController : ControllerBase
         if (response == false) throw new GameRepoDomainException("SDK发放失败，请联系管理员给你重发");
 
         //这时候SDK的状态已经成为Send 并且SDKPlayer表中也已经有记录了, 则已经购买成功。
+
         return Ok();
     }
 }

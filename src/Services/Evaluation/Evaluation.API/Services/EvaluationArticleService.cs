@@ -228,6 +228,15 @@ public class EvaluationArticleService : IEvaluationArticleService
         return await _evaluationContext.SaveChangesAsync() > 0;
     }
 
+    public async Task<ArticleShopDto> GetArticlesByShopItemAsync(int gameId)
+    {
+        return await _evaluationContext.Articles.AsNoTracking()
+            .Where(x => x.GameId == gameId)
+            .OrderByDescending(x => x.SupportCount)
+            .Select(x => new ArticleShopDto { ArticleId = x.ArticleId, Description = x.Description, Title = x.Title, GameId = x.GameId, GameName = x.GameName })
+            .FirstOrDefaultAsync();
+    }
+
     ///// <summary>
     /////     Bulks get articles
     ///// </summary>

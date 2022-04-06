@@ -254,6 +254,7 @@ services:
       - RedisHCCheckConnection=cache_master,DefaultDatabase=0,password=zhouredis11..
       - IdentityUrlExternal=http://localhost:5105
       - IdentityUrl=http://identity-api
+      - EvaluationUrl=http://evaluation-api
       - PATH_BASE=/gamerepo-api
       - GRPC_PORT=81
       - PORT=80
