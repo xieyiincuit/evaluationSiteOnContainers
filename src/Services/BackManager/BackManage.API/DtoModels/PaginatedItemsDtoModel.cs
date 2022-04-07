@@ -12,13 +12,13 @@ public class PaginatedItemsDtoModel<TEntity> where TEntity : class
         UserInfo = other;
     }
 
-    private int CurrentPage { get; }
-    private int TotalPages { get; }
-    private int PageSize { get; }
-    private int TotalCount { get; }
+    public int CurrentPage { get; set; }
+    public int TotalPages { get; set; }
+    public int PageSize { get; set; }
+    public int TotalCount { get; set; }
     public bool HasPrevious => CurrentPage > 1;
     public bool HasNext => CurrentPage < TotalPages;
 
-    private IEnumerable<TEntity> Data { get; }
-    private List<UserAvatarDto> UserInfo { get; }
+    public IEnumerable<TEntity> Data { get; set; }
+    public List<UserAvatarDto> UserInfo { get; set; }
 }

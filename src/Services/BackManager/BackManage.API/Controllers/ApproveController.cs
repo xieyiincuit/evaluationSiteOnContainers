@@ -31,6 +31,7 @@ public class ApproveController : ControllerBase
     /// <returns></returns>
     [HttpGet("list")]
     [Authorize(Roles = "administrator")]
+    [ProducesResponseType(typeof(PaginatedItemsDtoModel<ApproveRecordDto>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetApproveUserListAsync(
         [FromQuery] ApproveStatus status = ApproveStatus.Progressing,
         [FromQuery] int pageIndex = 1)
@@ -59,6 +60,7 @@ public class ApproveController : ControllerBase
     /// <returns></returns>
     [HttpGet("{id:int}")]
     [Authorize(Roles = "administrator")]
+    [ProducesResponseType(typeof(ApproveRecordBodyDto), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetApproveAsync([FromRoute] int id)
     {
         var approve = await _approvalService.GetApproveRecordByIdAsync(id);
@@ -107,17 +109,26 @@ public class ApproveController : ControllerBase
     public async Task<IActionResult> UpdateApproveBodyAsync([FromBody] ApproveRecordUpdateDto updateDto)
     {
         if (updateDto == null) return BadRequest();
-
         var currentUserId = User.FindFirstValue("sub");
 
         var approve = await _approvalService.GetApproveRecordByUserIdAsync(currentUserId);
-        if (approve == null) return NotFound();
-        if (approve.UserId != User.FindFirstValue("sub")) return BadRequest();
 
-        var response = await _approvalService.UpdateApproveInfoAsync(approve.Id, updateDto.Body);
-        if (response == true) return NoContent();
-
-        throw new BackManageDomainException($"user {User.FindFirstValue("nickname")} edit approve body fail");
+        if (approve == null)
+        {
+            var entityToAdd = new ApproveRecord { UserId = currentUserId, Body = updateDto.Body };
+            var addResponse = await _approvalService.AddApproveRecordAsync(entityToAdd);
+            return addResponse == true
+                ? (IActionResult)Ok()
+                : throw new BackManageDomainException($"user {User.FindFirstValue("nickname")} add approve apply fail");
+        }
+        else
+        {
+            if (approve.UserId != User.FindFirstValue("sub")) return BadRequest();
+            var updateResponse = await _approvalService.UpdateApproveInfoAsync(approve.Id, updateDto.Body);
+            return updateResponse == true
+                ? (IActionResult)NoContent()
+                : throw new BackManageDomainException($"user {User.FindFirstValue("nickname")} edit approve body fail");
+        }
     }
 
     [HttpDelete]
@@ -152,8 +163,7 @@ public class ApproveController : ControllerBase
         if (approve == null) return BadRequest();
 
         var applyUser = User.FindFirstValue("nickname");
-        var statusUpdateResult =
-            await _approvalService.UpdateApproveStatusAsync(approve.Id, ApproveStatus.Rejected, applyUser);
+        var statusUpdateResult = await _approvalService.UpdateApproveStatusAsync(approve.Id, ApproveStatus.Rejected, applyUser);
         if (statusUpdateResult != true)
             throw new BackManageDomainException("reject user occurred error, please check logging and fix it");
 

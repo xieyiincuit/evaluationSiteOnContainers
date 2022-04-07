@@ -56,11 +56,11 @@ public class SDKForPlayerService : ISDKForPlayerService
     public async Task<GameSDKForPlayer> GetPlayerSDKByIdAsync(long id)
     {
         return await _repoDbContext.GameSDKForPlayers
+            .AsNoTracking()
             .Include(x => x.GameItemSDK)
                 .ThenInclude(x => x.GameShopItem)
-                .ThenInclude(x => x.GameInfo)
-            .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.SDKItemId == id);
+                .ThenInclude(x => x.GameInfo)   
+            .FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public async Task<bool> UpdatePlayerSDKStatusCheck(int id)

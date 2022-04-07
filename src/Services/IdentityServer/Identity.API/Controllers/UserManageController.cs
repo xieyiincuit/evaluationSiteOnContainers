@@ -1,6 +1,5 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Controllers;
 
-//TODO 接口注释 用户信息管理完善
 [ApiController]
 [Route("api/v1/user")]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -27,11 +26,6 @@ public class UserManageController : ControllerBase
         _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
     }
 
-    /// <summary>
-    ///  用于测评内容页面获取作者信息
-    /// </summary>
-    /// <param name="userId"></param>
-    /// <returns></returns>
     [HttpGet("author")]
     [AllowAnonymous]
     public async Task<IActionResult> GetAuthorInfoAsync([FromQuery] string userId)
@@ -138,6 +132,11 @@ public class UserManageController : ControllerBase
         return BadRequest("oldPassword validate fail");
     }
 
+    /// <summary>
+    /// 获取用户信息
+    /// </summary>
+    /// <param name="pageIndex"></param>
+    /// <returns></returns>
     [HttpGet("list")]
     [Authorize(Roles = "administrator")]
     public async Task<IActionResult> GetUserInfoListAsync([FromQuery] int pageIndex = 1)
@@ -168,6 +167,12 @@ public class UserManageController : ControllerBase
         return Ok(model);
     }
 
+    /// <summary>
+    /// 根据角色查询用户信息
+    /// </summary>
+    /// <param name="pageIndex"></param>
+    /// <param name="roleSelect"></param>
+    /// <returns></returns>
     [HttpGet("role")]
     [Authorize(Roles = "administrator")]
     public async Task<IActionResult> GetNormalUserListAsync([FromQuery] int pageIndex = 1, [FromQuery] string roleSelect = "normaluser")

@@ -33,7 +33,7 @@ public static class Config
             },
             new("backmanage", "BackManage API")
             {
-                Scopes = {"back-manage"}
+                Scopes = {"back-manage", "role-approve"}
             }
         };
     }
@@ -54,7 +54,8 @@ public static class Config
                 new List<string> {JwtClaimTypes.Role, JwtClaimTypes.Name, JwtClaimTypes.Id}),
             new("back-manage", "网站后台管理权限",
                 new List<string> {JwtClaimTypes.Role, JwtClaimTypes.Name, JwtClaimTypes.Id}),
-
+            new("role-approve", "审批申请权限",
+                new List<string> {JwtClaimTypes.Role, JwtClaimTypes.Name, JwtClaimTypes.Id}),
         };
     }
 
@@ -168,7 +169,8 @@ public static class Config
                     IdentityServerConstants.StandardScopes.Email,
                     IdentityServerConstants.StandardScopes.OfflineAccess,
                     "eval-write",
-                    "ordering-buy"
+                    "ordering-buy",
+                    "role-approve"
                 }
             },
 

@@ -34,14 +34,16 @@ public class Startup
         services.AddControllersWithViews();
 
         services.AddSwaggerGen(options =>
-       {
+        {
            options.SwaggerDoc("v1", new OpenApiInfo
            {
                Title = "evaluationSiteOnContainers - Identity HTTP API",
                Version = "v1",
                Description = "The Identity Service HTTP API"
            });
-       });
+           var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+           options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+        });
 
         #endregion
 

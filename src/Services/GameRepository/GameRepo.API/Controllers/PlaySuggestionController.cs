@@ -25,7 +25,6 @@ public class PlaySuggestionController : ControllerBase
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    //TODO 返回游戏名
     /// <summary>
     /// 分页获取游戏建议
     /// </summary>
@@ -34,7 +33,7 @@ public class PlaySuggestionController : ControllerBase
     [HttpGet]
     [Route("suggestions")]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType(typeof(PaginatedItemsDtoModel<GamePlaySuggestion>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(PaginatedItemsDtoModel<PlaySuggestionDto>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetSuggestionsAsync([FromQuery] int pageIndex = 1)
     {
         var totalSuggestions = await _suggestionService.CountPlaySuggestionsAsync();
@@ -43,7 +42,9 @@ public class PlaySuggestionController : ControllerBase
         var suggestions = await _suggestionService.GetPlaySuggestionsAsync(pageIndex, _pageSize);
         if (!suggestions.Any()) return NotFound();
 
-        var model = new PaginatedItemsDtoModel<GamePlaySuggestion>(pageIndex, _pageSize, totalSuggestions, suggestions);
+        var suggestionDto = _mapper.Map<List<PlaySuggestionDto>>(suggestions);
+
+        var model = new PaginatedItemsDtoModel<PlaySuggestionDto>(pageIndex, _pageSize, totalSuggestions, suggestionDto);
         return Ok(model);
     }
 

@@ -41,5 +41,6 @@ public class GamePlaySuggestion
     [Comment("游戏外键id")]
     public int GameId { get; set; }
 
-    [JsonIgnore] public GameInfo GameInfo { get; set; }
+    [JsonIgnore] 
+    public GameInfo GameInfo { get; set; }
 }

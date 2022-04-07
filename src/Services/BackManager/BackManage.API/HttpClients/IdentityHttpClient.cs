@@ -17,7 +17,7 @@ public class IdentityHttpClient
     public async Task<HttpResponseMessage> GetUserProfileAsync(List<string> userIds)
     {
         _logger.LogDebug("---- BackManage client call identity services: baseUrl:{url}", _client.BaseAddress);
-        var callUrl = _client.BaseAddress + "api/v1/u/avatar/batch";
+        var callUrl = _client.BaseAddress + "api/v1/user/avatar/batch";
 
         try
         {

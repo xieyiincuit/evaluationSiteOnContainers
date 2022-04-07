@@ -343,14 +343,19 @@ public class Startup
 
         #endregion
 
+        #region HttpClients
+
         services.AddHttpClient<EvaluationCallService>(client =>
         {
             client.BaseAddress = new Uri(Configuration["EvaluationUrl"]);
             client.DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
             client.Timeout = TimeSpan.FromSeconds(10);
         })
-           .SetHandlerLifetime(TimeSpan.FromHours(6))
-           .AddTransientHttpErrorPolicy(p => p.WaitAndRetryAsync(3, _ => TimeSpan.FromMilliseconds(200)));
+         .SetHandlerLifetime(TimeSpan.FromHours(6))
+         .AddTransientHttpErrorPolicy(p => p.WaitAndRetryAsync(3, _ => TimeSpan.FromMilliseconds(200)));
+
+        #endregion
+
 
         var container = new ContainerBuilder();
         container.Populate(services);

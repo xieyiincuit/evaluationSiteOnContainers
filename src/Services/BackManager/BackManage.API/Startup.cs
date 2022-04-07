@@ -192,8 +192,6 @@ public class Startup
 
         #endregion
 
-
-
         var container = new ContainerBuilder();
         container.Populate(services);
         return new AutofacServiceProvider(container.Build());

@@ -31,20 +31,25 @@ public class PlaySuggestionService : IPlaySuggestionService
 
     public async Task<GamePlaySuggestion> GetPlaySuggestionAsync(int suggestionId)
     {
-        var suggestion =
-            await _repoContext.PlaySuggestions.AsNoTracking().FirstOrDefaultAsync(x => x.Id == suggestionId);
+        var suggestion = await _repoContext.PlaySuggestions
+            .Include(x => x.GameInfo)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == suggestionId);
         return suggestion;
     }
 
     public async Task<GamePlaySuggestion> GetPlaySuggestionByGameAsync(int gameId)
     {
-        var suggestion = await _repoContext.PlaySuggestions.AsNoTracking().FirstOrDefaultAsync(x => x.GameId == gameId);
+        var suggestion = await _repoContext.PlaySuggestions
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.GameId == gameId);
         return suggestion;
     }
 
     public async Task<List<GamePlaySuggestion>> GetPlaySuggestionsAsync(int pageIndex, int pageSize)
     {
         var suggestions = await _repoContext.PlaySuggestions
+            .Include(x => x.GameInfo)
             .OrderBy(x => x.Id)
             .Skip((pageIndex - 1) * pageSize)
             .Take(pageSize)

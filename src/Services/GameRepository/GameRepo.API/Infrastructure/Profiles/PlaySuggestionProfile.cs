@@ -6,5 +6,8 @@ public class PlaySuggestionProfile : Profile
     {
         CreateMap<PlaySuggestionAddDto, GamePlaySuggestion>();
         CreateMap<PlaySuggestionUpdateDto, GamePlaySuggestion>();
+
+        CreateMap<GamePlaySuggestion, PlaySuggestionDto>()
+            .ForMember(dest => dest.GameName, options => options.MapFrom(src => src.GameInfo.Name));
     }
 }

@@ -109,6 +109,8 @@ public class EvaluationArticleService : IEvaluationArticleService
     public async Task<List<ArticleTableDto>> GetUserArticlesAsync(int pageSize, int pageIndex, string userId, int? categoryId = null, bool timeDesc = true)
     {
         var queryString = _evaluationContext.Articles
+            .AsNoTracking()
+            .Where(x => x.UserId == userId)
             .Select(x => new ArticleTableDto()
             {
                 Id = x.ArticleId,
@@ -117,8 +119,7 @@ public class EvaluationArticleService : IEvaluationArticleService
                 GameName = x.GameName,
                 Title = x.Title,
                 Status = x.Status
-            })
-            .AsNoTracking();
+            });
 
         if (categoryId != null)
         {
