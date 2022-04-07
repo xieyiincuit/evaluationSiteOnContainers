@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Zhouxieyi.evaluationSiteOnContainers.Services.BackManage.API.Infrastructure;
 
@@ -10,9 +11,10 @@ using Zhouxieyi.evaluationSiteOnContainers.Services.BackManage.API.Infrastructur
 namespace BackManage.API.Infrastructure.BackManageMigrations
 {
     [DbContext(typeof(BackManageContext))]
-    partial class BackManageContextModelSnapshot : ModelSnapshot
+    [Migration("20220407060951_ChangeBodyLength")]
+    partial class ChangeBodyLength
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

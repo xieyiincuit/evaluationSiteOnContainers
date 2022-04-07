@@ -4,11 +4,18 @@
 [Comment("玩家游戏拥有表")]
 public class GameOwner
 {
-    [Column("user_id")][Comment("用户id")] public string UserId { get; set; }
+    [Column("user_id")]
+    [Comment("用户id")] 
+    public string UserId { get; set; }
 
     [Column("game_id")]
     [Comment("游戏信息id")]
     public int GameId { get; set; }
 
-    [NotMapped] public GameInfo GameInfo { get; set; }
+    [Column("game_score")]
+    [Comment("游戏评分")]
+    public double GameScore { get; set; }
+
+    [NotMapped] 
+    public GameInfo GameInfo { get; set; }
 }

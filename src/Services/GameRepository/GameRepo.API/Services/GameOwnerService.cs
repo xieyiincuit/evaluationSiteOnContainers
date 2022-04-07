@@ -33,4 +33,25 @@ public class GameOwnerService : IGameOwnerService
         };
         await _repoDbContext.AddAsync(gameOwnerRecord);
     }
+
+    public async Task UpdateGameScoreAsync(string userId, int gameId, double gameScore)
+    {
+        var gameRecord = await _repoDbContext.GameOwners.FindAsync(userId, gameId);
+        gameRecord.GameScore = gameScore;
+        await _repoDbContext.SaveChangesAsync();
+    }
+
+    public async Task<double> CalculateGameScore(int gameId)
+    {
+        var gameRecords = await _repoDbContext.GameOwners
+            .Where(x => x.GameId == gameId && x.GameScore != 0)
+            .AsNoTracking()
+            .ToListAsync();
+
+        int recordCount = gameRecords.Count;
+        double sumScore = 0;
+
+        gameRecords.ForEach(x => sumScore += x.GameScore);
+        return sumScore / recordCount;
+    }
 }

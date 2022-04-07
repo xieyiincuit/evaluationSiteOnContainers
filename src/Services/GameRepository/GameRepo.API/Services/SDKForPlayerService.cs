@@ -34,7 +34,7 @@ public class SDKForPlayerService : ISDKForPlayerService
             .Include(sdk => sdk.GameItemSDK)
             .ThenInclude(item => item.GameShopItem)
             .ThenInclude(info => info.GameInfo)
-            .Where(x => x.HasChecked == hasChecked);
+            .Where(x => x.HasChecked == hasChecked && x.UserId == userId);
 
         return await queryString
             .Select(x => new PlaySDKDto
@@ -57,12 +57,13 @@ public class SDKForPlayerService : ISDKForPlayerService
     {
         return await _repoDbContext.GameSDKForPlayers
             .Include(x => x.GameItemSDK)
-            .ThenInclude(x => x.GameShopItem)
-            .ThenInclude(x => x.GameInfo)
-            .AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+                .ThenInclude(x => x.GameShopItem)
+                .ThenInclude(x => x.GameInfo)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.SDKItemId == id);
     }
 
-    public async Task<bool> UpdatePlayerSDKStatusCheck(long id)
+    public async Task<bool> UpdatePlayerSDKStatusCheck(int id)
     {
         var recordToUpdate = await _repoDbContext.GameSDKForPlayers.FindAsync(id);
 

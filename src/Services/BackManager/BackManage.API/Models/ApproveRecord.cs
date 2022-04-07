@@ -16,7 +16,6 @@ public class ApproveRecord
     public string UserId { get; set; }
 
     [Required]
-    [MaxLength(1000)]
     [Column("approve_body")]
     [Comment("测评审批信息正文")]
     public string Body { get; set; }
