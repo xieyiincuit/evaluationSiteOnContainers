@@ -144,7 +144,7 @@ public class GameInfoController : ControllerBase
 
         //工作单元保存
         await _unitOfWorkService.SaveChangesAsync();
-        return CreatedAtRoute(nameof(GetGameInfoByIdAsync), new { gameId = entityToAdd.Id }, null);
+        return CreatedAtRoute(nameof(GetGameInfoByIdAsync), new { gameId = entityToAdd.Id }, new { gameId = entityToAdd.Id });
     }
 
     /// <summary>

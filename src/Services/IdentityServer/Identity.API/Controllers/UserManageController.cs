@@ -1,5 +1,6 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Controllers;
 
+//TODO 接口注释 用户信息管理完善
 [ApiController]
 [Route("api/v1/user")]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -169,8 +170,7 @@ public class UserManageController : ControllerBase
 
     [HttpGet("role")]
     [Authorize(Roles = "administrator")]
-    public async Task<IActionResult> GetNormalUserListAsync([FromQuery] int pageIndex = 1,
-        [FromQuery] string roleSelect = "normaluser")
+    public async Task<IActionResult> GetNormalUserListAsync([FromQuery] int pageIndex = 1, [FromQuery] string roleSelect = "normaluser")
     {
         const int pageSize = 10;
 
@@ -180,7 +180,6 @@ public class UserManageController : ControllerBase
             .AsNoTracking()
             .ToListAsync();
         if (!roles.Contains(roleSelect)) BadRequest();
-
 
         var role = await _applicationDbContext.Roles.AsNoTracking().FirstOrDefaultAsync(x => x.Name == roleSelect);
         var selectRolesCount = await _applicationDbContext.UserRoles.CountAsync(x => x.RoleId == role.Id);
