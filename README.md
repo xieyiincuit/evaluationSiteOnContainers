@@ -62,10 +62,6 @@ http:localhost:20000/v1/g/{everything}
 to 
 http:gamerepo-api//gamerepo-api/api/v1/game/{everything}
 
-http:localhost:20000/v1/g/u/{everything}
-to 
-http:gamerepo-api//gamerepo-api/api/v1/user/{everything}
-
 http:localhost:20000/v1/s/{everything}
 to 
 http:gamerepo-api//gamerepo-api/api/v1/shop/{everything}
