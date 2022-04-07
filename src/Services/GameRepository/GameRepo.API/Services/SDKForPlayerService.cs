@@ -41,7 +41,7 @@ public class SDKForPlayerService : ISDKForPlayerService
             {
                 Id = x.Id,
                 SDKString = x.GameItemSDK.SDKString,
-                GameId = x.GameItemSDK.GameItemId,
+                GameId = x.GameItemSDK.GameShopItem.GameInfo.Id,
                 GamePictrue = x.GameItemSDK.GameShopItem.SellPictrue,
                 GameName = x.GameItemSDK.GameShopItem.GameInfo.Name,
                 SendTime = x.GameItemSDK.SendTime.Value,
@@ -56,10 +56,9 @@ public class SDKForPlayerService : ISDKForPlayerService
     public async Task<GameSDKForPlayer> GetPlayerSDKByIdAsync(long id)
     {
         return await _repoDbContext.GameSDKForPlayers
-            .AsNoTracking()
             .Include(x => x.GameItemSDK)
                 .ThenInclude(x => x.GameShopItem)
-                .ThenInclude(x => x.GameInfo)   
+                .ThenInclude(x => x.GameInfo)
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 

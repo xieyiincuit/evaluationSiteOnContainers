@@ -82,9 +82,9 @@ public class GameSDKForPlayerController : ControllerBase
         await _sdkForPlayerService.UpdatePlayerSDKStatusCheck(sdk.Id);
 
         // 检测用户是否拥有该游戏，若拥有只Check SDK，而不增加游戏拥有记录。
-        if (await _ownerService.GetGameOwnerRecordAsync(userId, sdk.GameItemSDK.GameShopItem.Id) == null)
+        if (await _ownerService.GetGameOwnerRecordAsync(userId, sdk.GameItemSDK.GameShopItem.GameInfo.Id) == null)
         {
-            await _ownerService.AddGameOwnerRecordAsync(userId, sdk.GameItemSDK.GameShopItem.Id);
+            await _ownerService.AddGameOwnerRecordAsync(userId, sdk.GameItemSDK.GameShopItem.GameInfoId);
         }
 
         var response = await _unitOfWorkService.SaveEntitiesAsync();
