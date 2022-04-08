@@ -26,7 +26,7 @@ public class ApproveController : ControllerBase
     }
 
     /// <summary>
-    /// (管理员)获取审批列表
+    /// 管理员——获取审批列表
     /// </summary>
     /// <param name="status">默认获取未进行操作的审批</param>
     /// <param name="pageIndex">分页大小为10</param>
@@ -57,7 +57,7 @@ public class ApproveController : ControllerBase
     }
 
     /// <summary>
-    /// (管理员)获取用户的审批内容
+    /// 管理员——获取用户的审批内容
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
@@ -75,7 +75,7 @@ public class ApproveController : ControllerBase
     }
 
     /// <summary>
-    /// (用户)获取自己的审批内容
+    /// 用户--获取自己的测评资格申请内容
     /// </summary>
     /// <returns></returns>
     [HttpGet]
@@ -94,7 +94,7 @@ public class ApproveController : ControllerBase
     }
 
     /// <summary>
-    /// (用户)提交申请
+    /// 用户--提交自己的测评资格申请
     /// </summary>
     /// <param name="updateDto"></param>
     /// <returns></returns>
@@ -130,7 +130,7 @@ public class ApproveController : ControllerBase
     }
 
     /// <summary>
-    /// (用户)撤销测评资格申请
+    /// 用户--撤销自己的测评资格申请
     /// </summary>
     /// <returns></returns>
     /// <exception cref="BackManageDomainException"></exception>
@@ -154,7 +154,7 @@ public class ApproveController : ControllerBase
     }
 
     /// <summary>
-    /// (管理员)拒绝用户的申请
+    /// 管理员——拒绝用户的测评资格申请
     /// </summary>
     /// <param name="userId">用户Id</param>
     /// <returns></returns>
@@ -180,7 +180,7 @@ public class ApproveController : ControllerBase
     }
 
     /// <summary>
-    /// (管理员)同意该用户的审批
+    /// 管理员——同意用户的测评资格审批
     /// </summary>
     /// <param name="userId">用户Id</param>
     /// <returns></returns>
@@ -220,7 +220,7 @@ public class ApproveController : ControllerBase
     }
 
     /// <summary>
-    /// 撤回该用户的审批
+    /// 管理员——撤回用户的测评资格
     /// </summary>
     /// <param name="userId"></param>
     /// <returns></returns>

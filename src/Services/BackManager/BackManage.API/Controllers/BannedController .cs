@@ -1,7 +1,7 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.BackManage.API.Controllers;
 
 /// <summary>
-/// 用户封禁信息接口
+/// 用户举报封禁接口
 /// </summary>
 [ApiController]
 [Route("api/v1/back/banned")]
@@ -24,7 +24,7 @@ public class BannedController : ControllerBase
     }
 
     /// <summary>
-    /// (管理员)获取被举报用户列表
+    /// 管理员--获取被举报用户列表
     /// </summary>
     /// <param name="pageIndex">分页大小为10</param>
     /// <param name="status">checking-未处理 banned-已经封禁</param>
@@ -54,7 +54,7 @@ public class BannedController : ControllerBase
     }
 
     /// <summary>
-    /// (管理员)获取特定用户封禁信息
+    /// 管理员--获取特定举报记录信息
     /// </summary>
     /// <param name="id">举报记录Id</param>
     /// <returns></returns>
@@ -72,7 +72,7 @@ public class BannedController : ControllerBase
     }
 
     /// <summary>
-    /// (用户)举报某用户
+    /// 用户--举报其他用户
     /// </summary>
     /// <param name="addDto"></param>
     /// <returns></returns>
@@ -106,7 +106,7 @@ public class BannedController : ControllerBase
     }
 
     /// <summary>
-    /// (管理员)为用户解除封禁状态
+    /// 管理员--为用户解除封禁状态
     /// </summary>
     /// <param name="userId">举报记录Id</param>
     /// <returns></returns>
@@ -144,7 +144,7 @@ public class BannedController : ControllerBase
     }
 
     /// <summary>
-    /// (管理员)封禁用户
+    /// 管理员--封禁用户
     /// </summary>
     /// <param name="userId">用户Id</param>
     /// <returns></returns>
