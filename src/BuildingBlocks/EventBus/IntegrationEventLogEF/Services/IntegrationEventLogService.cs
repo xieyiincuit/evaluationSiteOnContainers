@@ -12,14 +12,12 @@ public class IntegrationEventLogService : IIntegrationEventLogService, IDisposab
         _dbConnection = dbConnection ?? throw new ArgumentNullException(nameof(dbConnection));
         try
         {
-            _integrationEventLogContext = new IntegrationEventLogContext(
-                new DbContextOptionsBuilder<IntegrationEventLogContext>()
+            _integrationEventLogContext = new IntegrationEventLogContext(new DbContextOptionsBuilder<IntegrationEventLogContext>()
                     .UseMySql(_dbConnection, new MySqlServerVersion(new Version(8, 0, 27))).Options);
         }
         catch (Exception)
         {
-            _integrationEventLogContext = new IntegrationEventLogContext(
-                new DbContextOptionsBuilder<IntegrationEventLogContext>()
+            _integrationEventLogContext = new IntegrationEventLogContext(new DbContextOptionsBuilder<IntegrationEventLogContext>()
                     .UseSqlServer(_dbConnection).Options);
         }
 

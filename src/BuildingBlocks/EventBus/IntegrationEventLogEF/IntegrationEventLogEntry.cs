@@ -23,9 +23,11 @@ public class IntegrationEventLogEntry
     public Guid EventId { get; }
     public string EventTypeName { get; }
 
-    [NotMapped] public string EventTypeShortName => EventTypeName.Split('.')?.Last();
+    [NotMapped] 
+    public string EventTypeShortName => EventTypeName.Split('.')?.Last();
 
-    [NotMapped] public IntegrationEvent IntegrationEvent { get; private set; }
+    [NotMapped] 
+    public IntegrationEvent IntegrationEvent { get; private set; }
 
     public EventStateEnum State { get; set; }
     public int TimesSent { get; set; }
@@ -35,8 +37,9 @@ public class IntegrationEventLogEntry
 
     public IntegrationEventLogEntry DeserializeJsonContent(Type type)
     {
-        IntegrationEvent = JsonSerializer.Deserialize(Content, type,
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) as IntegrationEvent;
+        IntegrationEvent = JsonSerializer.Deserialize(
+            Content, type, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) as IntegrationEvent;
+
         return this;
     }
 }
