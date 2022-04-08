@@ -16,31 +16,18 @@ namespace OcelotGateway
         public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
-        {
-            //JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-            //var identityUrl = Configuration.GetValue<string>("IdentityUrl");
-            //const string authenticationProviderKey = "IdentityApiKey";
-
-            //services.AddAuthentication()
-            //    .AddJwtBearer(authenticationProviderKey, x =>
-            //    {
-            //        x.Authority = identityUrl;
-            //        x.RequireHttpsMetadata = false;
-            //        x.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters()
-            //        {
-            //            ValidAudiences = new[] { "ordering", "evaluation", "gamerepo", "backmanage", "identity" }
-            //        };
-            //    });
-
+        {         
             services.AddOcelot()
-                .AddConsul()
-                .AddPolly()
+                .AddConsul() // 注册中心
+                .AddPolly()  // 重试机制
                 .AddConfigStoredInConsul()
                 .AddCacheManager(x =>
                 {
+                    // 缓存
                     x.WithDictionaryHandle();
                 });
 
+            // 网关跨域
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy",

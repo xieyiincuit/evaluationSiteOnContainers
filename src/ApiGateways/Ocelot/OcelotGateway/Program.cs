@@ -22,7 +22,6 @@ namespace OcelotGateway
                         .AddJsonFile("appsettings.json", true, true)
                         .AddJsonFile($"appsettings.{hostingContext.HostingEnvironment.EnvironmentName}.json", true, true)
                         .AddJsonFile("ocelot.json")
-                        //.AddOcelot("config",hostingContext.HostingEnvironment)
                         .AddEnvironmentVariables();
                 }).Build();
         }
