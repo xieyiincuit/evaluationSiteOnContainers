@@ -216,6 +216,7 @@ public class Startup
                     $"http://localhost:{Configuration.GetValue<string>("SwaggerRedirectUrlPort", "50004")}/swagger/oauth2-redirect.html");
             });
 
+        //需要详细信息时可以使用
         //app.UseHttpLogging();
 
         app.UseRouting();

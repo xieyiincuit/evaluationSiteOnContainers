@@ -3,8 +3,8 @@
 public class HomeController : Controller
 {
     [HttpGet]
-    public IActionResult Index()
-    {
-        return new RedirectResult("~/swagger");
-    }
+    public IActionResult Index() => new RedirectResult("~/swagger");
+
+    [HttpGet("api/health")]
+    public IActionResult Get() => Ok();
 }

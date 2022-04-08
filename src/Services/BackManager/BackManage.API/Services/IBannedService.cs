@@ -10,6 +10,5 @@ public interface IBannedService
     Task<bool> UpdateBannedRecordAsync(int id, string checkUserId);
     Task<bool> UpdateBannedStatusRecordAsync(int id, string applyUser);
     Task<bool> DeleteBannedRecordAsync(BannedRecord bannedRecord);
-
     Task<bool> CheckUserLinkExistAsync(string bannedUserId, string checkUserId);
 }

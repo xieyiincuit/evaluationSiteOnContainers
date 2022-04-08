@@ -38,20 +38,22 @@ public class BannedService : IBannedService
 
     public async Task<bool> AddBannedRecordAsync(BannedRecord bannedRecord, string checkUserId)
     {
-        await _dbContext.BannedRecords.AddAsync(bannedRecord);
-        await _dbContext.BannedUserLinks.AddAsync(new BannedUserLink
-        { BannedUserId = bannedRecord.UserId, CheckUserId = checkUserId });
+        var banUserLink = new BannedUserLink { BannedUserId = bannedRecord.UserId, CheckUserId = checkUserId };
 
+        await _dbContext.BannedRecords.AddAsync(bannedRecord);
+        await _dbContext.BannedUserLinks.AddAsync(banUserLink);
         return await _dbContext.SaveChangesAsync() > 0;
     }
 
     public async Task<bool> UpdateBannedRecordAsync(int id, string checkUserId)
     {
+        // 举报次数 +1
         var updateEntity = await _dbContext.BannedRecords.FindAsync(id);
         updateEntity.ReportCount += 1;
 
-        var userBanLink = new BannedUserLink { BannedUserId = updateEntity.UserId, CheckUserId = checkUserId };
-        await _dbContext.BannedUserLinks.AddAsync(userBanLink);
+        var banUserLink = new BannedUserLink { BannedUserId = updateEntity.UserId, CheckUserId = checkUserId };
+        await _dbContext.BannedUserLinks.AddAsync(banUserLink);
+
         return await _dbContext.SaveChangesAsync() > 0;
     }
 
@@ -61,13 +63,16 @@ public class BannedService : IBannedService
         updateEntity.BannedTime = DateTime.Now.ToLocalTime();
         updateEntity.Status = BannedStatus.Banned;
         updateEntity.ApproveUser = applyUser;
+
         return await _dbContext.SaveChangesAsync() > 0;
     }
 
     public async Task<bool> DeleteBannedRecordAsync(BannedRecord bannedRecord)
     {
-        var linkRecord = await _dbContext.BannedUserLinks.AsNoTracking()
-            .Where(x => x.BannedUserId == bannedRecord.UserId).ToListAsync();
+        var linkRecord = await _dbContext.BannedUserLinks
+            .AsNoTracking()
+            .Where(x => x.BannedUserId == bannedRecord.UserId)
+            .ToListAsync();
 
         _dbContext.BannedRecords.Remove(bannedRecord);
         _dbContext.BannedUserLinks.RemoveRange(linkRecord);

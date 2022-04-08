@@ -48,6 +48,7 @@ public class IdentityHttpClient
 
         try
         {
+            // 该操作需要进行身份权限认证
             var header = _httpContextAccessor.HttpContext.Request.Headers;
             _client.DefaultRequestHeaders.Add("Authorization", header["Authorization"].ToString());
 
@@ -59,8 +60,7 @@ public class IdentityHttpClient
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
 
-            _logger.LogInformation(
-                $"received callback response -> callUrl:{callUrl}, statusCode:{response.StatusCode}");
+            _logger.LogInformation($"received callback response -> callUrl:{callUrl}, statusCode:{response.StatusCode}");
             return response;
         }
         catch (Exception e)
@@ -77,6 +77,7 @@ public class IdentityHttpClient
 
         try
         {
+            // 该操作需要进行身份权限认证
             var header = _httpContextAccessor.HttpContext.Request.Headers;
             _client.DefaultRequestHeaders.Add("Authorization", header["Authorization"].ToString());
 
@@ -88,8 +89,7 @@ public class IdentityHttpClient
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
 
-            _logger.LogInformation(
-                $"received callback response -> callUrl:{callUrl}, statusCode:{response.StatusCode}");
+            _logger.LogInformation($"received callback response -> callUrl:{callUrl}, statusCode:{response.StatusCode}");
             return response;
         }
         catch (Exception e)
@@ -106,6 +106,7 @@ public class IdentityHttpClient
 
         try
         {
+            // 该操作需要进行身份权限认证
             var header = _httpContextAccessor.HttpContext.Request.Headers;
             _client.DefaultRequestHeaders.Add("Authorization", header["Authorization"].ToString());
 
@@ -117,8 +118,7 @@ public class IdentityHttpClient
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
 
-            _logger.LogInformation(
-                $"received callback response -> callUrl:{callUrl}, statusCode:{response.StatusCode}");
+            _logger.LogInformation($"received callback response -> callUrl:{callUrl}, statusCode:{response.StatusCode}");
             return response;
         }
         catch (Exception e)
@@ -135,6 +135,7 @@ public class IdentityHttpClient
 
         try
         {
+            // 该操作需要进行身份权限认证
             var header = _httpContextAccessor.HttpContext.Request.Headers;
             _client.DefaultRequestHeaders.Add("Authorization", header["Authorization"].ToString());
 
@@ -146,8 +147,7 @@ public class IdentityHttpClient
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
 
-            _logger.LogInformation(
-                $"received callback response -> callUrl:{callUrl}, statusCode:{response.StatusCode}");
+            _logger.LogInformation($"received callback response -> callUrl:{callUrl}, statusCode:{response.StatusCode}");
             return response;
         }
         catch (Exception e)

@@ -1,6 +1,6 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.BackManage.API.DtoModels;
 
-public class ApproveRecordUpdateDto
+public class ApproveRecordAddOrUpdateDto
 {
     [Display(Name = "申请补充内容")]
     [Required(ErrorMessage = "required | 请填写{0}")]

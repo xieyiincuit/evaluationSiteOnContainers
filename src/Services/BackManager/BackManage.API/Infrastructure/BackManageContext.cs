@@ -57,6 +57,6 @@ public class BackManageContextDesignFactory : IDesignTimeDbContextFactory<BackMa
         return new BackManageContext(builder.Options);
     }
 
-    //.NET ClI
+    //EFCore CLI
     //dotnet ef migrations add Initial -o ./Infrastructure/BackManageMigrations -c BackManageContext -v
 }
