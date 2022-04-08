@@ -2,9 +2,11 @@
 
 public class HomeController : Controller
 {
-    // GET: /<controller>/
-    public IActionResult Index()
-    {
-        return new RedirectResult("~/swagger");
-    }
+    [ApiExplorerSettings(IgnoreApi = true)]
+    [HttpGet]
+    public IActionResult Index() => new RedirectResult("~/swagger");
+
+    [ApiExplorerSettings(IgnoreApi = true)]
+    [HttpGet("api/health")]
+    public IActionResult Get() => Ok();
 }

@@ -1,11 +1,10 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Controllers;
 
 /// <summary>
-/// 管理测评文章分类
+/// 测评类别接口
 /// </summary>
 [ApiController]
 [Route("api/v1/category")]
-[Authorize(Roles = _adminRole)]
 public class EvaluationCategoryController : ControllerBase
 {
     private const string _adminRole = "administrator";
@@ -28,12 +27,11 @@ public class EvaluationCategoryController : ControllerBase
     }
 
     /// <summary>
-    /// 获取所有测评分类
+    /// 用户，管理员——获取所有的测评分类
     /// </summary>
     /// <returns></returns>
     [AllowAnonymous]
-    [HttpGet]
-    [Route("list")]
+    [HttpGet("list")]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(List<EvaluationCategory>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetEvaluateCategoriesAsync()
@@ -51,9 +49,8 @@ public class EvaluationCategoryController : ControllerBase
         return Ok(categories);
     }
 
-
     /// <summary>
-    /// 根据Id获取特定测评分类
+    /// 用户，管理员——根据Id获取特定测评分类
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
@@ -64,32 +61,36 @@ public class EvaluationCategoryController : ControllerBase
     public async Task<IActionResult> GetEvaluateCategoryAsync([FromRoute] int id)
     {
         var category = await _categoryService.GetEvaluationCategoryAsync(id);
-        if (category == null) return NotFound();
-        return Ok(category);
+        return category == null ? NotFound() : Ok(category);
     }
 
     /// <summary>
-    /// 修改分类名称
+    /// 管理员——修改测评分类名称
     /// </summary>
     /// <param name="categoryUpdateDto"></param>
     /// <returns></returns>
     [HttpPut]
-    [Authorize(Roles = "administrator")]
+    [Authorize(Roles = _adminRole)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     public async Task<IActionResult> ChangeEvaluateCategoryAsync([FromBody] CategoryUpdateDto categoryUpdateDto)
     {
         if (categoryUpdateDto == null) return BadRequest();
+
         var entity = await _categoryService.GetEvaluationCategoryAsync(categoryUpdateDto.CategoryId);
-        if (entity == null) return NotFound();
+        if (entity == null) return BadRequest();
 
         _mapper.Map(categoryUpdateDto, entity);
-        await _categoryService.UpdateEvaluationCategoryAsync(entity);
+        var updateResponse = await _categoryService.UpdateEvaluationCategoryAsync(entity);
+        if (updateResponse == false)
+        {
+            _logger.LogError("---- administrator:id:{UserId}, name:{Name} update a category error -> old:{@old} new:{@new}",
+                User.FindFirst("sub").Value, User.Identity.Name, entity, categoryUpdateDto);
+            throw new EvaluationDomainException("更新测评名称失败");
+        }
 
-        var userId = User.FindFirst("sub").Value;
         _logger.LogInformation("---- administrator:id:{UserId}, name:{Name} update a category -> old:{@old} new:{@new}",
-            userId, User.Identity.Name, entity, categoryUpdateDto);
+            User.FindFirst("sub").Value, User.Identity.Name, entity, categoryUpdateDto);
 
         if (await _redisDatabase.Database.KeyExistsAsync(_categoryListKey))
             await _redisDatabase.Database.KeyDeleteAsync(_categoryListKey);
@@ -98,47 +99,77 @@ public class EvaluationCategoryController : ControllerBase
     }
 
     /// <summary>
-    /// 新增分类
+    /// 管理员——新增测评分类
     /// </summary>
     /// <param name="categoryAddDto"></param>
     /// <returns></returns>
     [HttpPost]
-    [Authorize(Roles = "administrator")]
+    [Authorize(Roles = _adminRole)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(EvaluationCategory), (int)HttpStatusCode.Created)]
     public async Task<IActionResult> AddEvaluateCategoryAsync([FromBody] CategoryAddDto categoryAddDto)
     {
         if (categoryAddDto == null) return BadRequest();
-
         var entity = _mapper.Map<EvaluationCategory>(categoryAddDto);
-        await _categoryService.AddEvaluationCategoryAsync(entity);
-        var userId = User.FindFirst("sub").Value;
+
+        var addResponse = await _categoryService.AddEvaluationCategoryAsync(entity);
+        if (addResponse == false)
+        {
+            _logger.LogError("---- administrator:id:{UserId}, name:{Name} add a category error -> old:{@old} new:{@new}",
+                User.FindFirst("sub").Value, User.Identity.Name, entity, categoryAddDto);
+            throw new EvaluationDomainException("新增测评类别失败");
+        }
+
         _logger.LogInformation("---- administrator:id:{UserId}, name:{Name} add a category -> old:{@old} new:{@new}",
-            userId, User.Identity.Name, entity, categoryAddDto);
+            User.FindFirst("sub").Value, User.Identity.Name, entity, categoryAddDto);
+
         if (await _redisDatabase.Database.KeyExistsAsync(_categoryListKey))
             await _redisDatabase.Database.KeyDeleteAsync(_categoryListKey);
-        return CreatedAtRoute(nameof(GetEvaluateCategoryAsync), new { id = entity.CategoryId }, null);
+
+        return CreatedAtRoute(nameof(GetEvaluateCategoryAsync), new { id = entity.CategoryId }, new { categoryId = entity.CategoryId });
     }
 
     /// <summary>
-    /// 删除分类（该分类下有文章会被数据库约束阻止）
+    /// 管理员——删除测评分类
     /// </summary>
-    /// <param name="id"></param>
+    /// <param name="id">测评类别Id</param>
     /// <returns></returns>
-    [HttpDelete]
-    [Route("{id:int}")]
-    [Authorize(Roles = "administrator")]
+    [HttpDelete("{id:int}")]
+    [Authorize(Roles = _adminRole)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     public async Task<IActionResult> RemoveEvaluateCategoryAsync(int id)
     {
         if (id <= 0 || id >= int.MaxValue) return BadRequest();
-        var userId = User.FindFirst("sub").Value;
-        _logger.LogInformation("---- administrator:id:{UserId}, name:{Name} delete a category -> id:{id}",
-            userId, User.Identity.Name, id);
-        if (await _redisDatabase.Database.KeyExistsAsync(_categoryListKey))
-            await _redisDatabase.Database.KeyDeleteAsync(_categoryListKey);
-        return await _categoryService.DeleteEvaluationCategoryAsync(id) ? NoContent() : NotFound();
+        var entity = await _categoryService.GetEvaluationCategoryAsync(id);
+        if (entity == null) return BadRequest();
+
+        // 当测评分类下有测评文章时 数据库约束会导致程序出现异常
+        try
+        {
+            var delResponse = await _categoryService.DeleteEvaluationCategoryAsync(id);
+            if (delResponse == false)
+            {
+                _logger.LogError("---- administrator:id:{UserId}, name:{Name} delete a category error -> id:{id}",
+                    User.FindFirst("sub").Value, User.Identity.Name, id);
+                throw new EvaluationDomainException("删除测评分类失败");
+            }
+
+            // 删除成功同时清除Redis
+            if (await _redisDatabase.Database.KeyExistsAsync(_categoryListKey))
+                await _redisDatabase.Database.KeyDeleteAsync(_categoryListKey);
+
+            _logger.LogInformation("---- administrator:id:{UserId}, name:{Name} delete a category -> id:{id}",
+                User.FindFirst("sub").Value, User.Identity.Name, id);
+            return NoContent();
+
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("---- administrator:id:{UserId}, name:{Name} delete a category error -> message:{Message}",
+                User.FindFirst("sub").Value, User.Identity.Name, ex.Message);
+            throw new EvaluationDomainException("程序错误，可能是数据库约束导致的");
+        }
     }
 }

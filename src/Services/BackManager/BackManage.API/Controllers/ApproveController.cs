@@ -75,7 +75,7 @@ public class ApproveController : ControllerBase
     }
 
     /// <summary>
-    /// 用户--获取自己的测评资格申请内容
+    /// 用户——获取自己的测评资格申请内容
     /// </summary>
     /// <returns></returns>
     [HttpGet]
@@ -94,7 +94,7 @@ public class ApproveController : ControllerBase
     }
 
     /// <summary>
-    /// 用户--提交自己的测评资格申请
+    /// 用户——提交自己的测评资格申请
     /// </summary>
     /// <param name="updateDto"></param>
     /// <returns></returns>
@@ -130,7 +130,7 @@ public class ApproveController : ControllerBase
     }
 
     /// <summary>
-    /// 用户--撤销自己的测评资格申请
+    /// 用户——撤销自己的测评资格申请
     /// </summary>
     /// <returns></returns>
     /// <exception cref="BackManageDomainException"></exception>

@@ -10,11 +10,16 @@ public static class ServiceCollectionExtension
             {
                 Title = "evaluationSiteOnContainers - Evaluation HTTP API",
                 Version = "v1",
-                Description = "The Evaluation Service HTTP API"
+                Description = "游戏测评服务接口文档",
+                Contact = new OpenApiContact
+                {
+                    Name = "Zhousl",
+                    Email = "zhouslthere@outlook.com"
+                },
             });
 
             var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-            options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+            options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename), true);
 
             //Swagger授权
             options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
@@ -24,8 +29,7 @@ public static class ServiceCollectionExtension
                 {
                     Implicit = new OpenApiOAuthFlow
                     {
-                        AuthorizationUrl =
-                            new Uri($"{configuration.GetValue<string>("IdentityUrlExternal")}/connect/authorize"),
+                        AuthorizationUrl = new Uri($"{configuration.GetValue<string>("IdentityUrlExternal")}/connect/authorize"),
                         TokenUrl = new Uri($"{configuration.GetValue<string>("IdentityUrlExternal")}/connect/token"),
                         Scopes = new Dictionary<string, string>
                         {
@@ -95,24 +99,24 @@ public static class ServiceCollectionExtension
                     .AllowCredentials());
         });
 
-        services.AddHttpLogging(options =>
-        {
-            options.LoggingFields =
-                HttpLoggingFields.RequestPath | HttpLoggingFields.RequestMethod |
-                HttpLoggingFields.RequestQuery | HttpLoggingFields.RequestHeaders |
-                HttpLoggingFields.RequestBody | HttpLoggingFields.ResponseStatusCode |
-                HttpLoggingFields.ResponseHeaders | HttpLoggingFields.ResponseBody;
-            options.RequestHeaders.Add("Authorization");
+        //services.AddHttpLogging(options =>
+        //{
+        //    options.LoggingFields =
+        //        HttpLoggingFields.RequestPath | HttpLoggingFields.RequestMethod |
+        //        HttpLoggingFields.RequestQuery | HttpLoggingFields.RequestHeaders |
+        //        HttpLoggingFields.RequestBody | HttpLoggingFields.ResponseStatusCode |
+        //        HttpLoggingFields.ResponseHeaders | HttpLoggingFields.ResponseBody;
+        //    options.RequestHeaders.Add("Authorization");
 
-            options.RequestHeaders.Remove("Connection");
-            options.RequestHeaders.Remove("User-Agent");
-            options.RequestHeaders.Remove("Accept-Encoding");
-            options.RequestHeaders.Remove("Accept-Language");
+        //    options.RequestHeaders.Remove("Connection");
+        //    options.RequestHeaders.Remove("User-Agent");
+        //    options.RequestHeaders.Remove("Accept-Encoding");
+        //    options.RequestHeaders.Remove("Accept-Language");
 
-            options.MediaTypeOptions.AddText("application/json");
-            options.RequestBodyLogLimit = 1024;
-            options.ResponseBodyLogLimit = 1024;
-        });
+        //    options.MediaTypeOptions.AddText("application/json");
+        //    options.RequestBodyLogLimit = 1024;
+        //    options.ResponseBodyLogLimit = 1024;
+        //});
 
         return services;
     }

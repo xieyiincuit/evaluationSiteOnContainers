@@ -1,19 +1,27 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Controllers;
 
+/// <summary>
+/// 测评服务图片上传接口
+/// </summary>
 [ApiController]
 [Route("api/v1")]
-public class PostImageController : ControllerBase
+public class EvaluationImageController : ControllerBase
 {
     private readonly MinioClient _minioClient;
-    private readonly ILogger<PostImageController> _logger;
+    private readonly ILogger<EvaluationImageController> _logger;
     private const string _articleBucket = "articleinfo";
 
-    public PostImageController(ILogger<PostImageController> logger, MinioClient client)
+    public EvaluationImageController(ILogger<EvaluationImageController> logger, MinioClient client)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _minioClient = client ?? throw new ArgumentNullException(nameof(client));
     }
 
+    /// <summary>
+    /// 文章Banner上传
+    /// </summary>
+    /// <param name="file">格式: jpg, jpeg, png. 大小:3M以下. 文件名: 30个字符以内</param>
+    /// <returns></returns>
     [HttpPost("pic")]
     [Authorize]
     public async Task<IActionResult> PostGamePicToOssAsync([FromForm] IFormFile file)
@@ -27,17 +35,21 @@ public class PostImageController : ControllerBase
 
         if (file.Length > 10 * 1024 * 3 * 1000) return BadRequest("File size cannot exceed 3M");
 
-        //判断bucket是否存在
+        // 判断Minio bucket是否存在
         var bucketExist = await _minioClient.BucketExistsAsync(_articleBucket);
         if (!bucketExist)
         {
+            // 不存在则新建Bucket
             await _minioClient.MakeBucketAsync(_articleBucket);
             _logger.LogInformation("Minio OSS create a bucket: {BucketName}", _articleBucket);
         }
 
+        // 构建图片名
         var articlePic = "article-" + DateTime.Now.Ticks + Path.GetExtension(file.FileName);
+        // 获取图片上传地址
         var uploadFile = $"/evaluation/{articlePic}";
         await using var stream = file.OpenReadStream();
+        // 上传至OSS
         await _minioClient.PutObjectAsync(_articleBucket,
             uploadFile,
             stream,
@@ -45,6 +57,7 @@ public class PostImageController : ControllerBase
             file.ContentType);
         _logger.LogInformation("article Pic uploads successful -> bucket: {BucketName}, object:{ObjectName}", _articleBucket, uploadFile);
 
+        //返回图片地址
         var sourcePath = $"{_articleBucket}{uploadFile}";
         return Ok(sourcePath);
     }

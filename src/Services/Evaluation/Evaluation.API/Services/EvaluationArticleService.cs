@@ -16,17 +16,16 @@ public class EvaluationArticleService : IEvaluationArticleService
 
     public async Task<int> CountArticlesByTypeAsync(int categoryId)
     {
-        return await _evaluationContext.Articles
-            .Where(x => x.CategoryTypeId == categoryId).CountAsync(x => x.Status == ArticleStatus.Normal);
+        return await _evaluationContext.Articles.CountAsync(x => x.Status == ArticleStatus.Normal && x.CategoryTypeId == categoryId);
     }
 
     public async Task<int> CountArticlesByUserAsync(string userId)
     {
-        return await _evaluationContext.Articles.Where(x => x.UserId == userId).CountAsync();
+        return await _evaluationContext.Articles.CountAsync(x => x.UserId == userId);
     }
     public async Task<int> CountArticlesByGameAsync(int gameId)
     {
-        return await _evaluationContext.Articles.Where(x => x.GameId == gameId).CountAsync();
+        return await _evaluationContext.Articles.CountAsync(x => x.GameId == gameId);
     }
     public async Task<List<ArticleSmallDto>> GetArticlesAsync(int pageSize, int pageIndex)
     {
@@ -154,7 +153,8 @@ public class EvaluationArticleService : IEvaluationArticleService
 
     public async Task<EvaluationArticle> GetArticleAsync(int id)
     {
-        var article = await _evaluationContext.Articles.AsNoTracking()
+        var article = await _evaluationContext.Articles
+            .AsNoTracking()
             .FirstOrDefaultAsync(x => x.ArticleId == id);
         return article;
     }
@@ -169,8 +169,11 @@ public class EvaluationArticleService : IEvaluationArticleService
     {
         var random = new Random(DateTime.Now.Millisecond);
         evaluationArticle.CreateTime = DateTime.Now.ToLocalTime();
-        evaluationArticle.JoinCount = random.Next(24, 5000);
+
+        // 随机生成一点赞和浏览量
+        evaluationArticle.JoinCount = random.Next(30, 1000);
         evaluationArticle.SupportCount = random.Next(5, 100);
+
         await _evaluationContext.Articles.AddAsync(evaluationArticle);
         return await _evaluationContext.SaveChangesAsync() > 0;
     }
@@ -181,10 +184,8 @@ public class EvaluationArticleService : IEvaluationArticleService
         if (deleteEntity != null)
         {
             _evaluationContext.Articles.Remove(deleteEntity);
-            if (await _evaluationContext.SaveChangesAsync() > 0)
-                return true;
+            return await _evaluationContext.SaveChangesAsync() > 0;
         }
-
         return false;
     }
 

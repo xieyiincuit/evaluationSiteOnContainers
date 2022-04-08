@@ -1,5 +1,8 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Ordering.API.Controllers;
 
+/// <summary>
+/// 游戏订购接口
+/// </summary>
 [ApiController]
 [Route("api/v1/order")]
 public class PurchaseController : ControllerBase
@@ -11,8 +14,7 @@ public class PurchaseController : ControllerBase
     private readonly GameRepoHttpClient _gameRepoHttpClient;
 
     public PurchaseController(
-        ILogger<PurchaseController> logger,
-        IRedisClient redisClient,
+        ILogger<PurchaseController> logger,     
         IRedisDatabase redisDatabase,
         IDistributedLockFactory distributedLockFactory,
         GameRepoHttpClient gameRepoHttpClient,
@@ -25,13 +27,20 @@ public class PurchaseController : ControllerBase
         _gameRepoGrpcService = gameRepoGrpcService ?? throw new ArgumentNullException(nameof(gameRepoGrpcService));
     }
 
+    /// <summary>
+    /// 用户——购买游戏商品
+    /// </summary>
+    /// <param name="shopItemId"></param>
+    /// <returns></returns>
+    /// <exception cref="OrderingDomainException"></exception>
     [HttpPost("item/{shopItemId:int}")]
     [Authorize]
     public async Task<IActionResult> BuyShopItemAsync([FromRoute] int shopItemId)
     {
+        // 商品Key 用于做分布式锁
         var productKey = GetProductStockKey(shopItemId);
 
-        //没有此商品
+        //没有此商品 返回400
         if (!_redisDatabase.Database.KeyExists(productKey)) return BadRequest();
 
         //有此商品 上锁进行库存扣除
@@ -55,12 +64,16 @@ public class PurchaseController : ControllerBase
                 _logger.LogInformation("shopItem:{id} all sell, begin grpc call gameRepo to stop this", shopItemId);
                 var response = await _gameRepoGrpcService.StopShopSellAsync(shopItemId);
                 if (response == false)
+                {
                     _logger.LogError("shopItem:{id} all sell, begin grpc call gameRepo to stop this but fail", shopItemId);
+                }
+
                 return BadRequest();
             }
 
+            // 库存减少
             await _redisDatabase.Database.StringDecrementAsync(stockKey, 1);
-            //通信服务 发送SDK保存拥有记录
+            // 通信服务 发送SDK保存拥有记录
             await _gameRepoHttpClient.SaveBuyerRecordAsync(User.FindFirstValue("sub"), shopItemId);
             _logger.LogInformation("user:{name} buy a shopItem:{id}", User.FindFirstValue("nickname"), shopItemId);
         }

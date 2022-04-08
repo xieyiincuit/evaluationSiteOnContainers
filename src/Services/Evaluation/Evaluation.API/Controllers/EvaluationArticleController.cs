@@ -1,5 +1,8 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Controllers;
 
+/// <summary>
+/// 游戏测评文章接口
+/// </summary>
 [Route("api/v1")]
 [ApiController]
 public class EvaluationArticleController : ControllerBase
@@ -33,15 +36,17 @@ public class EvaluationArticleController : ControllerBase
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    // GET api/v1/evaluation/articles[?pageSize=10&pageIndex=1]
+
+    /// <summary>
+    /// 用户——分页获取所有游戏测评文章
+    /// </summary>
+    /// <param name="pageIndex">pageSize=5</param>
+    /// <returns></returns>
+    [HttpGet("articles")]
     [AllowAnonymous]
-    [HttpGet]
-    [Route("articles")]
     [ProducesResponseType(typeof(PaginatedItemsDtoModel<ArticleSmallDto>), (int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> GetArticlesAsync([FromQuery] int pageIndex = 1)
     {
-        //validate pageIndex        
         var totalArticles = await _articleService.CountArticlesAsync();
         if (ParameterValidateHelper.IsInvalidPageIndex(totalArticles, _pageSize, pageIndex))
             pageIndex = 1; // pageIndex不合法重设
@@ -54,41 +59,51 @@ public class EvaluationArticleController : ControllerBase
             smallDto.CommentsCount = await _commentService.CountArticleRootCommentsAsync(smallDto.ArticleId);
         }
 
-        var model = new PaginatedItemsDtoModel<ArticleSmallDto>(pageIndex, _pageSize, totalArticles, articlesToReturn, null);
+        var model = new PaginatedItemsDtoModel<ArticleSmallDto>(pageIndex, _pageSize, totalArticles, articlesToReturn);
         return Ok(model);
     }
 
+    /// <summary>
+    /// 用户——获取某个游戏的测评文章
+    /// </summary>
+    /// <param name="gameId">游戏Id</param>
+    /// <param name="pageIndex">pageSize=5</param>
+    /// <returns></returns>
+    [HttpGet("game/articles")]
     [AllowAnonymous]
-    [HttpGet]
-    [Route("game/articles")]
     public async Task<IActionResult> GetArticlesByGameAsync([FromQuery] int gameId, [FromQuery] int pageIndex = 1)
     {
-        //validate pageIndex        
         var totalArticles = await _articleService.CountArticlesByGameAsync(gameId);
         if (ParameterValidateHelper.IsInvalidPageIndex(totalArticles, _pageSize, pageIndex))
             pageIndex = 1; // pageIndex不合法重设
 
         var articlesToReturn = await _articleService.GetArticlesByGameAsync(_pageSize, pageIndex, gameId);
 
-        //获取评论数量和UserId
+        // 获取评论数量和UserId
         var userIds = new HashSet<string>();
         foreach (var smallDto in articlesToReturn)
         {
             smallDto.CommentsCount = await _commentService.CountArticleRootCommentsAsync(smallDto.ArticleId);
             userIds.Add(smallDto.AuthorId);
         }
-        //调用链的最上方释放
+
+        // 获取用户额外信息
         using var response = await _identityService.GetCommentsUserProfileAsync(userIds.ToList());
         var userInfoDto = new List<UserAvatarDto>();
         if (response.IsSuccessStatusCode) userInfoDto = await response.Content.ReadFromJsonAsync<List<UserAvatarDto>>();
 
-        var model = new PaginatedItemsDtoModel<ArticleGameDto>(pageIndex, _pageSize, totalArticles, articlesToReturn, userInfoDto);
+        var model = new PaginatedItemsWithUserDtoModel<ArticleGameDto>(pageIndex, _pageSize, totalArticles, articlesToReturn, userInfoDto);
         return Ok(model);
     }
 
+    /// <summary>
+    /// 供GameRepo服务调用的接口
+    /// </summary>
+    /// <param name="gameIds"></param>
+    /// <returns></returns>
+    [ApiExplorerSettings(IgnoreApi = true)]
+    [HttpPost("shop/articles")]
     [AllowAnonymous]
-    [HttpPost]
-    [Route("shop/articles")]
     public async Task<IActionResult> GetArticlesByShopItemAsync([FromBody] List<int> gameIds)
     {
         if (gameIds == null || gameIds.Count == 0) return BadRequest();
@@ -103,18 +118,21 @@ public class EvaluationArticleController : ControllerBase
         return Ok(result);
     }
 
-    // GET api/v1/evaluation/articles/1
-    [AllowAnonymous]
+
+    /// <summary>
+    /// 用户——获取测评文章详细信息
+    /// </summary>
+    /// <param name="id">文章Id</param>
+    /// <returns></returns>
     [HttpGet("article/{id:int}", Name = nameof(GetArticleByIdAsync))]
+    [AllowAnonymous]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(ArticleDto), (int)HttpStatusCode.OK)]
     public async Task<ActionResult<ArticleDto>> GetArticleByIdAsync(int id)
     {
         if (id <= 0 || id >= int.MaxValue) return BadRequest();
 
         var article = await _articleService.GetArticleAsync(id);
-
         if (article == null) return NotFound();
 
         var articleToReturn = _mapper.Map<ArticleDto>(article);
@@ -123,21 +141,24 @@ public class EvaluationArticleController : ControllerBase
         return Ok(articleToReturn);
     }
 
-    // GET api/v1/evaluation/type/articles
+    /// <summary>
+    /// 用户——根据测评类别获取特定测评文章
+    /// </summary>
+    /// <param name="categoryId">类别Id</param>
+    /// <param name="pageIndex">pageSize=5</param>
+    /// <returns></returns>
     [AllowAnonymous]
-    [HttpGet]
-    [Route("articles/type")]
+    [HttpGet("articles/type")]
     [ProducesResponseType(typeof(PaginatedItemsDtoModel<ArticleSmallDto>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> GetArticleByTypeAsync([FromQuery] int categoryId, [FromQuery] int pageIndex = 1)
     {
         var categories = await _categoryService.GetEvaluationCategoriesAsync();
 
-        //invalid categoryId
+        // 非法的类型Id
         if (!categories.Select(x => x.CategoryId).Contains(categoryId))
             return BadRequest("categoryId value invalid, wrong format or no exist");
 
-        //validate parameter
         var totalArticles = await _articleService.CountArticlesByTypeAsync(categoryId);
         if (ParameterValidateHelper.IsInvalidPageIndex(totalArticles, _pageSize, pageIndex)) pageIndex = 1;
 
@@ -149,69 +170,82 @@ public class EvaluationArticleController : ControllerBase
             article.CommentsCount = await _commentService.CountArticleRootCommentsAsync(article.ArticleId);
         }
 
-        var model = new PaginatedItemsDtoModel<ArticleSmallDto>(pageIndex, _pageSize, totalArticles, articlesToReturn, null);
+        var model = new PaginatedItemsDtoModel<ArticleSmallDto>(pageIndex, _pageSize, totalArticles, articlesToReturn);
         return Ok(model);
     }
 
-    // Post api/v1/evaluation/articles
+    /// <summary>
+    /// 测评人员——新增游戏测评文章
+    /// </summary>
+    /// <param name="articleAddDto"></param>
+    /// <returns></returns>
     [Authorize(Roles = _evaluatorRole)]
-    [HttpPost]
-    [Route("article")]
+    [HttpPost("article")]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(EvaluationArticle), (int)HttpStatusCode.Created)]
     public async Task<IActionResult> CreateArticleAsync([FromBody] ArticleAddDto articleAddDto)
     {
         if (articleAddDto == null) return BadRequest();
-
         if (await _gameRepoGrpcClient.CheckGameExistAsync(articleAddDto.GameId) == false) return BadRequest();
 
-        //mapping        
+        //mapping实体        
         var entity = _mapper.Map<EvaluationArticle>(articleAddDto);
+
         //grpc通信获取游戏信息
         var gameInfo = await _gameRepoGrpcClient.GetGameInfoAsync(articleAddDto.GameId);
+
+        //整合游戏信息
         entity.GameName = gameInfo.GameName;
         entity.DescriptionImage = gameInfo.DescriptionPic;
 
+        //整合用户信息
         entity.UserId = User.FindFirstValue("sub");
         entity.NickName = User.FindFirstValue("nickname");
 
-        await _articleService.AddArticleAsync(entity);
+        var addResonse = await _articleService.AddArticleAsync(entity);
+        if (addResonse != false) throw new EvaluationDomainException("创建测评文章失败");
+
         _logger.LogInformation($"---- evaluator:id:{entity.UserId}, name:{User.Identity.Name} create a article -> id:{entity.ArticleId}, title:{articleAddDto.Title}");
         return CreatedAtRoute(nameof(GetArticleByIdAsync), new { id = entity.ArticleId }, new { articleId = entity.ArticleId });
-
     }
 
+    /// <summary>
+    /// 测评人员——获取自己的测评文章
+    /// </summary>
+    /// <param name="pageIndex"></param>
+    /// <param name="categoryId"></param>
+    /// <param name="timeDesc"></param>
+    /// <returns></returns>
     [Authorize(Roles = _evaluatorRole)]
-    [HttpGet]
-    [Route("my/articles")]
+    [HttpGet("my/articles")]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> GetUserArticlesAsync([FromQuery] int pageIndex,
-        [FromQuery] int? categoryId, [FromQuery] bool timeDesc = true)
+    public async Task<IActionResult> GetUserArticlesAsync([FromQuery] int pageIndex, [FromQuery] int? categoryId, [FromQuery] bool timeDesc = true)
     {
-        var currentUserId = User.FindFirst("sub").Value;
+        // 用户文章列表分页数
         int pageSize = 15;
+
+        var currentUserId = User.FindFirst("sub").Value;
         var totalArticles = await _articleService.CountArticlesByUserAsync(currentUserId);
         if (ParameterValidateHelper.IsInvalidPageIndex(totalArticles, pageSize, pageIndex))
-            pageIndex = 1; // pageIndex不合法重设
+            pageIndex = 1;
 
+        // 获取当前测评人员的文章
         var userArticles = await _articleService.GetUserArticlesAsync(pageSize, pageIndex, currentUserId, categoryId, timeDesc);
 
-        var model = new PaginatedItemsDtoModel<ArticleTableDto>(pageIndex, pageSize, totalArticles, userArticles, null);
+        var model = new PaginatedItemsDtoModel<ArticleTableDto>(pageIndex, pageSize, totalArticles, userArticles);
         return Ok(model);
     }
 
     /// <summary>
-    /// 管理员获取所有测评文章列表
+    /// 管理员——获取所有测评文章列表
     /// </summary>
     /// <param name="pageIndex">pageSize为15</param>
     /// <param name="categoryId">可分类型筛选</param>
     /// <returns></returns>
-    //[Authorize(Roles = _adminRole)]
-    [HttpGet]
-    [Route("admin/articles")]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [Authorize(Roles = _adminRole)]
+    [HttpGet("admin/articles")]
+    [ProducesResponseType(typeof(PaginatedItemsDtoModel<ArticleSmallDto>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetArticlesForAdminAsync([FromQuery] int pageIndex, [FromQuery] int? categoryId)
     {
         int pageSize = 15;
@@ -226,21 +260,30 @@ public class EvaluationArticleController : ControllerBase
             ? await _articleService.GetArticlesAsync(pageSize, pageIndex, categoryId.Value)
             : await _articleService.GetArticlesAsync(pageSize, pageIndex);
 
-        var model = new PaginatedItemsDtoModel<ArticleSmallDto>(pageIndex, pageSize, totalArticles, articles, null);
+        //获取评论数量
+        foreach (var article in articles)
+        {
+            article.CommentsCount = await _commentService.CountArticleRootCommentsAsync(article.ArticleId);
+        }
+
+        var model = new PaginatedItemsDtoModel<ArticleSmallDto>(pageIndex, pageSize, totalArticles, articles);
         return Ok(model);
     }
 
-    // Delete api/v1/evaluation/articles/{id}
+
+    /// <summary>
+    /// 测评人员，管理员——删除测评文章
+    /// </summary>
+    /// <param name="id">文章Id</param>
+    /// <returns></returns>
     [Authorize(Roles = $"{_adminRole}, {_evaluatorRole}")]
-    [HttpDelete]
-    [Route("article/{id:int}")]
+    [HttpDelete("article/{id:int}")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> DeleteArticleByIdAsync([FromRoute] int id)
     {
         if (id <= 0 || id >= int.MaxValue) return BadRequest();
-        if (await _articleService.IsArticleExist(id) == false) return NotFound();
+        if (await _articleService.IsArticleExist(id) == false) return BadRequest();
 
         var userId = User.FindFirst("sub").Value;
         if (User.FindFirstValue("role") == _evaluatorRole)
@@ -249,30 +292,46 @@ public class EvaluationArticleController : ControllerBase
             if (article.UserId != userId) return BadRequest();
         }
 
-        await _articleService.DeleteArticleAsync(id);
+        var delResponse = await _articleService.DeleteArticleAsync(id);
+        if(delResponse == false)
+        {
+            _logger.LogError($"---- user:id:{userId}, name:{User.Identity.Name} delete a article error-> id:{id}");
+            throw new EvaluationDomainException("文章删除失败");
+        }
+
         _logger.LogInformation($"---- administrator:id:{userId}, name:{User.Identity.Name} delete a article -> id:{id}");
         return NoContent();
     }
 
-    // Put api/v1/evaluation/articles
+    /// <summary>
+    /// 测评人员——修改自己的测评文章内容
+    /// </summary>
+    /// <param name="articleUpdateDto"></param>
+    /// <returns></returns>
     [Authorize(Roles = _evaluatorRole)]
-    [HttpPut]
-    [Route("article")]
+    [HttpPut("article")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<IActionResult> UpdateArticleAsync([FromBody] ArticleUpdateDto articleUpdateDto)
     {
         if (articleUpdateDto.Id <= 0 || articleUpdateDto.Id >= int.MaxValue) return BadRequest();
-        if (await _articleService.IsArticleExist(articleUpdateDto.Id) == false) return NotFound();
+        if (await _articleService.IsArticleExist(articleUpdateDto.Id) == false) return BadRequest();
 
         var articleToUpdate = await _articleService.GetArticleAsync(articleUpdateDto.Id);
+
         //校验该文章是否为当前请求修改用户吻合
         var userId = User.FindFirst("sub").Value;
         if (userId != articleToUpdate.UserId) return BadRequest();
 
+        //更新文章内容
         _mapper.Map(articleUpdateDto, articleToUpdate);
-        await _articleService.UpdateArticleAsync(articleToUpdate);
+        var updateResponse =  await _articleService.UpdateArticleAsync(articleToUpdate);
+        if (updateResponse == false)
+        {
+            _logger.LogError("---- evaluator:id:{UserId}, name:{Name} update a article error -> id:{Id} content:{@content}",
+            userId, User.Identity.Name, articleUpdateDto.Id, articleToUpdate);
+        }
+
         _logger.LogInformation("---- evaluator:id:{UserId}, name:{Name} update a article -> id:{Id} content:{@content}",
             userId, User.Identity.Name, articleUpdateDto.Id, articleToUpdate);
         return NoContent();

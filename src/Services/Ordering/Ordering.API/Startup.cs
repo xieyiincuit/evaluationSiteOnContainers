@@ -42,24 +42,24 @@ public class Startup
         services.AddControllers(options => { options.Filters.Add(typeof(HttpGlobalExceptionFilter)); })
             .AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = true);
 
-        services.AddHttpLogging(options =>
-        {
-            options.LoggingFields =
-                HttpLoggingFields.RequestPath | HttpLoggingFields.RequestMethod |
-                HttpLoggingFields.RequestQuery | HttpLoggingFields.RequestHeaders |
-                HttpLoggingFields.RequestBody | HttpLoggingFields.ResponseStatusCode |
-                HttpLoggingFields.ResponseHeaders | HttpLoggingFields.ResponseBody;
-            options.RequestHeaders.Add("Authorization");
+        //services.AddHttpLogging(options =>
+        //{
+        //    options.LoggingFields =
+        //        HttpLoggingFields.RequestPath | HttpLoggingFields.RequestMethod |
+        //        HttpLoggingFields.RequestQuery | HttpLoggingFields.RequestHeaders |
+        //        HttpLoggingFields.RequestBody | HttpLoggingFields.ResponseStatusCode |
+        //        HttpLoggingFields.ResponseHeaders | HttpLoggingFields.ResponseBody;
+        //    options.RequestHeaders.Add("Authorization");
 
-            options.RequestHeaders.Remove("Connection");
-            options.RequestHeaders.Remove("User-Agent");
-            options.RequestHeaders.Remove("Accept-Encoding");
-            options.RequestHeaders.Remove("Accept-Language");
+        //    options.RequestHeaders.Remove("Connection");
+        //    options.RequestHeaders.Remove("User-Agent");
+        //    options.RequestHeaders.Remove("Accept-Encoding");
+        //    options.RequestHeaders.Remove("Accept-Language");
 
-            options.MediaTypeOptions.AddText("application/json");
-            options.RequestBodyLogLimit = 1024;
-            options.ResponseBodyLogLimit = 1024;
-        });
+        //    options.MediaTypeOptions.AddText("application/json");
+        //    options.RequestBodyLogLimit = 1024;
+        //    options.ResponseBodyLogLimit = 1024;
+        //});
 
         services.AddSwaggerGen(options =>
         {
@@ -67,8 +67,15 @@ public class Startup
             {
                 Title = "evaluationSiteOnContainers - Ordering HTTP API",
                 Version = "v1",
-                Description = "The Control of Ordering Service HTTP API"
+                Description = "游戏订购服务接口文档",
+                Contact = new OpenApiContact
+                {
+                    Name = "Zhousl",
+                    Email = "zhouslthere@outlook.com"
+                },
             });
+            var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename), true);
 
             //Swagger授权
             options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
@@ -195,10 +202,10 @@ public class Startup
                     "Ordering.API V1");
                 setup.OAuthClientId("orderingswaggerui");
                 setup.OAuthAppName("Ordering Swagger UI");
-                setup.OAuth2RedirectUrl(
-                    $"http://localhost:{Configuration.GetValue<string>("SwaggerRedirectUrlPort", "50001")}/swagger/oauth2-redirect.html");
+                setup.OAuth2RedirectUrl($"http://localhost:{Configuration.GetValue<string>("SwaggerRedirectUrlPort", "50001")}/swagger/oauth2-redirect.html");
             });
 
+        //Debug时使用
         //app.UseHttpLogging();
 
         app.UseRouting();

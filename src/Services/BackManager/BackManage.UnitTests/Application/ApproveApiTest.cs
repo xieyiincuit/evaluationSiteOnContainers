@@ -162,7 +162,7 @@ public class ApproveApiTest
     {
         //Arrange
         var correctSub = "correctSub";
-        var addObject = new ApproveRecordAddDto()
+        var addObject = new ApproveRecordAddOrUpdateDto()
         {
             Body = "body"
         };
@@ -188,7 +188,7 @@ public class ApproveApiTest
             HttpContext = new DefaultHttpContext() { User = GetExistUserClaimsPrincipal() }
         };
 
-        var actionResult = await approveController.AddApproveApplyAsync(addObject);
+        var actionResult = await approveController.UpdateApproveBodyAsync(addObject);
 
         //Assert
         Assert.Equal(((OkResult)actionResult).StatusCode, (int)HttpStatusCode.OK);
@@ -198,7 +198,7 @@ public class ApproveApiTest
     public async Task Add_user_approve_badRequest_when_addDtoNull()
     {
         //Arrange
-        ApproveRecordAddDto addObject = null;
+        ApproveRecordAddOrUpdateDto addObject = null;
 
         //Action
         var approveController = new ApproveController(
@@ -207,7 +207,7 @@ public class ApproveApiTest
             _identityClientMock.Object,
             _mapperMock.Object);
 
-        var actionResult = await approveController.AddApproveApplyAsync(addObject);
+        var actionResult = await approveController.UpdateApproveBodyAsync(addObject);
 
         //Assert
         Assert.Equal(((BadRequestResult)actionResult).StatusCode, (int)HttpStatusCode.BadRequest);
@@ -217,7 +217,7 @@ public class ApproveApiTest
     public async Task Add_user_approve_exception_when_add_fail()
     {
         //Arrange
-        var addObject = new ApproveRecordAddDto()
+        var addObject = new ApproveRecordAddOrUpdateDto()
         {
             Body = "body"
         };
@@ -239,7 +239,7 @@ public class ApproveApiTest
         {
             HttpContext = new DefaultHttpContext() { User = GetExistUserClaimsPrincipal() }
         };
-        var asyncAction = new Func<Task>(async () => await approveController.AddApproveApplyAsync(addObject));
+        var asyncAction = new Func<Task>(async () => await approveController.UpdateApproveBodyAsync(addObject));
 
         //Assert
         await Assert.ThrowsAsync<BackManageDomainException>(asyncAction);
@@ -250,7 +250,7 @@ public class ApproveApiTest
     {
         //Arrange
         var correctSub = "correctSub";
-        var addObject = new ApproveRecordAddDto()
+        var addObject = new ApproveRecordAddOrUpdateDto()
         {
             Body = "body"
         };
@@ -273,7 +273,7 @@ public class ApproveApiTest
             HttpContext = new DefaultHttpContext() { User = GetExistUserClaimsPrincipal() }
         };
 
-        var actionResult = await approveController.AddApproveApplyAsync(addObject);
+        var actionResult = await approveController.UpdateApproveBodyAsync(addObject);
 
         //Assert
         Assert.Equal(((BadRequestResult)actionResult).StatusCode, (int)HttpStatusCode.BadRequest);

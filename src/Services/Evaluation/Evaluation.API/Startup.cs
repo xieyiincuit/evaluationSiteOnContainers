@@ -42,6 +42,8 @@ public class Startup
         if (env.IsDevelopment()) IdentityModelEventSource.ShowPII = true;
 
         app.UseBundleSwagger(Configuration);
+
+        //Debug Using
         //app.UseHttpLogging();
 
         app.UseRouting();
