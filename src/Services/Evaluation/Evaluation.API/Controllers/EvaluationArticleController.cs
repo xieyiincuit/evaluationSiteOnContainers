@@ -206,7 +206,7 @@ public class EvaluationArticleController : ControllerBase
         var addResonse = await _articleService.AddArticleAsync(entity);
         if (addResonse != false) throw new EvaluationDomainException("创建测评文章失败");
 
-        _logger.LogInformation($"---- evaluator:id:{entity.UserId}, name:{User.Identity.Name} create a article -> id:{entity.ArticleId}, title:{articleAddDto.Title}");
+        _logger.LogInformation($"---- evaluator:id:{entity.UserId}, name:{User.FindFirst("nickname")} create a article -> id:{entity.ArticleId}, title:{articleAddDto.Title}");
         return CreatedAtRoute(nameof(GetArticleByIdAsync), new { id = entity.ArticleId }, new { articleId = entity.ArticleId });
     }
 
@@ -296,11 +296,11 @@ public class EvaluationArticleController : ControllerBase
         var delResponse = await _articleService.DeleteArticleAsync(id);
         if(delResponse == false)
         {
-            _logger.LogError($"---- user:id:{userId}, name:{User.Identity.Name} delete a article error-> id:{id}");
+            _logger.LogError($"---- user:id:{userId}, name:{User.FindFirst("nickname")} delete a article error-> id:{id}");
             throw new EvaluationDomainException("文章删除失败");
         }
 
-        _logger.LogInformation($"---- administrator:id:{userId}, name:{User.Identity.Name} delete a article -> id:{id}");
+        _logger.LogInformation($"---- administrator:id:{userId}, name:{User.FindFirst("nickname")} delete a article -> id:{id}");
         return NoContent();
     }
 
@@ -330,11 +330,11 @@ public class EvaluationArticleController : ControllerBase
         if (updateResponse == false)
         {
             _logger.LogError("---- evaluator:id:{UserId}, name:{Name} update a article error -> id:{Id} content:{@content}",
-                userId, User.Identity.Name, articleUpdateDto.Id, articleToUpdate);
+                userId, User.FindFirst("nickname"), articleUpdateDto.Id, articleToUpdate);
         }
 
         _logger.LogInformation("---- evaluator:id:{UserId}, name:{Name} update a article -> id:{Id} content:{@content}",
-            userId, User.Identity.Name, articleUpdateDto.Id, articleToUpdate);
+            userId, User.FindFirst("nickname"), articleUpdateDto.Id, articleToUpdate);
         return NoContent();
     }
 }

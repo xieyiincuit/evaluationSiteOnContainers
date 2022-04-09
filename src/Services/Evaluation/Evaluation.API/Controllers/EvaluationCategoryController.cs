@@ -90,12 +90,12 @@ public class EvaluationCategoryController : ControllerBase
         if (updateResponse == false)
         {
             _logger.LogError("---- administrator:id:{UserId}, name:{Name} update a category error -> old:{@old} new:{@new}",
-                User.FindFirst("sub").Value, User.Identity.Name, entity, categoryUpdateDto);
+                User.FindFirst("sub").Value, User.FindFirst("nickname"), entity, categoryUpdateDto);
             throw new EvaluationDomainException("更新测评名称失败");
         }
 
         _logger.LogInformation("---- administrator:id:{UserId}, name:{Name} update a category -> old:{@old} new:{@new}",
-            User.FindFirst("sub").Value, User.Identity.Name, entity, categoryUpdateDto);
+            User.FindFirst("sub").Value, User.FindFirst("nickname"), entity, categoryUpdateDto);
 
         if (await _redisDatabase.Database.KeyExistsAsync(_categoryListKey))
             await _redisDatabase.Database.KeyDeleteAsync(_categoryListKey);
@@ -121,12 +121,12 @@ public class EvaluationCategoryController : ControllerBase
         if (addResponse == false)
         {
             _logger.LogError("---- administrator:id:{UserId}, name:{Name} add a category error -> old:{@old} new:{@new}",
-                User.FindFirst("sub").Value, User.Identity.Name, entity, categoryAddDto);
+                User.FindFirst("sub").Value, User.FindFirst("nickname"), entity, categoryAddDto);
             throw new EvaluationDomainException("新增测评类别失败");
         }
 
         _logger.LogInformation("---- administrator:id:{UserId}, name:{Name} add a category -> old:{@old} new:{@new}",
-            User.FindFirst("sub").Value, User.Identity.Name, entity, categoryAddDto);
+            User.FindFirst("sub").Value, User.FindFirst("nickname"), entity, categoryAddDto);
 
         if (await _redisDatabase.Database.KeyExistsAsync(_categoryListKey))
             await _redisDatabase.Database.KeyDeleteAsync(_categoryListKey);
@@ -157,7 +157,7 @@ public class EvaluationCategoryController : ControllerBase
             if (delResponse == false)
             {
                 _logger.LogError("---- administrator:id:{UserId}, name:{Name} delete a category error -> id:{id}",
-                    User.FindFirst("sub").Value, User.Identity.Name, id);
+                    User.FindFirst("sub").Value, User.FindFirst("nickname"), id);
                 throw new EvaluationDomainException("删除测评分类失败");
             }
 
@@ -166,14 +166,14 @@ public class EvaluationCategoryController : ControllerBase
                 await _redisDatabase.Database.KeyDeleteAsync(_categoryListKey);
 
             _logger.LogInformation("---- administrator:id:{UserId}, name:{Name} delete a category -> id:{id}",
-                User.FindFirst("sub").Value, User.Identity.Name, id);
+                User.FindFirst("sub").Value, User.FindFirst("nickname"), id);
             return NoContent();
 
         }
         catch (MySqlException ex)
         {
             _logger.LogError("---- administrator:id:{UserId}, name:{Name} delete a category error -> message:{Message}",
-                User.FindFirst("sub").Value, User.Identity.Name, ex.Message);
+                User.FindFirst("sub").Value, User.FindFirst("nickname"), ex.Message);
             throw new EvaluationDomainException("程序错误，可能是数据库约束导致的", ex);
         }
     }

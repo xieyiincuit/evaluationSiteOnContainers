@@ -188,7 +188,7 @@ public class EvaluationCommentController : ControllerBase
         if (addResponse == false)
         {
             _logger.LogError("user:{Userid}:{UserName} wanna to comment on article:{ArticleId}, but fail",
-                User.FindFirstValue("sub"), User.Identity.Name, commentAddDto.ArticleId);
+                User.FindFirstValue("sub"), User.FindFirst("nickname"), commentAddDto.ArticleId);
             throw new EvaluationDomainException("测评文章评论失败");
         }
 
@@ -218,7 +218,7 @@ public class EvaluationCommentController : ControllerBase
         if (addResponse == false)
         {
             _logger.LogError("user:{Userid}:{UserName} wanna to reply on comment:{CommentId}, but fail",
-                User.FindFirstValue("sub"), User.Identity.Name, replyAddDto.RootCommentId);
+                User.FindFirstValue("sub"), User.FindFirst("nickname"), replyAddDto.RootCommentId);
             throw new EvaluationDomainException("文章评论回复失败");
         }
 
