@@ -10,6 +10,7 @@ public class EvaluationImageController : ControllerBase
     private readonly MinioClient _minioClient;
     private readonly ILogger<EvaluationImageController> _logger;
     private const string _articleBucket = "articleinfo";
+    private const string _picUploadRole = "evaluator";
 
     public EvaluationImageController(ILogger<EvaluationImageController> logger, MinioClient client)
     {
@@ -18,12 +19,14 @@ public class EvaluationImageController : ControllerBase
     }
 
     /// <summary>
-    /// 文章Banner上传
+    /// 测评人员——上传文章Banner
     /// </summary>
     /// <param name="file">格式: jpg, jpeg, png. 大小:3M以下. 文件名: 30个字符以内</param>
-    /// <returns></returns>
+    /// <returns>图片存储Url 访问图片通过http:localhost:9000/url</returns>
     [HttpPost("pic")]
-    [Authorize]
+    [Authorize(Roles = _picUploadRole)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(String), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> PostGamePicToOssAsync([FromForm] IFormFile file)
     {
         if (file == null || file.Length == 0 || file.FileName.Length >= 30)

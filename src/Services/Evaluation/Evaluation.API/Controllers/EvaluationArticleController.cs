@@ -71,6 +71,7 @@ public class EvaluationArticleController : ControllerBase
     /// <returns></returns>
     [HttpGet("game/articles")]
     [AllowAnonymous]
+    [ProducesResponseType(typeof(PaginatedItemsDtoModel<ArticleGameDto>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetArticlesByGameAsync([FromQuery] int gameId, [FromQuery] int pageIndex = 1)
     {
         var totalArticles = await _articleService.CountArticlesByGameAsync(gameId);
@@ -256,7 +257,7 @@ public class EvaluationArticleController : ControllerBase
         if (ParameterValidateHelper.IsInvalidPageIndex(totalArticles, pageSize, pageIndex))
             pageIndex = 1; // pageIndex不合法重设
 
-        List<ArticleSmallDto>? articles = categoryId.HasValue
+        List<ArticleSmallDto> articles = categoryId.HasValue
             ? await _articleService.GetArticlesAsync(pageSize, pageIndex, categoryId.Value)
             : await _articleService.GetArticlesAsync(pageSize, pageIndex);
 
@@ -329,7 +330,7 @@ public class EvaluationArticleController : ControllerBase
         if (updateResponse == false)
         {
             _logger.LogError("---- evaluator:id:{UserId}, name:{Name} update a article error -> id:{Id} content:{@content}",
-            userId, User.Identity.Name, articleUpdateDto.Id, articleToUpdate);
+                userId, User.Identity.Name, articleUpdateDto.Id, articleToUpdate);
         }
 
         _logger.LogInformation("---- evaluator:id:{UserId}, name:{Name} update a article -> id:{Id} content:{@content}",

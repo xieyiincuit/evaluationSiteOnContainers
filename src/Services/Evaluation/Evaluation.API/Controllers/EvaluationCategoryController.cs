@@ -8,7 +8,7 @@
 public class EvaluationCategoryController : ControllerBase
 {
     private const string _adminRole = "administrator";
-    private const string _categoryListKey = "categories";
+    private const string _categoryListKey = "evaluationCategories";
     private readonly IEvaluationCategoryService _categoryService;
     private readonly IRedisDatabase _redisDatabase;
     private readonly ILogger<EvaluationCategoryController> _logger;
@@ -39,13 +39,18 @@ public class EvaluationCategoryController : ControllerBase
         if (await _redisDatabase.Database.KeyExistsAsync(_categoryListKey))
         {
             var cacheCategory = await _redisDatabase.GetAsync<List<EvaluationCategory>>(_categoryListKey);
-            _logger.LogInformation("categories get from redis @{categoryList}", cacheCategory);
+            _logger.LogInformation("categories get from redis @{CategoryList}", cacheCategory);
             return Ok(cacheCategory);
         }
 
         var categories = await _categoryService.GetEvaluationCategoriesAsync();
         if (categories == null || categories.Count == 0) return NotFound();
-        await _redisDatabase.AddAsync(_categoryListKey, categories);
+
+        var redisResponse = await _redisDatabase.AddAsync(_categoryListKey, categories);
+        if (redisResponse == false)
+        {
+            _logger.LogWarning("redis add evaluation category @{CategoryList} Error", categories);
+        }
         return Ok(categories);
     }
 
@@ -165,11 +170,11 @@ public class EvaluationCategoryController : ControllerBase
             return NoContent();
 
         }
-        catch (Exception ex)
+        catch (MySqlException ex)
         {
             _logger.LogError("---- administrator:id:{UserId}, name:{Name} delete a category error -> message:{Message}",
                 User.FindFirst("sub").Value, User.Identity.Name, ex.Message);
-            throw new EvaluationDomainException("程序错误，可能是数据库约束导致的");
+            throw new EvaluationDomainException("程序错误，可能是数据库约束导致的", ex);
         }
     }
 }
