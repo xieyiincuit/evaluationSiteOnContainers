@@ -6,11 +6,11 @@ public interface IGameItemSDKService
 
     Task<long> CountSDKNumberByGameItemOrStatusAsync(int gameItemId, bool? hasSend);
 
-    Task<bool> GenerateSDKForGameShopItemAsync(int count, int gameItemId);
+    Task GenerateSDKForGameShopItemAsync(int count, int gameItemId);
 
     Task<int> BatchUpdateSDKStatusAsync(List<int> sdkIds);
 
-    Task<int> BatchDeleteGameItemsSDKAsync(int gameItemId, bool? hasSend, int deleteCount);
+    Task BatchDeleteGameItemsSDKAsync(int gameItemId, bool? hasSend, int deleteCount);
 
     Task<GameItemSDK> GetOneSDKToSendUserAsync(int shopItemId);
 }

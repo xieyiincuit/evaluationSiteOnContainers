@@ -80,7 +80,7 @@ public class PurchaseController : ControllerBase
         else
         {
             _logger.LogWarning("when user wanna buy a item:{itemId}, but get lock fail", shopItemId);
-            throw new OrderingDomainException("user wanna buy a item but get lock fail");
+            throw new OrderingDomainException($"user:{User.FindFirstValue("nickname")} wanna buy a item but get lock fail");
         }
 
         return Ok();

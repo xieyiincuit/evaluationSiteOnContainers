@@ -112,13 +112,13 @@ public class GameCategoryController : ControllerBase
         if (addResponse == false)
         {
             _logger.LogError("---- administrator:id:{UserId}, name:{Name} add a category error -> new:{@new}",
-                User.FindFirst("sub").Value, User.Identity.Name, categoryAddDto);
+                User.FindFirst("sub").Value, User.FindFirst("nickname"), categoryAddDto);
             throw new GameRepoDomainException("数据库新增游戏类型失败");
         }
         else
         {
             _logger.LogInformation("administrator: id:{UserId}, name:{UserName} add a category -> new:{@new}",
-                User.FindFirst("sub").Value, User.Identity.Name, categoryAddDto);
+                User.FindFirst("sub").Value, User.FindFirst("nickname"), categoryAddDto);
             // 新增数据后删除旧数据缓存
             if (await _redisDatabase.Database.KeyExistsAsync(_categoriesKey))
             {
@@ -154,7 +154,7 @@ public class GameCategoryController : ControllerBase
             if (delResponse == false)
             {
                 _logger.LogError("administrator: id:{UserId}, name:{UserName} delete a category -> categoryId:{id}",
-                    User.FindFirst("sub").Value, User.Identity.Name, id);
+                    User.FindFirst("sub").Value, User.FindFirst("nickname"), id);
                 throw new GameRepoDomainException("数据库删除游戏分类失败");
             }
 
@@ -174,7 +174,7 @@ public class GameCategoryController : ControllerBase
         catch (MySqlException ex)
         {
             _logger.LogError("---- administrator:id:{UserId}, name:{Name} delete a category error -> message:{Message}",
-                User.FindFirst("sub").Value, User.Identity.Name, ex.Message);
+                User.FindFirst("sub").Value, User.FindFirst("nickname"), ex.Message);
             throw new GameRepoDomainException("程序错误，可能是数据库约束导致的", ex);
         }
     }
@@ -196,14 +196,14 @@ public class GameCategoryController : ControllerBase
         if (entityToUpdate == null) return NotFound();
 
         _logger.LogInformation("---- administrator:id:{UserId}, name:{Name} update a category -> old:{@old} new:{@new}",
-            User.FindFirst("sub").Value, User.Identity.Name, entityToUpdate, categoryUpdateDto);
+            User.FindFirst("sub").Value, User.FindFirst("nickname"), entityToUpdate, categoryUpdateDto);
 
         _mapper.Map(categoryUpdateDto, entityToUpdate);
         var updateResponse = await _categoryService.UpdateCategoryAsync(entityToUpdate);
         if (updateResponse == false)
         {
             _logger.LogError("---- administrator:id:{UserId}, name:{Name} update a category error -> old:{@old} new:{@new}",
-                User.FindFirst("sub").Value, User.Identity.Name, entityToUpdate, categoryUpdateDto);
+                User.FindFirst("sub").Value, User.FindFirst("nickname"), entityToUpdate, categoryUpdateDto);
             throw new GameRepoDomainException("数据库修改游戏分类失败");
         }
 

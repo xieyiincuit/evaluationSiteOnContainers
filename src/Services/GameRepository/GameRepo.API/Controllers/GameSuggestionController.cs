@@ -99,19 +99,19 @@ public class GameSuggestionController : ControllerBase
             if (addResponse == false)
             {
                 _logger.LogError("administrator: id:{id}, name:{Name} add a suggestion error -> suggestion:{@suggestion}",
-                    User.FindFirst("sub").Value, User.Identity.Name, suggestionAddDto);
+                    User.FindFirst("sub").Value, User.FindFirst("nickname"), suggestionAddDto);
                 throw new GameRepoDomainException("数据库新增游戏建议失败");
             }
         }
         catch (MySqlException ex)
         {
             _logger.LogError("administrator: id:{id}, name:{Name} add a suggestion throw a exception -> ErrorMessage:{Error}",
-                User.FindFirst("sub").Value, User.Identity.Name, ex.Message);
+                User.FindFirst("sub").Value, User.FindFirst("nickname"), ex.Message);
             throw new GameRepoDomainException("数据库新增游戏建议失败, 数据库外键约束导致，请确认你新增的游戏是否存在");
         }
 
         _logger.LogInformation("administrator: id:{id}, name:{Name} add a suggestion -> suggestion:{@suggestion}",
-            User.FindFirst("sub").Value, User.Identity.Name, suggestionAddDto);
+            User.FindFirst("sub").Value, User.FindFirst("nickname"), suggestionAddDto);
         return CreatedAtRoute(nameof(GetSuggestionByIdAsync), new { suggestionId = entityToAdd.Id }, new { suggestionId = entityToAdd.Id });
     }
 
@@ -134,11 +134,11 @@ public class GameSuggestionController : ControllerBase
         if (delResponse == false)
         {
             _logger.LogInformation("administrator: id:{id}, name:{Name} delete a suggestion error -> suggestionId:{Id}",
-                User.FindFirst("sub").Value, User.Identity.Name, id);
+                User.FindFirst("sub").Value, User.FindFirst("nickname"), id);
         }
 
         _logger.LogInformation("administrator: id:{id}, name:{Name} delete a suggestion -> suggestionId:{Id}",
-            User.FindFirst("sub").Value, User.Identity.Name, id);
+            User.FindFirst("sub").Value, User.FindFirst("nickname"), id);
         return NoContent();
     }
 
@@ -163,12 +163,12 @@ public class GameSuggestionController : ControllerBase
         if (updateResponse == false)
         {
             _logger.LogError("administrator: id:{id}, name:{Name} update a suggestion error -> old:{@old} new:{@new}",
-                User.FindFirst("sub").Value, User.Identity.Name, entityToUpdate, suggestionUpdateDto);
+                User.FindFirst("sub").Value, User.FindFirst("nickname"), entityToUpdate, suggestionUpdateDto);
             throw new GameRepoDomainException("数据库修改游戏建议信息失败");
         }
 
         _logger.LogInformation("administrator: id:{id}, name:{Name} update a suggestion -> old:{@old} new:{@new}",
-            User.FindFirst("sub").Value, User.Identity.Name, entityToUpdate, suggestionUpdateDto);
+            User.FindFirst("sub").Value, User.FindFirst("nickname"), entityToUpdate, suggestionUpdateDto);
         return NoContent();
     }
 }

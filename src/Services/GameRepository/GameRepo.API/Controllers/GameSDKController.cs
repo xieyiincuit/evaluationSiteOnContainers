@@ -55,7 +55,7 @@ public class GameSDKController : ControllerBase
         if (updateResponse < 1)
         {
             _logger.LogError("administrator: id:{id}, name:{Name} batchUpdate sdks error -> sdks:{@sdks}",
-                User.FindFirst("sub").Value, User.Identity.Name, sdkIds);
+                User.FindFirst("sub").Value, User.FindFirst("nickname"), sdkIds);
             throw new GameRepoDomainException("批量改变SDK状态失败");
         }
 

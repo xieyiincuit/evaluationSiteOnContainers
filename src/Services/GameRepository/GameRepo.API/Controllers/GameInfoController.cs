@@ -1,7 +1,7 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Controllers;
 
 /// <summary>
-/// 游戏信息管理
+/// 游戏信息管理接口
 /// </summary>
 [ApiController]
 [Route("api/v1/game")]
@@ -28,8 +28,15 @@ public class GameInfoController : ControllerBase
         _unitOfWorkService = unitOfWorkService ?? throw new ArgumentNullException(nameof(unitOfWorkService));
     }
 
-    [HttpGet]
-    [Route("infos")]
+    /// <summary>
+    /// 用户——获取游戏展示信息
+    /// </summary>
+    /// <param name="categoryId">游戏类型</param>
+    /// <param name="companyId">游戏公司</param>
+    /// <param name="pageIndex">pageSize=18</param>
+    /// <param name="order">hot-热度排序 time-发布事件排序 score-游戏评分排序</param>
+    /// <returns></returns>
+    [HttpGet("infos")]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(PaginatedItemsDtoModel<GameInfoSmallDto>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetGameInfosAsync(
@@ -49,16 +56,15 @@ public class GameInfoController : ControllerBase
     }
 
     /// <summary>
-    /// 管理员获取游戏信息
+    /// 管理员——获取游戏信息列表
     /// </summary>
     /// <param name="categoryId">可根据游戏类别筛选</param>
     /// <param name="companyId">可根据游戏公司筛选</param>
     /// <param name="pageIndex">pageSize固定为10</param>
     /// <param name="order">排序方式：hot-游戏热度倒序(默认) time-发售时间倒序 score-游戏评分倒序 (其他无效字段)-Id倒序</param>
     /// <returns></returns>
-    [HttpGet]
-    [Route("admin/infos")]
-    //[Authorize(Roles = "administrator")]
+    [HttpGet("admin/infos")]
+    [Authorize(Roles = "administrator")]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(PaginatedItemsDtoModel<GameInfoAdminDto>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetGameInfoForAdminAsync(
@@ -78,8 +84,13 @@ public class GameInfoController : ControllerBase
         return Ok(model);
     }
 
-    [HttpGet]
-    [Route("ranks")]
+    /// <summary>
+    /// 用户——获取评分排名前十的游戏
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("ranks")]
+    [ProducesResponseType(typeof(List<GameRankDto>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<IActionResult> GetGameRankAsync()
     {
         var games = await _gameInfoService.GetGameInfoRankAsync();
@@ -87,11 +98,12 @@ public class GameInfoController : ControllerBase
     }
 
     /// <summary>
-    /// 获取所有游戏列表，可用于测评文章选择和商品上架游戏选择
+    /// 用户，管理员——获取所有游戏列表，用于测评文章选择和商品上架游戏选择
     /// </summary>
     /// <returns></returns>
-    [HttpGet]
-    [Route("selectlist")]
+    [HttpGet("selectlist")]
+    [ProducesResponseType(typeof(List<GameSelectDto>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<IActionResult> GetGameSelectListAsync()
     {
         var games = await _gameInfoService.GetGameSelectAsync();
@@ -99,14 +111,14 @@ public class GameInfoController : ControllerBase
     }
 
     /// <summary>
-    /// 获取特定游戏具体信息
+    /// 用户，管理员——获取游戏的具体信息
     /// </summary>
-    /// <param name="gameId"></param>
+    /// <param name="gameId">游戏Id</param>
     /// <returns></returns>
     [HttpGet("info/{gameId:int}", Name = nameof(GetGameInfoByIdAsync))]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(GameInfoSmallDto), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(GameInfoDto), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetGameInfoByIdAsync([FromRoute] int gameId)
     {
         if (gameId <= 0 || gameId >= int.MaxValue) return BadRequest();
@@ -119,12 +131,11 @@ public class GameInfoController : ControllerBase
     }
 
     /// <summary>
-    /// 新增游戏信息
+    /// 管理员——新增游戏信息
     /// </summary>
     /// <param name="gameInfoAddDto">supportPlatform需校验 内容用/隔开： 如PC/PS4</param>
     /// <returns></returns>
-    [HttpPost] //定义该Action为HTTP POST
-    [Route("info")] //定义子路由
+    [HttpPost("info")] //定义该Action为HTTP POST, 定义子路由
     [Authorize(Roles = "administrator")] //定义该方法需要身份验证且授权给administrator用户
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.Created)]
@@ -132,28 +143,30 @@ public class GameInfoController : ControllerBase
     {
         //若未带参数请求该接口 直接返回400
         if (gameInfoAddDto == null) return BadRequest();
-
         //将DTO映射为游戏信息数据库实体
         var entityToAdd = _mapper.Map<GameInfo>(gameInfoAddDto);
-
-        //记录日志
-        _logger.LogInformation($"administrator: id:{User.FindFirst("sub").Value}, name:{User.Identity.Name} add a gameInfo -> GameName:{gameInfoAddDto.Name}");
-
+        //记录行为日志
+        _logger.LogInformation("administrator: id:{UserId}, name:{UserName} start add a gameInfo:{@new}", User.FindFirstValue("sub"), User.FindFirst("nickname"), gameInfoAddDto);
         //调用Service将游戏实体写入数据库
         await _gameInfoService.AddGameInfoAsync(entityToAdd);
-
         //工作单元保存
-        await _unitOfWorkService.SaveChangesAsync();
+        var saveResponse = await _unitOfWorkService.SaveEntitiesAsync();
+        //保存失败
+        if (saveResponse == false)
+        {
+            //记录错误日志
+            _logger.LogInformation("administrator: id:{UserId}, name:{UserName} add a gameInfo:{@new} error", User.FindFirstValue("sub"), User.FindFirst("nickname"), gameInfoAddDto);
+            throw new GameRepoDomainException("数据库游戏信息添加失败");
+        }
         return CreatedAtRoute(nameof(GetGameInfoByIdAsync), new { gameId = entityToAdd.Id }, new { gameId = entityToAdd.Id });
     }
 
     /// <summary>
-    /// 修改游戏信息
+    /// 管理员——修改游戏信息
     /// </summary>
     /// <param name="gameInfoUpdateDto">supportPlatform需校验 内容用/隔开： 如PC/PS4</param>
     /// <returns></returns>
-    [HttpPut]
-    [Route("info")]
+    [HttpPut("info")]
     [Authorize(Roles = "administrator")]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
@@ -172,20 +185,28 @@ public class GameInfoController : ControllerBase
         _mapper.Map(gameInfoUpdateDto, gameItem);
         await _gameInfoService.UpdateGameInfoAsync(gameItem);
 
-        if (raiseGameNameChangedEvent)
+        try
         {
-            _logger.LogInformation("----- GameNameChangedEvent Raised, Will Send a message to Event Bus");
-            //1. 初始化集成事件，待事件总线发布。
-            var nameChangedEvent = new GameNameChangedIntegrationEvent(gameItem.Id, oldName, gameInfoUpdateDto.Name);
-            //2. 使用事务保证原子性的同时，在发布事件时同时记录事件日志。
-            await _repoIntegrationEventService.SaveEventAndGameRepoContextChangeAsync(nameChangedEvent);
-            //3. 将该事件发布并修改该事件发布状态为已发布
-            await _repoIntegrationEventService.PublishThroughEventBusAsync(nameChangedEvent);
+            if (raiseGameNameChangedEvent)
+            {
+                _logger.LogInformation("----- GameNameChangedEvent Raised, Will Send a message to Event Bus");
+                //1. 初始化集成事件，待事件总线发布。
+                var nameChangedEvent = new GameNameChangedIntegrationEvent(gameItem.Id, oldName, gameInfoUpdateDto.Name);
+                //2. 使用事务保证原子性的同时，在发布事件时同时记录事件日志。
+                await _repoIntegrationEventService.SaveEventAndGameRepoContextChangeAsync(nameChangedEvent);
+                //3. 将该事件发布并修改该事件发布状态为已发布
+                await _repoIntegrationEventService.PublishThroughEventBusAsync(nameChangedEvent);
+            }
+            else
+            {
+                // Just save the updated gameInfo because the Game's Name hasn't changed.
+                await _unitOfWorkService.SaveEntitiesAsync();
+            }
         }
-        else
+        catch (Exception ex)
         {
-            // Just save the updated gameInfo because the Game's Name hasn't changed.
-            await _unitOfWorkService.SaveEntitiesAsync();
+            _logger.LogError("administrator change gameInfo error -> gameInfo:{@game} | ErrorMessage:{Message}", gameInfoUpdateDto, ex.Message);
+            throw new GameRepoDomainException("数据库更新游戏信息失败, 或集成事件发布失败，请检查日志。");
         }
 
         return NoContent();
@@ -193,12 +214,11 @@ public class GameInfoController : ControllerBase
 
 
     /// <summary>
-    /// 游戏管理不需要删除功能 提供修改即可
+    /// 管理员——删除游戏信息
     /// </summary>
-    /// <param name="id"></param>
+    /// <param name="id">游戏Id</param>
     /// <returns></returns>
-    [HttpDelete]
-    [Route("info/{id:int}")]
+    [HttpDelete("info/{id:int}")]
     [Authorize(Roles = "administrator")]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -206,11 +226,9 @@ public class GameInfoController : ControllerBase
     public async Task<IActionResult> DeleteGameInfoAsync([FromRoute] int id)
     {
         if (id <= 0 || id >= int.MaxValue) return BadRequest();
-
         await _gameInfoService.RemoveGameInfoAsync(id);
         var response = await _unitOfWorkService.SaveEntitiesAsync();
-        _logger.LogInformation(
-            $"administrator: id:{User.FindFirst("sub").Value}, name:{User.Identity.Name} delete a gameInfo -> Id:{id}");
+        _logger.LogInformation($"administrator: id:{User.FindFirst("sub").Value}, name:{User.FindFirst("nickname")} delete a gameInfo -> Id:{id}");
         return response == true ? NoContent() : NotFound();
     }
 }

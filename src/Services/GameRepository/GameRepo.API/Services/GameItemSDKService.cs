@@ -11,8 +11,7 @@ public class GameItemSDKService : IGameItemSDKService
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<List<GameItemSDK>> GetSDKListByGameItemAsync(int pageIndex, int pageSize, int gameItemId,
-        bool? hasSend)
+    public async Task<List<GameItemSDK>> GetSDKListByGameItemAsync(int pageIndex, int pageSize, int gameItemId, bool? hasSend)
     {
         var queryString = _repoDbContext.GameItemSDKs
             .AsNoTracking()
@@ -31,14 +30,13 @@ public class GameItemSDKService : IGameItemSDKService
     public async Task<long> CountSDKNumberByGameItemOrStatusAsync(int gameItemId, bool? hasSend)
     {
         if (hasSend == null || hasSend == false)
-            return await _repoDbContext.GameItemSDKs
-                .LongCountAsync(x =>
-                    x.GameItemId == gameItemId && (x.HasSend == null || x.HasSend == false));
-        return await _repoDbContext.GameItemSDKs
-            .LongCountAsync(x => x.GameItemId == gameItemId && x.HasSend == true);
+        {
+            return await _repoDbContext.GameItemSDKs.LongCountAsync(x => x.GameItemId == gameItemId && (x.HasSend == null || x.HasSend == false));
+        }
+        return await _repoDbContext.GameItemSDKs.LongCountAsync(x => x.GameItemId == gameItemId && x.HasSend == true);
     }
 
-    public async Task<bool> GenerateSDKForGameShopItemAsync(int count, int gameItemId)
+    public async Task GenerateSDKForGameShopItemAsync(int count, int gameItemId)
     {
         var sdkToInsert = new List<GameItemSDK>();
         for (var i = 0; i < count; i++)
@@ -49,7 +47,6 @@ public class GameItemSDKService : IGameItemSDKService
             });
 
         await _repoDbContext.GameItemSDKs.AddRangeAsync(sdkToInsert);
-        return await _repoDbContext.SaveChangesAsync() == count;
     }
 
     public async Task<int> BatchUpdateSDKStatusAsync(List<int> sdkIds)
@@ -78,7 +75,7 @@ public class GameItemSDKService : IGameItemSDKService
         return await _repoDbContext.SaveChangesAsync();
     }
 
-    public async Task<int> BatchDeleteGameItemsSDKAsync(int gameItemId, bool? hasSend, int deleteCount)
+    public async Task BatchDeleteGameItemsSDKAsync(int gameItemId, bool? hasSend, int deleteCount)
     {
         var sdkItemsToDelete = await _repoDbContext.GameItemSDKs
             .Where(x => x.GameItemId == gameItemId && x.HasSend == hasSend)
@@ -87,7 +84,6 @@ public class GameItemSDKService : IGameItemSDKService
             .ToListAsync();
 
         _repoDbContext.GameItemSDKs.RemoveRange(sdkItemsToDelete);
-        return await _repoDbContext.SaveChangesAsync();
     }
 
     public async Task<GameItemSDK> GetOneSDKToSendUserAsync(int shopItemId)

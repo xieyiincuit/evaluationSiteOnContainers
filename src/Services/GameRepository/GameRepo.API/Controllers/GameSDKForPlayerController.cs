@@ -57,7 +57,7 @@ public class GameSDKForPlayerController : ControllerBase
             _ => await _sdkForPlayerService.GetPlayerSDKByUserIdAsync(userId, _pageSize, pageIndex)
         };
 
-        _logger.LogInformation("user:{UserId}-{UserName}, get it sdkList", userId, User.Identity.Name);
+        _logger.LogInformation("user:{UserId}-{UserName}, get it sdkList", userId, User.FindFirst("nickname"));
         var model = new PaginatedItemsDtoModel<PlaySDKDto>(pageIndex, _pageSize, userSdkCount, userSdksDto);
         return Ok(model);
     }
@@ -79,7 +79,7 @@ public class GameSDKForPlayerController : ControllerBase
         var sdk = await _sdkForPlayerService.GetPlayerSDKByIdAsync(sdkId);
         if (sdk.UserId != userId) return BadRequest();
 
-        _logger.LogInformation("user:{UserId}-{UserName} start to check itself sdk:{SDKId}", userId, User.Identity.Name, sdkId);
+        _logger.LogInformation("user:{UserId}-{UserName} start to check itself sdk:{SDKId}", userId, User.FindFirst("nickname"), sdkId);
         try
         {
             // Check SDK
@@ -97,10 +97,10 @@ public class GameSDKForPlayerController : ControllerBase
         }
         catch (MySqlException ex)
         {
-            _logger.LogError("user:{UserId}-{UserName} check itself sdk:{SDKId} error -> ErrorMessage:{Message}", userId, User.Identity.Name, sdkId, ex.Message);
+            _logger.LogError("user:{UserId}-{UserName} check itself sdk:{SDKId} error -> ErrorMessage:{Message}", userId, User.FindFirst("nickname"), sdkId, ex.Message);
             throw new GameRepoDomainException("数据库错误，用户校验游戏SDK失败", ex.InnerException);
         }
-        _logger.LogInformation("user:{UserId}-{UserName} check itself sdk:{SDKId} successfully", userId, User.Identity.Name, sdkId);
+        _logger.LogInformation("user:{UserId}-{UserName} check itself sdk:{SDKId} successfully", userId, User.FindFirst("nickname"), sdkId);
         return NoContent();
     }
 
@@ -177,7 +177,7 @@ public class GameSDKForPlayerController : ControllerBase
     public async Task<IActionResult> SendSdkToBuyerAsync([FromBody] SDKPlayerAddDto addDto)
     {
         // 获取该游戏未发放的SDK 准备发送给用户
-        _logger.LogInformation("User:{UserID}-{UserName} Buy a ShopItem:{ShopId}, ready to send Sdk", User.FindFirstValue("sub"), User.Identity.Name, addDto.ShopItemId);
+        _logger.LogInformation("User:{UserID}-{UserName} Buy a ShopItem:{ShopId}, ready to send Sdk", User.FindFirstValue("sub"), User.FindFirst("nickname"), addDto.ShopItemId);
 
         var sdk = await _sdkSendService.GetOneSDKToSendUserAsync(addDto.ShopItemId);
         if (sdk == null) return BadRequest();

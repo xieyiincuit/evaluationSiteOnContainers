@@ -2,14 +2,16 @@
 
 public interface IGameShopItemService
 {
+    Task<int> CountGameShopItemAsync();
+    Task<ShopItemStatusDto> CheckShopStatusAsync(int shopItemId);
     Task<List<GameShopItem>> GetGameShopItemListAsync(int pageIndex, int pageSize, int orderBy, bool isAdmin);
     Task<GameShopItem> GetGameShopItemByIdAsync(int shopItemId);
     Task<GameShopItem> GetGameShopItemByGameIdAsync(int gameInfoId);
-    Task<bool> AddGameShopItemAsync(GameShopItem gameShopItem);
-    Task<bool> DeleteGameShopItemByIdAsync(int shopItemId);
+    Task AddGameShopItemAsync(GameShopItem gameShopItem);
+    Task DeleteGameShopItemByIdAsync(int shopItemId);
     Task<bool> UpdateGameShopItemInfoAsync(GameShopItem gameShopItem);
-    Task<bool> ChangeGameShopItemStatusAsync(int shopItemId);
-    Task<int> CountGameShopItemAsync();
-    Task<bool> UpdateShopItemStockWhenTakeDownAsync(int shopItemId);
-    Task<bool> UpdateShopItemStockWhenChangeNumberAsync(int shopItemId, int newStock);
+    Task TakeDownGameShopItemAsync(int shopItemId);
+    Task<int> TakeUpGameShopItemAsync(int shopItemId);
+    Task UpdateShopItemStockWhenTakeDownAsync(int shopItemId, int currentStock);
+    Task UpdateShopItemStockWhenChangeNumberAsync(int shopItemId, int newStock);
 }

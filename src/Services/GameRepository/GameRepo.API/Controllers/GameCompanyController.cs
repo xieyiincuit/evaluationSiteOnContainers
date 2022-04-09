@@ -109,13 +109,13 @@ public class GameCompanyController : ControllerBase
         if (addResponse == false)
         {
             _logger.LogError("---- administrator:id:{UserId}, name:{Name} add a company error -> new:{@new}",
-                User.FindFirst("sub").Value, User.Identity.Name, companyAddDto);
+                User.FindFirst("sub").Value, User.FindFirst("nickname"), companyAddDto);
             throw new GameRepoDomainException("数据库新增游戏公司失败");
         }
         else
         {
             _logger.LogInformation("administrator: id:{UserId}, name:{UserName} add a company -> new:{@new}",
-                User.FindFirst("sub").Value, User.Identity.Name, companyAddDto);
+                User.FindFirst("sub").Value, User.FindFirst("nickname"), companyAddDto);
             // 新增数据后删除旧数据缓存
             if (await _redisDatabase.Database.KeyExistsAsync(_companiesKey))
             {
@@ -151,7 +151,7 @@ public class GameCompanyController : ControllerBase
             if (delResponse == false)
             {
                 _logger.LogError("administrator: id:{UserId}, name:{UserName} delete a company -> companyId:{id}",
-                    User.FindFirst("sub").Value, User.Identity.Name, id);
+                    User.FindFirst("sub").Value, User.FindFirst("nickname"), id);
                 throw new GameRepoDomainException("数据库删除游戏公司失败");
             }
 
@@ -171,7 +171,7 @@ public class GameCompanyController : ControllerBase
         catch (MySqlException ex)
         {
             _logger.LogError("---- administrator:id:{UserId}, name:{Name} delete a company error -> message:{Message}",
-                User.FindFirst("sub").Value, User.Identity.Name, ex.Message);
+                User.FindFirst("sub").Value, User.FindFirst("nickname"), ex.Message);
             throw new GameRepoDomainException("程序错误，可能是数据库约束导致的", ex);
         }
     }
@@ -193,14 +193,14 @@ public class GameCompanyController : ControllerBase
         if (entityToUpdate == null) return NotFound();
 
         _logger.LogInformation("---- administrator:id:{UserId}, name:{Name} update a company -> old:{@old} new:{@new}",
-            User.FindFirst("sub").Value, User.Identity.Name, entityToUpdate, companyUpdateDto);
+            User.FindFirst("sub").Value, User.FindFirst("nickname"), entityToUpdate, companyUpdateDto);
 
         _mapper.Map(companyUpdateDto, entityToUpdate);
         var updateResponse = await _companyService.UpdateGameCompanyAsync(entityToUpdate);
         if (updateResponse == false)
         {
             _logger.LogError("---- administrator:id:{UserId}, name:{Name} update a company error -> old:{@old} new:{@new}",
-                User.FindFirst("sub").Value, User.Identity.Name, entityToUpdate, companyUpdateDto);
+                User.FindFirst("sub").Value, User.FindFirst("nickname"), entityToUpdate, companyUpdateDto);
             throw new GameRepoDomainException("数据库修改游戏公司失败");
         }
 

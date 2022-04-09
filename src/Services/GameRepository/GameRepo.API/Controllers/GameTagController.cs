@@ -72,7 +72,7 @@ public class GameTagController : ControllerBase
         await _tagService.AddGameTagAsync(entityToAdd);
 
         _logger.LogInformation(
-            $"administrator: id:{User.FindFirst("sub").Value}, name:{User.Identity.Name} add a gameTag -> tagName:{tagAddDto.TagName}");
+            $"administrator: id:{User.FindFirst("sub").Value}, name:{User.FindFirst("nickname")} add a gameTag -> tagName:{tagAddDto.TagName}");
         return CreatedAtRoute(nameof(GetTagByIdAsync), new { tagId = entityToAdd.Id }, null);
     }
 
@@ -84,7 +84,7 @@ public class GameTagController : ControllerBase
     {
         if (id <= 0 || id >= int.MaxValue) return BadRequest();
         _logger.LogInformation(
-            $"administrator: id:{User.FindFirst("sub").Value}, name:{User.Identity.Name} delete a gameTag -> tagId:{id}");
+            $"administrator: id:{User.FindFirst("sub").Value}, name:{User.FindFirst("nickname")} delete a gameTag -> tagId:{id}");
         var response = await _tagService.DeleteGameTagAsync(id);
         return response == true ? NoContent() : NotFound();
     }
@@ -101,7 +101,7 @@ public class GameTagController : ControllerBase
         if (entityToUpdate == null) return NotFound();
 
         _logger.LogInformation(
-            $"administrator: id:{User.FindFirst("sub").Value}, name:{User.Identity.Name} update a gameTag -> old:{entityToUpdate.TagName}, new:{tagUpdateDto.TagName}");
+            $"administrator: id:{User.FindFirst("sub").Value}, name:{User.FindFirst("nickname")} update a gameTag -> old:{entityToUpdate.TagName}, new:{tagUpdateDto.TagName}");
 
         _mapper.Map(tagUpdateDto, entityToUpdate);
         await _tagService.UpdateGameTagAsync(entityToUpdate);
