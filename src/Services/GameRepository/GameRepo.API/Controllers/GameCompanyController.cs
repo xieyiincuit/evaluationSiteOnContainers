@@ -1,43 +1,67 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Controllers;
 
 /// <summary>
-/// 游戏发行公司管理
+/// 游戏公司管理接口
 /// </summary>
 [ApiController]
 [Route("api/v1/game")]
 public class GameCompanyController : ControllerBase
 {
     private const int _pageSize = 10;
+    private const string _companiesKey = "gameCompanies";
     private readonly IGameCompanyService _companyService;
     private readonly ILogger<GameCompany> _logger;
+    private readonly IRedisDatabase _redisDatabase;
     private readonly IMapper _mapper;
 
     public GameCompanyController(
         IGameCompanyService companyService,
         IMapper mapper,
-        ILogger<GameCompany> logger)
+        ILogger<GameCompany> logger,
+        IRedisDatabase redisDatabase)
     {
         _companyService = companyService ?? throw new ArgumentNullException(nameof(companyService));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
-
-    [HttpGet]
-    [Route("companies/all")]
-    public async Task<IActionResult> GetAllCompaniesAsync()
-    {
-        var companies = await _companyService.GetAllGameCompaniesAsync();
-        if (!companies.Any()) return NotFound();
-        return Ok(companies);
+        _redisDatabase = redisDatabase ?? throw new ArgumentNullException(nameof(redisDatabase));
     }
 
     /// <summary>
-    /// 分页获取游戏发行公司信息
+    /// 用户，管理员——获取所有游戏公司，可用于Select框
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("companies/all")]
+    [ProducesResponseType(typeof(List<GameCompany>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    public async Task<IActionResult> GetAllCompaniesAsync()
+    {
+        if (_redisDatabase.Database.KeyExists(_companiesKey))
+        {
+            var cacheCompanies = await _redisDatabase.GetAsync<List<GameCompany>>(_companiesKey);
+            _logger.LogInformation("gameCompanies get from redis @{CompanyList}", cacheCompanies);
+            return Ok(cacheCompanies);
+        }
+
+        var allCompanies = await _companyService.GetAllGameCompaniesAsync();
+        if (!allCompanies.Any())
+        {
+            return NotFound();
+        }
+
+        var redisResponse = await _redisDatabase.AddAsync(_companiesKey, allCompanies);
+        if (redisResponse == false)
+        {
+            _logger.LogWarning("redis add game category @{CompanyList} Error", allCompanies);
+        }
+        return Ok(allCompanies);
+    }
+
+    /// <summary>
+    /// 用户，管理员——分页获取游戏发行公司信息
     /// </summary>
     /// <param name="pageIndex">index默认为1, size后台固定为10</param>
     /// <returns></returns>
-    [HttpGet]
-    [Route("companies")]
+    [HttpGet("companies")]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(PaginatedItemsDtoModel<GameCompany>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetCompaniesAsync([FromQuery] int pageIndex = 1)
@@ -53,31 +77,26 @@ public class GameCompanyController : ControllerBase
     }
 
     /// <summary>
-    /// 获取特定游戏发行公司信息
+    /// 用户，管理员——获取特定游戏公司信息
     /// </summary>
-    /// <param name="companyId"></param>
+    /// <param name="companyId">公司Id</param>
     /// <returns></returns>
     [HttpGet("company/{companyId:int}", Name = nameof(GetCompanyByIdAsync))]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(GameCompany), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetCompanyByIdAsync([FromRoute] int companyId)
     {
         if (companyId <= 0 || companyId >= int.MaxValue) return BadRequest();
-
         var company = await _companyService.GetGameCompanyAsync(companyId);
-
-        if (company == null) return NotFound();
-        return Ok(company);
+        return company == null ? NotFound() : Ok(company);
     }
 
     /// <summary>
-    /// 新增游戏发行公司信息
+    /// 管理员——新增游戏公司信息
     /// </summary>
     /// <param name="companyAddDto"></param>
     /// <returns></returns>
-    [HttpPost]
-    [Route("company")]
+    [HttpPost("company")]
     [Authorize(Roles = "administrator")]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.Created)]
@@ -86,57 +105,115 @@ public class GameCompanyController : ControllerBase
         if (companyAddDto == null) return BadRequest();
 
         var entityToAdd = _mapper.Map<GameCompany>(companyAddDto);
-        await _companyService.AddGameCompanyAsync(entityToAdd);
-
-        _logger.LogInformation(
-            $"administrator: id:{User.FindFirst("sub").Value}, name:{User.Identity.Name} add a company -> companyName:{companyAddDto.CompanyName}");
-
-        return CreatedAtRoute(nameof(GetCompanyByIdAsync), new { companyId = entityToAdd.Id }, null);
+        var addResponse = await _companyService.AddGameCompanyAsync(entityToAdd);
+        if (addResponse == false)
+        {
+            _logger.LogError("---- administrator:id:{UserId}, name:{Name} add a company error -> new:{@new}",
+                User.FindFirst("sub").Value, User.Identity.Name, companyAddDto);
+            throw new GameRepoDomainException("数据库新增游戏公司失败");
+        }
+        else
+        {
+            _logger.LogInformation("administrator: id:{UserId}, name:{UserName} add a company -> new:{@new}",
+                User.FindFirst("sub").Value, User.Identity.Name, companyAddDto);
+            // 新增数据后删除旧数据缓存
+            if (await _redisDatabase.Database.KeyExistsAsync(_companiesKey))
+            {
+                var redisResponse = await _redisDatabase.Database.KeyDeleteAsync(_companiesKey);
+                if (redisResponse == false)
+                {
+                    _logger.LogError("redis delete game company error when game company add a new one");
+                    throw new GameRepoDomainException("数据库新增游戏公司时，Redis缓存删除失败，请手动删除缓存防止出现错误数据");
+                }
+            }
+            return CreatedAtRoute(nameof(GetCompanyByIdAsync), new { companyId = entityToAdd.Id }, new { companyId = entityToAdd.Id });
+        }
     }
 
     /// <summary>
-    /// 删除游戏发行公司信息
+    /// 管理员——删除游戏发行信息
     /// </summary>
-    /// <param name="id"></param>
+    /// <param name="id">游戏公司Id</param>
     /// <returns></returns>
-    [HttpDelete]
-    [Route("company/{id:int}")]
+    [HttpDelete("company/{id:int}")]
     [Authorize(Roles = "administrator")]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
-    public async Task<IActionResult> DeleteCategoryAsync([FromRoute] int id)
+    public async Task<IActionResult> DeleteCompanyAsync([FromRoute] int id)
     {
         if (id <= 0 || id >= int.MaxValue) return BadRequest();
+        var entity = await _companyService.GetGameCompanyAsync(id);
+        if (entity == null) return BadRequest();
 
-        _logger.LogInformation(
-            $"administrator: id:{User.FindFirst("sub").Value}, name:{User.Identity.Name} delete a company -> companyId:{id}");
+        try
+        {
+            var delResponse = await _companyService.DeleteGameCompanyAsync(id);
+            if (delResponse == false)
+            {
+                _logger.LogError("administrator: id:{UserId}, name:{UserName} delete a company -> companyId:{id}",
+                    User.FindFirst("sub").Value, User.Identity.Name, id);
+                throw new GameRepoDomainException("数据库删除游戏公司失败");
+            }
 
-        var response = await _companyService.DeleteGameCompanyAsync(id);
-        return response == true ? NoContent() : NotFound();
+            // 删除成功 一并清除缓存
+            if (await _redisDatabase.Database.KeyExistsAsync(_companiesKey))
+            {
+                var redisResponse = await _redisDatabase.Database.KeyDeleteAsync(_companiesKey);
+                if (redisResponse == false)
+                {
+                    _logger.LogError("redis delete game companies error when delete a company");
+                    throw new GameRepoDomainException("数据库删除游戏公司时，Redis缓存删除失败，请手动删除缓存防止出现错误数据");
+                }
+            }
+
+            return NoContent();
+        }
+        catch (MySqlException ex)
+        {
+            _logger.LogError("---- administrator:id:{UserId}, name:{Name} delete a company error -> message:{Message}",
+                User.FindFirst("sub").Value, User.Identity.Name, ex.Message);
+            throw new GameRepoDomainException("程序错误，可能是数据库约束导致的", ex);
+        }
     }
 
     /// <summary>
-    /// 修改游戏发行公司信息
+    /// 管理员——修改游戏公司信息
     /// </summary>
     /// <param name="companyUpdateDto"></param>
     /// <returns></returns>
-    [HttpPut]
-    [Route("company")]
+    [HttpPut("company")]
     [Authorize(Roles = "administrator")]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
-    public async Task<IActionResult> UpdateCategoryAsync([FromBody] GameCompanyUpdateDto companyUpdateDto)
+    public async Task<IActionResult> UpdateCompanyAsync([FromBody] GameCompanyUpdateDto companyUpdateDto)
     {
         if (companyUpdateDto == null) return BadRequest();
 
         var entityToUpdate = await _companyService.GetGameCompanyAsync(companyUpdateDto.Id);
         if (entityToUpdate == null) return NotFound();
 
-        _logger.LogInformation(
-            $"administrator: id:{User.FindFirst("sub").Value}, name:{User.Identity.Name} update a company -> old:{entityToUpdate.CompanyName}, new:{companyUpdateDto.CompanyName}");
+        _logger.LogInformation("---- administrator:id:{UserId}, name:{Name} update a company -> old:{@old} new:{@new}",
+            User.FindFirst("sub").Value, User.Identity.Name, entityToUpdate, companyUpdateDto);
 
         _mapper.Map(companyUpdateDto, entityToUpdate);
-        await _companyService.UpdateGameCompanyAsync(entityToUpdate);
+        var updateResponse = await _companyService.UpdateGameCompanyAsync(entityToUpdate);
+        if (updateResponse == false)
+        {
+            _logger.LogError("---- administrator:id:{UserId}, name:{Name} update a company error -> old:{@old} new:{@new}",
+                User.FindFirst("sub").Value, User.Identity.Name, entityToUpdate, companyUpdateDto);
+            throw new GameRepoDomainException("数据库修改游戏公司失败");
+        }
+
+        // 修改成功,清除缓存同步数据
+        if (await _redisDatabase.Database.KeyExistsAsync(_companiesKey))
+        {
+            var redisResponse = await _redisDatabase.Database.KeyDeleteAsync(_companiesKey);
+            if (redisResponse == false)
+            {
+                _logger.LogError("redis delete game company error when delete a category");
+                throw new GameRepoDomainException("数据库更新游戏公司时，Redis缓存删除失败，请手动删除缓存防止出现错误数据");
+            }
+        }
         return NoContent();
     }
 }

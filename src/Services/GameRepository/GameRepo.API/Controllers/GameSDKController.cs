@@ -1,7 +1,10 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Controllers;
 
+/// <summary>
+/// 游戏SDK管理接口
+/// </summary>
 [ApiController]
-[Route("api/v1/game/shop/sdks")]
+[Route("api/v1/game")]
 public class GameSDKController : ControllerBase
 {
     private const int _pageSize = 15;
@@ -14,12 +17,18 @@ public class GameSDKController : ControllerBase
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    [HttpGet("{gameItemId:int}")]
+    /// <summary>
+    /// 管理员——分页获取游戏SDK信息
+    /// </summary>
+    /// <param name="hasSend">是否已经发出</param>
+    /// <param name="gameItemId">属于哪个游戏</param>
+    /// <param name="pageIndex">pageSize=15</param>
+    /// <returns></returns>
+    [HttpGet("shop/sdks/{gameItemId:int}")]
     [Authorize(Roles = "administrator")]
     [ProducesResponseType(typeof(PaginatedItemsDtoModel<GameItemSDK>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    public async Task<IActionResult> GetGameSDKAsync(
-        [FromQuery] bool hasSend, [FromRoute] int gameItemId, [FromQuery] int pageIndex = 1)
+    public async Task<IActionResult> GetGameSDKAsync([FromQuery] bool hasSend, [FromRoute] int gameItemId, [FromQuery] int pageIndex = 1)
     {
         var sdkCount = await _sdkService.CountSDKNumberByGameItemOrStatusAsync(gameItemId, hasSend);
         if (ParameterValidateHelper.IsInvalidPageIndex(sdkCount, _pageSize, pageIndex)) pageIndex = 1;
@@ -31,13 +40,25 @@ public class GameSDKController : ControllerBase
         return Ok(model);
     }
 
-    [HttpPut]
+    /// <summary>
+    /// 管理员——批量校验SDK(业务中暂时没有用到此方法)
+    /// </summary>
+    /// <param name="sdkIds">sdkId的数组</param>
+    /// <returns></returns>
+    [HttpPut("shop/sdks")]
     [Authorize(Roles = "administrator")]
     public async Task<IActionResult> UpdateSDKStatusAsync(List<int> sdkIds)
     {
         if (sdkIds == null) return BadRequest();
 
-        var response = await _sdkService.BatchUpdateSDKStatusAsync(sdkIds);
-        return response > 1 ? NoContent() : BadRequest();
+        var updateResponse = await _sdkService.BatchUpdateSDKStatusAsync(sdkIds);
+        if (updateResponse < 1)
+        {
+            _logger.LogError("administrator: id:{id}, name:{Name} batchUpdate sdks error -> sdks:{@sdks}",
+                User.FindFirst("sub").Value, User.Identity.Name, sdkIds);
+            throw new GameRepoDomainException("批量改变SDK状态失败");
+        }
+
+        return NoContent();
     }
 }

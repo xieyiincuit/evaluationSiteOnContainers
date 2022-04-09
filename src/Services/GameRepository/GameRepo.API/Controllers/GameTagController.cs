@@ -1,6 +1,10 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Controllers;
 
+/// <summary>
+/// 游戏标签管理接口(系统中暂时未使用该模块)
+/// </summary>
 [ApiController]
+[ApiExplorerSettings(IgnoreApi = true)]
 [Route("api/v1/game")]
 public class GameTagController : ControllerBase
 {
@@ -19,8 +23,12 @@ public class GameTagController : ControllerBase
         _logger = logger;
     }
 
-    [HttpGet]
-    [Route("tags")]
+    /// <summary>
+    /// 用户，管理员——分页获取游戏标签信息
+    /// </summary>
+    /// <param name="pageIndex">pageSize=10</param>
+    /// <returns></returns>
+    [HttpGet("tags")]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(PaginatedItemsDtoModel<GameTag>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetTagsAsync([FromQuery] int pageIndex = 1)
@@ -35,6 +43,11 @@ public class GameTagController : ControllerBase
         return Ok(model);
     }
 
+    /// <summary>
+    /// 用户，管理员——获取特定游戏标签
+    /// </summary>
+    /// <param name="tagId"></param>
+    /// <returns></returns>
     [HttpGet("tag/{tagId:int}", Name = nameof(GetTagByIdAsync))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -42,15 +55,12 @@ public class GameTagController : ControllerBase
     public async Task<IActionResult> GetTagByIdAsync([FromRoute] int tagId)
     {
         if (tagId <= 0 || tagId >= int.MaxValue) return BadRequest();
-
         var tag = await _tagService.GetGameTagAsync(tagId);
-
-        if (tag == null) return NotFound();
-        return Ok(tag);
+        return tag == null ? NotFound() : Ok(tag);
     }
 
-    [HttpPost]
-    [Route("tag")]
+
+    [HttpPost("tag")]
     [Authorize(Roles = "administrator")]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.Created)]
@@ -66,8 +76,7 @@ public class GameTagController : ControllerBase
         return CreatedAtRoute(nameof(GetTagByIdAsync), new { tagId = entityToAdd.Id }, null);
     }
 
-    [HttpDelete]
-    [Route("tag/{id:int}")]
+    [HttpDelete("tag/{id:int}")]
     [Authorize(Roles = "administrator")]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
@@ -80,8 +89,7 @@ public class GameTagController : ControllerBase
         return response == true ? NoContent() : NotFound();
     }
 
-    [HttpPut]
-    [Route("tag")]
+    [HttpPut("tag")]
     [Authorize(Roles = "administrator")]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]

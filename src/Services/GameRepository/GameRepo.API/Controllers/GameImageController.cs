@@ -1,34 +1,39 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Controllers;
 
+/// <summary>
+/// 游戏资料服务图片上传接口
+/// </summary>
 [ApiController]
-[Route("api/v1/game")]
-public class PostImageController : ControllerBase
+[Route("api/v1")]
+public class GameImageController : ControllerBase
 {
     private readonly MinioClient _minioClient;
-    private readonly ILogger<PostImageController> _logger;
+    private readonly ILogger<GameImageController> _logger;
     private const string _gameInfoBucket = "gameinfopic";
     private const string _shopInfoBucket = "shopinfopic";
-
-    public PostImageController(ILogger<PostImageController> logger, MinioClient client)
+    private const string _picUploadRole = "administrator";
+    public GameImageController(ILogger<GameImageController> logger, MinioClient client)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _minioClient = client ?? throw new ArgumentNullException(nameof(client));
     }
 
     /// <summary>
-    /// 上传游戏略缩图和详细图
+    /// 管理员——上传游戏略缩图和详细图
     /// </summary>
-    /// <param name="file"></param>
-    /// <returns></returns>
-    [HttpPost("pic")]
-    [Authorize]
+    /// <param name="file">格式: jpg, jpeg, png. 大小:3M以下. 文件名: 30个字符以内</param>
+    /// <returns>图片存储Url 访问图片通过http:localhost:9000/url</returns>
+    [HttpPost("game/pic")]
+    [Authorize(Roles = _picUploadRole)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(String), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> PostGamePicToOssAsync([FromForm] IFormFile file)
     {
         if (file == null || file.Length == 0 || file.FileName.Length >= 30)
             return BadRequest("file empty or file name > 30 char");
 
         var acceptTypes = new[] { ".jpg", ".jpeg", ".png" };
-        if (acceptTypes.All(t => t != Path.GetExtension(file.FileName)?.ToLower()))
+        if (acceptTypes.All(t => t != Path.GetExtension(file.FileName).ToLower()))
             return BadRequest("File type not valid, only jpg and png are acceptable.");
 
         if (file.Length > 10 * 1024 * 3 * 1000) return BadRequest("File size cannot exceed 3M");
@@ -56,24 +61,25 @@ public class PostImageController : ControllerBase
     }
 
     /// <summary>
-    /// 上传商品图片
+    /// 管理员——上传商品图片
     /// </summary>
-    /// <param name="file"></param>
-    /// <returns></returns>
+    /// <param name="file">格式: jpg, jpeg, png. 大小:3M以下. 文件名: 30个字符以内</param>
+    /// <returns>图片存储Url 访问图片通过http:localhost:9000/url</returns>
     [HttpPost("shop/pic")]
-    [Authorize]
+    [Authorize(Roles = _picUploadRole)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(String), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> PostShopPicToOssAsync([FromForm] IFormFile file)
     {
         if (file == null || file.Length == 0 || file.FileName.Length >= 30)
             return BadRequest("file empty or file name > 30 char");
 
         var acceptTypes = new[] { ".jpg", ".jpeg", ".png" };
-        if (acceptTypes.All(t => t != Path.GetExtension(file.FileName)?.ToLower()))
+        if (acceptTypes.All(t => t != Path.GetExtension(file.FileName).ToLower()))
             return BadRequest("File type not valid, only jpg and png are acceptable.");
 
         if (file.Length > 10 * 1024 * 3 * 1000) return BadRequest("File size cannot exceed 3M");
 
-        //判断bucket是否存在
         var bucketExist = await _minioClient.BucketExistsAsync(_shopInfoBucket);
         if (!bucketExist)
         {
@@ -94,5 +100,4 @@ public class PostImageController : ControllerBase
         var sourcePath = $"{_shopInfoBucket}{uploadFile}";
         return Ok(sourcePath);
     }
-
 }

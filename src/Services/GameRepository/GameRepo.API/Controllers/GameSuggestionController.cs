@@ -1,23 +1,23 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Controllers;
 
 /// <summary>
-/// 游戏建议管理
+/// 游戏建议管理接口
 /// </summary>
 [ApiController]
 [Route("api/v1/game")]
-public class PlaySuggestionController : ControllerBase
+public class GameSuggestionController : ControllerBase
 {
     private const int _pageSize = 10;
-    private readonly ILogger<PlaySuggestionController> _logger;
+    private readonly ILogger<GameSuggestionController> _logger;
     private readonly IMapper _mapper;
     private readonly IPlaySuggestionService _suggestionService;
     private readonly IGameInfoService _gameInfoService;
 
-    public PlaySuggestionController(
+    public GameSuggestionController(
         IPlaySuggestionService suggestionService,
         IGameInfoService gameInfoService,
         IMapper mapper,
-        ILogger<PlaySuggestionController> logger)
+        ILogger<GameSuggestionController> logger)
     {
         _suggestionService = suggestionService ?? throw new ArgumentNullException(nameof(suggestionService));
         _gameInfoService = gameInfoService ?? throw new ArgumentNullException(nameof(gameInfoService));
@@ -26,12 +26,11 @@ public class PlaySuggestionController : ControllerBase
     }
 
     /// <summary>
-    /// 分页获取游戏建议
+    /// 用户，管理员——分页获取游戏建议
     /// </summary>
     /// <param name="pageIndex"></param>
     /// <returns></returns>
-    [HttpGet]
-    [Route("suggestions")]
+    [HttpGet("suggestions")]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(PaginatedItemsDtoModel<PlaySuggestionDto>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetSuggestionsAsync([FromQuery] int pageIndex = 1)
@@ -49,9 +48,9 @@ public class PlaySuggestionController : ControllerBase
     }
 
     /// <summary>
-    /// 获取游戏建议Id获取游戏建议
+    /// 用户，管理员——获取特定游戏建议信息
     /// </summary>
-    /// <param name="suggestionId"></param>
+    /// <param name="suggestionId">游戏建议Id</param>
     /// <returns></returns>
     [HttpGet("suggestion/{suggestionId:int}", Name = nameof(GetSuggestionByIdAsync))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -60,80 +59,95 @@ public class PlaySuggestionController : ControllerBase
     public async Task<IActionResult> GetSuggestionByIdAsync([FromRoute] int suggestionId)
     {
         if (suggestionId <= 0 || suggestionId >= int.MaxValue) return BadRequest();
-
         var suggestion = await _suggestionService.GetPlaySuggestionAsync(suggestionId);
-
-        if (suggestion == null) return NotFound();
-        return Ok(suggestion);
+        return suggestion == null ? NotFound() : Ok(suggestion);
     }
 
     /// <summary>
-    /// 通过游戏Id获取游戏建议
+    /// 用户，管理员——获取特定游戏的游戏建议
     /// </summary>
-    /// <param name="gameId"></param>
+    /// <param name="gameId">游戏Id</param>
     /// <returns></returns>
     [HttpGet("suggestion")]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(GamePlaySuggestion), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetSuggestionByGameIdAsync([FromQuery] int gameId)
     {
         if (!await _gameInfoService.GameExistAsync(gameId)) return BadRequest();
-        var suggestion = await _suggestionService.GetPlaySuggestionByGameAsync(gameId);
-        if (suggestion == null)
-        {
-            suggestion = new GamePlaySuggestion();
-        }
+        var suggestion = await _suggestionService.GetPlaySuggestionByGameAsync(gameId) ?? new GamePlaySuggestion();
         return Ok(suggestion);
     }
 
     /// <summary>
-    /// 新增游戏建议 在新增游戏后让管理员填写游戏建议
+    /// 管理员——为游戏添加游戏建议
     /// </summary>
     /// <param name="suggestionAddDto"></param>
     /// <returns></returns>
-    [HttpPost]
-    [Route("suggestion")]
+    [HttpPost("suggestion")]
     [Authorize(Roles = "administrator")]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.Created)]
     public async Task<IActionResult> CreateSuggestionAsync([FromBody] PlaySuggestionAddDto suggestionAddDto)
     {
         if (suggestionAddDto == null) return BadRequest();
+        if (!await _gameInfoService.GameExistAsync(suggestionAddDto.GameId)) return BadRequest();
 
         var entityToAdd = _mapper.Map<GamePlaySuggestion>(suggestionAddDto);
-        await _suggestionService.AddPlaySuggestionAsync(entityToAdd);
+        try
+        {
+            var addResponse = await _suggestionService.AddPlaySuggestionAsync(entityToAdd);
+            if (addResponse == false)
+            {
+                _logger.LogError("administrator: id:{id}, name:{Name} add a suggestion error -> suggestion:{@suggestion}",
+                    User.FindFirst("sub").Value, User.Identity.Name, suggestionAddDto);
+                throw new GameRepoDomainException("数据库新增游戏建议失败");
+            }
+        }
+        catch (MySqlException ex)
+        {
+            _logger.LogError("administrator: id:{id}, name:{Name} add a suggestion throw a exception -> ErrorMessage:{Error}",
+                User.FindFirst("sub").Value, User.Identity.Name, ex.Message);
+            throw new GameRepoDomainException("数据库新增游戏建议失败, 数据库外键约束导致，请确认你新增的游戏是否存在");
+        }
 
         _logger.LogInformation("administrator: id:{id}, name:{Name} add a suggestion -> suggestion:{@suggestion}",
             User.FindFirst("sub").Value, User.Identity.Name, suggestionAddDto);
-
-        return CreatedAtRoute(nameof(GetSuggestionByIdAsync), new { suggestionId = entityToAdd.Id }, null);
+        return CreatedAtRoute(nameof(GetSuggestionByIdAsync), new { suggestionId = entityToAdd.Id }, new { suggestionId = entityToAdd.Id });
     }
 
     /// <summary>
-    /// 删除游戏建议
+    /// 管理员——删除游戏建议
     /// </summary>
-    /// <param name="id"></param>
+    /// <param name="id">游戏建议Id</param>
     /// <returns></returns>
-    [HttpDelete]
-    [Route("suggestion/{id:int}")]
+    [HttpDelete("suggestion/{id:int}")]
     [Authorize(Roles = "administrator")]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     public async Task<IActionResult> DeleteSuggestionAsync([FromRoute] int id)
     {
         if (id <= 0 || id >= int.MaxValue) return BadRequest();
+        var entity = await _suggestionService.GetPlaySuggestionAsync(id);
+        if (entity == null) return BadRequest();
 
-        _logger.LogInformation(
-            $"administrator: id:{User.FindFirst("sub").Value}, name:{User.Identity.Name} delete a suggestion -> Id:{id}");
-        var response = await _suggestionService.DeletePlaySuggestionAsync(id);
-        return response == true ? NoContent() : NotFound();
+        var delResponse = await _suggestionService.DeletePlaySuggestionAsync(id);
+        if (delResponse == false)
+        {
+            _logger.LogInformation("administrator: id:{id}, name:{Name} delete a suggestion error -> suggestionId:{Id}",
+                User.FindFirst("sub").Value, User.Identity.Name, id);
+        }
+
+        _logger.LogInformation("administrator: id:{id}, name:{Name} delete a suggestion -> suggestionId:{Id}",
+            User.FindFirst("sub").Value, User.Identity.Name, id);
+        return NoContent();
     }
 
     /// <summary>
-    /// 修改游戏建议
+    /// 管理员——修改游戏建议信息
     /// </summary>
     /// <param name="suggestionUpdateDto"></param>
     /// <returns></returns>
-    [HttpPut]
-    [Route("suggestion")]
+    [HttpPut("suggestion")]
     [Authorize(Roles = "administrator")]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
@@ -142,13 +156,19 @@ public class PlaySuggestionController : ControllerBase
         if (suggestionUpdateDto == null) return BadRequest();
 
         var entityToUpdate = await _suggestionService.GetPlaySuggestionAsync(suggestionUpdateDto.Id);
-
         if (entityToUpdate == null) return NotFound();
 
-        _logger.LogInformation("administrator: id:{id}, name:{Name} add a suggestion -> old:{@old} new:{@new}",
-            User.FindFirst("sub").Value, User.Identity.Name, entityToUpdate, suggestionUpdateDto);
         _mapper.Map(suggestionUpdateDto, entityToUpdate);
-        await _suggestionService.UpdatePlaySuggestionAsync(entityToUpdate);
+        var updateResponse = await _suggestionService.UpdatePlaySuggestionAsync(entityToUpdate);
+        if (updateResponse == false)
+        {
+            _logger.LogError("administrator: id:{id}, name:{Name} update a suggestion error -> old:{@old} new:{@new}",
+                User.FindFirst("sub").Value, User.Identity.Name, entityToUpdate, suggestionUpdateDto);
+            throw new GameRepoDomainException("数据库修改游戏建议信息失败");
+        }
+
+        _logger.LogInformation("administrator: id:{id}, name:{Name} update a suggestion -> old:{@old} new:{@new}",
+            User.FindFirst("sub").Value, User.Identity.Name, entityToUpdate, suggestionUpdateDto);
         return NoContent();
     }
 }

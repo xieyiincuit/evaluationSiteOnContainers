@@ -32,7 +32,11 @@ public class GameItemSDK
     [Comment("行版本")]
     public DateTime RowVersion { get; set; }
 
-    [NotMapped][JsonIgnore] public GameShopItem GameShopItem { get; set; }
+    [NotMapped]
+    [JsonIgnore] 
+    public GameShopItem GameShopItem { get; set; }
 
-    [NotMapped][JsonIgnore] public GameSDKForPlayer GameSDKForPlayer { get; set; }
+    [NotMapped]
+    [JsonIgnore] 
+    public GameSDKForPlayer GameSDKForPlayer { get; set; }
 }

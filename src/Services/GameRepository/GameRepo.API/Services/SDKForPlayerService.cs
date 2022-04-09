@@ -42,10 +42,10 @@ public class SDKForPlayerService : ISDKForPlayerService
                 Id = x.Id,
                 SDKString = x.GameItemSDK.SDKString,
                 GameId = x.GameItemSDK.GameShopItem.GameInfo.Id,
-                GamePictrue = x.GameItemSDK.GameShopItem.SellPictrue,
+                GamePicture = x.GameItemSDK.GameShopItem.SellPictrue,
                 GameName = x.GameItemSDK.GameShopItem.GameInfo.Name,
                 SendTime = x.GameItemSDK.SendTime.Value,
-                hasChecked = x.HasChecked ?? false,
+                HasChecked = x.HasChecked ?? false,
             })
             .Skip((pageIndex - 1) * pageSize)
             .Take(pageSize)

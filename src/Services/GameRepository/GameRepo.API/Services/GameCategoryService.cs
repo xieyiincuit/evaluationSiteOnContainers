@@ -47,7 +47,8 @@ public class GameCategoryService : IGameCategoryService
     public async Task<GameCategory> GetGameCategoryAsync(int categoryId)
     {
         var category = await _repoContext.GameCategories
-            .AsNoTracking().FirstOrDefaultAsync(x => x.Id == categoryId);
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == categoryId);
         return category;
     }
 

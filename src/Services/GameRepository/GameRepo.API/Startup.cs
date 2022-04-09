@@ -38,12 +38,16 @@ public class Startup
             {
                 Title = "evaluationSiteOnContainers - GameRepo HTTP API",
                 Version = "v1",
-                Description = "The Control of GameInfo Service HTTP API"
-
+                Description = "游戏资料服务接口文档",
+                Contact = new OpenApiContact
+                {
+                    Name = "Zhousl",
+                    Email = "zhouslthere@outlook.com"
+                },
             });
 
             var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-            options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+            options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename), true);
 
             //Swagger授权
             options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
