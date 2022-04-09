@@ -18,6 +18,7 @@ public class GameShopItemService : IGameShopItemService
     {
         return await _repoDbContext.GameShopItems
             .AsNoTracking()
+            .Where(x=>x.Id == shopItemId)
             .Select(x => new ShopItemStatusDto() { Id = x.Id, TemporaryStopSell = x.TemporaryStopSell })
             .FirstOrDefaultAsync();
     }

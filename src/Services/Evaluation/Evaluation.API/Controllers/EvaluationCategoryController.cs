@@ -39,7 +39,7 @@ public class EvaluationCategoryController : ControllerBase
         if (await _redisDatabase.Database.KeyExistsAsync(_categoryListKey))
         {
             var cacheCategory = await _redisDatabase.GetAsync<List<EvaluationCategory>>(_categoryListKey);
-            _logger.LogInformation("categories get from redis @{CategoryList}", cacheCategory);
+            _logger.LogInformation("categories get from redis {@CategoryList}", cacheCategory);
             return Ok(cacheCategory);
         }
 
@@ -49,7 +49,7 @@ public class EvaluationCategoryController : ControllerBase
         var redisResponse = await _redisDatabase.AddAsync(_categoryListKey, categories);
         if (redisResponse == false)
         {
-            _logger.LogWarning("redis add evaluation category @{CategoryList} Error", categories);
+            _logger.LogWarning("redis add evaluation category {@CategoryList} Error", categories);
         }
         return Ok(categories);
     }

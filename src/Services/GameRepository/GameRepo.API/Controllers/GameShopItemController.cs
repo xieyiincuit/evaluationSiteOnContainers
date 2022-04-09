@@ -172,6 +172,10 @@ public class GameShopItemController : ControllerBase
         try
         {
             await _shopItemService.AddGameShopItemAsync(entityToAdd);
+            var preResponse = await _unitOfWorkService.SaveEntitiesAsync();
+            if (preResponse == false)
+                throw new GameRepoDomainException("新增商品信息事务开启失败");
+
             // 批量生成游戏SDK
             await _sdkService.GenerateSDKForGameShopItemAsync(entityToAdd.AvailableStock, entityToAdd.Id);
             // Redis字段创建
@@ -226,7 +230,7 @@ public class GameShopItemController : ControllerBase
     }
 
     /// <summary>
-    /// 管理员——下架游戏商品
+    /// 管理员——下架或上架游戏商品
     /// </summary>
     /// <param name="itemId">商品Id</param>
     /// <returns></returns>
@@ -241,14 +245,14 @@ public class GameShopItemController : ControllerBase
         //不存在该商品
         if (shopItem == null) return BadRequest();
 
+        //Redis键不存在 程序错误
+        if (await _redisDatabase.ExistsAsync(GetProductStockKey(itemId)) == false)
+        {
+            throw new GameRepoDomainException("分布式锁失效, 商品库存获取失败");
+        }
+
         if (!shopItem.TemporaryStopSell.HasValue || shopItem.TemporaryStopSell.Value == false) //该商品已上架
         {
-            //Redis键不存在 程序错误
-            if (await _redisDatabase.ExistsAsync(GetProductStockKey(itemId)) == false)
-            {
-                throw new GameRepoDomainException("分布式锁失效, 商品库存获取失败");
-            }
-
             _logger.LogInformation("admin:{name} take down shopItem:{id}, will sync stock in next step",
                 User.FindFirstValue("nickname"), itemId);
             //从Redis中获取当前库存
@@ -265,31 +269,6 @@ public class GameShopItemController : ControllerBase
                 _logger.LogError("admin:{name} take down shopItem:{id} error, database transaction rollback",
                     User.FindFirstValue("nickname"), itemId);
                 throw new GameRepoDomainException("商品下架失败");
-            }
-
-            //获取分布式锁
-            await using var redLock = await _distributedLockFactory.CreateLockAsync(
-                GetProductStockKey(itemId),
-                TimeSpan.FromSeconds(30),
-                TimeSpan.FromSeconds(20),
-                TimeSpan.FromSeconds(1)
-            );
-            if (redLock.IsAcquired)
-            {
-                //移除分布式锁
-                var redisRemove = await _redisDatabase.RemoveAsync(GetProductStockKey(itemId));
-                if (redisRemove == false)
-                {
-                    _logger.LogError("admin:{name} take down shopItem:{id}, sync stock:{StockKey} delete fail",
-                        User.FindFirstValue("nickname"), itemId, GetProductStockKey(itemId));
-                    throw new GameRepoDomainException("商品下架成功,但分布式锁移除失败");
-                }
-            }
-            else
-            {
-                _logger.LogError("admin:{name} take down shopItem:{id}, get sync stock:{StockKey} fail",
-                    User.FindFirstValue("nickname"), itemId, GetProductStockKey(itemId));
-                throw new GameRepoDomainException("获取分布式锁失败");
             }
 
             _logger.LogInformation("admin:{name} take down shopItem:{id} successfully", User.FindFirstValue("nickname"), itemId);
@@ -327,7 +306,7 @@ public class GameShopItemController : ControllerBase
             }
             else
             {
-                _logger.LogError("admin:{name} take down shopItem:{id}, get sync stock:{StockKey} fail",
+                _logger.LogError("admin:{name} take up shopItem:{id}, get sync stock:{StockKey} fail",
                     User.FindFirstValue("nickname"), itemId, GetProductStockKey(itemId));
                 throw new GameRepoDomainException("获取分布式锁失败");
             }
@@ -351,6 +330,11 @@ public class GameShopItemController : ControllerBase
         var shopStatusCheck = await _shopItemService.CheckShopStatusAsync(stockUpdateDto.Id);
         if (shopStatusCheck == null || shopStatusCheck.TemporaryStopSell == false) return BadRequest("商品不存在，或商品还未下架");
 
+        //Redis键不存在 程序错误
+        if (await _redisDatabase.ExistsAsync(GetProductStockKey(stockUpdateDto.Id)) == false)
+        {
+            throw new GameRepoDomainException("分布式锁失效, 商品库存无法更新");
+        }
         var shopItem = await _shopItemService.GetGameShopItemByIdAsync(stockUpdateDto.Id);
         _logger.LogInformation("admin:{name} wanna change shopItem:{id} stock", User.FindFirstValue("nickname"), stockUpdateDto.Id);
 
@@ -361,30 +345,53 @@ public class GameShopItemController : ControllerBase
             var generateCount = stockUpdateDto.AvailableStock - shopItem.AvailableStock;
             await _shopItemService.UpdateShopItemStockWhenChangeNumberAsync(stockUpdateDto.Id, stockUpdateDto.AvailableStock);
             await _sdkService.GenerateSDKForGameShopItemAsync(generateCount, stockUpdateDto.Id);
-            var addResponse = await _unitOfWorkService.SaveEntitiesAsync();
-            if (addResponse == false)
+            var addResponse = await _unitOfWorkService.SaveChangesAsync();
+            if (addResponse < generateCount)
             {
                 _logger.LogInformation("shopItem:{id} stock is {now}, add to {new} fail, data will roll back",
                     stockUpdateDto.Id, shopItem.AvailableStock, stockUpdateDto.AvailableStock);
                 throw new GameRepoDomainException("新增商品库存事务失败");
             }
-
         }
         else if (shopItem.AvailableStock > stockUpdateDto.AvailableStock) //减少库存
         {
             _logger.LogInformation("now shopItem:{id} stock is {now}, reduce to {new}", stockUpdateDto.Id, shopItem.AvailableStock, stockUpdateDto.AvailableStock);
-            var deleteCount = shopItem.AvailableStock - shopItem.AvailableStock;
+            var deleteCount = shopItem.AvailableStock - stockUpdateDto.AvailableStock;
             await _shopItemService.UpdateShopItemStockWhenChangeNumberAsync(stockUpdateDto.Id, stockUpdateDto.AvailableStock);
             //删除未发出的SDK
             await _sdkService.BatchDeleteGameItemsSDKAsync(stockUpdateDto.Id, null, deleteCount);
-            var reduceResponse = await _unitOfWorkService.SaveEntitiesAsync();
-            if (reduceResponse == false)
+            var reduceResponse = await _unitOfWorkService.SaveChangesAsync();
+            if (reduceResponse < deleteCount)
             {
                 _logger.LogInformation("shopItem:{id} stock is {now}, reduce to {new} fail, data will roll back",
                     stockUpdateDto.Id, shopItem.AvailableStock, stockUpdateDto.AvailableStock);
                 throw new GameRepoDomainException("减少商品库存事务失败");
             }
         }
+
+        await using var redLock = await _distributedLockFactory.CreateLockAsync(
+            GetProductStockKey(stockUpdateDto.Id),
+            TimeSpan.FromSeconds(30),
+            TimeSpan.FromSeconds(20),
+            TimeSpan.FromSeconds(1)
+        );
+        if (redLock.IsAcquired)
+        {
+            var redisAdd =  await _redisDatabase.Database.StringSetAsync(GetProductStockKey(stockUpdateDto.Id), stockUpdateDto.AvailableStock);
+            if (redisAdd == false)
+            {
+                _logger.LogError("admin:{name} change shopItem:{id} stock, sync stock:{StockKey} add fail",
+                    User.FindFirstValue("nickname"), stockUpdateDto.Id, GetProductStockKey(stockUpdateDto.Id));
+                throw new GameRepoDomainException("商品库存修改成功,但分布式锁设置失败");
+            }
+        }
+        else
+        {
+            _logger.LogError("admin:{name} change shopItem:{id} stock, get sync stock:{StockKey} fail",
+                User.FindFirstValue("nickname"), stockUpdateDto.Id, GetProductStockKey(stockUpdateDto.Id));
+            throw new GameRepoDomainException("获取分布式锁失败");
+        }
+       
 
         return NoContent();
     }
@@ -403,21 +410,56 @@ public class GameShopItemController : ControllerBase
         var checkShopStatus = await _shopItemService.CheckShopStatusAsync(itemId);
         if (checkShopStatus == null || checkShopStatus.TemporaryStopSell == false) return BadRequest("商品不存在或商品已上架"); // 商品不存在或商品已上架
 
+        //Redis键不存在 程序错误
+        if (await _redisDatabase.ExistsAsync(GetProductStockKey(itemId)) == false)
+        {
+            throw new GameRepoDomainException("分布式锁失效, 商品库存无法更新");
+        }
+
         //商品下架进行删除前，判断该商品是否已经发放过SDK
         var removeShopItem = await _shopItemService.GetGameShopItemByIdAsync(itemId);
-        var availableStock = await _sdkService.CountSDKNumberByGameItemOrStatusAsync(removeShopItem.GameInfoId, null);
+        var availableStock = await _sdkService.CountSDKNumberByGameItemOrStatusAsync(removeShopItem.Id, null);
         if (availableStock != removeShopItem.AvailableStock) return BadRequest("该商品已出售部分，不允许被删除");
 
         //删除商品和SDK信息
+        await _sdkService.BatchDeleteGameItemsSDKAsync(removeShopItem.Id, null, (int)availableStock);
+        var preResponse = await _unitOfWorkService.SaveEntitiesAsync();
+        if (preResponse == false)
+        {
+            throw new GameRepoDomainException("删除商品事务发起失败");
+        }
         await _shopItemService.DeleteGameShopItemByIdAsync(itemId);
-        await _sdkService.BatchDeleteGameItemsSDKAsync(removeShopItem.GameInfoId, null, (int)availableStock);
-        var removeResponse =  await _unitOfWorkService.SaveEntitiesAsync();
+        var removeResponse = await _unitOfWorkService.SaveEntitiesAsync();
         if (removeResponse == false)
         {
             _logger.LogError("shopItem:{id} stock is {now}, delete this shop but fail, data will roll back", removeShopItem.Id, availableStock);
             throw new GameRepoDomainException("删除商品事务失败");
         }
 
+        //获取分布式锁
+        await using var redLock = await _distributedLockFactory.CreateLockAsync(
+            GetProductStockKey(itemId),
+            TimeSpan.FromSeconds(30),
+            TimeSpan.FromSeconds(20),
+            TimeSpan.FromSeconds(1)
+        );
+        if (redLock.IsAcquired)
+        {
+            //移除分布式锁
+            var redisRemove = await _redisDatabase.RemoveAsync(GetProductStockKey(itemId));
+            if (redisRemove == false)
+            {
+                _logger.LogError("admin:{name} take down shopItem:{id}, sync stock:{StockKey} delete fail",
+                    User.FindFirstValue("nickname"), itemId, GetProductStockKey(itemId));
+                throw new GameRepoDomainException("商品下架成功,但分布式锁移除失败");
+            }
+        }
+        else
+        {
+            _logger.LogError("admin:{name} take down shopItem:{id}, get sync stock:{StockKey} fail",
+                User.FindFirstValue("nickname"), itemId, GetProductStockKey(itemId));
+            throw new GameRepoDomainException("获取分布式锁失败");
+        }
         return NoContent();
     }
 

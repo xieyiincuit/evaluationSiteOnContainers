@@ -39,7 +39,7 @@ public class GameCategoryController : ControllerBase
         if (_redisDatabase.Database.KeyExists(_categoriesKey))
         {
             var cacheCategory = await _redisDatabase.GetAsync<List<GameCategory>>(_categoriesKey);
-            _logger.LogInformation("gameCategories get from redis @{categoryList}", cacheCategory);
+            _logger.LogInformation("gameCategories get from redis {@categoryList}", cacheCategory);
             return Ok(cacheCategory);
         }
 
@@ -52,7 +52,7 @@ public class GameCategoryController : ControllerBase
         var redisResponse = await _redisDatabase.AddAsync(_categoriesKey, allCategories);
         if (redisResponse == false)
         {
-            _logger.LogWarning("redis add game category @{CategoryList} Error", allCategories);
+            _logger.LogWarning("redis add game category {@CategoryList} Error", allCategories);
         }
         return Ok(allCategories);
     }

@@ -21,19 +21,19 @@ public class GameSDKController : ControllerBase
     /// 管理员——分页获取游戏SDK信息
     /// </summary>
     /// <param name="hasSend">是否已经发出</param>
-    /// <param name="gameItemId">属于哪个游戏</param>
+    /// <param name="shopItemId">商品Id</param>
     /// <param name="pageIndex">pageSize=15</param>
     /// <returns></returns>
-    [HttpGet("shop/sdks/{gameItemId:int}")]
+    [HttpGet("shop/sdks/{shopItemId:int}")]
     [Authorize(Roles = "administrator")]
     [ProducesResponseType(typeof(PaginatedItemsDtoModel<GameItemSDK>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    public async Task<IActionResult> GetGameSDKAsync([FromQuery] bool hasSend, [FromRoute] int gameItemId, [FromQuery] int pageIndex = 1)
+    public async Task<IActionResult> GetGameSDKAsync([FromQuery] bool hasSend, [FromRoute] int shopItemId, [FromQuery] int pageIndex = 1)
     {
-        var sdkCount = await _sdkService.CountSDKNumberByGameItemOrStatusAsync(gameItemId, hasSend);
+        var sdkCount = await _sdkService.CountSDKNumberByGameItemOrStatusAsync(shopItemId, hasSend);
         if (ParameterValidateHelper.IsInvalidPageIndex(sdkCount, _pageSize, pageIndex)) pageIndex = 1;
 
-        var sdks = await _sdkService.GetSDKListByGameItemAsync(pageIndex, _pageSize, gameItemId, hasSend);
+        var sdks = await _sdkService.GetSDKListByGameItemAsync(pageIndex, _pageSize, shopItemId, hasSend);
         if (!sdks.Any()) return NotFound();
 
         var model = new PaginatedItemsDtoModel<GameItemSDK>(pageIndex, _pageSize, sdkCount, sdks);

@@ -14,7 +14,7 @@ public class PurchaseController : ControllerBase
     private readonly GameRepoHttpClient _gameRepoHttpClient;
 
     public PurchaseController(
-        ILogger<PurchaseController> logger,     
+        ILogger<PurchaseController> logger,
         IRedisDatabase redisDatabase,
         IDistributedLockFactory distributedLockFactory,
         GameRepoHttpClient gameRepoHttpClient,
@@ -41,7 +41,8 @@ public class PurchaseController : ControllerBase
         var productKey = GetProductStockKey(shopItemId);
 
         //没有此商品 返回400
-        if (!_redisDatabase.Database.KeyExists(productKey)) return BadRequest();
+        if (!_redisDatabase.Database.KeyExists(productKey) || (int)await _redisDatabase.Database.StringGetAsync(productKey) == 0 ) 
+            return BadRequest();
 
         //有此商品 上锁进行库存扣除
         //锁的过期时间为30s，等待获取锁的时间为20s，如果没有获取到锁，则等待1秒钟后再次尝试获取
@@ -57,6 +58,16 @@ public class PurchaseController : ControllerBase
         {
             _logger.LogInformation("shopItemId:{id} get the distribute locked", shopItemId);
             var stockKey = GetProductStockKey(shopItemId);
+            
+            // 通信服务 发送SDK保存拥有记录
+            var sdkSendResponse = await _gameRepoHttpClient.SaveBuyerRecordAsync(User.FindFirstValue("sub"), shopItemId);
+            if (!sdkSendResponse.IsSuccessStatusCode)
+            {
+                _logger.LogError("user:{name} buy a shopItem:{id} error", User.FindFirstValue("nickname"), shopItemId);
+                throw new OrderingDomainException("商品购买时SDK发放失败");
+            }
+            // 库存减少
+            await _redisDatabase.Database.StringDecrementAsync(stockKey, 1);
             var currentQuantity = (int)await _redisDatabase.Database.StringGetAsync(stockKey);
 
             if (currentQuantity < 1)
@@ -70,11 +81,6 @@ public class PurchaseController : ControllerBase
 
                 return BadRequest();
             }
-
-            // 库存减少
-            await _redisDatabase.Database.StringDecrementAsync(stockKey, 1);
-            // 通信服务 发送SDK保存拥有记录
-            await _gameRepoHttpClient.SaveBuyerRecordAsync(User.FindFirstValue("sub"), shopItemId);
             _logger.LogInformation("user:{name} buy a shopItem:{id}", User.FindFirstValue("nickname"), shopItemId);
         }
         else

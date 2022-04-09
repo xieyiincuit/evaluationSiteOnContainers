@@ -11,11 +11,11 @@ public class GameItemSDKService : IGameItemSDKService
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<List<GameItemSDK>> GetSDKListByGameItemAsync(int pageIndex, int pageSize, int gameItemId, bool? hasSend)
+    public async Task<List<GameItemSDK>> GetSDKListByGameItemAsync(int pageIndex, int pageSize, int shopItemId, bool? hasSend)
     {
         var queryString = _repoDbContext.GameItemSDKs
             .AsNoTracking()
-            .Where(x => x.GameItemId == gameItemId)
+            .Where(x => x.GameItemId == shopItemId)
             .Skip((pageIndex - 1) * pageSize)
             .Take(pageSize);
 
@@ -27,23 +27,23 @@ public class GameItemSDKService : IGameItemSDKService
         return result;
     }
 
-    public async Task<long> CountSDKNumberByGameItemOrStatusAsync(int gameItemId, bool? hasSend)
+    public async Task<long> CountSDKNumberByGameItemOrStatusAsync(int shopItemId, bool? hasSend)
     {
         if (hasSend == null || hasSend == false)
         {
-            return await _repoDbContext.GameItemSDKs.LongCountAsync(x => x.GameItemId == gameItemId && (x.HasSend == null || x.HasSend == false));
+            return await _repoDbContext.GameItemSDKs.LongCountAsync(x => x.GameItemId == shopItemId && (x.HasSend == null || x.HasSend == false));
         }
-        return await _repoDbContext.GameItemSDKs.LongCountAsync(x => x.GameItemId == gameItemId && x.HasSend == true);
+        return await _repoDbContext.GameItemSDKs.LongCountAsync(x => x.GameItemId == shopItemId && x.HasSend == true);
     }
 
-    public async Task GenerateSDKForGameShopItemAsync(int count, int gameItemId)
+    public async Task GenerateSDKForGameShopItemAsync(int count, int shopItemId)
     {
         var sdkToInsert = new List<GameItemSDK>();
         for (var i = 0; i < count; i++)
             sdkToInsert.Add(new GameItemSDK
             {
-                GameItemId = gameItemId,
-                SDKString = gameItemId + Guid.NewGuid().ToString("D")
+                GameItemId = shopItemId,
+                SDKString = shopItemId + Guid.NewGuid().ToString("D")
             });
 
         await _repoDbContext.GameItemSDKs.AddRangeAsync(sdkToInsert);
@@ -75,10 +75,10 @@ public class GameItemSDKService : IGameItemSDKService
         return await _repoDbContext.SaveChangesAsync();
     }
 
-    public async Task BatchDeleteGameItemsSDKAsync(int gameItemId, bool? hasSend, int deleteCount)
+    public async Task BatchDeleteGameItemsSDKAsync(int shopItemId, bool? hasSend, int deleteCount)
     {
         var sdkItemsToDelete = await _repoDbContext.GameItemSDKs
-            .Where(x => x.GameItemId == gameItemId && x.HasSend == hasSend)
+            .Where(x => x.GameItemId == shopItemId && x.HasSend == hasSend)
             .OrderBy(x => x.Id)
             .Take(deleteCount)
             .ToListAsync();

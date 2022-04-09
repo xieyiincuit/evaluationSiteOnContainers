@@ -184,14 +184,6 @@ public class GameSDKForPlayerController : ControllerBase
 
         _logger.LogInformation("Get SDK successfully, SDK:{SDKId}-{SDKValue}", sdk.Id, sdk.SDKString);
 
-        // 检查该SDK是否被发放到其他用户
-        var ifSend = await _sdkForPlayerService.GetPlayerSDKByIdAsync(sdk.Id);
-        if (ifSend != null)
-        {
-            _logger.LogError("SDK:{SDKId}-{SDKValue} has been owner by another user:{AnotherUserId}, send fail, please fix it", sdk.Id, sdk.SDKString, ifSend.UserId);
-            throw new GameRepoDomainException("该SDK已被其他玩家拥有，请联系管理员给你重发");
-        }
-
         // 发放SDK至该用户
         var response = await _sdkForPlayerService.AddPlayerSDKAsync(sdk.Id, addDto.UserId);
         if (response == false)

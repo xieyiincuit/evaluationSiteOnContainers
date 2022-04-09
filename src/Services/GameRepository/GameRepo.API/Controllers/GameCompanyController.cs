@@ -38,7 +38,7 @@ public class GameCompanyController : ControllerBase
         if (_redisDatabase.Database.KeyExists(_companiesKey))
         {
             var cacheCompanies = await _redisDatabase.GetAsync<List<GameCompany>>(_companiesKey);
-            _logger.LogInformation("gameCompanies get from redis @{CompanyList}", cacheCompanies);
+            _logger.LogInformation("gameCompanies get from redis {@CompanyList}", cacheCompanies);
             return Ok(cacheCompanies);
         }
 
@@ -51,7 +51,7 @@ public class GameCompanyController : ControllerBase
         var redisResponse = await _redisDatabase.AddAsync(_companiesKey, allCompanies);
         if (redisResponse == false)
         {
-            _logger.LogWarning("redis add game category @{CompanyList} Error", allCompanies);
+            _logger.LogWarning("redis add game category {@CompanyList} Error", allCompanies);
         }
         return Ok(allCompanies);
     }
