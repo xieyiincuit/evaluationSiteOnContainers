@@ -162,9 +162,12 @@ services:
       - GameRepoApiClient=http://localhost:5101
       - OrderingApiClient=http://localhost:5102
       - BackManageApiClient=http://localhost:5104
+      - IdentityApiClient=http://localhost:5105
       - WebSPAClient=http://localhost:3000
-      - AdminClient=http://localhost:4000
+      - AdminSPAClient=http://localhost:4000
+      - IdentityUrlExternal=http://localhost:5105
       - IdentityUrl=http://identity-api
+      - SwaggerRedirectUrlPort=5105
       - PATH_BASE=/identity-api
       - ServiceRegister__ServiceName=identity-api
       - ServiceRegister__ServiceAddress=http://identity-api:80
