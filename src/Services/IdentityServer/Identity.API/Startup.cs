@@ -35,14 +35,40 @@ public class Startup
 
         services.AddSwaggerGen(options =>
         {
-           options.SwaggerDoc("v1", new OpenApiInfo
-           {
-               Title = "evaluationSiteOnContainers - Identity HTTP API",
-               Version = "v1",
-               Description = "The Identity Service HTTP API"
-           });
-           var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-           options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+            options.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Title = "evaluationSiteOnContainers - Identity HTTP API",
+                Version = "v1",
+                Description = "身份认证授权接口文档",
+                Contact = new OpenApiContact
+                {
+                    Name = "Zhousl",
+                    Email = "zhouslthere@outlook.com"
+                },
+            });
+
+            var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename), true);
+
+            //Swagger授权
+            options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+            {
+                Type = SecuritySchemeType.OAuth2,
+                Flows = new OpenApiOAuthFlows
+                {
+                    Implicit = new OpenApiOAuthFlow
+                    {
+                        AuthorizationUrl = new Uri($"{Configuration.GetValue<string>("IdentityUrlExternal")}/connect/authorize"),
+                        TokenUrl = new Uri($"{Configuration.GetValue<string>("IdentityUrlExternal")}/connect/token"),
+                        Scopes =
+                        {
+                            {"user-info", "用户信息查看"}
+                        }
+                    }
+                }
+            });
+
+            options.OperationFilter<AuthorizeCheckOperationFilter>();
         });
 
         #endregion
@@ -275,6 +301,9 @@ public class Startup
           {
               setup.SwaggerEndpoint(
                   $"{(!string.IsNullOrEmpty(pathBase) ? pathBase : string.Empty)}/swagger/v1/swagger.json", "Identity.API V1");
+              setup.OAuthClientId("identityswaggerui");
+              setup.OAuthAppName("Identity Swagger UI");
+              setup.OAuth2RedirectUrl($"http://localhost:{Configuration.GetValue<string>("SwaggerRedirectUrlPort", "50005")}/swagger/oauth2-redirect.html");
               setup.RoutePrefix = "swagger";
           });
 

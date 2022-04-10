@@ -46,4 +46,8 @@ public class HomeController : Controller
 
         return View("Error", vm);
     }
+
+    [ApiExplorerSettings(IgnoreApi = true)]
+    [HttpGet("api/health")]
+    public IActionResult Get() => Ok();
 }

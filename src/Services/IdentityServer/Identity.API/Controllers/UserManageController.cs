@@ -1,5 +1,8 @@
 ﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Controllers;
 
+/// <summary>
+/// 用户信息管理接口
+/// </summary>
 [ApiController]
 [Route("api/v1/user")]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -19,15 +22,19 @@ public class UserManageController : ControllerBase
         RoleManager<IdentityRole> roleManager)
     {
         _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
-        _logger = logger;
-        _identityIntegrationService = identityIntegrationService ??
-                                      throw new ArgumentNullException(nameof(identityIntegrationService));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _identityIntegrationService = identityIntegrationService ?? throw new ArgumentNullException(nameof(identityIntegrationService));
         _applicationDbContext = applicationDbContext ?? throw new ArgumentNullException(nameof(applicationDbContext));
         _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
     }
 
-    [HttpGet("author")]
+    /// <summary>
+    /// 用户——获取游戏作者信息
+    /// </summary>
+    /// <param name="userId">用户Id</param>
+    /// <returns></returns>
     [AllowAnonymous]
+    [HttpGet("author")]
     public async Task<IActionResult> GetAuthorInfoAsync([FromQuery] string userId)
     {
         var user = await _userManager.FindByIdAsync(userId);
@@ -37,6 +44,44 @@ public class UserManageController : ControllerBase
         return Ok(authorDto);
     }
 
+    /// <summary>
+    /// 用户，管理员——批量获取用户头像信息
+    /// </summary>
+    /// <param name="userIds">用户Id, List</param>
+    /// <returns></returns>
+    [AllowAnonymous]
+    [HttpPost("batch")]
+    public async Task<IActionResult> BatchGetAvatarAsync([FromBody] List<string> userIds)
+    {
+        if (userIds == null || userIds.Count == 0 || userIds.Count > 5)
+            return BadRequest("batch get avatar, id count should be 1-5");
+        var result = new List<UserAvatarDto>();
+        var errorList = new List<string>();
+
+        foreach (var id in userIds)
+        {
+            var user = await _applicationDbContext.Users
+                .AsNoTracking()
+                .Where(x => x.Id == id)
+                .Select(x => new UserAvatarDto { Id = x.Id, NickName = x.NickName, Avatar = x.Avatar })
+                .FirstOrDefaultAsync();
+            if (user != null)
+                result.Add(user);
+            else
+                errorList.Add(id);
+        }
+
+        if (errorList.Any())
+            _logger.LogWarning("---- GetUserInfo Error userIds:{@ids}", errorList);
+
+        if (!result.Any()) return NotFound();
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// 用户——获取自己信息
+    /// </summary>
+    /// <returns></returns>
     [HttpGet("info")]
     [Authorize]
     public async Task<IActionResult> GetUserInfoAsync()
@@ -55,6 +100,11 @@ public class UserManageController : ControllerBase
         return Ok(userDto);
     }
 
+    /// <summary>
+    /// 用户——检查昵称是否可用
+    /// </summary>
+    /// <param name="nickName"></param>
+    /// <returns></returns>
     [HttpGet("name/check")]
     [Authorize]
     public async Task<IActionResult> CheckNickNameAsync([FromQuery] string nickName)
@@ -65,6 +115,12 @@ public class UserManageController : ControllerBase
         return Ok(user == null);
     }
 
+    /// <summary>
+    /// 用户——更新自己的信息
+    /// </summary>
+    /// <param name="updateDto"></param>
+    /// <returns></returns>
+    /// <exception cref="IdentityDomainException"></exception>
     [HttpPut("info")]
     [Authorize]
     public async Task<IActionResult> UpdateUserInfoAsync([FromBody] UserInfoUpdateDto updateDto)
@@ -115,6 +171,11 @@ public class UserManageController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// 用户——修改密码
+    /// </summary>
+    /// <param name="passwordDto"></param>
+    /// <returns></returns>
     [HttpPut("password")]
     [Authorize]
     public async Task<IActionResult> ChangeUserPasswordAsync([FromBody] UserPasswordDto passwordDto)
@@ -133,7 +194,7 @@ public class UserManageController : ControllerBase
     }
 
     /// <summary>
-    /// 获取用户信息
+    /// 管理员——获取用户信息列表
     /// </summary>
     /// <param name="pageIndex"></param>
     /// <returns></returns>
@@ -168,10 +229,10 @@ public class UserManageController : ControllerBase
     }
 
     /// <summary>
-    /// 根据角色查询用户信息
+    /// 管理员——根据角色查询用户信息
     /// </summary>
-    /// <param name="pageIndex"></param>
-    /// <param name="roleSelect"></param>
+    /// <param name="pageIndex">pageSize=10</param>
+    /// <param name="roleSelect">角色选择: normaluser, evaluator, forbiddenuser</param>
     /// <returns></returns>
     [HttpGet("role")]
     [Authorize(Roles = "administrator")]
@@ -223,6 +284,7 @@ public class UserManageController : ControllerBase
         return Ok(model);
     }
 
+    [ApiExplorerSettings(IgnoreApi = true)]
     [HttpPost("ban/{uid}")]
     [Authorize(Roles = "administrator")]
     public async Task<IActionResult> BanUserAsync([FromRoute] string uid)
@@ -257,6 +319,7 @@ public class UserManageController : ControllerBase
         throw new IdentityDomainException($"ban user failed -> userName: {user.UserName}");
     }
 
+    [ApiExplorerSettings(IgnoreApi = true)]
     [HttpPost("recover/{uid}")]
     [Authorize(Roles = "administrator")]
     public async Task<IActionResult> RecoverUserAsync([FromRoute] string uid)
@@ -291,6 +354,7 @@ public class UserManageController : ControllerBase
         throw new IdentityDomainException($"recover user failed -> userName: {user.UserName}");
     }
 
+    [ApiExplorerSettings(IgnoreApi = true)]
     [HttpPost("approve/{uid}")]
     [Authorize(Roles = "administrator")]
     public async Task<IActionResult> ApproveUserAsync([FromRoute] string uid)
@@ -324,6 +388,7 @@ public class UserManageController : ControllerBase
         throw new IdentityDomainException($"approve user failed -> userName: {user.UserName}");
     }
 
+    [ApiExplorerSettings(IgnoreApi = true)]
     [HttpPost("redraw/{uid}")]
     [Authorize(Roles = "administrator")]
     public async Task<IActionResult> RedrawUserAsync([FromRoute] string uid)

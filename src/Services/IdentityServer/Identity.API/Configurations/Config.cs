@@ -56,6 +56,8 @@ public static class Config
                 new List<string> {JwtClaimTypes.Role, JwtClaimTypes.Name, JwtClaimTypes.Id}),
             new("role-approve", "审批申请权限",
                 new List<string> {JwtClaimTypes.Role, JwtClaimTypes.Name, JwtClaimTypes.Id}),
+            new("user-info", "用户信息查看",
+                new List<string> {JwtClaimTypes.Role, JwtClaimTypes.Name, JwtClaimTypes.Id}),
         };
     }
 
@@ -138,6 +140,24 @@ public static class Config
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Profile,
                     "back-manage"
+                }
+            },
+            new()
+            {
+                ClientId = "identityswaggerui",
+                ClientName = "Identity Swagger UI",
+                AllowedGrantTypes = GrantTypes.Implicit,
+                AllowAccessTokensViaBrowser = true,
+                RedirectUris = {$"{clientsUrl["IdentityApi"]}/swagger/oauth2-redirect.html"},
+                PostLogoutRedirectUris = {$"{clientsUrl["IdentityApi"]}/swagger/"},
+                AccessTokenLifetime = 7200,
+                AlwaysSendClientClaims = true,
+                AlwaysIncludeUserClaimsInIdToken = true,
+                AllowedScopes =
+                {
+                    IdentityServerConstants.StandardScopes.OpenId,
+                    IdentityServerConstants.StandardScopes.Profile,
+                    "user-info"
                 }
             },
 

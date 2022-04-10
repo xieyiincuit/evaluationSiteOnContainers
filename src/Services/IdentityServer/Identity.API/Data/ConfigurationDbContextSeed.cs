@@ -13,6 +13,7 @@ public class ConfigurationDbContextSeed
             {"GameRepoApi", configuration.GetValue<string>("GameRepoApiClient")},
             {"OrderingApi", configuration.GetValue<string>("OrderingApiClient")},
             {"BackManageApi", configuration.GetValue<string>("BackManageApiClient")},
+            {"IdentityApi", configuration.GetValue<string>("IdentityApiClient")},
             {"WebSPA", configuration.GetValue<string>("WebSPAClient")},
             {"AdminSPA", configuration.GetValue<string>("AdminSPAClient")}
         };

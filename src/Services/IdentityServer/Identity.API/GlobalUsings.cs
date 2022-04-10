@@ -23,6 +23,7 @@ global using Microsoft.AspNetCore.Http;
 global using Microsoft.AspNetCore.Identity;
 global using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 global using Microsoft.AspNetCore.Mvc;
+global using Microsoft.AspNetCore.Mvc.Authorization;
 global using Microsoft.AspNetCore.Mvc.Filters;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.Design;
@@ -62,6 +63,7 @@ global using Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.IntegrationEven
 global using Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.IntegrationEventLogEF.Utilities;
 global using Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.WebHost.Customization;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API;
+global using Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Auth;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Configurations;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Data;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.DtoModels;
