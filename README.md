@@ -40,7 +40,7 @@ docker ps
 游戏资料服务 : http://localhost:5101
 游戏订购服务 : http://localhost:5102
 后台管理服务 : http://localhost:5104
-授权认证服务 : http://localhost:5105
+授权认证服务 : http://localhost:5105/swagger
 ```
 
 # 网关建设
