@@ -14,7 +14,8 @@ try
     {
         var env = services.GetService<IWebHostEnvironment>();
         var logger = services.GetRequiredService<ILogger<GameRepoContextSeed>>();
-        new GameRepoContextSeed().SeedAsync(context, logger, env).Wait();
+        var redis = services.GetRequiredService<IRedisDatabase>();
+        new GameRepoContextSeed().SeedAsync(context, logger, env, redis).Wait();
     });
     host.MigrateMySqlDbContext<IntegrationEventLogContext>((_, _) => { });
     Log.Information("Migrations Applied ({ApplicationContext})...", AppName);

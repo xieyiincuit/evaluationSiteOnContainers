@@ -2,7 +2,7 @@
 
 public class GameRepoContextSeed
 {
-    public async Task SeedAsync(GameRepoContext context, ILogger<GameRepoContextSeed> logger, IWebHostEnvironment env)
+    public async Task SeedAsync(GameRepoContext context, ILogger<GameRepoContextSeed> logger, IWebHostEnvironment env, IRedisDatabase redis)
     {
         var policy = CreatePolicy(logger, nameof(GameRepoContextSeed));
 
@@ -39,6 +39,38 @@ public class GameRepoContextSeed
             {
                 await context.AddRangeAsync(GetPreconfiguredSuggestions());
                 await context.SaveChangesAsync();
+            }
+
+            if (!context.GameShopItems.Any())
+            {
+                await context.AddRangeAsync(GetPreconfiguredGameShopItem());
+                var result = await context.SaveChangesAsync();
+                if (result > 0)
+                {
+                    await redis.Database.StringSetAsync("ProductStock_1", 50);
+                    await redis.Database.StringSetAsync("ProductStock_2", 50);
+
+                    var sdkToInsert1 = new List<GameItemSDK>();
+                    for (var i = 0; i < 50; i++)
+                        sdkToInsert1.Add(new GameItemSDK
+                        {
+                            GameItemId = 1,
+                            SDKString = 1 + Guid.NewGuid().ToString("D")
+                        });
+
+                    await context.GameItemSDKs.AddRangeAsync(sdkToInsert1);
+
+                    var sdkToInsert2 = new List<GameItemSDK>();
+                    for (var i = 0; i < 50; i++)
+                        sdkToInsert2.Add(new GameItemSDK
+                        {
+                            GameItemId = 2,
+                            SDKString = 2 + Guid.NewGuid().ToString("D")
+                        });
+
+                    await context.GameItemSDKs.AddRangeAsync(sdkToInsert2);
+                    await context.SaveChangesAsync();
+                }
             }
         });
     }
@@ -453,6 +485,37 @@ public class GameRepoContextSeed
                 CPUName = "Intel i7-8700", GraphicsCard = "GeForce GTX 1660",
                 DiskSize = 80, MemorySize = 16,
                 OperationSystem = "Windows 10", GameId = 9
+            }
+        };
+    }
+
+    #endregion
+
+    #region GameShopInitialize
+
+    private IEnumerable<GameShopItem> GetPreconfiguredGameShopItem()
+    {
+        return new List<GameShopItem>
+        {
+            new()
+            {
+                Id = 1,
+                AvailableStock = 50,
+                Discount = 73,
+                GameInfoId = 1,
+                Price = 98,
+                SellPictrue = "shopinfopic/gamerepo/shopyongjie.jpg",
+                HotSellPoint = 560
+            },
+            new()
+            {
+                Id = 2,
+                AvailableStock = 50,
+                Discount = 80,
+                GameInfoId = 2,
+                Price = 298,
+                SellPictrue = "shopinfopic/gamerepo/shoplaotouhuan.jpg",
+                HotSellPoint = 2000
             }
         };
     }
