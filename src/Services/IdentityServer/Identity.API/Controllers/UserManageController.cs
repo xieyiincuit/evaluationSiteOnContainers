@@ -50,7 +50,7 @@ public class UserManageController : ControllerBase
     /// <param name="userIds">用户Id, List</param>
     /// <returns></returns>
     [AllowAnonymous]
-    [HttpPost("batch")]
+    [HttpPost("avatar/batch")]
     public async Task<IActionResult> BatchGetAvatarAsync([FromBody] List<string> userIds)
     {
         if (userIds == null || userIds.Count == 0 || userIds.Count > 5)

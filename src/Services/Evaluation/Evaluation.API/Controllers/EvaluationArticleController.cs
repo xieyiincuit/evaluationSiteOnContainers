@@ -129,7 +129,7 @@ public class EvaluationArticleController : ControllerBase
     [AllowAnonymous]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(ArticleDto), (int)HttpStatusCode.OK)]
-    public async Task<ActionResult<ArticleDto>> GetArticleByIdAsync(int id)
+    public async Task<ActionResult<ArticleDto>> GetArticleByIdAsync([FromRoute] int id)
     {
         if (id <= 0 || id >= int.MaxValue) return BadRequest();
 
