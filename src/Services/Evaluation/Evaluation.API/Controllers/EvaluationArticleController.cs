@@ -203,8 +203,8 @@ public class EvaluationArticleController : ControllerBase
         entity.UserId = User.FindFirstValue("sub");
         entity.NickName = User.FindFirstValue("nickname");
 
-        var addResonse = await _articleService.AddArticleAsync(entity);
-        if (addResonse != false) throw new EvaluationDomainException("创建测评文章失败");
+        var addResponse = await _articleService.AddArticleAsync(entity);
+        if (addResponse != false) throw new EvaluationDomainException("创建测评文章失败");
 
         _logger.LogInformation($"---- evaluator:id:{entity.UserId}, name:{User.FindFirst("nickname")} create a article -> id:{entity.ArticleId}, title:{articleAddDto.Title}");
         return CreatedAtRoute(nameof(GetArticleByIdAsync), new { id = entity.ArticleId }, new { articleId = entity.ArticleId });

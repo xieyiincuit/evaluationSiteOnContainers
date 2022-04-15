@@ -16,7 +16,7 @@ x-minio-common:
         "CMD",
         "curl",
         "-f",
-        "http://http://13.76.44.158/:9000/minio/health/live"
+        "http://20.70.192.60/:9000/minio/health/live"
       ]
     interval: 30s
     timeout: 20s
@@ -165,16 +165,19 @@ services:
       - EventBusSettings__Connection=mq_evaluation
       - EventBusSettings__UserName=zhoushanlin
       - EventBusSettings__PassWord=rabbitmq!!..
-      - EvaluationApiClient=http://13.76.44.158:5100
-      - GameRepoApiClient=http://13.76.44.158:5101
-      - OrderingApiClient=http://13.76.44.158:5102
-      - BackManageApiClient=http://13.76.44.158:5104
-      - IdentityApiClient=http://13.76.44.158:5105
-      - WebSPAClient=http://13.76.44.158:3000
-      - AdminSPAClient=http://13.76.44.158:4000
-      - IdentityUrlExternal=http://13.76.44.158:5105
+      - EvaluationApiClient=http://20.70.192.60:5100
+      - GameRepoApiClient=http://20.70.192.60:5101
+      - OrderingApiClient=http://20.70.192.60:5102
+      - BackManageApiClient=http://20.70.192.60:5104
+      - IdentityApiClient=http://20.70.192.60:5105
+      - WebSPAClient=http://localhost:3000
+      - AdminSPAClient=http://localhost:4000
+      - AdminSPAIpClient=http://192.168.4.35:4000
+      - AdminSPACompanyClient=http://172.16.197.20:4000
+      - AdminSPAHomeClient=http://192.168.31.118:4000
+      - IdentityUrlExternal=http://20.70.192.60:5105
       - IdentityUrl=http://identity-api
-      - SwaggerRedirectUrl=13.76.44.158
+      - SwaggerRedirectUrl=20.70.192.60
       - SwaggerRedirectUrlPort=5105
       - PATH_BASE=/identity-api
       - ServiceRegister__ServiceName=identity-api
@@ -200,14 +203,14 @@ services:
       - Redis__Hosts__0__Host=cache_master
       - Redis__Hosts__0__Port=6379
       - RedisHCCheckConnection=cache_master,DefaultDatabase=0,password=zhouredis11..
-      - IdentityUrlExternal=http://13.76.44.158:5105
+      - IdentityUrlExternal=http://20.70.192.60:5105
       - IdentityUrl=http://identity-api
       - PATH_BASE=/evaluation-api
       - GrpcGameRepoUrl=http://gamerepo-api:81
       - GRPC_PORT=81
       - PORT=80
       - UseCustomizationData=True
-      - SwaggerRedirectUrl=13.76.44.158
+      - SwaggerRedirectUrl=20.70.192.60
       - SwaggerRedirectUrlPort=5100
       - ServiceRegister__ServiceName=evaluation-api
       - ServiceRegister__ServiceAddress=http://evaluation-api:80
@@ -231,7 +234,7 @@ services:
       - Redis__Hosts__0__Host=cache_master
       - Redis__Hosts__0__Port=6379
       - RedisHCCheckConnection=cache_master,DefaultDatabase=0,password=zhouredis11..
-      - IdentityUrlExternal=http://13.76.44.158:5105
+      - IdentityUrlExternal=http://20.70.192.60:5105
       - IdentityUrl=http://identity-api
       - GrpcGameRepoUrl=http://gamerepo-api:81
       - PATH_BASE=/evaluation-api
@@ -264,13 +267,13 @@ services:
       - Redis__Hosts__0__Host=cache_master
       - Redis__Hosts__0__Port=6379
       - RedisHCCheckConnection=cache_master,DefaultDatabase=0,password=zhouredis11..
-      - IdentityUrlExternal=http://13.76.44.158:5105
+      - IdentityUrlExternal=http://20.70.192.60:5105
       - IdentityUrl=http://identity-api
       - EvaluationUrl=http://evaluation-api
       - PATH_BASE=/gamerepo-api
       - GRPC_PORT=81
       - PORT=80
-      - SwaggerRedirectUrl=13.76.44.158
+      - SwaggerRedirectUrl=20.70.192.60
       - SwaggerRedirectUrlPort=5101
       - ServiceRegister__ServiceName=gamerepo-api
       - ServiceRegister__ServiceAddress=http://gamerepo-api:80
@@ -290,14 +293,14 @@ services:
       - Redis__Hosts__0__Host=cache_master
       - Redis__Hosts__0__Port=6379
       - RedisHCCheckConnection=cache_master,DefaultDatabase=0,password=zhouredis11..
-      - IdentityUrlExternal=http://13.76.44.158:5105
+      - IdentityUrlExternal=http://20.70.192.60:5105
       - IdentityUrl=http://identity-api
       - GameRepoUrl=http://gamerepo-api
       - GrpcGameRepoUrl=http://gamerepo-api:81
       - PATH_BASE=/ordering-api
       - GRPC_PORT=81
       - PORT=80
-      - SwaggerRedirectUrl=13.76.44.158
+      - SwaggerRedirectUrl=20.70.192.60
       - SwaggerRedirectUrlPort=5102
       - ServiceRegister__ServiceName=ordering-api
       - ServiceRegister__ServiceAddress=http://ordering-api:80
@@ -311,10 +314,10 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
       - BackDbConnectString=server=db_backmanage;port=3306;database=evaluation_back;user=root;password=ZhouBack!1n;IgnoreCommandTransaction=true
-      - IdentityUrlExternal=http://13.76.44.158:5105
+      - IdentityUrlExternal=http://20.70.192.60:5105
       - IdentityUrl=http://identity-api
       - PATH_BASE=/backmanage-api
-      - SwaggerRedirectUrl=13.76.44.158
+      - SwaggerRedirectUrl=20.70.192.60
       - SwaggerRedirectUrlPort=5104
       - ServiceRegister__ServiceName=backmanage-api
       - ServiceRegister__ServiceAddress=http://backmanage-api:80

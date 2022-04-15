@@ -18,7 +18,11 @@ public class ConfigurationDbContextSeed
             {"BackManageApi", configuration.GetValue<string>("BackManageApiClient")},
             {"IdentityApi", configuration.GetValue<string>("IdentityApiClient")},
             {"WebSPA", configuration.GetValue<string>("WebSPAClient")},
-            {"AdminSPA", configuration.GetValue<string>("AdminSPAClient")}
+            {"AdminSPA", configuration.GetValue<string>("AdminSPAClient")},
+            {"AdminSPAIp", configuration.GetValue<string>("AdminSPAIpClient")},
+            {"AdminSPACompany", configuration.GetValue<string>("AdminSPACompanyClient")},
+            {"AdminSPAHome", configuration.GetValue<string>("AdminSPAHomeClient")},
+
         };
 
         var policy = CreatePolicy(logger, nameof(ConfigurationDbContextSeed));

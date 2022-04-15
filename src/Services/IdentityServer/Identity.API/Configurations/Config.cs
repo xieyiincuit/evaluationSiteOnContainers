@@ -222,6 +222,89 @@ public static class Config
                 }
             },
 
+            new Client
+            {
+                ClientId = "evaluationadminvuejsip",
+                ClientName = "EvaluationAdmin SPA OpenId Client Ip",
+                AllowedGrantTypes = GrantTypes.Implicit,
+                AllowAccessTokensViaBrowser = true,
+                RequireConsent = false,
+
+                RedirectUris = {$"{clientsUrl["AdminSPAIp"]}/callback"},
+                PostLogoutRedirectUris = {$"{clientsUrl["AdminSPAIp"]}/"},
+                AllowedCorsOrigins = {$"{clientsUrl["AdminSPAIp"]}"},
+
+                AccessTokenLifetime = 3600 * 24 * 7,
+                UpdateAccessTokenClaimsOnRefresh = true,
+                AllowOfflineAccess = true,
+
+                AllowedScopes =
+                {
+                    IdentityServerConstants.StandardScopes.OpenId,
+                    IdentityServerConstants.StandardScopes.Profile,
+                    IdentityServerConstants.StandardScopes.Email,
+                    IdentityServerConstants.StandardScopes.OfflineAccess,
+                    "eval-manage",
+                    "repo-manage",
+                    "back-manage"
+                }
+            },
+
+            new Client
+            {
+                ClientId = "evaluationadminvuejscompany",
+                ClientName = "EvaluationAdmin SPA OpenId Client Company",
+                AllowedGrantTypes = GrantTypes.Implicit,
+                AllowAccessTokensViaBrowser = true,
+                RequireConsent = false,
+
+                RedirectUris = {$"{clientsUrl["AdminSPACompany"]}/callback"},
+                PostLogoutRedirectUris = {$"{clientsUrl["AdminSPACompany"]}/"},
+                AllowedCorsOrigins = {$"{clientsUrl["AdminSPACompany"]}"},
+
+                AccessTokenLifetime = 3600 * 24 * 7,
+                UpdateAccessTokenClaimsOnRefresh = true,
+                AllowOfflineAccess = true,
+
+                AllowedScopes =
+                {
+                    IdentityServerConstants.StandardScopes.OpenId,
+                    IdentityServerConstants.StandardScopes.Profile,
+                    IdentityServerConstants.StandardScopes.Email,
+                    IdentityServerConstants.StandardScopes.OfflineAccess,
+                    "eval-manage",
+                    "repo-manage",
+                    "back-manage"
+                }
+            },
+            new Client
+            {
+                ClientId = "evaluationadminvuejshome",
+                ClientName = "EvaluationAdmin SPA OpenId Client Home",
+                AllowedGrantTypes = GrantTypes.Implicit,
+                AllowAccessTokensViaBrowser = true,
+                RequireConsent = false,
+
+                RedirectUris = {$"{clientsUrl["AdminSPAHome"]}/callback"},
+                PostLogoutRedirectUris = {$"{clientsUrl["AdminSPAHome"]}/"},
+                AllowedCorsOrigins = {$"{clientsUrl["AdminSPAHome"]}"},
+
+                AccessTokenLifetime = 3600 * 24 * 7,
+                UpdateAccessTokenClaimsOnRefresh = true,
+                AllowOfflineAccess = true,
+
+                AllowedScopes =
+                {
+                    IdentityServerConstants.StandardScopes.OpenId,
+                    IdentityServerConstants.StandardScopes.Profile,
+                    IdentityServerConstants.StandardScopes.Email,
+                    IdentityServerConstants.StandardScopes.OfflineAccess,
+                    "eval-manage",
+                    "repo-manage",
+                    "back-manage"
+                }
+            },
+
             #endregion
         };
     }
