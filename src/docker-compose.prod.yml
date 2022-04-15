@@ -1,6 +1,7 @@
-version: '3.9'
+﻿version: '3.9'
 # Settings and configurations that are common for all containers
-x-minio-common: &minio-common
+x-minio-common:
+  &minio-common
   image: quay.io/minio/minio:RELEASE.2022-03-17T06-34-49Z
   command: server --console-address ":9001" http://minio{1...2}/data{1...2}
   expose:
@@ -10,11 +11,17 @@ x-minio-common: &minio-common
     MINIO_ROOT_USER: zhousl
     MINIO_ROOT_PASSWORD: zhou11..
   healthcheck:
-    test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+    test:
+      [
+        "CMD",
+        "curl",
+        "-f",
+        "http://http://13.76.44.158/:9000/minio/health/live"
+      ]
     interval: 30s
     timeout: 20s
     retries: 3
-    
+
 services:
   minio1:
     <<: *minio-common
@@ -23,7 +30,7 @@ services:
       - minio-data1:/data
       - minio-data1-1:/data1
       - minio-data1-2:/data2
-    
+
   minio2:
     <<: *minio-common
     hostname: minio2
@@ -31,7 +38,7 @@ services:
       - minio-data2:/data
       - minio-data2-1:/data1
       - minio-data2-2:/data2
-  
+
   nginx:
     hostname: nginx
     volumes:
@@ -154,19 +161,20 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
-      - ConnectionStrings__IdentityConnection=Server=db_identity;Database=IdentityDb;User Id=sa;Password=Zh0u!1,,;
+      - ConnectionStrings__IdentityConnection=Server=db_identity;Database=IdentityDb;User Id=sa;Password=Zh0u!1,,;TrustServerCertificate=true;
       - EventBusSettings__Connection=mq_evaluation
       - EventBusSettings__UserName=zhoushanlin
       - EventBusSettings__PassWord=rabbitmq!!..
-      - EvaluationApiClient=http://localhost:5100
-      - GameRepoApiClient=http://localhost:5101
-      - OrderingApiClient=http://localhost:5102
-      - BackManageApiClient=http://localhost:5104
-      - IdentityApiClient=http://localhost:5105
-      - WebSPAClient=http://localhost:3000
-      - AdminSPAClient=http://localhost:4000
-      - IdentityUrlExternal=http://localhost:5105
+      - EvaluationApiClient=http://13.76.44.158:5100
+      - GameRepoApiClient=http://13.76.44.158:5101
+      - OrderingApiClient=http://13.76.44.158:5102
+      - BackManageApiClient=http://13.76.44.158:5104
+      - IdentityApiClient=http://13.76.44.158:5105
+      - WebSPAClient=http://13.76.44.158:3000
+      - AdminSPAClient=http://13.76.44.158:4000
+      - IdentityUrlExternal=http://13.76.44.158:5105
       - IdentityUrl=http://identity-api
+      - SwaggerRedirectUrl=13.76.44.158
       - SwaggerRedirectUrlPort=5105
       - PATH_BASE=/identity-api
       - ServiceRegister__ServiceName=identity-api
@@ -192,13 +200,14 @@ services:
       - Redis__Hosts__0__Host=cache_master
       - Redis__Hosts__0__Port=6379
       - RedisHCCheckConnection=cache_master,DefaultDatabase=0,password=zhouredis11..
-      - IdentityUrlExternal=http://localhost:5105
+      - IdentityUrlExternal=http://13.76.44.158:5105
       - IdentityUrl=http://identity-api
       - PATH_BASE=/evaluation-api
       - GrpcGameRepoUrl=http://gamerepo-api:81
       - GRPC_PORT=81
       - PORT=80
       - UseCustomizationData=True
+      - SwaggerRedirectUrl=13.76.44.158
       - SwaggerRedirectUrlPort=5100
       - ServiceRegister__ServiceName=evaluation-api
       - ServiceRegister__ServiceAddress=http://evaluation-api:80
@@ -222,7 +231,7 @@ services:
       - Redis__Hosts__0__Host=cache_master
       - Redis__Hosts__0__Port=6379
       - RedisHCCheckConnection=cache_master,DefaultDatabase=0,password=zhouredis11..
-      - IdentityUrlExternal=http://localhost:5105
+      - IdentityUrlExternal=http://13.76.44.158:5105
       - IdentityUrl=http://identity-api
       - GrpcGameRepoUrl=http://gamerepo-api:81
       - PATH_BASE=/evaluation-api
@@ -255,12 +264,13 @@ services:
       - Redis__Hosts__0__Host=cache_master
       - Redis__Hosts__0__Port=6379
       - RedisHCCheckConnection=cache_master,DefaultDatabase=0,password=zhouredis11..
-      - IdentityUrlExternal=http://localhost:5105
+      - IdentityUrlExternal=http://13.76.44.158:5105
       - IdentityUrl=http://identity-api
       - EvaluationUrl=http://evaluation-api
       - PATH_BASE=/gamerepo-api
       - GRPC_PORT=81
       - PORT=80
+      - SwaggerRedirectUrl=13.76.44.158
       - SwaggerRedirectUrlPort=5101
       - ServiceRegister__ServiceName=gamerepo-api
       - ServiceRegister__ServiceAddress=http://gamerepo-api:80
@@ -280,13 +290,14 @@ services:
       - Redis__Hosts__0__Host=cache_master
       - Redis__Hosts__0__Port=6379
       - RedisHCCheckConnection=cache_master,DefaultDatabase=0,password=zhouredis11..
-      - IdentityUrlExternal=http://localhost:5105
+      - IdentityUrlExternal=http://13.76.44.158:5105
       - IdentityUrl=http://identity-api
       - GameRepoUrl=http://gamerepo-api
       - GrpcGameRepoUrl=http://gamerepo-api:81
       - PATH_BASE=/ordering-api
       - GRPC_PORT=81
       - PORT=80
+      - SwaggerRedirectUrl=13.76.44.158
       - SwaggerRedirectUrlPort=5102
       - ServiceRegister__ServiceName=ordering-api
       - ServiceRegister__ServiceAddress=http://ordering-api:80
@@ -300,9 +311,10 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
       - BackDbConnectString=server=db_backmanage;port=3306;database=evaluation_back;user=root;password=ZhouBack!1n;IgnoreCommandTransaction=true
-      - IdentityUrlExternal=http://localhost:5105
+      - IdentityUrlExternal=http://13.76.44.158:5105
       - IdentityUrl=http://identity-api
       - PATH_BASE=/backmanage-api
+      - SwaggerRedirectUrl=13.76.44.158
       - SwaggerRedirectUrlPort=5104
       - ServiceRegister__ServiceName=backmanage-api
       - ServiceRegister__ServiceAddress=http://backmanage-api:80
@@ -310,24 +322,24 @@ services:
     ports:
       - "5104:80"
 
-  #webstatus:
-  #  environment:
-  #    - ASPNETCORE_ENVIRONMENT=Development
-  #    - ASPNETCORE_URLS=http://0.0.0.0:80
-  #    - HealthChecksUI__HealthChecks__0__Name=Evaluation Services Check
-  #    - HealthChecksUI__HealthChecks__0__Uri=http://evaluation-api/hc
-  #    - HealthChecksUI__HealthChecks__1__Name=GameRepository Services Check
-  #    - HealthChecksUI__HealthChecks__1__Uri=http://gamerepo-api/hc
-  #    - HealthChecksUI__HealthChecks__2__Name=Ordering Services Check
-  #    - HealthChecksUI__HealthChecks__2__Uri=http://ordering-api/hc
-  #    - HealthChecksUI__HealthChecks__3__Name=BackManager Services Check
-  #    - HealthChecksUI__HealthChecks__3__Uri=http://backmanage-api/hc
-  #    - HealthChecksUI__HealthChecks__4__Name=Identity Services Check
-  #    - HealthChecksUI__HealthChecks__4__Uri=http://identity-api/hc
-  #    - HealthChecksUI__HealthChecks__5__Name=Evaluation Services 2 Check
-  #    - HealthChecksUI__HealthChecks__5__Uri=http://evaluation-api-2/hc
-  #  ports:
-  #    - "5106:80"
+  # webstatus:
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=Development
+  #     - ASPNETCORE_URLS=http://0.0.0.0:80
+  #     - HealthChecksUI__HealthChecks__0__Name=Evaluation Services Check
+  #     - HealthChecksUI__HealthChecks__0__Uri=http://evaluation-api/hc
+  #     - HealthChecksUI__HealthChecks__1__Name=GameRepository Services Check
+  #     - HealthChecksUI__HealthChecks__1__Uri=http://gamerepo-api/hc
+  #     - HealthChecksUI__HealthChecks__2__Name=Ordering Services Check
+  #     - HealthChecksUI__HealthChecks__2__Uri=http://ordering-api/hc
+  #     - HealthChecksUI__HealthChecks__3__Name=BackManager Services Check
+  #     - HealthChecksUI__HealthChecks__3__Uri=http://backmanage-api/hc
+  #     - HealthChecksUI__HealthChecks__4__Name=Identity Services Check
+  #     - HealthChecksUI__HealthChecks__4__Uri=http://identity-api/hc
+  #     - HealthChecksUI__HealthChecks__5__Name=Evaluation Services 2 Check
+  #     - HealthChecksUI__HealthChecks__5__Uri=http://evaluation-api-2/hc
+  #   ports:
+  #     - "5106:80"
 
 volumes:
   mysql_gamerepo:
@@ -339,7 +351,7 @@ volumes:
   consul_center:
   consul_center1:
   consul_center2:
-  consul_client: 
+  consul_client:
   minio-data1:
   minio-data1-1:
   minio-data1-2:
