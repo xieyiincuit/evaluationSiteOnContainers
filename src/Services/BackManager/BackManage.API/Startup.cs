@@ -218,7 +218,7 @@ public class Startup
                 setup.OAuthClientId("backmanageswaggerui");
                 setup.OAuthAppName("BackManage Swagger UI");
                 setup.OAuth2RedirectUrl(
-                    $"http://localhost:{Configuration.GetValue<string>("SwaggerRedirectUrlPort", "50004")}/swagger/oauth2-redirect.html");
+                    $"http://{Configuration.GetValue<string>("SwaggerRedirectUrl", "localhost")}:{Configuration.GetValue<string>("SwaggerRedirectUrlPort", "50004")}/swagger/oauth2-redirect.html");
             });
 
         //需要详细信息时可以使用

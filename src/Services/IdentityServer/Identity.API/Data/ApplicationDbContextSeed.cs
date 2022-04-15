@@ -1,14 +1,17 @@
-﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Data;
+﻿using Microsoft.Data.SqlClient;
+using Polly;
+using Polly.Retry;
+
+namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Data;
 
 public class ApplicationDbContextSeed
 {
     private readonly IPasswordHasher<ApplicationUser> _passwordHasher = new PasswordHasher<ApplicationUser>();
 
-    public async Task SeedAsync(
-        ApplicationDbContext context, IWebHostEnvironment env,
-        ILogger<ApplicationDbContextSeed> logger, int? retry = 0)
+    public async Task SeedAsync(ApplicationDbContext context, IWebHostEnvironment env, ILogger<ApplicationDbContextSeed> logger)
     {
-        try
+        var policy = CreatePolicy(logger, nameof(ApplicationDbContextSeed));
+        await policy.ExecuteAsync(async () =>
         {
             if (!context.Users.Any())
             {
@@ -34,19 +37,7 @@ public class ApplicationDbContextSeed
                 await context.SaveChangesAsync();
                 logger.LogInformation("---- Ending Linking Roles and User");
             }
-        }
-        catch (Exception ex)
-        {
-            if (retry < 10)
-            {
-                retry++;
-
-                logger.LogError(ex, "EXCEPTION ERROR while migrating {DbContextName}",
-                    nameof(ApplicationDbContext));
-
-                await SeedAsync(context, env, logger, retry);
-            }
-        }
+        });
     }
 
     private IEnumerable<ApplicationUser> GetDefaultUser()
@@ -186,5 +177,20 @@ public class ApplicationDbContextSeed
             }
         };
         return linkRoles;
+    }
+
+    private AsyncRetryPolicy CreatePolicy(ILogger<ApplicationDbContextSeed> logger, string prefix, int retries = 5)
+    {
+        return Policy.Handle<SqlException>().WaitAndRetryAsync(
+            retries,
+            retry => TimeSpan.FromSeconds(5),
+            (exception, timeSpan, retry, ctx) =>
+            {
+                //记录重试日志
+                logger.LogWarning(exception,
+                    "[{prefix}] Exception {ExceptionType} with message {Message} detected on attempt {retry} of {retries}",
+                    prefix, exception.GetType().Name, exception.Message, retry, retries);
+            }
+        );
     }
 }

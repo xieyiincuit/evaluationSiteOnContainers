@@ -1,10 +1,13 @@
 ﻿using IdentityServer4.EntityFramework.Mappers;
+using Microsoft.Data.SqlClient;
+using Polly;
+using Polly.Retry;
 
 namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Data;
 
 public class ConfigurationDbContextSeed
 {
-    public async Task SeedAsync(ConfigurationDbContext context, IConfiguration configuration)
+    public async Task SeedAsync(ConfigurationDbContext context, IConfiguration configuration, ILogger<ConfigurationDbContextSeed> logger)
     {
         //callbacks urls from config:
         var clientUrls = new Dictionary<string, string>
@@ -18,50 +21,69 @@ public class ConfigurationDbContextSeed
             {"AdminSPA", configuration.GetValue<string>("AdminSPAClient")}
         };
 
-        if (!context.Clients.Any())
+        var policy = CreatePolicy(logger, nameof(ConfigurationDbContextSeed));
+        await policy.ExecuteAsync(async () =>
         {
-            foreach (var client in Config.GetClients(clientUrls)) context.Clients.Add(client.ToEntity());
-            await context.SaveChangesAsync();
-        }
-        // Checking always for old redirects to fix existing deployments
-        // to use new swagger-ui redirect uri as of v3.0.0
-        else
-        {
-            var oldRedirects = (await context.Clients.Include(c => c.RedirectUris).ToListAsync())
-                .SelectMany(c => c.RedirectUris)
-                .Where(ru => ru.RedirectUri.EndsWith("/o2c.html"))
-                .ToList();
-
-            if (oldRedirects.Any())
+            if (!context.Clients.Any())
             {
-                foreach (var ru in oldRedirects)
+                foreach (var client in Config.GetClients(clientUrls)) context.Clients.Add(client.ToEntity());
+                await context.SaveChangesAsync();
+            }
+            // Checking always for old redirects to fix existing deployments
+            // to use new swagger-ui redirect uri as of v3.0.0
+            else
+            {
+                var oldRedirects = (await context.Clients.Include(c => c.RedirectUris).ToListAsync())
+                    .SelectMany(c => c.RedirectUris)
+                    .Where(ru => ru.RedirectUri.EndsWith("/o2c.html"))
+                    .ToList();
+
+                if (oldRedirects.Any())
                 {
-                    ru.RedirectUri = ru.RedirectUri.Replace("/o2c.html", "/oauth2-redirect.html");
-                    context.Update(ru.Client);
+                    foreach (var ru in oldRedirects)
+                    {
+                        ru.RedirectUri = ru.RedirectUri.Replace("/o2c.html", "/oauth2-redirect.html");
+                        context.Update(ru.Client);
+                    }
+
+                    await context.SaveChangesAsync();
                 }
+            }
+
+            if (!context.IdentityResources.Any())
+            {
+                foreach (var resource in Config.GetIdentityResources()) context.IdentityResources.Add(resource.ToEntity());
+                await context.SaveChangesAsync();
+            }
+
+            if (!context.ApiScopes.Any())
+            {
+                foreach (var api in Config.GetApiScopes()) context.ApiScopes.Add(api.ToEntity());
 
                 await context.SaveChangesAsync();
             }
-        }
 
-        if (!context.IdentityResources.Any())
-        {
-            foreach (var resource in Config.GetIdentityResources()) context.IdentityResources.Add(resource.ToEntity());
-            await context.SaveChangesAsync();
-        }
+            if (!context.ApiResources.Any())
+            {
+                foreach (var api in Config.GetApiResources()) context.ApiResources.Add(api.ToEntity());
 
-        if (!context.ApiScopes.Any())
-        {
-            foreach (var api in Config.GetApiScopes()) context.ApiScopes.Add(api.ToEntity());
+                await context.SaveChangesAsync();
+            }
+        });
+    }
 
-            await context.SaveChangesAsync();
-        }
-
-        if (!context.ApiResources.Any())
-        {
-            foreach (var api in Config.GetApiResources()) context.ApiResources.Add(api.ToEntity());
-
-            await context.SaveChangesAsync();
-        }
+    private AsyncRetryPolicy CreatePolicy(ILogger<ConfigurationDbContextSeed> logger, string prefix, int retries = 5)
+    {
+        return Policy.Handle<SqlException>().WaitAndRetryAsync(
+            retries,
+            retry => TimeSpan.FromSeconds(5),
+            (exception, timeSpan, retry, ctx) =>
+            {
+                //记录重试日志
+                logger.LogWarning(exception,
+                    "[{prefix}] Exception {ExceptionType} with message {Message} detected on attempt {retry} of {retries}",
+                    prefix, exception.GetType().Name, exception.Message, retry, retries);
+            }
+        );
     }
 }

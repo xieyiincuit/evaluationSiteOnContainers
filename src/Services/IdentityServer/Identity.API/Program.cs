@@ -19,9 +19,8 @@ try
     host.MigrateSqlServerDbContext<PersistedGrantDbContext>((_, _) => { });
     host.MigrateSqlServerDbContext<ConfigurationDbContext>((context, services) =>
     {
-        new ConfigurationDbContextSeed()
-            .SeedAsync(context, configuration)
-            .Wait();
+        var logger = services.GetRequiredService<ILogger<ConfigurationDbContextSeed>>();
+        new ConfigurationDbContextSeed().SeedAsync(context, configuration, logger).Wait();
     });
     host.MigrateSqlServerDbContext<IntegrationEventLogContext>((_, _) => { });
     Log.Information("Migrations Applied ({ApplicationContext})...", AppName);

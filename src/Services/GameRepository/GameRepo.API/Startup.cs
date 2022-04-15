@@ -383,7 +383,7 @@ public class Startup
                 setup.OAuthClientId("gamereposwaggerui");
                 setup.OAuthAppName("GameRepo Swagger UI");
                 setup.OAuth2RedirectUrl(
-                    $"http://localhost:{Configuration.GetValue<string>("SwaggerRedirectUrlPort", "50001")}/swagger/oauth2-redirect.html");
+                    $"http://{Configuration.GetValue<string>("SwaggerRedirectUrl", "localhost")}:{Configuration.GetValue<string>("SwaggerRedirectUrlPort", "50001")}/swagger/oauth2-redirect.html");
             });
 
         //app.UseHttpLogging();

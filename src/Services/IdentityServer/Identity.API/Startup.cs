@@ -303,7 +303,8 @@ public class Startup
                   $"{(!string.IsNullOrEmpty(pathBase) ? pathBase : string.Empty)}/swagger/v1/swagger.json", "Identity.API V1");
               setup.OAuthClientId("identityswaggerui");
               setup.OAuthAppName("Identity Swagger UI");
-              setup.OAuth2RedirectUrl($"http://localhost:{Configuration.GetValue<string>("SwaggerRedirectUrlPort", "50005")}/swagger/oauth2-redirect.html");
+              setup.OAuth2RedirectUrl(
+                  $"http://{Configuration.GetValue<string>("SwaggerRedirectUrl", "localhost")}:{Configuration.GetValue<string>("SwaggerRedirectUrlPort", "50005")}/swagger/oauth2-redirect.html");
               setup.RoutePrefix = "swagger";
           });
 
@@ -363,9 +364,11 @@ public static class CustomExtensionMethod
         this IServiceCollection services,
         IConfiguration configuration)
     {
+        var identityConnectionString = configuration.GetConnectionString("IdentityConnection");
+
         // Add framework services.
         services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("IdentityConnection"),
+            options.UseSqlServer(identityConnectionString,
                 sqlOptions =>
                 {
                     sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);

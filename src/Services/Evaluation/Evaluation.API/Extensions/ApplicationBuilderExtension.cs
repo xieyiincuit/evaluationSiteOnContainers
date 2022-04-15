@@ -16,7 +16,7 @@ public static class ApplicationBuilderExtension
             setup.OAuthClientId("evaluationswaggerui");
             setup.OAuthAppName("Evaluation Swagger UI");
             setup.OAuth2RedirectUrl(
-                $"http://localhost:{configuration.GetValue<string>("SwaggerRedirectUrlPort", "50000")}/swagger/oauth2-redirect.html");
+                $"http://{configuration.GetValue<string>("SwaggerRedirectUrl", "localhost")}:{configuration.GetValue<string>("SwaggerRedirectUrlPort", "50000")}/swagger/oauth2-redirect.html");
         });
 
         return builder;

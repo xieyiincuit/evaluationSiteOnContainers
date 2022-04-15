@@ -202,7 +202,8 @@ public class Startup
                     "Ordering.API V1");
                 setup.OAuthClientId("orderingswaggerui");
                 setup.OAuthAppName("Ordering Swagger UI");
-                setup.OAuth2RedirectUrl($"http://localhost:{Configuration.GetValue<string>("SwaggerRedirectUrlPort", "50001")}/swagger/oauth2-redirect.html");
+                setup.OAuth2RedirectUrl(
+                    $"http://{Configuration.GetValue<string>("SwaggerRedirectUrl", "localhost")}:{Configuration.GetValue<string>("SwaggerRedirectUrlPort", "50002")}/swagger/oauth2-redirect.html");
             });
 
         //Debug时使用
