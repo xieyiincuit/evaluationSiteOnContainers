@@ -37,14 +37,14 @@ public class PurchaseController : ControllerBase
     [Authorize]
     public async Task<IActionResult> BuyShopItemAsync([FromRoute] int shopItemId)
     {
-        // 商品Key 用于做分布式锁
+        // 生成商品Key 用于做分布式锁
         var productKey = GetProductStockKey(shopItemId);
 
-        //没有此商品 返回400
-        if (!_redisDatabase.Database.KeyExists(productKey) || (int)await _redisDatabase.Database.StringGetAsync(productKey) == 0 ) 
+        // 若用户请求的商品不存在 返回400
+        if (!_redisDatabase.Database.KeyExists(productKey) || (int)await _redisDatabase.Database.StringGetAsync(productKey) < 1)
             return BadRequest();
 
-        //有此商品 上锁进行库存扣除
+        //有此商品 获取分布式锁进行库存扣除
         //锁的过期时间为30s，等待获取锁的时间为20s，如果没有获取到锁，则等待1秒钟后再次尝试获取
         await using var redLock = await _distributedLockFactory.CreateLockAsync(
             shopItemId.ToString(),
@@ -57,8 +57,7 @@ public class PurchaseController : ControllerBase
         if (redLock.IsAcquired)
         {
             _logger.LogInformation("shopItemId:{id} get the distribute locked", shopItemId);
-            var stockKey = GetProductStockKey(shopItemId);
-            
+
             // 通信服务 发送SDK保存拥有记录
             var sdkSendResponse = await _gameRepoHttpClient.SaveBuyerRecordAsync(User.FindFirstValue("sub"), shopItemId);
             if (!sdkSendResponse.IsSuccessStatusCode)
@@ -66,20 +65,22 @@ public class PurchaseController : ControllerBase
                 _logger.LogError("user:{name} buy a shopItem:{id} error", User.FindFirstValue("nickname"), shopItemId);
                 throw new OrderingDomainException("商品购买时SDK发放失败");
             }
-            // 库存减少
-            await _redisDatabase.Database.StringDecrementAsync(stockKey, 1);
-            var currentQuantity = (int)await _redisDatabase.Database.StringGetAsync(stockKey);
 
+            // 商品库存减少
+            await _redisDatabase.Database.StringDecrementAsync(productKey, 1);
+            // 获取当前商品库存
+            var currentQuantity = (int)await _redisDatabase.Database.StringGetAsync(productKey);
+            // 该商品售罄
             if (currentQuantity < 1)
             {
                 _logger.LogInformation("shopItem:{id} all sell, begin grpc call gameRepo to stop this", shopItemId);
+                //GRPC通知游戏资料服务下架该商品
                 var response = await _gameRepoGrpcService.StopShopSellAsync(shopItemId);
                 if (response == false)
                 {
                     _logger.LogError("shopItem:{id} all sell, begin grpc call gameRepo to stop this but fail", shopItemId);
+                    throw new OrderingDomainException("商品售罄，但下架商品失败");
                 }
-
-                return BadRequest();
             }
             _logger.LogInformation("user:{name} buy a shopItem:{id}", User.FindFirstValue("nickname"), shopItemId);
         }
