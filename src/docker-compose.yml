@@ -13,13 +13,8 @@ services:
   db_gamerepo:
     image: mysql:8.0.27
 
-  #local
   db_identity:
     image: mcr.microsoft.com/mssql/server:2019-latest
-
-  #azure
-  #db_identity:
-  #  image: mcr.microsoft.com/mssql/server:2019-CU15-ubuntu-18.04
 
   db_backmanage:
     image: mysql:8.0.27
