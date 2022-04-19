@@ -41,11 +41,11 @@ public partial class InMemoryEventBusSubscriptionsManager : IEventBusSubscriptio
         where T : IntegrationEvent
         where TH : IIntegrationEventHandler<T>
     {
-        var eventName = GetEventKey<T>(); //Get event name
-
+        // 获取集成事件名
+        var eventName = GetEventKey<T>(); 
+        // 添加事件订阅到映射表中
         DoAddSubscription(typeof(TH), eventName, false);
-
-        // 新增事件订阅类型
+        // 注册事件订阅类型
         if (!_eventTypes.Contains(typeof(T))) _eventTypes.Add(typeof(T));
     }
 
@@ -64,8 +64,11 @@ public partial class InMemoryEventBusSubscriptionsManager : IEventBusSubscriptio
         where TH : IIntegrationEventHandler<T>
         where T : IntegrationEvent
     {
+        // 获取该事件类型的订阅信息
         var handlerToRemove = FindSubscriptionToRemove<T, TH>();
+        // 获取该事件类型的事件名
         var eventName = GetEventKey<T>();
+        //删除事件订阅信息和事件注册名
         DoRemoveHandler(eventName, handlerToRemove);
     }
 
@@ -111,6 +114,7 @@ public partial class InMemoryEventBusSubscriptionsManager : IEventBusSubscriptio
         // 添加事件之前对事件存储进行检查，防止重复注册
         if (_handlers[eventName].Any(s => s.HandlerType == handlerType))
             throw new ArgumentException($"Handler Type {handlerType.Name} already registered for '{eventName}'", nameof(handlerType));
+
         // 根据事件的类型来选择不同的处理接口
         if (isDynamic)
             _handlers[eventName].Add(SubscriptionInfo.Dynamic(handlerType)); // 添加动态接口处理
@@ -126,11 +130,14 @@ public partial class InMemoryEventBusSubscriptionsManager : IEventBusSubscriptio
             // 移除映射表中的特定事件类型中的某个事件
             _handlers[eventName].Remove(subsToRemove);
 
-            // 如果该事件类型没有订阅的事件了, 则将该事件类型一并移除
+            // 如果该事件类型已经没有订阅的事件
             if (!_handlers[eventName].Any())
             {
+                // 移除该事件类型的订阅列表
                 _handlers.Remove(eventName);
+                // 得到该事件类型
                 var eventType = _eventTypes.SingleOrDefault(e => e.Name == eventName);
+                // 删除该事件类型
                 if (eventType != null) _eventTypes.Remove(eventType);
 
                 //当一个事件类型订阅的事件全部被移除后, 触发事件移除事件。

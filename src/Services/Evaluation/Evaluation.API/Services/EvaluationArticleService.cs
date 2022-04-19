@@ -43,7 +43,7 @@ public class EvaluationArticleService : IEvaluationArticleService
                 Status = x.Status,
                 UserId = x.UserId,
                 Title = x.Title,
-                SupportCount = x.SupportCount
+                SupportCount = x.SupportCount,
             })
             .Where(x => x.Status == ArticleStatus.Normal)
             .OrderByDescending(c => c.CreateTime)

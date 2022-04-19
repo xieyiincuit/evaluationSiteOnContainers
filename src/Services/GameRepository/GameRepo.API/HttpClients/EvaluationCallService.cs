@@ -24,7 +24,7 @@ public class EvaluationCallService
 
             var response = await _client.PostAsync(callUrl, postBody);
 
-            if (response is null)
+            if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError("http response return null when callTo:{callUrl}, bodyInfo:{@ids}", callUrl, gameIds);
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);

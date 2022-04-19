@@ -180,33 +180,34 @@ public class EvaluationArticleController : ControllerBase
     /// </summary>
     /// <param name="articleAddDto"></param>
     /// <returns></returns>
-    [Authorize(Roles = _evaluatorRole)]
-    [HttpPost("article")]
+    [Authorize(Roles = _evaluatorRole)] //表示该接口需要身份认证并且只授权给身份为“evaluator”的用户
+    [HttpPost("article")] //请求路由
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(EvaluationArticle), (int)HttpStatusCode.Created)]
     public async Task<IActionResult> CreateArticleAsync([FromBody] ArticleAddDto articleAddDto)
     {
+        //若HttpRequest body为空，返回BadRequest
         if (articleAddDto == null) return BadRequest();
+        //若该测评文章关联的游戏不存在，返回BadRequest
         if (await _gameRepoGrpcClient.CheckGameExistAsync(articleAddDto.GameId) == false) return BadRequest();
-
         //mapping实体        
         var entity = _mapper.Map<EvaluationArticle>(articleAddDto);
-
-        //grpc通信获取游戏信息
+        //grpc通信游戏资料服务获取游戏信息
         var gameInfo = await _gameRepoGrpcClient.GetGameInfoAsync(articleAddDto.GameId);
-
-        //整合游戏信息
+        //将游戏姓名关联记录到测评文章中
         entity.GameName = gameInfo.GameName;
+        //将游戏描述图片关联记录到测评文章中
         entity.DescriptionImage = gameInfo.DescriptionPic;
-
-        //整合用户信息
+        //记录测评人员Id
         entity.UserId = User.FindFirstValue("sub");
+        //记录测评人员姓名
         entity.NickName = User.FindFirstValue("nickname");
-
+        //提交新增测评文章事务
         var addResponse = await _articleService.AddArticleAsync(entity);
         if (addResponse != false) throw new EvaluationDomainException("创建测评文章失败");
-
+        //记录日志并返回结果
         _logger.LogInformation($"---- evaluator:id:{entity.UserId}, name:{User.FindFirst("nickname")} create a article -> id:{entity.ArticleId}, title:{articleAddDto.Title}");
+        //成功返回Created 201结果
         return CreatedAtRoute(nameof(GetArticleByIdAsync), new { id = entity.ArticleId }, new { articleId = entity.ArticleId });
     }
 
