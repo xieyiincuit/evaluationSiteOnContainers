@@ -95,6 +95,9 @@ public class EvaluationArticle
     /// </summary>
     [JsonIgnore]
     public List<EvaluationComment> EvaluationComments { get; set; }
+
+    [JsonIgnore]
+    public List<EvaluationLikeRecord> EvaluationLikeRecords { get; set; }
 }
 
 public enum ArticleStatus

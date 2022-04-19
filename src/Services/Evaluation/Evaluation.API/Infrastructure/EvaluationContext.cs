@@ -15,6 +15,7 @@ public class EvaluationContext : DbContext
         modelBuilder.ApplyConfiguration(new EvaluationArticleEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new EvaluationCategoryEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new EvaluationCommentEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new EvaluationLikeEntityTypeConfiguration());
     }
 }
 
