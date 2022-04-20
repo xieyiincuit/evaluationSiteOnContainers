@@ -284,6 +284,17 @@ public class UserManageController : ControllerBase
         return Ok(model);
     }
 
+
+    [ApiExplorerSettings(IgnoreApi = true)]
+    [HttpGet("count")]
+    [Authorize(Roles = "administrator")]
+    public async Task<IActionResult> GetUserCountAsync()
+    {
+        var userCount = await _applicationDbContext.Users.CountAsync();
+        var userCountDto = new UserCountDto() { UserCount = userCount };
+        return Ok(userCountDto);
+    }
+
     [ApiExplorerSettings(IgnoreApi = true)]
     [HttpPost("ban/{uid}")]
     [Authorize(Roles = "administrator")]
