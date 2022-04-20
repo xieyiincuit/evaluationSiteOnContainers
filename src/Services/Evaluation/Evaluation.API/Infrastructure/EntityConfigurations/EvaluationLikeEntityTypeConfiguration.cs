@@ -21,7 +21,7 @@ public class EvaluationLikeEntityTypeConfiguration : IEntityTypeConfiguration<Ev
         builder.Property(x => x.CreateTime)
             .HasColumnName("create_time")
             .HasComment("点赞时间")
-            .HasDefaultValue(DateTime.Now.ToLocalTime());
+            .IsRequired();
 
         builder.HasOne(x => x.EvaluationArticle)
             .WithMany(x => x.EvaluationLikeRecords)

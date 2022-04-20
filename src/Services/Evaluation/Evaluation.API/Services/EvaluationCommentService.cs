@@ -16,7 +16,28 @@ public class EvaluationCommentService : IEvaluationCommentService
         return await _evaluationContext.SaveChangesAsync() > 0;
     }
 
-    public async Task<bool> DeleteCommentAsync(int commentId)
+    public async Task<bool> DeleteRootCommentAsync(int commentId)
+    {
+        var rootComment = await _evaluationContext.Comments.FirstOrDefaultAsync(x => x.CommentId == commentId);
+        var subComments = await _evaluationContext.Comments.Where(x => x.RootCommentId == commentId).ToListAsync();
+        subComments.Add(rootComment);
+
+        _evaluationContext.Comments.RemoveRange(subComments);
+        return await _evaluationContext.SaveChangesAsync() == subComments.Count;
+    }
+
+    public async Task<bool> DeleteReplyCommentAsync(int commentId)
+    {
+        var comment = await _evaluationContext.Comments.FirstOrDefaultAsync(x => x.CommentId == commentId && x.IsReply == true);
+        var replyComments = await _evaluationContext.Comments
+            .Where(x => x.IsReply == true && x.ReplyCommentId == commentId).ToListAsync();
+        replyComments.Add(comment);
+
+        _evaluationContext.Comments.RemoveRange(replyComments);
+        return await _evaluationContext.SaveChangesAsync() == replyComments.Count;
+    }
+
+    public async Task<bool> DeleteChildCommentAsync(int commentId)
     {
         var comment = await _evaluationContext.Comments.FindAsync(commentId);
         if (comment == null) return false;

@@ -230,6 +230,26 @@ public class EvaluationArticleService : IEvaluationArticleService
         return await _evaluationContext.SaveChangesAsync() > 0;
     }
 
+    public async Task<int> LikeArticleAsync(int articleId, string userId)
+    {
+        var likeRecord = await _evaluationContext.LikeRecords
+            .FirstOrDefaultAsync(x => x.ArticleId == articleId && x.UserId == userId);
+        //新增点赞记录
+        if (likeRecord == null)
+        {
+            var insertEntity = new EvaluationLikeRecord() { ArticleId = articleId, UserId = userId, CreateTime = DateTime.Now.ToLocalTime() };
+            _evaluationContext.LikeRecords.Add(insertEntity);
+            var updateArticle = await _evaluationContext.Articles.FindAsync(articleId);
+            updateArticle.SupportCount += 1;
+            await _evaluationContext.SaveChangesAsync();
+            return 1;
+        }
+        else // 已有记录
+        {
+            return -1;
+        }
+    }
+
     public async Task<ArticleShopDto> GetArticlesByShopItemAsync(int gameId)
     {
         return await _evaluationContext.Articles.AsNoTracking()

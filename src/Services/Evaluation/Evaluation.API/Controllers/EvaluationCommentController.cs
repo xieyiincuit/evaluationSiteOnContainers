@@ -226,7 +226,7 @@ public class EvaluationCommentController : ControllerBase
     }
 
     /// <summary>
-    /// 用户——删除自己的评论 (未实现)
+    /// 用户——删除自己的评论
     /// </summary>
     /// <param name="commentId">评论Id</param>
     /// <returns></returns>
@@ -237,6 +237,24 @@ public class EvaluationCommentController : ControllerBase
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     public async Task<IActionResult> DeleteCommentAsync([FromRoute] int commentId)
     {
-        throw new NotImplementedException();
+        var currentUser = User.FindFirstValue("sub");
+        var comment = await _commentService.GetCommentById(commentId);
+        if (comment == null || currentUser != comment.UserId) return BadRequest();
+
+        // 删除的评论是根评论，则删除该评论下的所有评论
+        if (comment.RootCommentId == null)
+        {
+            var rootDelResponse = await _commentService.DeleteRootCommentAsync(commentId);
+            if (rootDelResponse == false)
+                throw new EvaluationDomainException("删除顶级评论失败");
+        }
+        else
+        {
+            var replyDelResponse = await _commentService.DeleteReplyCommentAsync(commentId);
+            if (replyDelResponse == false)
+                throw new EvaluationDomainException("删除评论回复失败");
+        }
+
+        return NoContent();
     }
 }

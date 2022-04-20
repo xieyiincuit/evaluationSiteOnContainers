@@ -19,4 +19,5 @@ public interface IEvaluationArticleService
     Task<List<EvaluationArticle>> GetArticlesByGameInfoAsync(int gameId);
     Task<List<EvaluationArticle>> GetArticlesByAuthorInfoAsync(string userId);
     Task<bool> BatchUpdateArticlesAsync();
+    Task<int> LikeArticleAsync(int articleId, string userId);
 }

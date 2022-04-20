@@ -9,6 +9,7 @@ public class EvaluationContext : DbContext
     public DbSet<EvaluationArticle> Articles { get; set; }
     public DbSet<EvaluationCategory> Categories { get; set; }
     public DbSet<EvaluationComment> Comments { get; set; }
+    public DbSet<EvaluationLikeRecord> LikeRecords { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -16,6 +16,7 @@ public class EvaluationArticleController : ControllerBase
     private readonly IdentityCallService _identityService;
     private readonly GameRepoGrpcService _gameRepoGrpcClient;
     private readonly ILogger<EvaluationArticleController> _logger;
+    private readonly IRedisDatabase _redisDatabase;
     private readonly IMapper _mapper;
 
     public EvaluationArticleController(
@@ -24,6 +25,7 @@ public class EvaluationArticleController : ControllerBase
         IEvaluationCommentService commentService,
         IMapper mapper,
         ILogger<EvaluationArticleController> logger,
+        IRedisDatabase redisDatabase,
         IdentityCallService identityService,
         GameRepoGrpcService gameRepoGrpcClient)
     {
@@ -34,8 +36,8 @@ public class EvaluationArticleController : ControllerBase
         _gameRepoGrpcClient = gameRepoGrpcClient ?? throw new ArgumentNullException(nameof(gameRepoGrpcClient));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _redisDatabase = redisDatabase ?? throw new ArgumentNullException(nameof(redisDatabase));
     }
-
 
     /// <summary>
     /// 用户——分页获取所有游戏测评文章
@@ -98,29 +100,6 @@ public class EvaluationArticleController : ControllerBase
     }
 
     /// <summary>
-    /// 供GameRepo服务调用的接口
-    /// </summary>
-    /// <param name="gameIds"></param>
-    /// <returns></returns>
-    [ApiExplorerSettings(IgnoreApi = true)]
-    [HttpPost("shop/articles")]
-    [AllowAnonymous]
-    public async Task<IActionResult> GetArticlesByShopItemAsync([FromBody] List<int> gameIds)
-    {
-        if (gameIds == null || gameIds.Count == 0) return BadRequest();
-
-        var result = new List<ArticleShopDto>();
-        foreach (var gameId in gameIds)
-        {
-            var article = await _articleService.GetArticlesByShopItemAsync(gameId);
-            if (article == null) continue;
-            else result.Add(article);
-        }
-        return Ok(result);
-    }
-
-
-    /// <summary>
     /// 用户——获取测评文章详细信息
     /// </summary>
     /// <param name="id">文章Id</param>
@@ -132,13 +111,22 @@ public class EvaluationArticleController : ControllerBase
     public async Task<ActionResult<ArticleDto>> GetArticleByIdAsync([FromRoute] int id)
     {
         if (id <= 0 || id >= int.MaxValue) return BadRequest();
-
         var article = await _articleService.GetArticleAsync(id);
         if (article == null) return NotFound();
 
         var articleToReturn = _mapper.Map<ArticleDto>(article);
         articleToReturn.CommentsCount = await _commentService.CountArticleRootCommentsAsync(articleToReturn.ArticleId);
 
+        var redisKey = $"view_article_{id}";
+        if (!await _redisDatabase.Database.KeyExistsAsync(redisKey))
+        {
+            await _redisDatabase.Database.StringSetAsync(redisKey, article.JoinCount + 1);
+        }
+        else
+        {
+            var newJoin = await _redisDatabase.Database.StringIncrementAsync(redisKey);
+            articleToReturn.JoinCount = (int)newJoin;
+        }
         return Ok(articleToReturn);
     }
 
@@ -295,7 +283,7 @@ public class EvaluationArticleController : ControllerBase
         }
 
         var delResponse = await _articleService.DeleteArticleAsync(id);
-        if(delResponse == false)
+        if (delResponse == false)
         {
             _logger.LogError($"---- user:id:{userId}, name:{User.FindFirst("nickname")} delete a article error-> id:{id}");
             throw new EvaluationDomainException("文章删除失败");
@@ -327,7 +315,7 @@ public class EvaluationArticleController : ControllerBase
 
         //更新文章内容
         _mapper.Map(articleUpdateDto, articleToUpdate);
-        var updateResponse =  await _articleService.UpdateArticleAsync(articleToUpdate);
+        var updateResponse = await _articleService.UpdateArticleAsync(articleToUpdate);
         if (updateResponse == false)
         {
             _logger.LogError("---- evaluator:id:{UserId}, name:{Name} update a article error -> id:{Id} content:{@content}",
@@ -337,5 +325,43 @@ public class EvaluationArticleController : ControllerBase
         _logger.LogInformation("---- evaluator:id:{UserId}, name:{Name} update a article -> id:{Id} content:{@content}",
             userId, User.FindFirst("nickname"), articleUpdateDto.Id, articleToUpdate);
         return NoContent();
+    }
+
+    /// <summary>
+    /// 用户——点赞测评文章
+    /// </summary>
+    /// <param name="likeAddDto"></param>
+    /// <returns></returns>
+    [Authorize]
+    [HttpPost("like")]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    public async Task<IActionResult> LikeArticleAsync([FromBody] ArticleLikeAddDto likeAddDto)
+    {
+        var currentUser = User.FindFirstValue("sub");
+        var likeResponse = await _articleService.LikeArticleAsync(likeAddDto.ArticleId, currentUser);
+        return likeResponse == 1 ? Ok("点赞成功^ ^") : Ok("请勿重复点赞^ ^");
+    }
+
+    /// <summary>
+    /// 供GameRepo服务调用的接口
+    /// </summary>
+    /// <param name="gameIds"></param>
+    /// <returns></returns>
+    [ApiExplorerSettings(IgnoreApi = true)]
+    [HttpPost("shop/articles")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetArticlesByShopItemAsync([FromBody] List<int> gameIds)
+    {
+        if (gameIds == null || gameIds.Count == 0) return BadRequest();
+
+        var result = new List<ArticleShopDto>();
+        foreach (var gameId in gameIds)
+        {
+            var article = await _articleService.GetArticlesByShopItemAsync(gameId);
+            if (article == null) continue;
+            else result.Add(article);
+        }
+        return Ok(result);
     }
 }
