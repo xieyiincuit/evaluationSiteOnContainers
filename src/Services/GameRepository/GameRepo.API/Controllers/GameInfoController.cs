@@ -226,9 +226,18 @@ public class GameInfoController : ControllerBase
     public async Task<IActionResult> DeleteGameInfoAsync([FromRoute] int id)
     {
         if (id <= 0 || id >= int.MaxValue) return BadRequest();
-        await _gameInfoService.RemoveGameInfoAsync(id);
-        var response = await _unitOfWorkService.SaveEntitiesAsync();
-        _logger.LogInformation($"administrator: id:{User.FindFirst("sub").Value}, name:{User.FindFirst("nickname")} delete a gameInfo -> Id:{id}");
-        return response == true ? NoContent() : NotFound();
+        try
+        {
+            await _gameInfoService.RemoveGameInfoAsync(id);
+            await _unitOfWorkService.SaveEntitiesAsync();
+            _logger.LogInformation("administrator delete gameInfo success -> gameInfoId:{Id}", id);
+        }
+        catch (MySqlException ex)
+        {
+            _logger.LogError("administrator delete gameInfo error -> gameInfoId:{Id} | ErrorMessage:{Message}", id, ex.Message);
+            throw new GameRepoDomainException("数据库删除游戏信息失败, 外键约束导致的。");
+        }
+
+        return NoContent();
     }
 }
