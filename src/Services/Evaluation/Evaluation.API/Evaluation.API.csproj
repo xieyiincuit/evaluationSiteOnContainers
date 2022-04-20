@@ -18,6 +18,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Proto\evaluation.proto" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.MySql" Version="6.0.2" />
     <PackageReference Include="AspNetCore.HealthChecks.Rabbitmq" Version="6.0.2" />
     <PackageReference Include="AspNetCore.HealthChecks.Redis" Version="6.0.3" />
@@ -71,6 +75,7 @@
     <Protobuf Include="..\..\GameRepository\GameRepo.API\Proto\gameRepository.proto" GrpcServices="Client">
       <Link>Protos\gameRepository.proto</Link>
     </Protobuf>
+    <Protobuf Include="Proto\evaluation.proto" GrpcServices="Server" />
   </ItemGroup>
 
 </Project>

@@ -77,6 +77,7 @@ public static class ServiceCollectionExtension
 
     public static IServiceCollection AddCustomMvc(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddGrpc();
         services.AddControllers(options =>
             {
                 options.Filters.Add(typeof(HttpGlobalExceptionFilter));

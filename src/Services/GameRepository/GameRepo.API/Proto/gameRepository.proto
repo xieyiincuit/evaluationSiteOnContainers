@@ -7,6 +7,7 @@ package GameRepoApi;
 service GameRepository {
 	rpc ChangeShopSellStatus(shopStatusChangeRequest) returns (shopStatusChangeResponse) {}
 	rpc GetGameInformation(gameInfoRequest) returns (gameInfoResponse) {}
+	rpc GetGameStatisticsInfo(gameStatisticsRequest) returns (gameStatisticsResponse) {}
 }
 
 message shopStatusChangeRequest {
@@ -26,4 +27,13 @@ message gameInfoResponse {
 	int32 gameId = 1;
 	string gameName = 2;
 	string descriptionPic = 3;
+}
+
+message gameStatisticsRequest {
+}
+
+message gameStatisticsResponse { 
+	int32 gameCount = 1;
+	map<string, int32> categoryMap = 2;
+	int64 shopCount = 3;
 }

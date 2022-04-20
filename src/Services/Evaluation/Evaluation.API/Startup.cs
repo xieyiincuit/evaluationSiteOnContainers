@@ -1,4 +1,6 @@
-﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API;
+﻿using Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API.Grpc;
+
+namespace Zhouxieyi.evaluationSiteOnContainers.Services.Evaluation.API;
 
 public class Startup
 {
@@ -56,6 +58,7 @@ public class Startup
         {
             endpoints.MapDefaultControllerRoute();
             endpoints.MapControllers();
+            endpoints.MapGrpcService<EvaluationService>();
 
             endpoints.MapHealthChecks("/hc", new HealthCheckOptions
             {

@@ -5,16 +5,18 @@ public class GameRepositoryService : GameRepository.GameRepositoryBase
     private readonly ILogger<GameRepositoryService> _logger;
     private readonly IRedisDatabase _redisDatabase;
     private readonly IUnitOfWorkService _unitOfWorkService;
+    private readonly GameRepoContext _dbContext;
     private readonly IGameShopItemService _shopItemService;
     private readonly IGameInfoService _gameInfoService;
 
-
-    public GameRepositoryService(IGameShopItemService shopItemService,
+    public GameRepositoryService(GameRepoContext dbContext,
+        IGameShopItemService shopItemService,
         IGameInfoService gameInfoService,
         ILogger<GameRepositoryService> logger,
         IRedisDatabase redisDatabase,
         IUnitOfWorkService unitOfWorkService)
     {
+        _dbContext = dbContext;
         _shopItemService = shopItemService ?? throw new ArgumentNullException(nameof(shopItemService));
         _gameInfoService = gameInfoService ?? throw new ArgumentNullException(nameof(gameInfoService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -55,6 +57,23 @@ public class GameRepositoryService : GameRepository.GameRepositoryBase
             };
             return result;
         }
+    }
+
+    public override async Task<gameStatisticsResponse> GetGameStatisticsInfo(gameStatisticsRequest request, ServerCallContext context)
+    {
+        var response = new gameStatisticsResponse();
+        response.GameCount = await _gameInfoService.CountGameInfoAsync();
+        response.ShopCount = await _shopItemService.CountGameShopItemAsync();
+
+        var gameCategories = await _dbContext.GameCategories.AsNoTracking().ToListAsync();
+        foreach (var category in gameCategories)
+        {
+            var count = await _dbContext.GameInfos.CountAsync(x => x.GameCategoryId == category.Id);
+            if (count == 0) continue; ;
+            response.CategoryMap.Add(category.CategoryName, count);
+        }
+
+        return response;
     }
 
     public override async Task<gameInfoResponse> GetGameInformation(gameInfoRequest request, ServerCallContext context)

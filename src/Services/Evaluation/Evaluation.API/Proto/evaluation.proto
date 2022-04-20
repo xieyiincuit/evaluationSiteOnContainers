@@ -3,3 +3,16 @@ syntax = "proto3";
 option csharp_namespace = "GrpcEvaluation";
 
 package EvaluationApi;
+
+service EvaluationRepository{
+	rpc GetArticleStatisticsInfo(articleStatisticsRequest) returns (articleStatisticsResponse) {}
+}
+
+message articleStatisticsRequest {
+}
+
+message articleStatisticsResponse { 
+	int32 articleCount = 1;
+	map<string, int32> categoryMap = 2;
+	int64 commentCount = 3;
+}
