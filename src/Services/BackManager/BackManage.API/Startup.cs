@@ -1,4 +1,8 @@
-﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.BackManage.API;
+﻿using GrpcEvaluation;
+using GrpcGameRepository;
+using Zhouxieyi.evaluationSiteOnContainers.Services.BackManage.API.GrpcClients;
+
+namespace Zhouxieyi.evaluationSiteOnContainers.Services.BackManage.API;
 
 public class Startup
 {
@@ -194,6 +198,25 @@ public class Startup
             .AddPolicyHandler(retryPolicy);
 
         services.AddHttpContextAccessor();
+
+        #endregion
+
+
+        #region GrpcClient
+
+        services.AddGrpcClient<GameRepository.GameRepositoryClient>(options =>
+        {
+            var grpcGameRepoUrl = Configuration.GetValue("GrpcGameRepoUrl", "http://127.0.0.1:55001");
+            options.Address = new Uri(grpcGameRepoUrl);
+        }).AddInterceptor<GrpcExceptionInterceptor>();
+        services.AddGrpcClient<EvaluationRepository.EvaluationRepositoryClient>(options =>
+        {
+            var grpcEvalRepoUrl = Configuration.GetValue("GrpcEvalRepoUrl", "http://127.0.0.1:55000");
+            options.Address = new Uri(grpcEvalRepoUrl);
+        }).AddInterceptor<GrpcExceptionInterceptor>();
+        services.AddScoped<GameRepoGrpcService>();
+        services.AddScoped<EvaluationRepoGrpcService>();
+        services.AddTransient<GrpcExceptionInterceptor>();
 
         #endregion
 

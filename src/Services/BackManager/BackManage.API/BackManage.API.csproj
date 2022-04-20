@@ -29,6 +29,8 @@
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="6.0.4" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.2.0" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.40.0" />
+    <PackageReference Include="Grpc.AspNetCore.Server.ClientFactory" Version="2.45.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.3">
       <PrivateAssets>all</PrivateAssets>
@@ -43,6 +45,15 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\WebHostKits\WebHost.Customization\WebHost.Customization.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="..\..\Evaluation\Evaluation.API\Proto\evaluation.proto" GrpcServices="Client">
+      <Link>Protos\evaluation.proto</Link>
+    </Protobuf>
+    <Protobuf Include="..\..\GameRepository\GameRepo.API\Proto\gameRepository.proto" GrpcServices="Client">
+      <Link>Protos\gameRepository.proto</Link>
+    </Protobuf>
   </ItemGroup>
 
 </Project>

@@ -6,7 +6,6 @@ global using Microsoft.AspNetCore;
 global using Microsoft.AspNetCore.Authentication.JwtBearer;
 global using Microsoft.AspNetCore.Authorization;
 global using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-global using Microsoft.AspNetCore.HttpLogging;
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.AspNetCore.Mvc.Authorization;
 global using Microsoft.AspNetCore.Mvc.Filters;
@@ -32,6 +31,7 @@ global using Zhouxieyi.evaluationSiteOnContainers.BuildingBlocks.WebHost.Customi
 global using Zhouxieyi.evaluationSiteOnContainers.Services.BackManage.API;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.BackManage.API.Auth;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.BackManage.API.DtoModels;
+global using Zhouxieyi.evaluationSiteOnContainers.Services.BackManage.API.GrpcClients;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.BackManage.API.HttpClients;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.BackManage.API.Infrastructure;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.BackManage.API.Models;

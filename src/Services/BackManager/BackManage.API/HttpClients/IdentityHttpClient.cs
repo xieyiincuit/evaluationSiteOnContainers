@@ -156,4 +156,34 @@ public class IdentityHttpClient
             return new HttpResponseMessage(HttpStatusCode.InternalServerError);
         }
     }
+
+
+    public async Task<HttpResponseMessage> CountUserAsync()
+    {
+        _logger.LogDebug("---- BackManage client call identity services: baseUrl:{url}", _client.BaseAddress);
+        var callUrl = _client.BaseAddress + "api/v1/user/count";
+
+        try
+        {
+            var header = _httpContextAccessor.HttpContext.Request.Headers;
+            _client.DefaultRequestHeaders.Add("Authorization", header["Authorization"].ToString());
+
+            var response = await _client.GetAsync(callUrl);
+
+            if (response is null)
+            {
+                _logger.LogError("http response return null when callTo:{callUrl}", callUrl);
+                return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+            }
+
+            _logger.LogInformation($"received callback response -> callUrl:{callUrl}, statusCode:{response.StatusCode}");
+            return response;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError($"httpClient to callback {callUrl} occurred an error -> message:{e.Message}");
+            return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+        }
+    }
+
 }
