@@ -1,6 +1,6 @@
 namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Controllers;
 
-[SecurityHeaders]
+
 [AllowAnonymous]
 public class AccountController : Controller
 {

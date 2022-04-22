@@ -3,7 +3,6 @@ namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Controllers
 /// <summary>
 ///     This sample controller allows a user to revoke grants given to clients
 /// </summary>
-[SecurityHeaders]
 [Authorize]
 public class GrantsController : Controller
 {

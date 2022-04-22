@@ -143,33 +143,6 @@ public class Startup
 
         #region ExternalProvider
 
-        services.AddAuthentication()
-            .AddGoogle("Google", options =>
-            {
-                options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-
-                options.ClientId = "<insert here>";
-                options.ClientSecret = "<insert here>";
-            }).AddMicrosoftAccount("Microsoft", microsoftOptions =>
-            {
-                microsoftOptions.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-
-                microsoftOptions.ClientId = "<insert here>";
-                microsoftOptions.ClientSecret = "<insert here>";
-            }).AddQQ("QQ", options =>
-            {
-                options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-
-                options.ClientId = "<insert here>";
-                options.ClientSecret = "<insert here>";
-            }).AddWeixin("Weixin", options =>
-            {
-                options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-
-                options.ClientId = "<insert here>";
-                options.ClientSecret = "<insert here>";
-            });
-
         #endregion
 
         #region HealthChecks

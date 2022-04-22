@@ -1,7 +1,6 @@
 namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Controllers;
 
 [Authorize]
-[SecurityHeaders]
 public class DeviceController : Controller
 {
     private readonly IEventService _events;

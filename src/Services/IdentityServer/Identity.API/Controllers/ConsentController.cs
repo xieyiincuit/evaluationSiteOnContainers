@@ -3,7 +3,6 @@ namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Controllers
 /// <summary>
 ///     This controller processes the consent UI
 /// </summary>
-[SecurityHeaders]
 [Authorize]
 public class ConsentController : Controller
 {

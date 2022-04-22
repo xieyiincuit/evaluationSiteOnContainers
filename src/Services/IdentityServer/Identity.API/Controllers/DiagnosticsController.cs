@@ -1,6 +1,5 @@
 namespace Zhouxieyi.evaluationSiteOnContainers.Services.Identity.API.Controllers;
 
-[SecurityHeaders]
 [Authorize]
 public class DiagnosticsController : Controller
 {
