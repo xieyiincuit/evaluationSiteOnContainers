@@ -36,7 +36,7 @@ public class GameCategoryService : IGameCategoryService
     public async Task<List<GameCategory>> GetGameCategoriesAsync(int pageIndex, int pageSize)
     {
         var categories = await _repoContext.GameCategories
-            .OrderBy(x => x.CategoryName)
+            .OrderBy(x => x.Id)
             .Skip((pageIndex - 1) * pageSize)
             .Take(pageSize)
             .AsNoTracking()

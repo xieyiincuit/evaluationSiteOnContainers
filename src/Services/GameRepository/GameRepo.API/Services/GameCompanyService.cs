@@ -36,7 +36,7 @@ public class GameCompanyService : IGameCompanyService
     public async Task<List<GameCompany>> GetGameCompaniesAsync(int pageIndex, int pageSize)
     {
         var companies = await _repoContext.GameCompanies
-            .OrderBy(x => x.CompanyName)
+            .OrderBy(x => x.Id)
             .Skip((pageIndex - 1) * pageSize)
             .Take(pageSize)
             .AsNoTracking()

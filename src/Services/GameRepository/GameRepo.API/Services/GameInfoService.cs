@@ -50,7 +50,7 @@ public class GameInfoService : IGameInfoService
     public async Task<List<GameInfo>> GetGameInfosAsync(int pageIndex, int pageSize)
     {
         return await _repoContext.GameInfos
-            .OrderBy(x => x.Name)
+            .OrderBy(x => x.Id)
             .AsNoTracking()
             .Skip((pageIndex - 1) * pageSize)
             .Take(pageSize)
