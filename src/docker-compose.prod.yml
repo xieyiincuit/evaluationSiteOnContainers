@@ -316,6 +316,8 @@ services:
       - BackDbConnectString=server=db_backmanage;port=3306;database=evaluation_back;user=root;password=ZhouBack!1n;IgnoreCommandTransaction=true
       - IdentityUrlExternal=http://zhousl.australiaeast.cloudapp.azure.com:5105
       - IdentityUrl=http://identity-api
+      - GrpcGameRepoUrl=http://gamerepo-api:81
+      - GrpcEvalRepoUrl=http://evaluation-api:81
       - PATH_BASE=/backmanage-api
       - SwaggerRedirectUrl=zhousl.australiaeast.cloudapp.azure.com
       - SwaggerRedirectUrlPort=5104
