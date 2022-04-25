@@ -192,7 +192,7 @@ public class EvaluationArticleController : ControllerBase
         entity.NickName = User.FindFirstValue("nickname");
         //提交新增测评文章事务
         var addResponse = await _articleService.AddArticleAsync(entity);
-        if (addResponse != false) throw new EvaluationDomainException("创建测评文章失败");
+        if (addResponse != true) throw new EvaluationDomainException("数据库新增创建测评文章失败");
         //记录日志并返回结果
         _logger.LogInformation($"---- evaluator:id:{entity.UserId}, name:{User.FindFirst("nickname")} create a article -> id:{entity.ArticleId}, title:{articleAddDto.Title}");
         //成功返回Created 201结果

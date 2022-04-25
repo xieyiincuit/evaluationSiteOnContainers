@@ -11,6 +11,9 @@ public class GameInfoService : IGameInfoService
 
     public async Task AddGameInfoAsync(GameInfo gameInfo)
     {
+        var random = new Random(DateTime.Now.Millisecond);
+        gameInfo.AverageScore = random.NextDouble() * 10;
+        gameInfo.HotPoints = random.NextInt64(1000, 5000);
         await _repoContext.AddAsync(gameInfo);
     }
 
@@ -101,7 +104,12 @@ public class GameInfoService : IGameInfoService
 
     public Task UpdateGameInfoAsync(GameInfo gameInfo)
     {
+        var gameCategory = _repoContext.GameCategories.FirstOrDefault(x => x.Id == gameInfo.GameCategoryId);
+        var gameCompany = _repoContext.GameCompanies.FirstOrDefault(x => x.Id == gameInfo.GameCompanyId);
+        gameInfo.GameCategory = gameCategory;
+        gameInfo.GameCompany = gameCompany;
         _repoContext.GameInfos.Update(gameInfo);
+
         return Task.CompletedTask;
     }
 
