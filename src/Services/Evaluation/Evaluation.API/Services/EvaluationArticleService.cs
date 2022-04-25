@@ -83,6 +83,50 @@ public class EvaluationArticleService : IEvaluationArticleService
         return articles;
     }
 
+    public async Task<List<ArticleAdminDto>> GetArticleForAdminsAsync(int pageSize, int pageIndex, int? categoryTypeId)
+    {
+        var queryString = _evaluationContext.Articles
+            .Include(x => x.CategoryType)
+            .AsNoTracking()
+            .Select(x => new ArticleAdminDto()
+            {
+                Id = x.ArticleId,
+                Title = $"《{x.GameName}》{x.Title}",
+                AuthorName = x.NickName,
+                CategoryName = x.CategoryType.CategoryType,
+                CommentCounts = 0,
+                CreateTime = x.CreateTime,
+                GameName = x.GameName,
+                LikeCounts = x.SupportCount,
+                ViewCounts = x.JoinCount
+            });
+
+        if (categoryTypeId != null)
+        {
+            queryString = _evaluationContext.Articles
+                .Include(x => x.CategoryType)
+                .AsNoTracking()
+                .Where(x => x.CategoryTypeId == categoryTypeId)
+                .Select(x => new ArticleAdminDto()
+                {
+                    Id = x.ArticleId,
+                    Title = $"《{x.GameName}》{x.Title}",
+                    AuthorName = x.NickName,
+                    CategoryName = x.CategoryType.CategoryType,
+                    CommentCounts = 0,
+                    CreateTime = x.CreateTime,
+                    GameName = x.GameName,
+                    LikeCounts = x.SupportCount,
+                    ViewCounts = x.JoinCount
+                });
+        }
+
+        return await queryString.OrderByDescending(x => x.CreateTime)
+            .Skip((pageIndex - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+    }
+
     public async Task<List<ArticleGameDto>> GetArticlesByGameAsync(int pageSize, int pageIndex, int gameId)
     {
         var articles = await _evaluationContext.Articles

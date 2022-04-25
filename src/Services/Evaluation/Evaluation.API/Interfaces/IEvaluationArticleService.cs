@@ -8,6 +8,7 @@ public interface IEvaluationArticleService
     Task<int> CountArticlesByGameAsync(int gameId);
     Task<List<ArticleSmallDto>> GetArticlesAsync(int pageSize, int pageIndex);
     Task<List<ArticleSmallDto>> GetArticlesAsync(int pageSize, int pageIndex, int categoryTypeId);
+    Task<List<ArticleAdminDto>> GetArticleForAdminsAsync(int pageSize, int pageIndex, int? categoryTypeId);
     Task<List<ArticleGameDto>> GetArticlesByGameAsync(int pageSize, int pageIndex, int gameId);
     Task<ArticleShopDto> GetArticlesByShopItemAsync(int gameId);
     Task<List<ArticleTableDto>> GetUserArticlesAsync(int pageSize, int pageIndex, string userId, int? categoryId = null, bool timeDesc = true);

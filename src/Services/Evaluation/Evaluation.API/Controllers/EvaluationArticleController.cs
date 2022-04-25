@@ -235,10 +235,10 @@ public class EvaluationArticleController : ControllerBase
     /// <returns></returns>
     [Authorize(Roles = _adminRole)]
     [HttpGet("admin/articles")]
-    [ProducesResponseType(typeof(PaginatedItemsDtoModel<ArticleSmallDto>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(PaginatedItemsDtoModel<ArticleAdminDto>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetArticlesForAdminAsync([FromQuery] int pageIndex, [FromQuery] int? categoryId)
     {
-        int pageSize = 15;
+        const int pageSize = 15;
         int totalArticles = categoryId.HasValue
             ? await _articleService.CountArticlesByTypeAsync(categoryId.Value)
             : await _articleService.CountArticlesAsync();
@@ -246,20 +246,17 @@ public class EvaluationArticleController : ControllerBase
         if (ParameterValidateHelper.IsInvalidPageIndex(totalArticles, pageSize, pageIndex))
             pageIndex = 1; // pageIndex不合法重设
 
-        List<ArticleSmallDto> articles = categoryId.HasValue
-            ? await _articleService.GetArticlesAsync(pageSize, pageIndex, categoryId.Value)
-            : await _articleService.GetArticlesAsync(pageSize, pageIndex);
+        var articles = await _articleService.GetArticleForAdminsAsync(pageSize, pageIndex, categoryId);
 
         //获取评论数量
         foreach (var article in articles)
         {
-            article.CommentsCount = await _commentService.CountArticleRootCommentsAsync(article.ArticleId);
+            article.CommentCounts = await _commentService.CountArticleRootCommentsAsync(article.Id);
         }
 
-        var model = new PaginatedItemsDtoModel<ArticleSmallDto>(pageIndex, pageSize, totalArticles, articles);
+        var model = new PaginatedItemsDtoModel<ArticleAdminDto>(pageIndex, pageSize, totalArticles, articles);
         return Ok(model);
     }
-
 
     /// <summary>
     /// 测评人员，管理员——删除测评文章
