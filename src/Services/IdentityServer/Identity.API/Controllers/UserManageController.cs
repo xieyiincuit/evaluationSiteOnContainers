@@ -212,10 +212,11 @@ public class UserManageController : ControllerBase
             .Select(x => new UserListDto
             {
                 Id = x.Id,
-                Avatar = x.Avatar,
-                NickName = x.NickName,
-                Email = x.Email,
                 UserName = x.UserName,
+                NickName = x.NickName,
+                Avatar = x.Avatar,
+                Email = x.Email,
+                PhoneNumber = x.PhoneNumber,
                 RegisterTime = x.RegistrationDate
             })
             .AsNoTracking()
@@ -268,11 +269,13 @@ public class UserManageController : ControllerBase
                 .Select(x => new UserRoleDto
                 {
                     Id = x.Id,
-                    NickName = x.NickName,
                     UserName = x.UserName,
+                    NickName = x.NickName,
+                    Avatar = x.Avatar,
+                    Email = x.Email,
+                    PhoneNumber = x.PhoneNumber,
                     RegisterTime = x.RegistrationDate,
                     Role = role.Name,
-                    Avatar = x.Avatar
                 })
                 .AsNoTracking()
                 .OrderBy(x => x.RegisterTime)

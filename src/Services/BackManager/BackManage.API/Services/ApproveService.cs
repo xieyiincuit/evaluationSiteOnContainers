@@ -46,6 +46,10 @@ public class ApproveService : IApprovalService
     {
         var updateEntity = await _dbContext.ApproveRecords.FindAsync(id);
         updateEntity.Body = body;
+        if (updateEntity.Status == ApproveStatus.Rejected)
+        {
+            updateEntity.Status = ApproveStatus.Progressing;
+        }
         return await _dbContext.SaveChangesAsync() > 0;
     }
 
