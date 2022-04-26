@@ -134,7 +134,8 @@ public class Startup
                         "ordering",
                         "evaluation",
                         "backmanage",
-                        "gamerepo"
+                        "gamerepo",
+                        "identity"
                     }
                 };
             });

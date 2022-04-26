@@ -34,6 +34,10 @@ public static class Config
             new("backmanage", "BackManage API")
             {
                 Scopes = {"back-manage", "role-approve"}
+            },
+            new("identity", "Identity API")
+            {
+                Scopes = {"user-info"}
             }
         };
     }
