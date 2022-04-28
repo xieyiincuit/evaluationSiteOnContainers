@@ -111,7 +111,7 @@ public class BannedController : ControllerBase
     /// <param name="userId">举报记录Id</param>
     /// <returns></returns>
     /// <exception cref="BackManageDomainException"></exception>
-    [HttpDelete("{id:int}")]
+    [HttpDelete("{userId}")]
     [Authorize(Roles = "administrator")]
     public async Task<IActionResult> DeleteBannedInfoAsync([FromRoute] string userId)
     {
