@@ -127,4 +127,10 @@ public class GameInfoService : IGameInfoService
         var game = await _repoContext.GameInfos.FirstOrDefaultAsync(x => x.Name == gameName);
         return game != null;
     }
+
+    public async Task UpdateGameInfoWhenUserBuyAsync(int gameId)
+    {
+        var game = await _repoContext.GameInfos.FindAsync(gameId);
+        game.HotPoints += 100;
+    }
 }

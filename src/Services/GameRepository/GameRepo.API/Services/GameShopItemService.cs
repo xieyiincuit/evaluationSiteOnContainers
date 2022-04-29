@@ -117,6 +117,14 @@ public class GameShopItemService : IGameShopItemService
         shopItem.AvailableStock = newStock;
     }
 
+    public async Task<int> UpdateShopItemInfoWhenUserBuyAsync(int shopItemId)
+    {
+        var shopItem = await _repoDbContext.GameShopItems.FindAsync(shopItemId);
+        shopItem.AvailableStock -= 1;
+        shopItem.HotSellPoint += 50;
+        return shopItem.GameInfoId;
+    }
+
     public async Task<bool> HasSameGameShopAsync(int gameInfoId)
     {
         var shopItem = await _repoDbContext.GameShopItems.FirstOrDefaultAsync(x => x.GameInfoId == gameInfoId);

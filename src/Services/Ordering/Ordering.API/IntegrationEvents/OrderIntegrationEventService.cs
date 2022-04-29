@@ -3,7 +3,6 @@
 public class OrderIntegrationEventService : IOrderIntegrationEventService
 {
     private readonly IEventBus _eventBus;
-
     private readonly ILogger<OrderIntegrationEventService> _logger;
     private volatile bool _disposedValue;
 
@@ -15,7 +14,6 @@ public class OrderIntegrationEventService : IOrderIntegrationEventService
         _eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
     }
 
-  
     public async Task PublishThroughEventBusAsync(IntegrationEvent @event)
     {
         try

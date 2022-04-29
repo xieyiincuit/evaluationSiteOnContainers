@@ -233,6 +233,9 @@ public class Startup
 
         services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();
 
+        //Handler服务注入，这里切记要注入，不然AutoFac映射不到对应的Handler
+        services.AddTransient<BuyGameIntegrationEventHandler>(); //注入用户购买商品事件
+
         #endregion
 
         #region GameRepoServices
@@ -360,7 +363,6 @@ public class Startup
 
         #endregion
 
-
         var container = new ContainerBuilder();
         container.Populate(services);
         return new AutofacServiceProvider(container.Build());
@@ -418,8 +420,9 @@ public class Startup
         ConfigureEventBus(app);
     }
 
-    protected virtual void ConfigureEventBus(IApplicationBuilder app)
+    protected static void ConfigureEventBus(IApplicationBuilder app)
     {
-        app.ApplicationServices.GetRequiredService<IEventBus>();
+        var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
+        eventBus.Subscribe<BuyGameIntegrationEvent, BuyGameIntegrationEventHandler>();
     }
 }

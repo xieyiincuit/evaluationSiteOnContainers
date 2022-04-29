@@ -32,6 +32,7 @@ global using RedLockNet;
 global using RedLockNet.SERedis;
 global using RedLockNet.SERedis.Configuration;
 global using Serilog;
+global using Serilog.Context;
 global using Serilog.Events;
 global using StackExchange.Redis.Extensions.Core.Abstractions;
 global using StackExchange.Redis.Extensions.Core.Configuration;
@@ -65,6 +66,7 @@ global using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Infrastr
 global using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Infrastructure.Exceptions;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Infrastructure.Filters;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.IntegrationEvents;
+global using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.IntegrationEvents.EventHandling;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.IntegrationEvents.Events;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Interfaces;
 global using Zhouxieyi.evaluationSiteOnContainers.Services.GameRepo.API.Models;

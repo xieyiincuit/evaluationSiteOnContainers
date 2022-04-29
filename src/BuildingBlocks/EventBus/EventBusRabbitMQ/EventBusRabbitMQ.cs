@@ -280,6 +280,7 @@ public class EventBusRabbitMQ : IEventBus, IDisposable
         //如果在内存中存在该事件的注册，则开始处理该事件
         if (_subsManager.HasSubscriptionsForEvent(eventName))
         {
+            _logger.LogDebug("RabbitMQ event all ready subscript: {EventName}", eventName);
             //获取事件总线服务容器，所有的事件处理都被注册在该Scope中
             await using var scope = _autofac.BeginLifetimeScope(AUTOFAC_SCOPE_NAME);
             //从订阅管理中获取该事件的处理对象
@@ -289,6 +290,7 @@ public class EventBusRabbitMQ : IEventBus, IDisposable
             foreach (var subscription in subscriptions)
                 if (subscription.IsDynamic) //若是动态处理事件
                 {
+                    _logger.LogDebug("subscriptions is dynamic: {EventName}", eventName);
                     // 将该Handler转换为动态事件处理接口
                     var handler = scope.ResolveOptional(subscription.HandlerType) as IDynamicIntegrationEventHandler;
                     if (handler == null) continue; //转换失败，则说明该事件类型未注册。
@@ -302,9 +304,13 @@ public class EventBusRabbitMQ : IEventBus, IDisposable
                 }
                 else //是具体的订阅事件类型
                 {
+                    _logger.LogDebug("subscriptions is concreteType: {EventName}", eventName);
+                    _logger.LogDebug("subscriptions: {@subscription}", subscription);
                     // 解析出订阅的事件类型Handler
                     var handler = scope.ResolveOptional(subscription.HandlerType);
                     if (handler == null) continue;
+
+                    _logger.LogDebug("handler: {@handler}", handler);
 
                     //从订阅管理中获取事件类型
                     var eventType = _subsManager.GetEventTypeByName(eventName);

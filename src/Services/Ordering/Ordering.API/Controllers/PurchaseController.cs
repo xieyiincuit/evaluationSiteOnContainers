@@ -1,4 +1,6 @@
-﻿namespace Zhouxieyi.evaluationSiteOnContainers.Services.Ordering.API.Controllers;
+﻿using Zhouxieyi.evaluationSiteOnContainers.Services.Ordering.API.IntegrationEvents.Events;
+
+namespace Zhouxieyi.evaluationSiteOnContainers.Services.Ordering.API.Controllers;
 
 /// <summary>
 /// 游戏订购接口
@@ -8,6 +10,7 @@
 public class PurchaseController : ControllerBase
 {
     private readonly IDistributedLockFactory _distributedLockFactory;
+    private readonly IOrderIntegrationEventService _orderIntegrationEventService;
     private readonly GameRepoGrpcService _gameRepoGrpcService;
     private readonly ILogger<PurchaseController> _logger;
     private readonly IRedisDatabase _redisDatabase;
@@ -17,12 +20,14 @@ public class PurchaseController : ControllerBase
         ILogger<PurchaseController> logger,
         IRedisDatabase redisDatabase,
         IDistributedLockFactory distributedLockFactory,
+        IOrderIntegrationEventService orderIntegrationEventService,
         GameRepoHttpClient gameRepoHttpClient,
         GameRepoGrpcService gameRepoGrpcService)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _redisDatabase = redisDatabase ?? throw new ArgumentNullException(nameof(redisDatabase));
         _distributedLockFactory = distributedLockFactory ?? throw new ArgumentNullException(nameof(distributedLockFactory));
+        _orderIntegrationEventService = orderIntegrationEventService ?? throw new ArgumentNullException(nameof(orderIntegrationEventService));
         _gameRepoHttpClient = gameRepoHttpClient ?? throw new ArgumentNullException(nameof(gameRepoHttpClient));
         _gameRepoGrpcService = gameRepoGrpcService ?? throw new ArgumentNullException(nameof(gameRepoGrpcService));
     }
@@ -66,6 +71,9 @@ public class PurchaseController : ControllerBase
                 throw new OrderingDomainException("商品购买时SDK发放失败");
             }
 
+            // 异步更改游戏热度
+            var userBuyEvent = new BuyGameIntegrationEvent(shopItemId);
+            await _orderIntegrationEventService.PublishThroughEventBusAsync(userBuyEvent);
             // 商品库存减少
             await _redisDatabase.Database.StringDecrementAsync(productKey, 1);
             // 获取当前商品库存

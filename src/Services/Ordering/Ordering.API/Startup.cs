@@ -289,5 +289,12 @@ public class Startup
         var consul = app.ApplicationServices.GetRequiredService<Consul.IConsulClient>();
         var serviceConfiguration = app.ApplicationServices.GetRequiredService<IOptions<ServiceRegisterOptions>>();
         app.RegisterService(serviceConfiguration, consul, lifetime);
+
+        ConfigureEventBus(app);
+    }
+
+    protected virtual void ConfigureEventBus(IApplicationBuilder app)
+    {
+        app.ApplicationServices.GetRequiredService<IEventBus>();
     }
 }
