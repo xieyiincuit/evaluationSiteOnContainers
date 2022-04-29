@@ -143,6 +143,10 @@ public class GameInfoController : ControllerBase
     {
         //若未带参数请求该接口 直接返回400
         if (gameInfoAddDto == null) return BadRequest();
+
+        if (await _gameInfoService.HasSameGameNameAsync(gameInfoAddDto.Name))
+            return BadRequest("该游戏信息已经存在");
+
         //将DTO映射为游戏信息数据库实体
         var entityToAdd = _mapper.Map<GameInfo>(gameInfoAddDto);
         //记录行为日志
@@ -176,6 +180,9 @@ public class GameInfoController : ControllerBase
 
         var gameItem = await _gameInfoService.GetGameInfoAsync(gameInfoUpdateDto.Id);
         if (gameItem == null) return NotFound(new { Message = $"game with id {gameInfoUpdateDto.Id} not fount." });
+
+        if (await _gameInfoService.HasSameGameNameAsync(gameInfoUpdateDto.Name))
+            return BadRequest("该游戏信息已经存在");
 
         //检查是否更新了游戏名，若更新需要发布集成事件通知其他相关服务
         var oldName = gameItem.Name;

@@ -104,6 +104,9 @@ public class GameCompanyController : ControllerBase
     {
         if (companyAddDto == null) return BadRequest();
 
+        if (await _companyService.HasSameCompanyNameAsync(companyAddDto.CompanyName))
+            return BadRequest("该游戏公司已存在");
+
         var entityToAdd = _mapper.Map<GameCompany>(companyAddDto);
         var addResponse = await _companyService.AddGameCompanyAsync(entityToAdd);
         if (addResponse == false)
@@ -191,6 +194,9 @@ public class GameCompanyController : ControllerBase
 
         var entityToUpdate = await _companyService.GetGameCompanyAsync(companyUpdateDto.Id);
         if (entityToUpdate == null) return NotFound();
+
+        if (await _companyService.HasSameCompanyNameAsync(companyUpdateDto.CompanyName))
+            return BadRequest("该游戏公司已存在");
 
         _logger.LogInformation("---- administrator:id:{UserId}, name:{Name} update a company -> old:{@old} new:{@new}",
             User.FindFirst("sub").Value, User.FindFirst("nickname"), entityToUpdate, companyUpdateDto);

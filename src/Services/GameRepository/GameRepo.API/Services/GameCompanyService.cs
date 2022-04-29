@@ -28,6 +28,12 @@ public class GameCompanyService : IGameCompanyService
         return await _repoContext.SaveChangesAsync() > 0;
     }
 
+    public async Task<bool> HasSameCompanyNameAsync(string gameCompanyName)
+    {
+        var gameCompany = await _repoContext.GameCompanies.FirstOrDefaultAsync(x => x.CompanyName == gameCompanyName);
+        return gameCompany != null;
+    }
+
     public async Task<List<GameCompany>> GetAllGameCompaniesAsync()
     {
         return await _repoContext.GameCompanies.AsNoTracking().ToListAsync();

@@ -28,6 +28,12 @@ public class GameCategoryService : IGameCategoryService
         return await _repoContext.SaveChangesAsync() > 0;
     }
 
+    public async Task<bool> HasSameCategoryNameAsync(string gameCategoryName)
+    {
+        var gameCategory = await _repoContext.GameCategories.FirstOrDefaultAsync(x => x.CategoryName == gameCategoryName);
+        return gameCategory != null;
+    }
+
     public async Task<List<GameCategory>> GetAllGameCategoriesAsync()
     {
         return await _repoContext.GameCategories.AsNoTracking().ToListAsync();

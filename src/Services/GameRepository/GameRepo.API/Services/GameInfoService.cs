@@ -122,4 +122,9 @@ public class GameInfoService : IGameInfoService
         return game != null;
     }
 
+    public async Task<bool> HasSameGameNameAsync(string gameName)
+    {
+        var game = await _repoContext.GameInfos.FirstOrDefaultAsync(x => x.Name == gameName);
+        return game != null;
+    }
 }

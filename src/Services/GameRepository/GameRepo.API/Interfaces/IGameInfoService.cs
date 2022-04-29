@@ -12,4 +12,5 @@ public interface IGameInfoService
     Task RemoveGameInfoAsync(int gameId);
     Task UpdateGameInfoAsync(GameInfo gameInfo);
     Task<bool> GameExistAsync(int gameId);
+    Task<bool> HasSameGameNameAsync(string gameName);
 }

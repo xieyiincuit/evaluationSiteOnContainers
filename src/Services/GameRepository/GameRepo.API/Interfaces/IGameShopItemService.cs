@@ -14,4 +14,5 @@ public interface IGameShopItemService
     Task<int> TakeUpGameShopItemAsync(int shopItemId);
     Task UpdateShopItemStockWhenTakeDownAsync(int shopItemId, int currentStock);
     Task UpdateShopItemStockWhenChangeNumberAsync(int shopItemId, int newStock);
+    Task<bool> HasSameGameShopAsync(int gameInfoId);
 }

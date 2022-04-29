@@ -168,6 +168,9 @@ public class GameShopItemController : ControllerBase
         //映射DTO实体为Model实体
         var entityToAdd = _mapper.Map<GameShopItem>(addDto);
 
+        if (await _shopItemService.HasSameGameShopAsync(addDto.GameInfoId))
+            return BadRequest("该游戏的附属商品已经存在");
+
         //新增商品上架信息，并开启事务
         try
         {
@@ -377,7 +380,7 @@ public class GameShopItemController : ControllerBase
         );
         if (redLock.IsAcquired)
         {
-            var redisAdd =  await _redisDatabase.Database.StringSetAsync(GetProductStockKey(stockUpdateDto.Id), stockUpdateDto.AvailableStock);
+            var redisAdd = await _redisDatabase.Database.StringSetAsync(GetProductStockKey(stockUpdateDto.Id), stockUpdateDto.AvailableStock);
             if (redisAdd == false)
             {
                 _logger.LogError("admin:{name} change shopItem:{id} stock, sync stock:{StockKey} add fail",
@@ -391,7 +394,7 @@ public class GameShopItemController : ControllerBase
                 User.FindFirstValue("nickname"), stockUpdateDto.Id, GetProductStockKey(stockUpdateDto.Id));
             throw new GameRepoDomainException("获取分布式锁失败");
         }
-       
+
 
         return NoContent();
     }

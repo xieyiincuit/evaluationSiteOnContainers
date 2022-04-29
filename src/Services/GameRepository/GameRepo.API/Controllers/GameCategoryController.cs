@@ -107,6 +107,9 @@ public class GameCategoryController : ControllerBase
     {
         if (categoryAddDto == null) return BadRequest();
 
+        if (await _categoryService.HasSameCategoryNameAsync(categoryAddDto.CategoryName))
+            return BadRequest("该游戏类型已存在");
+        
         var entityToAdd = _mapper.Map<GameCategory>(categoryAddDto);
         var addResponse = await _categoryService.AddCategoryAsync(entityToAdd);
         if (addResponse == false)
@@ -195,6 +198,9 @@ public class GameCategoryController : ControllerBase
         var entityToUpdate = await _categoryService.GetGameCategoryAsync(categoryUpdateDto.Id);
         if (entityToUpdate == null) return NotFound();
 
+        if (await _categoryService.HasSameCategoryNameAsync(categoryUpdateDto.CategoryName))
+            return BadRequest("该游戏类型已存在");
+        
         _logger.LogInformation("---- administrator:id:{UserId}, name:{Name} update a category -> old:{@old} new:{@new}",
             User.FindFirst("sub").Value, User.FindFirst("nickname"), entityToUpdate, categoryUpdateDto);
 

@@ -9,4 +9,5 @@ public interface IGameCompanyService
     Task<bool> AddGameCompanyAsync(GameCompany gameCompany);
     Task<bool> UpdateGameCompanyAsync(GameCompany gameCompany);
     Task<bool> DeleteGameCompanyAsync(int companyId);
+    Task<bool> HasSameCompanyNameAsync(string gameCompanyName);
 }

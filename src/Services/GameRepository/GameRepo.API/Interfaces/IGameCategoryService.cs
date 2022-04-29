@@ -9,4 +9,5 @@ public interface IGameCategoryService
     Task<bool> AddCategoryAsync(GameCategory gameCategory);
     Task<bool> UpdateCategoryAsync(GameCategory gameCategory);
     Task<bool> DeleteCategoryAsync(int categoryId);
+    Task<bool> HasSameCategoryNameAsync(string gameCategoryName);
 }
