@@ -182,6 +182,62 @@ public class Startup
 
         #endregion
 
+        #region Events
+        services.AddTransient<IOrderIntegrationEventService, OrderIntegrationEventService>();
+
+        services.Configure<OrderingSettings>(Configuration);
+        services.Configure<EventBusSettings>(Configuration.GetSection("EventBusSettings"));
+
+        //注册IRabbitMQPersistentConnection服务用于设置RabbitMQ连接
+        services.AddSingleton<IRabbitMQPersistentConnection>(sp =>
+        {
+            var settings = sp.GetRequiredService<IOptions<EventBusSettings>>().Value;
+            var logger = sp.GetRequiredService<ILogger<DefaultRabbitMQPersistentConnection>>();
+
+            var factory = new ConnectionFactory
+            {
+                HostName = settings.Connection,
+                Port = int.Parse(settings.Port),
+                ClientProvidedName = Program.AppName,
+                DispatchConsumersAsync = true
+            };
+
+            if (!string.IsNullOrEmpty(settings.UserName))
+                factory.UserName = settings.UserName;
+
+            if (!string.IsNullOrEmpty(settings.PassWord))
+                factory.Password = settings.PassWord;
+
+            var retryCount = 5;
+            if (!string.IsNullOrEmpty(settings.RetryCount))
+                retryCount = int.Parse(settings.RetryCount);
+
+            return new DefaultRabbitMQPersistentConnection(factory, logger, retryCount);
+        });
+
+        //连接RabbitMq集成事件总线服务
+        services.AddSingleton<IEventBus, EventBusRabbitMQ>(sp =>
+        {
+            var subscriptionClientName = Configuration["SubscriptionClientName"];
+            var eventBusSettings = sp.GetRequiredService<IOptions<EventBusSettings>>().Value;
+            var rabbitMQPersistentConnection = sp.GetRequiredService<IRabbitMQPersistentConnection>();
+            var iLifetimeScope = sp.GetRequiredService<ILifetimeScope>();
+            var logger = sp.GetRequiredService<ILogger<EventBusRabbitMQ>>();
+            var eventBusSubscriptionManager = sp.GetRequiredService<IEventBusSubscriptionsManager>();
+
+            var retryCount = 5;
+            if (!string.IsNullOrEmpty(eventBusSettings.RetryCount))
+                retryCount = int.Parse(eventBusSettings.RetryCount);
+
+            return new EventBusRabbitMQ(
+                rabbitMQPersistentConnection, logger, iLifetimeScope,
+                eventBusSubscriptionManager, subscriptionClientName, retryCount);
+        });
+
+        services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();
+
+        #endregion
+
         var container = new ContainerBuilder();
         container.Populate(services);
         return new AutofacServiceProvider(container.Build());
