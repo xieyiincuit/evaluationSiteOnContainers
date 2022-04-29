@@ -7,4 +7,5 @@ public interface IEvaluationCategoryService
     Task<bool> AddEvaluationCategoryAsync(EvaluationCategory category);
     Task<bool> UpdateEvaluationCategoryAsync(EvaluationCategory category);
     Task<bool> DeleteEvaluationCategoryAsync(int categoryId);
+    Task<bool> HasSameCategoryNameAsync(string categoryName);
 }

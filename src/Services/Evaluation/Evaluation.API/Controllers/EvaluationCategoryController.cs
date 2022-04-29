@@ -85,6 +85,9 @@ public class EvaluationCategoryController : ControllerBase
         var entity = await _categoryService.GetEvaluationCategoryAsync(categoryUpdateDto.CategoryId);
         if (entity == null) return BadRequest();
 
+        if (await _categoryService.HasSameCategoryNameAsync(categoryUpdateDto.CategoryType))
+            return BadRequest("该测评类别已经存在");
+
         _mapper.Map(categoryUpdateDto, entity);
         var updateResponse = await _categoryService.UpdateEvaluationCategoryAsync(entity);
         if (updateResponse == false)
@@ -116,6 +119,9 @@ public class EvaluationCategoryController : ControllerBase
     {
         if (categoryAddDto == null) return BadRequest();
         var entity = _mapper.Map<EvaluationCategory>(categoryAddDto);
+
+        if (await _categoryService.HasSameCategoryNameAsync(categoryAddDto.CategoryType))
+            return BadRequest("该测评类别已经存在");
 
         var addResponse = await _categoryService.AddEvaluationCategoryAsync(entity);
         if (addResponse == false)

@@ -23,6 +23,12 @@ public class EvaluationCategoryService : IEvaluationCategoryService
         return await _evaluationContext.SaveChangesAsync() > 0;
     }
 
+    public async Task<bool> HasSameCategoryNameAsync(string categoryName)
+    {
+        var category = await _evaluationContext.Categories.FirstOrDefaultAsync(x => x.CategoryType == categoryName);
+        return category != null;
+    }
+
     public async Task<List<EvaluationCategory>> GetEvaluationCategoriesAsync()
     {
         var category = await _evaluationContext.Categories.AsNoTracking().ToListAsync();
