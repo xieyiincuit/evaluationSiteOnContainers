@@ -293,6 +293,9 @@ services:
       - Redis__Hosts__0__Host=cache_master
       - Redis__Hosts__0__Port=6379
       - RedisHCCheckConnection=cache_master,DefaultDatabase=0,password=zhouredis11..
+      - EventBusSettings__Connection=mq_evaluation
+      - EventBusSettings__UserName=zhoushanlin
+      - EventBusSettings__PassWord=rabbitmq!!..
       - IdentityUrlExternal=http://zhousl.australiaeast.cloudapp.azure.com:5105
       - IdentityUrl=http://identity-api
       - GameRepoUrl=http://gamerepo-api
