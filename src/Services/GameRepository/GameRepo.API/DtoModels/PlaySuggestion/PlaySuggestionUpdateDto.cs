@@ -12,7 +12,7 @@ public class PlaySuggestionUpdateDto
 
     [Required(ErrorMessage = "required | 请填写建议的CPU型号")]
     [MaxLength(50, ErrorMessage = "length | 不能超过50个字符")]
-    [JsonPropertyName("cupName")]
+    [JsonPropertyName("cpuName")]
     public string CPUName { get; set; }
 
     [Required(ErrorMessage = "required | 请填写建议的内存大小")]

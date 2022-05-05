@@ -12,7 +12,7 @@ public class GameInfoService : IGameInfoService
     public async Task AddGameInfoAsync(GameInfo gameInfo)
     {
         var random = new Random(DateTime.Now.Millisecond);
-        gameInfo.AverageScore = random.NextDouble() * 10;
+        gameInfo.AverageScore = Convert.ToDouble((random.NextDouble() * 10).ToString("0.0"));
         gameInfo.HotPoints = random.NextInt64(1000, 5000);
         await _repoContext.AddAsync(gameInfo);
     }
@@ -38,6 +38,26 @@ public class GameInfoService : IGameInfoService
     public async Task<int> CountGameInfoAsync()
     {
         return await _repoContext.GameInfos.CountAsync();
+    }
+
+    public async Task<int> CountGameInfoWithTermAsync(int? categoryId, int? companyId)
+    {
+        //Both
+        if (categoryId.HasValue && categoryId.Value != 0 && companyId.HasValue && companyId.Value != 0)
+        {
+            return await _repoContext.GameInfos.CountAsync(x => x.GameCategoryId == categoryId && x.GameCompanyId == companyId);
+        }
+        else if (categoryId.HasValue && categoryId.Value != 0 || companyId.HasValue && companyId.Value != 0) // One of them
+        {
+            if (companyId.HasValue && companyId.Value != 0)
+                return await _repoContext.GameInfos.CountAsync(x => x.GameCompanyId == companyId);
+            else
+                return await _repoContext.GameInfos.CountAsync(x => x.GameCategoryId == categoryId);
+        }
+        else
+        {
+            return await _repoContext.GameInfos.CountAsync();
+        }
     }
 
     public async Task<GameInfo> GetGameInfoAsync(int gameId)

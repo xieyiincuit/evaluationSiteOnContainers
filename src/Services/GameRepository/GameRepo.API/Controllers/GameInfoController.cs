@@ -71,8 +71,8 @@ public class GameInfoController : ControllerBase
         [FromQuery] int? categoryId, [FromQuery] int? companyId,
         [FromQuery] int pageIndex = 1, [FromQuery] string? order = "hot")
     {
-        int pageIndexForAdmin = 10;
-        var totalGames = await _gameInfoService.CountGameInfoAsync();
+        const int pageIndexForAdmin = 10;
+        var totalGames = await _gameInfoService.CountGameInfoWithTermAsync(categoryId, companyId);
         if (ParameterValidateHelper.IsInvalidPageIndex(totalGames, pageIndexForAdmin, pageIndex)) pageIndex = 1;
 
         var games = await _gameInfoService.GetGameInfoWithTermAsync(pageIndex, pageIndexForAdmin, categoryId, companyId, order);
@@ -180,9 +180,6 @@ public class GameInfoController : ControllerBase
 
         var gameItem = await _gameInfoService.GetGameInfoAsync(gameInfoUpdateDto.Id);
         if (gameItem == null) return NotFound(new { Message = $"game with id {gameInfoUpdateDto.Id} not fount." });
-
-        if (await _gameInfoService.HasSameGameNameAsync(gameInfoUpdateDto.Name))
-            return BadRequest("该游戏信息已经存在");
 
         //检查是否更新了游戏名，若更新需要发布集成事件通知其他相关服务
         var oldName = gameItem.Name;

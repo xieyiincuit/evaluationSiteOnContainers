@@ -191,7 +191,7 @@ public class ApproveApiTest
         var actionResult = await approveController.UpdateApproveBodyAsync(addObject);
 
         //Assert
-        Assert.Equal(((OkResult)actionResult).StatusCode, (int)HttpStatusCode.OK);
+        Assert.Equal(((BadRequestResult)actionResult).StatusCode, (int)HttpStatusCode.BadRequest);
     }
 
     [Fact]

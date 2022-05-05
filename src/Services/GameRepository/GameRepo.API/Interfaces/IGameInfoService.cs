@@ -2,12 +2,13 @@
 
 public interface IGameInfoService
 {
+    Task<int> CountGameInfoAsync();
+    Task<int> CountGameInfoWithTermAsync(int? categoryId, int? companyId);
     Task<List<GameInfo>> GetGameInfosAsync(int pageIndex, int pageSize);
     Task<List<GameInfo>> GetGameInfoWithTermAsync(int pageIndex, int pageSize, int? categoryId, int? companyId, string? order);
     Task<GameInfo> GetGameInfoAsync(int gameId);
     Task<List<GameRankDto>> GetGameInfoRankAsync();
     Task<List<GameSelectDto>> GetGameSelectAsync();
-    Task<int> CountGameInfoAsync();
     Task AddGameInfoAsync(GameInfo gameInfo);
     Task RemoveGameInfoAsync(int gameId);
     Task UpdateGameInfoAsync(GameInfo gameInfo);

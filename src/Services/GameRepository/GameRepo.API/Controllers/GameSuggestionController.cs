@@ -74,7 +74,7 @@ public class GameSuggestionController : ControllerBase
     public async Task<IActionResult> GetSuggestionByGameIdAsync([FromQuery] int gameId)
     {
         if (!await _gameInfoService.GameExistAsync(gameId)) return BadRequest();
-        var suggestion = await _suggestionService.GetPlaySuggestionByGameAsync(gameId) ?? new GamePlaySuggestion();
+        var suggestion = await _suggestionService.GetPlaySuggestionByGameAsync(gameId) ?? new GamePlaySuggestion() { GameId = gameId };
         return Ok(suggestion);
     }
 
